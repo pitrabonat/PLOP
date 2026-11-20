@@ -90,7 +90,9 @@ namespace Plop.EditorTools
                 var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
                 EditorSceneManager.SaveScene(scene, BootScene);
             }
-            EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(BootScene, true) };
+            // Prefer the gameplay prototype scene when it exists (see PlopSceneSetup).
+            var entry = File.Exists(PlopSceneSetup.GameplayScene) ? PlopSceneSetup.GameplayScene : BootScene;
+            EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(entry, true) };
         }
 
         [MenuItem("PLOP/Build/Android APK (Development)")]

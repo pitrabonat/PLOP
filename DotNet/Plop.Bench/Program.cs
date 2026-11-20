@@ -44,17 +44,7 @@ namespace Plop.Bench
             ? ulong.Parse(s.Substring(2), NumberStyles.HexNumber, CultureInfo.InvariantCulture)
             : ulong.Parse(s, CultureInfo.InvariantCulture);
 
-        public static List<GeneratorSettings> DefaultProfiles() => new List<GeneratorSettings>
-        {
-            new GeneratorSettings { Width = 4, Height = 4, PlopCount = 1, WallDensity = 0.20 },
-            new GeneratorSettings { Width = 5, Height = 5, PlopCount = 1, WallDensity = 0.30 },
-            new GeneratorSettings { Width = 4, Height = 5, PlopCount = 2, WallDensity = 0.15 },
-            new GeneratorSettings { Width = 5, Height = 5, PlopCount = 2, WallDensity = 0.20 },
-            new GeneratorSettings { Width = 6, Height = 6, PlopCount = 2, WallDensity = 0.20 },
-            new GeneratorSettings { Width = 5, Height = 6, PlopCount = 3, WallDensity = 0.15 },
-            new GeneratorSettings { Width = 6, Height = 6, PlopCount = 3, WallDensity = 0.20 },
-            new GeneratorSettings { Width = 7, Height = 7, PlopCount = 3, WallDensity = 0.20 },
-        };
+        public static List<GeneratorSettings> DefaultProfiles() => GeneratorProfiles.Default();
 
         private static int Explore(int perProfile, ulong seed)
         {
