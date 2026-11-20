@@ -48,3 +48,27 @@ Checkpoint before work: tag `checkpoint/pre-gameplay-foundation` (= `e0bd5bd` on
 - Level Lab UI needs a manual pass in the Editor.
 - Difficulty weights need playtest calibration; generator quality improvements (see LEVEL_GENERATION.md).
 - Hints UI (async solver) not implemented yet.
+
+## 2026-11-20/21 — Visual foundation & gameplay presentation (branch `feature/visual-foundation`)
+
+Checkpoint: tag `checkpoint/pre-visual-foundation` (= `5148514`).
+
+- **Root cause of sharp corners:** `PlaceholderArt` drew tiles/walls with an opaque square texture, Nests with a
+  square ring, and HUD buttons as sprite-less uGUI Images (hard rectangles). Removed.
+- **New rendering:** `ShapeAtlas` — SDF-rasterized rounded sprites (1 px AA edge) in one shared texture,
+  resolution chosen from on-screen pixels per cell (buckets 64–256, cached). Rounded tiles (19%), pebble walls
+  (22%, baked side/shadow/highlight), pillow Nests (24%), 9-sliced rounded board container with soft shadow.
+  `UiSprites` — 2× 9-sliced pill/card shapes for the HUD. Palette in `PlopPalette` (brief colors).
+- **Plops:** `PlopView` jelly gumdrops (per-color baked body with rim/translucency/highlight, eyes with glints,
+  blush, ground shadow) animated mathematically from events: squash/stretch on move (0.13 s), landing wobble,
+  bump, breathing, blinking, look-direction, sleep (closed eyes, relax, Nest pulse), completion hop.
+- **HUD:** level title + move counter, pill Undo (disabled when nothing to undo) / Restart with press squish,
+  completion card with Berry "Next"; all inside the safe area.
+- **Layout:** `BoardLayout` fits the board between header and footer inside the safe area, square cells, side
+  margin for rounded display corners, small boards not blown up; refits on screen/safe-area change.
+- **Verification:** Unity compile clean; EditMode 84/84, PlayMode 17/17 (14 new visual/layout tests);
+  iOS Simulator screenshots on iPhone 15 Pro Max (Dynamic Island) and iPhone SE (16:9) at start, mid-play and
+  completion of Level 73 (`Documentation/screenshots/`). First screenshots showed a too-dark board shadow
+  (baked mask at full strength) → renderer alpha 0.15; re-shot.
+- Gameplay rules, solver, generator and level data unchanged (dotnet 84/84 still pass).
+- Android IL2CPP build after the visual changes: success (`PLOP-dev.apk`, 60 MB, 2026-11-21 00:18).

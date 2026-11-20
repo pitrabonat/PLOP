@@ -17,7 +17,7 @@ Tests use only NUnit features available in Unity's NUnit 3.5 fork.
 |---|---|---|---|---|
 | dotnet test (net10.0) | 84 | 84 | 0 | 0 |
 | Unity 6000.3.29f1 EditMode | 84 | 84 | 0 | 0 |
-| Unity 6000.3.29f1 PlayMode | 3 | 3 | 0 | 0 |
+| Unity 6000.3.29f1 PlayMode | 17 | 17 | 0 | 0 |
 
 A mutation check (inverting the front-to-back ordering rule) made 4 rule tests fail, confirming the tests
 detect rule regressions; the code was restored afterwards.
@@ -46,6 +46,7 @@ detect rule regressions; the code was restored afterwards.
 | Difficulty | `Difficulty_*` |
 | Verified solution replay / shipped pack | `Batch_ProducesUniqueVerifiedLevels`, `ShippedLevelPack_IsValidAndVerified` |
 | Unity prototype integration | `GameplayPrototypeTests.*` (move/animate/complete/undo/restart/next, pack loads from Resources, swipe mapping) |
+| Visual foundation | `VisualFoundationTests.*`: corner radii within the style guide, tile/pebble outlines geometrically rounded, one shared atlas texture (batching), density buckets, 9-sliced panel/UI, layout fits 7 screen profiles × 9 board sizes inside the free safe area |
 
 ## Not covered by automated tests
 

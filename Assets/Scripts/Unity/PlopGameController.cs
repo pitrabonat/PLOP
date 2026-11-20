@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Plop.Core;
 using UnityEngine;
@@ -58,6 +59,7 @@ namespace Plop.Presentation
             _hud.UndoClicked += Undo;
             _hud.RestartClicked += Restart;
             _hud.NextClicked += NextLevel;
+            _hud.LayoutChanged += Relayout;
         }
 
         private void Start()
@@ -66,8 +68,29 @@ namespace Plop.Presentation
             _levels = LevelLibrary.Load(levelPackResource);
             if (_levels.Count == 0) return;
             _index = rememberProgress ? Mathf.Clamp(PlayerPrefs.GetInt(ProgressKey, 0), 0, _levels.Count - 1) : 0;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            // Dev-only screenshot/demo hook: PlayerPrefs "plop.debug.level" (1-based) and "plop.debug.moves" ("RRUD").
+            int debugLevel = PlayerPrefs.GetInt("plop.debug.level", 0);
+            if (debugLevel > 0) _index = Mathf.Clamp(debugLevel - 1, 0, _levels.Count - 1);
+#endif
             LoadCurrent();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            string debugMoves = PlayerPrefs.GetString("plop.debug.moves", "");
+            if (!string.IsNullOrEmpty(debugMoves)) StartCoroutine(PlayDebugMoves(debugMoves));
+#endif
         }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        private IEnumerator PlayDebugMoves(string moves)
+        {
+            yield return new WaitForSecondsRealtime(1.5f);
+            foreach (char c in moves)
+            {
+                if (DirectionUtil.TryParse(c, out var d)) Move(d);
+                yield return new WaitForSecondsRealtime(0.45f);
+            }
+        }
+#endif
 
         private void OnDestroy()
         {
@@ -126,20 +149,22 @@ namespace Plop.Presentation
             switch (e.Type)
             {
                 case GameEventType.LevelLoaded:
-                    _board.Build(_engine.Level, _engine.CurrentState);
-                    FitCamera();
-                    _hud.SetLevel(_engine.Level.Name + "  (" + (_index + 1) + "/" + _levels.Count + ")");
+                    _board.Build(_engine.Level, _engine.CurrentState, ShapeAtlas.ForDensity(FitCamera()));
+                    _hud.SetLevel(_engine.Level.Name);
                     _hud.SetMoves(0);
+                    _hud.SetCanUndo(false);
                     _hud.SetCompleted(false, 0);
                     break;
                 case GameEventType.MoveUndone:
                 case GameEventType.LevelRestarted:
                     _board.Sync(_engine.CurrentState);
                     _hud.SetMoves(_engine.MoveCount);
+                    _hud.SetCanUndo(_engine.CanUndo);
                     _hud.SetCompleted(false, 0);
                     break;
                 case GameEventType.PlopMoved:
                     _hud.SetMoves(e.MoveCount);
+                    _hud.SetCanUndo(true);
                     break;
                 case GameEventType.LevelCompleted:
                     _hud.SetCompleted(true, e.MoveCount);
@@ -148,17 +173,28 @@ namespace Plop.Presentation
             }
         }
 
-        private void FitCamera()
+        /// <summary>Fits the camera to the board inside the safe area (see BoardLayout). Returns pixels per cell.</summary>
+        private float FitCamera()
         {
             if (_camera == null) _camera = Camera.main;
-            if (_camera == null) return;
+            if (_camera == null || !_engine.HasLevel) return 128f;
+            var layout = BoardLayout.Compute(Screen.width, Screen.height, Screen.safeArea, _engine.Level.Width, _engine.Level.Height);
             _camera.orthographic = true;
-            _camera.backgroundColor = PlaceholderArt.Background;
-            _camera.transform.position = new Vector3(0f, -0.4f, -10f);
-            float aspect = Mathf.Max(0.1f, _camera.aspect);
-            float halfHeightForWidth = (_engine.Level.Width * 0.5f + 0.6f) / aspect;
-            float halfHeightForHeight = _engine.Level.Height * 0.5f + 2.2f; // room for HUD
-            _camera.orthographicSize = Mathf.Max(halfHeightForWidth, halfHeightForHeight);
+            _camera.clearFlags = CameraClearFlags.SolidColor;
+            _camera.backgroundColor = PlopPalette.Milk;
+            _camera.orthographicSize = layout.OrthographicSize;
+            _camera.transform.position = new Vector3(layout.CameraPosition.x, layout.CameraPosition.y, -10f);
+            return layout.PixelsPerUnit;
+        }
+
+        /// <summary>Screen or safe area changed: refit; rebuild sprites only if the density bucket changed.</summary>
+        private void Relayout()
+        {
+            if (!_engine.HasLevel) return;
+            float ppu = FitCamera();
+            if (ShapeAtlas.Bucket(ppu) != _board.PixelsPerUnitBucket)
+                _board.Build(_engine.Level, _engine.CurrentState, ShapeAtlas.ForDensity(ppu));
+            MarkActive();
         }
 
         private void MarkActive()
@@ -171,7 +207,7 @@ namespace Plop.Presentation
         {
             // Battery: drop the render rate while nothing is moving (input/UI still processed every frame).
             if (idleRenderInterval > 1 && OnDemandRendering.renderFrameInterval == 1 &&
-                !_board.IsAnimating && Time.unscaledTime - _lastActivity > idleDelay)
+                !_board.IsBusy && Time.unscaledTime - _lastActivity > idleDelay)
             {
                 OnDemandRendering.renderFrameInterval = idleRenderInterval;
             }

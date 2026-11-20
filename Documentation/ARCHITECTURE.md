@@ -59,12 +59,17 @@ GameHud ──Undo/Restart/Next──▶      │                          │
 ```
 
 - `PlopGameController` owns the engine and routes input; contains **no rules**.
-- `BoardView` builds placeholder sprites from the level and animates `PlopMoved` / `PlopBlocked` events with
-  one short coroutine per command; `Sync` snaps after undo/restart/load.
+- `BoardView` builds the board from one runtime `ShapeAtlas` (rounded tiles, pebble walls, pillow Nests,
+  9-sliced rounded container) and drives `PlopView`s (jelly Plops: squash & stretch, landing wobble, bump,
+  idle breathing/blinking, sleep, completion hop) from `GameEvent`s in a single allocation-free `Update`;
+  `Sync` snaps after undo/restart/load. See VISUAL_STYLE.md.
 - `SwipeInput` — Input System callbacks (pointer press/release swipe, arrows/WASD, Z/Backspace, R, N/Enter).
-- `GameHud` — uGUI built in code; text changes only on events.
+- `GameHud` — uGUI built in code (rounded 9-sliced pills/card from `UiSprites`, `PressScale`), inside
+  `Screen.safeArea`; text changes only on events. `RectChangeNotifier` reports screen/safe-area changes.
+- `BoardLayout` — pure portrait layout math: fits the board between header and footer in the safe area.
 - `LevelLibrary` — loads `Resources/Levels/PLOP_Pack_001.json` without the dev block.
-- `PlaceholderArt` — runtime-generated square / circle / outline sprites (replaceable art).
+- `PlopPalette` — Soft Toy Minimalism colors and the gameplay-color → palette-slot mapping.
+- `ShapeAtlas` / `UiSprites` / `Sdf` — SDF-rasterized rounded sprites at screen-appropriate density.
 
 ## Performance design
 
@@ -84,6 +89,7 @@ GameHud ──Undo/Restart/Next──▶      │                          │
 - New tile mechanics (portals, ice, buttons): extend `LevelDefinition` (+ serializer schema v2) and
   `MoveRules.Apply`; solver/generator/tests automatically use the new rules. If a mechanic adds mutable
   state (e.g. toggled buttons), add it to `GameState` and `StateCodec` (and bump `SolverInfo.Version`).
-- Art/animation: replace `PlaceholderArt` / `BoardView`; events already carry everything needed.
+- Art/animation: replace sprites in `ShapeAtlas` or `PlopView` (e.g. with authored character art) without
+  touching gameplay; events already carry everything needed.
 - Hints: run `BfsSolver.Solve(level, engine.CurrentState)` off the main thread.
 - Difficulty tuning: `DifficultyWeights` (weights + thresholds) — no code changes needed.

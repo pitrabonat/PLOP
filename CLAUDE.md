@@ -13,7 +13,8 @@ Guidance for Claude Code and other contributors working in this repository.
 - **Status:** Gameplay foundation implemented: deterministic core simulation, BFS solver, procedural generator,
   Level Lab, placeholder Unity prototype, 100-level pack. No final art, ads, analytics or monetization —
   do not add ad/analytics SDKs without explicit approval.
-- **Docs:** `Documentation/` — ARCHITECTURE, GAME_RULES, SOLVER, LEVEL_GENERATION, LEVEL_FORMAT, TESTING, DEVELOPMENT_LOG.
+- **Visual style:** "Soft Toy Minimalism" — see `Documentation/VISUAL_STYLE.md` (palette, corner radii, animation).
+- **Docs:** `Documentation/` — ARCHITECTURE, GAME_RULES, SOLVER, LEVEL_GENERATION, LEVEL_FORMAT, VISUAL_STYLE, TESTING, DEVELOPMENT_LOG.
 
 ## Storage layout (important)
 The SanDisk drive is **exFAT**, which is unsuitable for Unity (no symlinks/permissions, 128 KB clusters).
@@ -62,7 +63,10 @@ Documentation/       design & technical docs (+ benchmarks/)
 - **One rules implementation:** `Plop.Core.MoveRules.Apply`. Engine, solver, generator and tools call it.
 - Core/Solver/Generation must never reference UnityEngine (`noEngineReferences: true`), and must compile
   under C# 9 / netstandard2.1 (checked by `DotNet/Plop.Lib`).
-- Gameplay never touches visuals: presentation reacts to `GameEvent`s.
+- Gameplay never touches visuals: presentation reacts to `GameEvent`s. Views never decide logical positions:
+  a Plop's root position comes only from `PlopMoved.To` / `Sync(state)`; animation touches child transforms.
+- Visual rule: no sharp corners. New board/UI shapes go into `ShapeAtlas` / `UiSprites` as SDF shapes with
+  radii as fractions of the cell; colors only from `PlopPalette`; no pure black shadows or pure white highlights.
 - No generation/solving at runtime in `Update`; the pack is precomputed. Hints must run off the main thread.
 - Any change that can alter generated output bumps `GeneratorInfo.Version`; solver output → `SolverInfo.Version`;
   JSON breaking change → `LevelSerializer.SchemaVersion`.
