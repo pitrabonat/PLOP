@@ -34,6 +34,7 @@ namespace Plop.Bench
                     case "--pack": pack = args[++i]; break;
                     case "--report": report = args[++i]; break;
                     case "--explore": explore = int.Parse(args[++i]); break;
+                    case "--perf": return Perf(args[++i]);
                     default: Console.Error.WriteLine("Unknown argument " + args[i]); return 2;
                 }
             }
@@ -67,6 +68,40 @@ namespace Plop.Bench
                                   $"score p10={P(scores, .1):0.0} p50={P(scores, .5):0.0} p90={P(scores, .9):0.0} max={scores.LastOrDefault():0.0} " +
                                   $"len avg={(lens.Count > 0 ? lens.Average() : 0):0.0} time={sw.ElapsedMilliseconds}ms");
             }
+            return 0;
+        }
+
+        /// <summary>Measures solver cost on every level of a pack and per-move allocations of GameEngine.</summary>
+        private static int Perf(string packPath)
+        {
+            var levels = LevelSerializer.PackFromJson(File.ReadAllText(packPath));
+            LevelDefinition worst = null; SolverResult worstResult = null;
+            double total = 0;
+            foreach (var l in levels)
+            {
+                var r = BfsSolver.Solve(l);
+                total += r.ElapsedMs;
+                if (worstResult == null || r.StatesVisited > worstResult.StatesVisited) { worst = l; worstResult = r; }
+            }
+            var analysis = StateSpaceAnalyzer.Analyze(worst);
+            Console.WriteLine($"Solver over {levels.Count} levels: total {total:0.0} ms, avg {total / levels.Count:0.00} ms");
+            Console.WriteLine($"Largest search: {worst.Name} {worst.Width}x{worst.Height} p{worst.Plops.Count}: BFS visited {worstResult.StatesVisited} states in {worstResult.ElapsedMs:0.0} ms; full analysis {analysis.ReachableStates} states in {analysis.ElapsedMs:0.0} ms");
+
+            var engine = new GameEngine();
+            engine.LoadLevel(worst);
+            var rng = new SplitMix64(1);
+            for (int i = 0; i < 1000; i++) { engine.TryMove((Direction)rng.NextInt(4)); if (engine.IsCompleted) engine.Restart(); }
+            long before = GC.GetAllocatedBytesForCurrentThread();
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            int moves = 0, changed = 0;
+            for (int i = 0; i < 100000; i++)
+            {
+                var r = engine.TryMove((Direction)rng.NextInt(4)); moves++;
+                if (r.Changed) changed++;
+                if (engine.IsCompleted || engine.MoveCount > 200) engine.Restart();
+            }
+            long bytes = GC.GetAllocatedBytesForCurrentThread() - before;
+            Console.WriteLine($"GameEngine.TryMove: {moves} commands ({changed} state-changing) in {sw.Elapsed.TotalMilliseconds:0.0} ms, {sw.Elapsed.TotalMilliseconds * 1000 / moves:0.00} us/command, {bytes / (double)moves:0} bytes allocated per command (history snapshot + event array)");
             return 0;
         }
 

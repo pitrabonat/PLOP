@@ -32,15 +32,31 @@ namespace Plop.Presentation
             scaler.matchWidthOrHeight = 0.5f;
             canvasGo.AddComponent<GraphicRaycaster>();
 
-            _title = MakeText(canvasGo.transform, font, "Title", 64, new Vector2(0.5f, 1f), new Vector2(0, -110));
-            _moves = MakeText(canvasGo.transform, font, "Moves", 48, new Vector2(0.5f, 1f), new Vector2(0, -190));
-            _banner = MakeText(canvasGo.transform, font, "Banner", 72, new Vector2(0.5f, 0.5f), new Vector2(0, 520));
+            // All HUD elements live inside the device safe area (notch / Dynamic Island / home indicator).
+            var safe = new GameObject("SafeArea", typeof(RectTransform)).GetComponent<RectTransform>();
+            safe.SetParent(canvasGo.transform, false);
+            ApplySafeArea(safe);
+
+            _title = MakeText(safe, font, "Title", 64, new Vector2(0.5f, 1f), new Vector2(0, -70));
+            _moves = MakeText(safe, font, "Moves", 48, new Vector2(0.5f, 1f), new Vector2(0, -150));
+            _banner = MakeText(safe, font, "Banner", 72, new Vector2(0.5f, 0.5f), new Vector2(0, 520));
             _banner.color = new Color(1f, 0.92f, 0.55f);
             _banner.gameObject.SetActive(false);
 
-            MakeButton(canvasGo.transform, font, "Undo", new Vector2(-330, 170), () => UndoClicked?.Invoke());
-            MakeButton(canvasGo.transform, font, "Restart", new Vector2(0, 170), () => RestartClicked?.Invoke());
-            _next = MakeButton(canvasGo.transform, font, "Next", new Vector2(330, 170), () => NextClicked?.Invoke());
+            MakeButton(safe, font, "Undo", new Vector2(-330, 110), () => UndoClicked?.Invoke());
+            MakeButton(safe, font, "Restart", new Vector2(0, 110), () => RestartClicked?.Invoke());
+            _next = MakeButton(safe, font, "Next", new Vector2(330, 110), () => NextClicked?.Invoke());
+        }
+
+        /// <summary>Fits a full-screen RectTransform to Screen.safeArea (portrait-only game: applied once).</summary>
+        private static void ApplySafeArea(RectTransform rt)
+        {
+            Rect area = Screen.safeArea;
+            float w = Mathf.Max(1, Screen.width), h = Mathf.Max(1, Screen.height);
+            if (area.width <= 0 || area.height <= 0) area = new Rect(0, 0, w, h);
+            rt.anchorMin = new Vector2(area.xMin / w, area.yMin / h);
+            rt.anchorMax = new Vector2(area.xMax / w, area.yMax / h);
+            rt.offsetMin = rt.offsetMax = Vector2.zero;
         }
 
         public void SetLevel(string title) => _title.text = title;

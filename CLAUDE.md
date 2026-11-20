@@ -10,7 +10,10 @@ Guidance for Claude Code and other contributors working in this repository.
 - **Targets:** Android (IL2CPP, ARM64, min API 26, target = highest installed) and iOS (min iOS 15.0)
 - **Orientation:** Portrait only
 - **Repository:** https://github.com/pitrabonat/PLOP (remote `origin`, branch `main`; public)
-- **Status:** Scaffold only. No gameplay, art, ads or analytics yet. Do not add ad/analytics SDKs without explicit approval.
+- **Status:** Gameplay foundation implemented: deterministic core simulation, BFS solver, procedural generator,
+  Level Lab, placeholder Unity prototype, 100-level pack. No final art, ads, analytics or monetization —
+  do not add ad/analytics SDKs without explicit approval.
+- **Docs:** `Documentation/` — ARCHITECTURE, GAME_RULES, SOLVER, LEVEL_GENERATION, LEVEL_FORMAT, TESTING, DEVELOPMENT_LOG.
 
 ## Storage layout (important)
 The SanDisk drive is **exFAT**, which is unsuitable for Unity (no symlinks/permissions, 128 KB clusters).
@@ -38,28 +41,40 @@ Rules:
 ## Directory architecture
 ```
 Assets/
-  Art/  Audio/  Animations/  Materials/  Prefabs/
-  Scenes/            Boot.unity = build entry scene
+  Scenes/            Gameplay.unity = build entry scene (prototype); Boot.unity = URP 2D template scene
   Scripts/
-    Core/            bootstrapping, services, shared utilities
-    Gameplay/        board, pieces, rules (runtime)
-    LevelGeneration/ procedural level creation
-    Solver/          puzzle solver / validation
-    UI/              menus, HUD
-    SaveSystem/      persistence
-    Editor/          editor-only tools (PlopBuild.cs) — never referenced by runtime code
-  Levels/            level data assets
-  Settings/          URP / 2D renderer / Input System assets (from template)
-Tests/               test plans & notes (put Unity test assemblies in Assets/Tests/{EditMode,PlayMode})
-Documentation/       design & technical docs
+    Core/            PLOP.Core        — pure C# rules/state/engine/validation/JSON (NO UnityEngine)
+    Solver/          PLOP.Solver      — BFS solver + state-space analyzer (NO UnityEngine)
+    LevelGeneration/ PLOP.Generation  — PRNG, generator, verifier, duplicates, difficulty (NO UnityEngine)
+    Unity/           PLOP.Unity       — presentation: BoardView, SwipeInput, GameHud, PlopGameController
+    LevelLab/Editor/ PLOP.LevelLab    — editor-only Level Lab window (PLOP → Level Lab)
+    Editor/          build + scene setup scripts (PlopBuild, PlopSceneSetup)
+    Gameplay/ UI/ SaveSystem/          reserved (empty)
+  Tests/EditMode/    PLOP.Tests          — NUnit tests (also run by DotNet/Plop.Tests)
+  Tests/PlayMode/    PLOP.Tests.PlayMode — Unity integration tests
+  Levels/Resources/Levels/PLOP_Pack_001.json — shipped level pack (100 verified levels)
+  Art/ Audio/ Animations/ Materials/ Prefabs/ Settings/
+DotNet/              Plop.Lib (netstandard2.1 build of Core/Solver/Generation), Plop.Tests, Plop.Bench
+Documentation/       design & technical docs (+ benchmarks/)
 ```
+
+## Architecture rules (do not break)
+- **One rules implementation:** `Plop.Core.MoveRules.Apply`. Engine, solver, generator and tools call it.
+- Core/Solver/Generation must never reference UnityEngine (`noEngineReferences: true`), and must compile
+  under C# 9 / netstandard2.1 (checked by `DotNet/Plop.Lib`).
+- Gameplay never touches visuals: presentation reacts to `GameEvent`s.
+- No generation/solving at runtime in `Update`; the pack is precomputed. Hints must run off the main thread.
+- Any change that can alter generated output bumps `GeneratorInfo.Version`; solver output → `SolverInfo.Version`;
+  JSON breaking change → `LevelSerializer.SchemaVersion`.
+- Levels that cannot be verified within budget are rejected — never assumed solvable.
 
 ## Conventions
 - Namespaces: `Plop.<Area>` (e.g. `Plop.Core`, `Plop.Solver`); editor code in `Plop.EditorTools`.
 - One public type per file; file name = type name. PascalCase types/methods, `_camelCase` private fields, `[SerializeField] private` over public fields.
 - Keep game logic (Solver, LevelGeneration) free of `MonoBehaviour` where possible so it is unit-testable.
 - Use the Input System package (already installed), not the legacy Input Manager.
-- Add an assembly definition (`.asmdef`) per Scripts area once code exists.
+- One asmdef per Scripts area (see table in Documentation/ARCHITECTURE.md).
+- Tests: shared NUnit files must stick to NUnit 3.5 APIs (Unity's fork).
 - Always commit `.meta` files; never commit `Library/`, `Temp/`, `Logs/`, `UserSettings/`, builds.
 - Binary assets (png, psd, wav, fbx, …) go through **Git LFS** (see `.gitattributes`).
 - Minimal dependencies: ask before adding packages. Removed from template on purpose: Collab, Rider, Visual Scripting, Timeline, SpriteShape, Tilemap Extras, Aseprite, PSD Importer, 2D Animation, 2D Tooling.
@@ -69,6 +84,20 @@ Documentation/       design & technical docs
   In Unity: Preferences → External Tools → External Script Editor = Visual Studio Code.
 - Git + Git LFS (`git lfs install` done for the user).
 - ADB: `~/Library/Android/sdk/platform-tools/adb` (same version, 37.0.1, as Unity's bundled one).
+
+## Tests, levels and benchmark
+```bash
+export NUGET_PACKAGES=/Volumes/PLOP_DEV/Cache/NuGet          # keep NuGet cache off the internal SSD
+dotnet test DotNet/Plop.Tests/Plop.Tests.csproj                # fast: 84 tests in ~1 s
+dotnet run -c Release --project DotNet/Plop.Bench -- --count 100 \
+  --pack Assets/Levels/Resources/Levels/PLOP_Pack_001.json --report Documentation/benchmarks/generation_benchmark_v1.md
+dotnet run -c Release --project DotNet/Plop.Bench -- --perf Assets/Levels/Resources/Levels/PLOP_Pack_001.json
+UNITY=/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/Unity.app/Contents/MacOS/Unity
+"$UNITY" -batchmode -nographics -projectPath "$PWD" -runTests -testPlatform EditMode -testResults /Volumes/PLOP_DEV/Builds/Logs/editmode.xml
+"$UNITY" -batchmode -projectPath "$PWD" -runTests -testPlatform PlayMode -testResults /Volumes/PLOP_DEV/Builds/Logs/playmode.xml
+"$UNITY" -batchmode -quit -projectPath "$PWD" -executeMethod Plop.EditorTools.PlopSceneSetup.CreateGameplayScene
+```
+Level Lab: Unity menu **PLOP → Level Lab** (edit, generate, solve, replay, metrics, import/export, packs, batches).
 
 ## Build instructions
 GUI: Unity menu **PLOP → Build → Android APK (Development)** / **iOS Xcode Project (Device)** / **iOS Xcode Project (Simulator)**.
