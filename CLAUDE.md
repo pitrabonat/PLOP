@@ -25,7 +25,7 @@ All dev data therefore lives inside an **APFS sparse-bundle image stored on SanD
 | Android SDK / NDK r27c / OpenJDK 17 (Unity-bundled) | `/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/PlaybackEngines/AndroidPlayer/{SDK,NDK,OpenJDK}` |
 | Build outputs | `/Volumes/PLOP_DEV/Builds/{Android,iOS}` |
 | Unity package (UPM) cache | `/Volumes/PLOP_DEV/Cache/UPM` (set in `~/.upmconfig.toml`) |
-| Xcode (when installed) | `/Volumes/PLOP_DEV/Xcode/Xcode.app` |
+| Xcode 26.3 | `/Volumes/PLOP_DEV/Xcode/Xcode-26.3.app` (used via `DEVELOPER_DIR`) |
 | Raw source assets / docs / backups | `/Volumes/PLOP_DEV/{Assets,Documentation,Backups}` |
 
 Rules:
@@ -71,7 +71,7 @@ Documentation/       design & technical docs
 - ADB: `~/Library/Android/sdk/platform-tools/adb` (same version, 37.0.1, as Unity's bundled one).
 
 ## Build instructions
-GUI: Unity menu **PLOP → Build → Android APK (Development)** / **iOS Xcode Project**.
+GUI: Unity menu **PLOP → Build → Android APK (Development)** / **iOS Xcode Project (Device)** / **iOS Xcode Project (Simulator)**.
 
 CLI (quit any open Editor on this project first):
 ```bash
@@ -82,20 +82,30 @@ PROJ=/Volumes/PLOP_DEV/Unity/Projects/PLOP
 # Install & launch on a connected phone
 adb install -r /Volumes/PLOP_DEV/Builds/Android/PLOP-dev.apk
 adb shell monkey -p com.plop.sleepypuzzle -c android.intent.category.LAUNCHER 1
-# iOS Xcode project (Simulator SDK by default; PLOP_IOS_SDK=device for device SDK)
+export DEVELOPER_DIR=/Volumes/PLOP_DEV/Xcode/Xcode-26.3.app/Contents/Developer
+# iOS Simulator: export (arm64 simulator) -> build -> run in "PLOP iPhone 15 Pro Max" simulator
+"$UNITY" -batchmode -quit -projectPath "$PROJ" -buildTarget iOS -executeMethod Plop.EditorTools.PlopBuild.ExportIOSSimulator -logFile -
+xcodebuild -project /Volumes/PLOP_DEV/Builds/iOS/PLOP-Xcode-Sim/Unity-iPhone.xcodeproj -scheme Unity-iPhone \
+  -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+  -derivedDataPath /Volumes/PLOP_DEV/Builds/iOS/DerivedData-Sim CODE_SIGNING_ALLOWED=NO build
+SIM=$(xcrun simctl list devices | grep "PLOP iPhone 15 Pro Max" | grep -o '[0-9A-F-]\{36\}' | head -1)
+xcrun simctl boot "$SIM" 2>/dev/null; open -a "$DEVELOPER_DIR/Applications/Simulator.app"
+xcrun simctl install "$SIM" /Volumes/PLOP_DEV/Builds/iOS/DerivedData-Sim/Build/Products/Debug-iphonesimulator/PLOP.app
+xcrun simctl launch "$SIM" com.plop.sleepypuzzle
+# iOS device (signed with the free Personal Team 78P9NBFG37; Apple ID must be in Xcode → Settings → Accounts)
 "$UNITY" -batchmode -quit -projectPath "$PROJ" -buildTarget iOS -executeMethod Plop.EditorTools.PlopBuild.ExportIOS -logFile -
-# Build the exported project for the simulator (no signing needed)
-DEVELOPER_DIR=/Volumes/PLOP_DEV/Xcode/Xcode.app/Contents/Developer \
-  xcodebuild -project /Volumes/PLOP_DEV/Builds/iOS/PLOP-Xcode/Unity-iPhone.xcodeproj \
-  -scheme Unity-iPhone -sdk iphonesimulator -configuration Debug \
-  -derivedDataPath /Volumes/PLOP_DEV/Builds/iOS/DerivedData build
+xcodebuild -project /Volumes/PLOP_DEV/Builds/iOS/PLOP-Xcode/Unity-iPhone.xcodeproj -scheme Unity-iPhone -configuration Debug \
+  -destination "id=<iPhone hardware UDID>" -derivedDataPath /Volumes/PLOP_DEV/Builds/iOS/DerivedData \
+  -allowProvisioningUpdates -allowProvisioningDeviceRegistration DEVELOPMENT_TEAM=78P9NBFG37 CODE_SIGN_STYLE=Automatic build
+xcrun devicectl device install app --device <CoreDevice id> /Volumes/PLOP_DEV/Builds/iOS/DerivedData/Build/Products/Debug-iphoneos/PLOP.app
 ```
 Bundle id placeholder: `com.plop.sleepypuzzle` — change before publishing.
 
 ## Known constraints
-- macOS 15.5 supports Xcode up to 16.4 (iOS 18.5 SDK). App Store uploads require Xcode 26+, which needs macOS Tahoe 26.2+. Upgrade macOS before shipping to the App Store.
-- Xcode 16.4 is installed at `/Volumes/PLOP_DEV/Xcode/Xcode.app` (license accepted). Use it via `DEVELOPER_DIR` (no `sudo xcode-select`).
-- The test iPhone (iPhone 15 Pro Max) runs **iOS 26.6.1**; Xcode 16.4 cannot install/debug on iOS 26 ("no DDI"). Real-iPhone testing needs macOS Tahoe 26.2+ and Xcode 26.x.
-- Xcode builds that compile storyboards (Unity's LaunchScreen) require the iOS platform component (`xcodebuild -downloadPlatform iOS`), which also installs a simulator runtime (~8 GB on the **internal** SSD). Not installed yet to save internal space. Without it, all code (IL2CPP + UnityFramework) compiles; only the LaunchScreen storyboards fail.
+- macOS **Sequoia 15.8.3** + **Xcode 26.3** (iOS 26.2 SDK). Xcode 26.3 is the newest Xcode that runs on Sequoia (26.4+ needs Tahoe 26.2+). It is new enough for App Store uploads (Xcode 26+ required since April 2026).
+- iOS platform component installed with `xcodebuild -downloadPlatform iOS -architectureVariant arm64` (simulator runtime iOS 26.3.1, ~7.8 GB on the **internal** SSD — unavoidable; Xcode needs it even to compile LaunchScreen storyboards).
+- Unity's iOS Simulator export defaults to x86_64; `ExportIOSSimulator` forces arm64 (required on this Apple-silicon Mac with the arm64-only runtime).
+- The test iPhone 15 Pro Max (iOS 26.6.1) builds, signs and installs fine, but **won't launch dev builds**: a device-management (MDM) profile on the phone blocks trusting developer apps ("Your device management settings do not allow using apps from developer…"). Use the iOS Simulator, remove the profile (only if not needed), or use TestFlight (paid Apple Developer Program).
+- Free Personal Team profiles expire after 7 days — rebuild/reinstall to refresh.
 - Xiaomi/HyperOS test phone blocks `adb install` unless Developer options → "Install via USB" is enabled; fallback: `adb push` the APK to `/sdcard/Download` and install from Files.
-- Physical iPhone testing requires an Apple ID in Xcode → Settings → Accounts (free Personal Team works).
+- The built-in Claude Code iOS Simulator panel needs `sudo xcode-select -s` to a full Xcode; not configured (system-wide change). The Simulator app works without it.

@@ -102,14 +102,28 @@ namespace Plop.EditorTools
             Build(BuildTarget.Android, path, BuildOptions.Development);
         }
 
-        [MenuItem("PLOP/Build/iOS Xcode Project")]
+        /// iOS Xcode project for real devices -> Builds/iOS/PLOP-Xcode.
+        /// Set PLOP_IOS_SDK=simulator (batchmode) to call ExportIOSSimulator instead.
+        [MenuItem("PLOP/Build/iOS Xcode Project (Device)")]
         public static void ExportIOS()
         {
+            if (Environment.GetEnvironmentVariable("PLOP_IOS_SDK") == "simulator") { ExportIOSSimulator(); return; }
             EnsureBootScene();
-            var sdk = Environment.GetEnvironmentVariable("PLOP_IOS_SDK");
-            PlayerSettings.iOS.sdkVersion = sdk == "device" ? iOSSdkVersion.DeviceSDK : iOSSdkVersion.SimulatorSDK;
-            var path = Path.Combine(BuildsRoot, "iOS", "PLOP-Xcode");
-            Build(BuildTarget.iOS, path, BuildOptions.None);
+            PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
+            Build(BuildTarget.iOS, Path.Combine(BuildsRoot, "iOS", "PLOP-Xcode"), BuildOptions.None);
+        }
+
+        /// iOS Xcode project for the iOS Simulator -> Builds/iOS/PLOP-Xcode-Sim.
+        /// Restores the Device SDK setting afterwards so project settings stay device-ready.
+        [MenuItem("PLOP/Build/iOS Xcode Project (Simulator)")]
+        public static void ExportIOSSimulator()
+        {
+            EnsureBootScene();
+            PlayerSettings.iOS.sdkVersion = iOSSdkVersion.SimulatorSDK;
+            // Apple silicon Mac + arm64-only simulator runtime: build arm64 simulator binaries (Unity default is x86_64).
+            PlayerSettings.iOS.simulatorSdkArchitecture = AppleMobileArchitectureSimulator.ARM64;
+            try { Build(BuildTarget.iOS, Path.Combine(BuildsRoot, "iOS", "PLOP-Xcode-Sim"), BuildOptions.Development); }
+            finally { PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK; AssetDatabase.SaveAssets(); }
         }
 
         static void Build(BuildTarget target, string path, BuildOptions options)
