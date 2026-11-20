@@ -1,0 +1,17 @@
+{
+    "name": "PLOP.Generation",
+    "rootNamespace": "Plop.Generation",
+    "references": [
+        "PLOP.Core",
+        "PLOP.Solver"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

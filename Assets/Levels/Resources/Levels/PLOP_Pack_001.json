@@ -1,0 +1,6458 @@
+{
+  "schemaVersion": 1,
+  "packId": "PLOP_Pack_001",
+  "levels": [
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-870CEC087725",
+      "name": "Level 1",
+      "width": 4,
+      "height": 4,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [2, 0],
+        [1, 2]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x9754CCA21694E164",
+        "generatorParams": "w=4 h=4 plops=1 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=10",
+        "solverVersion": 1,
+        "solution": "LDDR",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 6.15,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 16,
+            "avgBranching": 2,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 3,
+            "misleadingMoves": 3,
+            "plops": 1,
+            "reachableStates": 12,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 4
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-98C912A9906B",
+      "name": "Level 2",
+      "width": 4,
+      "height": 4,
+      "walls": [
+        [1, 0],
+        [2, 0],
+        [3, 0],
+        [3, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x1A096B5733C55696",
+        "generatorParams": "w=4 h=4 plops=1 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=2",
+        "solverVersion": 1,
+        "solution": "URRR",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 6.9,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 16,
+            "avgBranching": 2.5,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 4,
+            "misleadingMoves": 6,
+            "plops": 1,
+            "reachableStates": 12,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 4
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-4942BB6AA24F",
+      "name": "Level 3",
+      "width": 4,
+      "height": 4,
+      "walls": [
+        [3, 0],
+        [1, 1],
+        [0, 2],
+        [3, 2],
+        [0, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xBF802946A6776DE3",
+        "generatorParams": "w=4 h=4 plops=1 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=7",
+        "solverVersion": 1,
+        "solution": "LDLLU",
+        "solutionLength": 5,
+        "difficulty": {
+          "score": 7.01,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 16,
+            "avgBranching": 2,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 5,
+            "misleadingMoves": 5,
+            "plops": 1,
+            "reachableStates": 11,
+            "solutionLength": 5,
+            "trapMoves": 0,
+            "walls": 5
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-402475EF4D8D",
+      "name": "Level 4",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [3, 0],
+        [4, 0],
+        [4, 1],
+        [3, 2],
+        [3, 3],
+        [1, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x88E869DAB0630652",
+        "generatorParams": "w=5 h=5 plops=1 walls=0.3 target=any minLen=4 maxLen=60 solverStates=300000 attempt=2",
+        "solverVersion": 1,
+        "solution": "DRRU",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 7.06,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 2.5,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 4,
+            "misleadingMoves": 6,
+            "plops": 1,
+            "reachableStates": 15,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 6
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-D13F273EE370",
+      "name": "Level 5",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [2, 0],
+        [0, 1],
+        [0, 2],
+        [0, 3],
+        [1, 3],
+        [2, 3],
+        [0, 4],
+        [1, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xAECC5747FFD3C7DB",
+        "generatorParams": "w=5 h=5 plops=1 walls=0.3 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "UURR",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 7.23,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 2.25,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 3,
+            "misleadingMoves": 4,
+            "plops": 1,
+            "reachableStates": 16,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-B54E48117506",
+      "name": "Level 6",
+      "width": 4,
+      "height": 4,
+      "walls": [
+        [1, 1],
+        [3, 2]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x29CD851BDB3B8069",
+        "generatorParams": "w=4 h=4 plops=1 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=3",
+        "solverVersion": 1,
+        "solution": "URRR",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 7.41,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 16,
+            "avgBranching": 2.75,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 3,
+            "misleadingMoves": 6,
+            "plops": 1,
+            "reachableStates": 14,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 2
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-7A86AE25480C",
+      "name": "Level 7",
+      "width": 4,
+      "height": 4,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [2, 0],
+        [0, 1],
+        [1, 1],
+        [1, 2],
+        [2, 2]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xD08E7E2EA022A706",
+        "generatorParams": "w=4 h=4 plops=1 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=3",
+        "solverVersion": 1,
+        "solution": "RRDDD",
+        "solutionLength": 5,
+        "difficulty": {
+          "score": 7.61,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 16,
+            "avgBranching": 2.2,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 5,
+            "misleadingMoves": 6,
+            "plops": 1,
+            "reachableStates": 9,
+            "solutionLength": 5,
+            "trapMoves": 0,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-FCDA1FC5606C",
+      "name": "Level 8",
+      "width": 4,
+      "height": 4,
+      "walls": [
+        [1, 1],
+        [2, 1]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xE47DC3ADA4C9A417",
+        "generatorParams": "w=4 h=4 plops=1 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=10",
+        "solverVersion": 1,
+        "solution": "LLLD",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 7.66,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 16,
+            "avgBranching": 3,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 4,
+            "misleadingMoves": 8,
+            "plops": 1,
+            "reachableStates": 14,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 2
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-C0EAF00CE960",
+      "name": "Level 9",
+      "width": 4,
+      "height": 4,
+      "walls": [
+        [3, 1],
+        [0, 2],
+        [1, 2]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xAB846E8EE4316E80",
+        "generatorParams": "w=4 h=4 plops=1 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "UUUL",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 7.71,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 16,
+            "avgBranching": 3,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 4,
+            "misleadingMoves": 8,
+            "plops": 1,
+            "reachableStates": 12,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 3
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-0A28F6EF9E89",
+      "name": "Level 10",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [2, 0],
+        [3, 0],
+        [1, 1],
+        [2, 1],
+        [3, 1],
+        [1, 2],
+        [2, 2],
+        [0, 4],
+        [1, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x1CB797C4DFBE9A58",
+        "generatorParams": "w=5 h=5 plops=1 walls=0.3 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "LLDDD",
+        "solutionLength": 5,
+        "difficulty": {
+          "score": 7.82,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 2.2,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 5,
+            "misleadingMoves": 6,
+            "plops": 1,
+            "reachableStates": 15,
+            "solutionLength": 5,
+            "trapMoves": 0,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-90DAF99E4F18",
+      "name": "Level 11",
+      "width": 4,
+      "height": 4,
+      "walls": [
+        [1, 1],
+        [0, 3],
+        [1, 3],
+        [2, 3],
+        [3, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x26DDE055BB0BDD51",
+        "generatorParams": "w=4 h=4 plops=1 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "RUUR",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 8.01,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 16,
+            "avgBranching": 2.75,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 2,
+            "misleadingMoves": 5,
+            "plops": 1,
+            "reachableStates": 11,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 5
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-D863448D1CFE",
+      "name": "Level 12",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [3, 0],
+        [4, 0],
+        [3, 1],
+        [4, 1],
+        [4, 2],
+        [1, 3],
+        [2, 3],
+        [4, 3],
+        [2, 4],
+        [3, 4],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xF3B9D075D960FA24",
+        "generatorParams": "w=5 h=5 plops=1 walls=0.3 target=any minLen=4 maxLen=60 solverStates=300000 attempt=3",
+        "solverVersion": 1,
+        "solution": "LLUU",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 8.04,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 2.75,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 4,
+            "misleadingMoves": 7,
+            "plops": 1,
+            "reachableStates": 13,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 11
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-196E2B1179D5",
+      "name": "Level 13",
+      "width": 4,
+      "height": 4,
+      "walls": [
+        [2, 0],
+        [3, 0],
+        [2, 1],
+        [1, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x324D64138E763881",
+        "generatorParams": "w=4 h=4 plops=1 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=2",
+        "solverVersion": 1,
+        "solution": "URRU",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 8.15,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 16,
+            "avgBranching": 3,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 3,
+            "misleadingMoves": 7,
+            "plops": 1,
+            "reachableStates": 12,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 4
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-11D2EF0A380D",
+      "name": "Level 14",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [2, 1],
+        [0, 2],
+        [2, 2],
+        [4, 2],
+        [2, 3],
+        [0, 4],
+        [2, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xC8B1A4801F5843D9",
+        "generatorParams": "w=5 h=5 plops=1 walls=0.3 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "LUUUU",
+        "solutionLength": 5,
+        "difficulty": {
+          "score": 8.21,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 2.4,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 5,
+            "misleadingMoves": 7,
+            "plops": 1,
+            "reachableStates": 17,
+            "solutionLength": 5,
+            "trapMoves": 0,
+            "walls": 8
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-719457410079",
+      "name": "Level 15",
+      "width": 4,
+      "height": 4,
+      "walls": [
+        [3, 1],
+        [0, 2],
+        [0, 3],
+        [1, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xE7F8014F9C0D6714",
+        "generatorParams": "w=4 h=4 plops=1 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=6",
+        "solverVersion": 1,
+        "solution": "URUR",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 8.4,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 16,
+            "avgBranching": 3,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 2,
+            "misleadingMoves": 6,
+            "plops": 1,
+            "reachableStates": 12,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 4
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-DF10E8FA8735",
+      "name": "Level 16",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [2, 0],
+        [4, 0],
+        [2, 1],
+        [0, 2],
+        [4, 3],
+        [1, 4],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x0EB4FEDD926DA654",
+        "generatorParams": "w=5 h=5 plops=1 walls=0.3 target=any minLen=4 maxLen=60 solverStates=300000 attempt=2",
+        "solverVersion": 1,
+        "solution": "UURR",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 8.73,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 3,
+            "misleadingMoves": 7,
+            "plops": 1,
+            "reachableStates": 16,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-83F72BA60E61",
+      "name": "Level 17",
+      "width": 4,
+      "height": 4,
+      "walls": [
+        [3, 0],
+        [0, 2],
+        [3, 2]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x7DAB043B5AB95829",
+        "generatorParams": "w=4 h=4 plops=1 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=8",
+        "solverVersion": 1,
+        "solution": "RDDDR",
+        "solutionLength": 5,
+        "difficulty": {
+          "score": 8.98,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 16,
+            "avgBranching": 2.8,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 2,
+            "misleadingMoves": 6,
+            "plops": 1,
+            "reachableStates": 13,
+            "solutionLength": 5,
+            "trapMoves": 0,
+            "walls": 3
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-924CD836718D",
+      "name": "Level 18",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [1, 0],
+        [2, 0],
+        [3, 0],
+        [4, 0],
+        [3, 1],
+        [2, 3],
+        [0, 4],
+        [2, 4],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x306C57F780EA0079",
+        "generatorParams": "w=5 h=5 plops=1 walls=0.3 target=any minLen=4 maxLen=60 solverStates=300000 attempt=4",
+        "solverVersion": 1,
+        "solution": "LLLL",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 8.98,
+          "category": "Tutorial",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.25,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 4,
+            "misleadingMoves": 9,
+            "plops": 1,
+            "reachableStates": 16,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-0FF8161B32A4",
+      "name": "Level 19",
+      "width": 4,
+      "height": 4,
+      "walls": [
+        [2, 0],
+        [3, 0],
+        [0, 2]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xAC6FE5CACB5952D4",
+        "generatorParams": "w=4 h=4 plops=1 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=5",
+        "solverVersion": 1,
+        "solution": "URURR",
+        "solutionLength": 5,
+        "difficulty": {
+          "score": 9.18,
+          "category": "Easy",
+          "metrics": {
+            "area": 16,
+            "avgBranching": 3,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 3,
+            "misleadingMoves": 8,
+            "plops": 1,
+            "reachableStates": 13,
+            "solutionLength": 5,
+            "trapMoves": 0,
+            "walls": 3
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-FFEB50E7DCCE",
+      "name": "Level 20",
+      "width": 4,
+      "height": 4,
+      "walls": [
+        [3, 0],
+        [3, 2]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xAA5FED5FF9EEFE79",
+        "generatorParams": "w=4 h=4 plops=1 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=4",
+        "solverVersion": 1,
+        "solution": "DDDL",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 9.41,
+          "category": "Easy",
+          "metrics": {
+            "area": 16,
+            "avgBranching": 3.5,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 1,
+            "misleadingMoves": 7,
+            "plops": 1,
+            "reachableStates": 14,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 2
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-C86510A36304",
+      "name": "Level 21",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [1, 0],
+        [4, 0],
+        [1, 1],
+        [4, 1],
+        [4, 2],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x41B5CB1539951424",
+        "generatorParams": "w=5 h=5 plops=1 walls=0.3 target=any minLen=4 maxLen=60 solverStates=300000 attempt=4",
+        "solverVersion": 1,
+        "solution": "DLLD",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 9.47,
+          "category": "Easy",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.5,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 3,
+            "misleadingMoves": 9,
+            "plops": 1,
+            "reachableStates": 18,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 6
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-9A878AE0BADF",
+      "name": "Level 22",
+      "width": 4,
+      "height": 5,
+      "walls": [
+        [0, 2],
+        [1, 2],
+        [2, 2],
+        [0, 3],
+        [1, 3],
+        [2, 3],
+        [3, 3],
+        [0, 4],
+        [1, 4],
+        [2, 4],
+        [3, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xE934EA913707F566",
+        "generatorParams": "w=4 h=5 plops=2 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=2",
+        "solverVersion": 1,
+        "solution": "RULL",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 10.3,
+          "category": "Easy",
+          "metrics": {
+            "area": 20,
+            "avgBranching": 2.25,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 4,
+            "misleadingMoves": 5,
+            "plops": 2,
+            "reachableStates": 12,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 11
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-AA54A4ECFF17",
+      "name": "Level 23",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [4, 0],
+        [2, 1],
+        [0, 2],
+        [1, 2],
+        [2, 2],
+        [0, 4],
+        [2, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xFF074D2631943A4C",
+        "generatorParams": "w=5 h=5 plops=1 walls=0.3 target=any minLen=4 maxLen=60 solverStates=300000 attempt=2",
+        "solverVersion": 1,
+        "solution": "DDDLDLL",
+        "solutionLength": 7,
+        "difficulty": {
+          "score": 10.47,
+          "category": "Easy",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 2.429,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 4,
+            "misleadingMoves": 7,
+            "plops": 1,
+            "reachableStates": 15,
+            "solutionLength": 7,
+            "trapMoves": 0,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-4F2245C5D76B",
+      "name": "Level 24",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 1],
+        [0, 2],
+        [2, 2],
+        [1, 4],
+        [2, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x5A0E5ED154D17850",
+        "generatorParams": "w=5 h=5 plops=1 walls=0.3 target=any minLen=4 maxLen=60 solverStates=300000 attempt=3",
+        "solverVersion": 1,
+        "solution": "URUUR",
+        "solutionLength": 5,
+        "difficulty": {
+          "score": 10.59,
+          "category": "Easy",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.4,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 2,
+            "misleadingMoves": 9,
+            "plops": 1,
+            "reachableStates": 20,
+            "solutionLength": 5,
+            "trapMoves": 0,
+            "walls": 5
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-0D1170C86367",
+      "name": "Level 25",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [2, 1],
+        [4, 1],
+        [4, 2],
+        [0, 3],
+        [3, 3],
+        [0, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x9B45FD50F3DF11CD",
+        "generatorParams": "w=5 h=5 plops=1 walls=0.3 target=any minLen=4 maxLen=60 solverStates=300000 attempt=4",
+        "solverVersion": 1,
+        "solution": "LLDDRDDR",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 11.27,
+          "category": "Easy",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 2.5,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 8,
+            "misleadingMoves": 12,
+            "plops": 1,
+            "reachableStates": 19,
+            "solutionLength": 8,
+            "trapMoves": 0,
+            "walls": 6
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-15A6585090B1",
+      "name": "Level 26",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [0, 1],
+        [4, 1],
+        [3, 2],
+        [4, 2],
+        [2, 3],
+        [3, 3],
+        [4, 3],
+        [3, 4],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x8C0312952EBFF059",
+        "generatorParams": "w=5 h=5 plops=1 walls=0.3 target=any minLen=4 maxLen=60 solverStates=300000 attempt=3",
+        "solverVersion": 1,
+        "solution": "DDRDDRRR",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 12.54,
+          "category": "Easy",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 2.75,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 4,
+            "misleadingMoves": 10,
+            "plops": 1,
+            "reachableStates": 15,
+            "solutionLength": 8,
+            "trapMoves": 0,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-9F2F7EA199C3",
+      "name": "Level 27",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [2, 1],
+        [3, 1],
+        [1, 2],
+        [2, 2],
+        [3, 2],
+        [0, 3],
+        [1, 3],
+        [2, 3],
+        [3, 3],
+        [0, 4],
+        [1, 4],
+        [2, 4],
+        [3, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xDA916E713CE8CB4C",
+        "generatorParams": "w=5 h=5 plops=1 walls=0.3 target=any minLen=4 maxLen=60 solverStates=300000 attempt=2",
+        "solverVersion": 1,
+        "solution": "DDDDLLLULU",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 13.01,
+          "category": "Easy",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 2.1,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 9,
+            "misleadingMoves": 10,
+            "plops": 1,
+            "reachableStates": 12,
+            "solutionLength": 10,
+            "trapMoves": 0,
+            "walls": 13
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-38BFFAE4B9DA",
+      "name": "Level 28",
+      "width": 4,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [3, 1],
+        [3, 2],
+        [3, 3],
+        [0, 4],
+        [2, 4],
+        [3, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xAC4FE9B6F1D0B508",
+        "generatorParams": "w=4 h=5 plops=2 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DDUL",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 13.32,
+          "category": "Easy",
+          "metrics": {
+            "area": 20,
+            "avgBranching": 2.75,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 2,
+            "misleadingMoves": 5,
+            "plops": 2,
+            "reachableStates": 117,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 8
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-E7982E9AE978",
+      "name": "Level 29",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [3, 0],
+        [5, 0],
+        [0, 2],
+        [3, 2],
+        [0, 3],
+        [2, 4],
+        [5, 4],
+        [0, 5],
+        [4, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xB5B270D1D0E07902",
+        "generatorParams": "w=6 h=6 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "LRRDR",
+        "solutionLength": 5,
+        "difficulty": {
+          "score": 14.38,
+          "category": "Easy",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 2.4,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 4,
+            "misleadingMoves": 6,
+            "plops": 2,
+            "reachableStates": 606,
+            "solutionLength": 5,
+            "trapMoves": 0,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-36B8BDF70613",
+      "name": "Level 30",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 1],
+        [2, 1],
+        [0, 2],
+        [2, 2],
+        [4, 2],
+        [2, 3],
+        [4, 3],
+        [0, 4],
+        [2, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [5, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xC40E55D88C33C936",
+        "generatorParams": "w=6 h=6 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "LLDD",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 14.39,
+          "category": "Easy",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0.0034,
+            "deadEndStates": 2,
+            "forcedSteps": 4,
+            "misleadingMoves": 8,
+            "plops": 2,
+            "reachableStates": 595,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-E714A1BAC747",
+      "name": "Level 31",
+      "width": 4,
+      "height": 5,
+      "walls": [
+        [1, 0],
+        [2, 0],
+        [1, 1],
+        [2, 2],
+        [2, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xCC7AAB0EC9AE511B",
+        "generatorParams": "w=4 h=5 plops=2 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DUUUUL",
+        "solutionLength": 6,
+        "difficulty": {
+          "score": 14.67,
+          "category": "Easy",
+          "metrics": {
+            "area": 20,
+            "avgBranching": 2,
+            "coordinationMoves": 1,
+            "deadEndRatio": 0.0682,
+            "deadEndStates": 6,
+            "forcedSteps": 6,
+            "misleadingMoves": 6,
+            "plops": 2,
+            "reachableStates": 88,
+            "solutionLength": 6,
+            "trapMoves": 0,
+            "walls": 5
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-2F403ECB23AF",
+      "name": "Level 32",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 2],
+        [2, 2],
+        [3, 2],
+        [4, 2],
+        [0, 3],
+        [4, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x26DC378637CBEEDE",
+        "generatorParams": "w=5 h=5 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "LRRR",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 15.17,
+          "category": "Easy",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3,
+            "coordinationMoves": 1,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 4,
+            "misleadingMoves": 8,
+            "plops": 2,
+            "reachableStates": 306,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 6
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-8ECAD1572463",
+      "name": "Level 33",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [4, 0],
+        [3, 3],
+        [2, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xDBB2351683722C24",
+        "generatorParams": "w=5 h=5 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DDRDD",
+        "solutionLength": 5,
+        "difficulty": {
+          "score": 15.98,
+          "category": "Easy",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.6,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 4,
+            "misleadingMoves": 12,
+            "plops": 2,
+            "reachableStates": 363,
+            "solutionLength": 5,
+            "trapMoves": 0,
+            "walls": 4
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-F06141806BC5",
+      "name": "Level 34",
+      "width": 4,
+      "height": 5,
+      "walls": [
+        [0, 2],
+        [0, 3],
+        [3, 3],
+        [0, 4],
+        [1, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x48965B1D3E89BA6C",
+        "generatorParams": "w=4 h=5 plops=2 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=3",
+        "solverVersion": 1,
+        "solution": "DDLL",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 16.28,
+          "category": "Normal",
+          "metrics": {
+            "area": 20,
+            "avgBranching": 3.5,
+            "coordinationMoves": 1,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 2,
+            "misleadingMoves": 8,
+            "plops": 2,
+            "reachableStates": 187,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 5
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-623F39E7EDAE",
+      "name": "Level 35",
+      "width": 4,
+      "height": 5,
+      "walls": [
+        [3, 2]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xE6391DF8611942AC",
+        "generatorParams": "w=4 h=5 plops=2 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=2",
+        "solverVersion": 1,
+        "solution": "URDDDLL",
+        "solutionLength": 7,
+        "difficulty": {
+          "score": 16.9,
+          "category": "Normal",
+          "metrics": {
+            "area": 20,
+            "avgBranching": 3.286,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 3,
+            "misleadingMoves": 12,
+            "plops": 2,
+            "reachableStates": 204,
+            "solutionLength": 7,
+            "trapMoves": 0,
+            "walls": 1
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-0384706B98D6",
+      "name": "Level 36",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 3],
+        [2, 3],
+        [0, 4],
+        [2, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xDD9D3AD08A655754",
+        "generatorParams": "w=5 h=5 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=2",
+        "solverVersion": 1,
+        "solution": "LLLLRUU",
+        "solutionLength": 7,
+        "difficulty": {
+          "score": 16.94,
+          "category": "Normal",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.286,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0.0036,
+            "deadEndStates": 1,
+            "forcedSteps": 7,
+            "misleadingMoves": 16,
+            "plops": 2,
+            "reachableStates": 275,
+            "solutionLength": 7,
+            "trapMoves": 0,
+            "walls": 4
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-A58FFCDA8B40",
+      "name": "Level 37",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [1, 0],
+        [4, 3],
+        [2, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x75DAE1F98ADC7CA1",
+        "generatorParams": "w=5 h=5 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "LRRRUR",
+        "solutionLength": 6,
+        "difficulty": {
+          "score": 17.04,
+          "category": "Normal",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3,
+            "coordinationMoves": 1,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 6,
+            "misleadingMoves": 12,
+            "plops": 2,
+            "reachableStates": 395,
+            "solutionLength": 6,
+            "trapMoves": 0,
+            "walls": 3
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-60FF09210910",
+      "name": "Level 38",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [4, 0],
+        [0, 1],
+        [2, 1],
+        [0, 2],
+        [2, 2]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x508134E1313182CE",
+        "generatorParams": "w=5 h=5 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=2",
+        "solverVersion": 1,
+        "solution": "RDUUUL",
+        "solutionLength": 6,
+        "difficulty": {
+          "score": 17.68,
+          "category": "Normal",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.167,
+            "coordinationMoves": 1,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 5,
+            "misleadingMoves": 12,
+            "plops": 2,
+            "reachableStates": 355,
+            "solutionLength": 6,
+            "trapMoves": 0,
+            "walls": 5
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-E176CE74D3F6",
+      "name": "Level 39",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [0, 2],
+        [1, 2],
+        [0, 4],
+        [2, 4],
+        [4, 4],
+        [0, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xA6427E52AFA141D8",
+        "generatorParams": "w=6 h=6 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "UDRDDLDL",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 17.99,
+          "category": "Normal",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 2.75,
+            "coordinationMoves": 0,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 7,
+            "misleadingMoves": 13,
+            "plops": 2,
+            "reachableStates": 722,
+            "solutionLength": 8,
+            "trapMoves": 0,
+            "walls": 8
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-75573036973B",
+      "name": "Level 40",
+      "width": 4,
+      "height": 5,
+      "walls": [
+        [1, 0]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x06CE787AAFC341F7",
+        "generatorParams": "w=4 h=5 plops=2 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=3",
+        "solverVersion": 1,
+        "solution": "DLDUUUL",
+        "solutionLength": 7,
+        "difficulty": {
+          "score": 18.66,
+          "category": "Normal",
+          "metrics": {
+            "area": 20,
+            "avgBranching": 3.571,
+            "coordinationMoves": 1,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 5,
+            "misleadingMoves": 16,
+            "plops": 2,
+            "reachableStates": 200,
+            "solutionLength": 7,
+            "trapMoves": 0,
+            "walls": 1
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-E09C6A37BBED",
+      "name": "Level 41",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [3, 1],
+        [2, 2],
+        [2, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x140285ED30005076",
+        "generatorParams": "w=5 h=5 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "LDRDDL",
+        "solutionLength": 6,
+        "difficulty": {
+          "score": 18.92,
+          "category": "Normal",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.167,
+            "coordinationMoves": 2,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 6,
+            "misleadingMoves": 13,
+            "plops": 2,
+            "reachableStates": 419,
+            "solutionLength": 6,
+            "trapMoves": 0,
+            "walls": 3
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-3F57F9907B74",
+      "name": "Level 42",
+      "width": 4,
+      "height": 5,
+      "walls": [
+        [3, 0],
+        [0, 4],
+        [3, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xC66A10C5AFA9FADD",
+        "generatorParams": "w=4 h=5 plops=2 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "URDDDDL",
+        "solutionLength": 7,
+        "difficulty": {
+          "score": 19.72,
+          "category": "Normal",
+          "metrics": {
+            "area": 20,
+            "avgBranching": 3.143,
+            "coordinationMoves": 2,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 2,
+            "misleadingMoves": 10,
+            "plops": 2,
+            "reachableStates": 138,
+            "solutionLength": 7,
+            "trapMoves": 0,
+            "walls": 3
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-0CE9BFCC813D",
+      "name": "Level 43",
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [2, 0],
+        [0, 1],
+        [1, 3],
+        [3, 3],
+        [3, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 3]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [3, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xB07DCB01F6F0992F",
+        "generatorParams": "w=5 h=6 plops=3 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "ULUU",
+        "solutionLength": 4,
+        "difficulty": {
+          "score": 19.73,
+          "category": "Normal",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.5,
+            "coordinationMoves": 1,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 3,
+            "misleadingMoves": 9,
+            "plops": 3,
+            "reachableStates": 500,
+            "solutionLength": 4,
+            "trapMoves": 0,
+            "walls": 6
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-83C8A1A2288A",
+      "name": "Level 44",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [3, 2],
+        [3, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xEBF40F8B99FF376A",
+        "generatorParams": "w=5 h=5 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DULLUULL",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 20.09,
+          "category": "Normal",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.25,
+            "coordinationMoves": 1,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 4,
+            "misleadingMoves": 14,
+            "plops": 2,
+            "reachableStates": 482,
+            "solutionLength": 8,
+            "trapMoves": 0,
+            "walls": 2
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-832CAB9F9F69",
+      "name": "Level 45",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [4, 0],
+        [5, 0],
+        [0, 1],
+        [4, 1],
+        [5, 1],
+        [0, 2],
+        [5, 2],
+        [0, 3],
+        [1, 3],
+        [4, 3],
+        [2, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x1676D8ADB029227B",
+        "generatorParams": "w=6 h=6 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "UUDLDDL",
+        "solutionLength": 7,
+        "difficulty": {
+          "score": 20.74,
+          "category": "Normal",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.143,
+            "coordinationMoves": 2,
+            "deadEndRatio": 0.0121,
+            "deadEndStates": 5,
+            "forcedSteps": 6,
+            "misleadingMoves": 14,
+            "plops": 2,
+            "reachableStates": 412,
+            "solutionLength": 7,
+            "trapMoves": 0,
+            "walls": 12
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-F8DB8B13B01C",
+      "name": "Level 46",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [1, 2],
+        [2, 2],
+        [1, 3],
+        [4, 3],
+        [5, 3],
+        [5, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xAAB6E5667DFA9ADB",
+        "generatorParams": "w=6 h=6 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "LLDUUUUR",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 20.9,
+          "category": "Normal",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.5,
+            "coordinationMoves": 1,
+            "deadEndRatio": 0.0013,
+            "deadEndStates": 1,
+            "forcedSteps": 7,
+            "misleadingMoves": 19,
+            "plops": 2,
+            "reachableStates": 784,
+            "solutionLength": 8,
+            "trapMoves": 0,
+            "walls": 6
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-1A62E827BFDD",
+      "name": "Level 47",
+      "width": 4,
+      "height": 5,
+      "walls": [
+        [1, 1]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x0836246A5311406F",
+        "generatorParams": "w=4 h=5 plops=2 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "URULURUU",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 21.03,
+          "category": "Normal",
+          "metrics": {
+            "area": 20,
+            "avgBranching": 3.375,
+            "coordinationMoves": 2,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 7,
+            "misleadingMoves": 18,
+            "plops": 2,
+            "reachableStates": 323,
+            "solutionLength": 8,
+            "trapMoves": 0,
+            "walls": 1
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-D353F9038337",
+      "name": "Level 48",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [1, 1],
+        [4, 1],
+        [5, 1],
+        [5, 2],
+        [3, 3],
+        [4, 3],
+        [5, 3],
+        [1, 4],
+        [4, 4],
+        [5, 4],
+        [0, 5],
+        [1, 5],
+        [2, 5],
+        [4, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x31F0D716BC830F97",
+        "generatorParams": "w=6 h=6 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DDDRRD",
+        "solutionLength": 6,
+        "difficulty": {
+          "score": 21.07,
+          "category": "Normal",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.5,
+            "coordinationMoves": 2,
+            "deadEndRatio": 0.0506,
+            "deadEndStates": 18,
+            "forcedSteps": 4,
+            "misleadingMoves": 13,
+            "plops": 2,
+            "reachableStates": 356,
+            "solutionLength": 6,
+            "trapMoves": 0,
+            "walls": 15
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-D88A682084E0",
+      "name": "Level 49",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [4, 0],
+        [2, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xDDDC8F66FE287B81",
+        "generatorParams": "w=5 h=5 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "UUDDRRRUR",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 21.79,
+          "category": "Normal",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.333,
+            "coordinationMoves": 2,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 6,
+            "misleadingMoves": 16,
+            "plops": 2,
+            "reachableStates": 321,
+            "solutionLength": 9,
+            "trapMoves": 0,
+            "walls": 2
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-6BFB02CCC1AB",
+      "name": "Level 50",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [3, 2],
+        [1, 3],
+        [0, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xD7A10EC22BBD2D58",
+        "generatorParams": "w=5 h=5 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "RUUDLDDLL",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 22.6,
+          "category": "Normal",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.333,
+            "coordinationMoves": 2,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 6,
+            "misleadingMoves": 18,
+            "plops": 2,
+            "reachableStates": 425,
+            "solutionLength": 9,
+            "trapMoves": 0,
+            "walls": 3
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-B3FC0527B8F8",
+      "name": "Level 51",
+      "width": 4,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [3, 0],
+        [0, 2],
+        [2, 2],
+        [0, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x446EBA6D61663365",
+        "generatorParams": "w=4 h=5 plops=2 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "LURUULUR",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 22.96,
+          "category": "Normal",
+          "metrics": {
+            "area": 20,
+            "avgBranching": 2.75,
+            "coordinationMoves": 4,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 7,
+            "misleadingMoves": 13,
+            "plops": 2,
+            "reachableStates": 167,
+            "solutionLength": 8,
+            "trapMoves": 0,
+            "walls": 6
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-1ACFCD1128BB",
+      "name": "Level 52",
+      "width": 4,
+      "height": 5,
+      "walls": [
+        [2, 0],
+        [3, 0],
+        [0, 1],
+        [2, 2],
+        [1, 4],
+        [2, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x9834538FDACB6080",
+        "generatorParams": "w=4 h=5 plops=2 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=4",
+        "solverVersion": 1,
+        "solution": "UULLLUUR",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 24.26,
+          "category": "Normal",
+          "metrics": {
+            "area": 20,
+            "avgBranching": 3.375,
+            "coordinationMoves": 4,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 7,
+            "misleadingMoves": 18,
+            "plops": 2,
+            "reachableStates": 177,
+            "solutionLength": 8,
+            "trapMoves": 0,
+            "walls": 6
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-3A7A2E9C30FB",
+      "name": "Level 53",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [2, 0],
+        [1, 1],
+        [4, 4],
+        [0, 5],
+        [1, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 3]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 1]
+        },
+        {
+          "color": "Yellow",
+          "pos": [0, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x7955A4DC4983505A",
+        "generatorParams": "w=6 h=6 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DLDLLL",
+        "solutionLength": 6,
+        "difficulty": {
+          "score": 24.8,
+          "category": "Normal",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.667,
+            "coordinationMoves": 1,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 6,
+            "misleadingMoves": 16,
+            "plops": 3,
+            "reachableStates": 17595,
+            "solutionLength": 6,
+            "trapMoves": 0,
+            "walls": 6
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-6C430578B69A",
+      "name": "Level 54",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [5, 0],
+        [0, 1],
+        [3, 1],
+        [1, 2],
+        [2, 4],
+        [2, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [3, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [1, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xAE850F4014D62B8C",
+        "generatorParams": "w=6 h=6 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DDLLUU",
+        "solutionLength": 6,
+        "difficulty": {
+          "score": 24.83,
+          "category": "Normal",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.667,
+            "coordinationMoves": 1,
+            "deadEndRatio": 0.0011,
+            "deadEndStates": 20,
+            "forcedSteps": 6,
+            "misleadingMoves": 16,
+            "plops": 3,
+            "reachableStates": 18162,
+            "solutionLength": 6,
+            "trapMoves": 0,
+            "walls": 6
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-E83232B0681A",
+      "name": "Level 55",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [2, 0],
+        [3, 0],
+        [2, 2],
+        [4, 2],
+        [4, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x4B0B0F3747CE987D",
+        "generatorParams": "w=5 h=5 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "LLULDULU",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 25.2,
+          "category": "Normal",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 2.875,
+            "coordinationMoves": 5,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 6,
+            "misleadingMoves": 13,
+            "plops": 2,
+            "reachableStates": 362,
+            "solutionLength": 8,
+            "trapMoves": 0,
+            "walls": 5
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-4122C7372DEE",
+      "name": "Level 56",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [3, 0],
+        [4, 0],
+        [3, 1],
+        [4, 1],
+        [1, 2],
+        [3, 3],
+        [5, 3],
+        [0, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xE2AC4FDAFA3A623A",
+        "generatorParams": "w=6 h=6 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DRRDRUUUR",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 25.4,
+          "category": "Normal",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3,
+            "coordinationMoves": 4,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 9,
+            "misleadingMoves": 18,
+            "plops": 2,
+            "reachableStates": 687,
+            "solutionLength": 9,
+            "trapMoves": 0,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-DD46EAE05F7F",
+      "name": "Level 57",
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [1, 1],
+        [3, 1]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 5]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 1]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xA5385CAF0FF7C4FA",
+        "generatorParams": "w=5 h=6 plops=3 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "UDDDRRD",
+        "solutionLength": 7,
+        "difficulty": {
+          "score": 25.97,
+          "category": "Normal",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.714,
+            "coordinationMoves": 1,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 4,
+            "misleadingMoves": 16,
+            "plops": 3,
+            "reachableStates": 16584,
+            "solutionLength": 7,
+            "trapMoves": 0,
+            "walls": 2
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-1BEFFE84BA56",
+      "name": "Level 58",
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [2, 0],
+        [1, 1],
+        [2, 1],
+        [2, 4],
+        [3, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x73F53DE8E485199E",
+        "generatorParams": "w=5 h=6 plops=3 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "RURURDD",
+        "solutionLength": 7,
+        "difficulty": {
+          "score": 25.98,
+          "category": "Normal",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.143,
+            "coordinationMoves": 2,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 6,
+            "misleadingMoves": 14,
+            "plops": 3,
+            "reachableStates": 8695,
+            "solutionLength": 7,
+            "trapMoves": 0,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-5F750E60F7A3",
+      "name": "Level 59",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [5, 0],
+        [4, 1],
+        [5, 1],
+        [1, 2],
+        [4, 2],
+        [3, 4],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [5, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x781FB2914233723B",
+        "generatorParams": "w=6 h=6 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DLULDDLLL",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 26.48,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.333,
+            "coordinationMoves": 4,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 5,
+            "misleadingMoves": 17,
+            "plops": 2,
+            "reachableStates": 796,
+            "solutionLength": 9,
+            "trapMoves": 0,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-C2A82B996294",
+      "name": "Level 60",
+      "width": 4,
+      "height": 5,
+      "walls": [],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x064A6D161CEAF452",
+        "generatorParams": "w=4 h=5 plops=2 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "UUURRDDLLL",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 26.7,
+          "category": "Hard",
+          "metrics": {
+            "area": 20,
+            "avgBranching": 3.4,
+            "coordinationMoves": 5,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 6,
+            "misleadingMoves": 18,
+            "plops": 2,
+            "reachableStates": 162,
+            "solutionLength": 10,
+            "trapMoves": 0,
+            "walls": 0
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-62B1735AF30C",
+      "name": "Level 61",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [3, 0],
+        [5, 0],
+        [0, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 5]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xE967066EBB0D8E5A",
+        "generatorParams": "w=6 h=6 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DDRUULLL",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 26.93,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.75,
+            "coordinationMoves": 1,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 7,
+            "misleadingMoves": 21,
+            "plops": 3,
+            "reachableStates": 19680,
+            "solutionLength": 8,
+            "trapMoves": 0,
+            "walls": 3
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-3E6BEFBCDCA8",
+      "name": "Level 62",
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [1, 1],
+        [2, 1],
+        [2, 2],
+        [3, 2],
+        [4, 3],
+        [3, 4],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [0, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x8EBF2F09C12B6648",
+        "generatorParams": "w=5 h=6 plops=3 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DRUURR",
+        "solutionLength": 6,
+        "difficulty": {
+          "score": 27.73,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3,
+            "coordinationMoves": 4,
+            "deadEndRatio": 0.0204,
+            "deadEndStates": 150,
+            "forcedSteps": 5,
+            "misleadingMoves": 11,
+            "plops": 3,
+            "reachableStates": 7337,
+            "solutionLength": 6,
+            "trapMoves": 0,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-E15F2FF5901C",
+      "name": "Level 63",
+      "width": 4,
+      "height": 5,
+      "walls": [
+        [1, 0],
+        [0, 2],
+        [1, 2],
+        [2, 2],
+        [2, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x9969E207C3320DB4",
+        "generatorParams": "w=4 h=5 plops=2 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=2",
+        "solverVersion": 1,
+        "solution": "UURRRUULU",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 27.89,
+          "category": "Hard",
+          "metrics": {
+            "area": 20,
+            "avgBranching": 3.111,
+            "coordinationMoves": 6,
+            "deadEndRatio": 0.0968,
+            "deadEndStates": 9,
+            "forcedSteps": 7,
+            "misleadingMoves": 17,
+            "plops": 2,
+            "reachableStates": 93,
+            "solutionLength": 9,
+            "trapMoves": 0,
+            "walls": 5
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-4F2DD40BFB94",
+      "name": "Level 64",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [1, 0],
+        [1, 1],
+        [2, 1],
+        [4, 2],
+        [1, 3],
+        [3, 3],
+        [4, 3],
+        [3, 4],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xF70A5136184EB8BB",
+        "generatorParams": "w=5 h=5 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=2",
+        "solverVersion": 1,
+        "solution": "RDDLUULLRR",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 28.49,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 2.7,
+            "coordinationMoves": 6,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 7,
+            "misleadingMoves": 14,
+            "plops": 2,
+            "reachableStates": 232,
+            "solutionLength": 10,
+            "trapMoves": 0,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-44D59A4D2C97",
+      "name": "Level 65",
+      "width": 7,
+      "height": 7,
+      "walls": [
+        [1, 0],
+        [2, 0],
+        [3, 0],
+        [5, 0],
+        [2, 1],
+        [3, 2],
+        [5, 2],
+        [3, 4],
+        [0, 5],
+        [0, 6],
+        [6, 6]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [6, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xEEA83853B910B264",
+        "generatorParams": "w=7 h=7 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "RUUDRRRRD",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 28.72,
+          "category": "Hard",
+          "metrics": {
+            "area": 49,
+            "avgBranching": 3.667,
+            "coordinationMoves": 1,
+            "deadEndRatio": 0.0001,
+            "deadEndStates": 6,
+            "forcedSteps": 9,
+            "misleadingMoves": 24,
+            "plops": 3,
+            "reachableStates": 41947,
+            "solutionLength": 9,
+            "trapMoves": 0,
+            "walls": 11
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-E7AE9EE8CF60",
+      "name": "Level 66",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [5, 1],
+        [1, 3],
+        [3, 3],
+        [2, 4],
+        [3, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [5, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xD7CDDABD2A603F56",
+        "generatorParams": "w=6 h=6 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "UUUULLUR",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 28.81,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.625,
+            "coordinationMoves": 6,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 6,
+            "misleadingMoves": 19,
+            "plops": 2,
+            "reachableStates": 910,
+            "solutionLength": 8,
+            "trapMoves": 0,
+            "walls": 5
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-3F72F60FE69E",
+      "name": "Level 67",
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [2, 1],
+        [0, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 5]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x405E9A0C16574850",
+        "generatorParams": "w=5 h=6 plops=3 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "UDRDLDDD",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 29.2,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.75,
+            "coordinationMoves": 3,
+            "deadEndRatio": 0.0001,
+            "deadEndStates": 1,
+            "forcedSteps": 6,
+            "misleadingMoves": 18,
+            "plops": 3,
+            "reachableStates": 13822,
+            "solutionLength": 8,
+            "trapMoves": 0,
+            "walls": 2
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-4CDEDCECDDE9",
+      "name": "Level 68",
+      "width": 4,
+      "height": 5,
+      "walls": [
+        [1, 1],
+        [1, 2],
+        [3, 3],
+        [3, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x5DE0C4B82B74CBFE",
+        "generatorParams": "w=4 h=5 plops=2 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DDDLDLUUL",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 29.64,
+          "category": "Hard",
+          "metrics": {
+            "area": 20,
+            "avgBranching": 3.333,
+            "coordinationMoves": 7,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 7,
+            "misleadingMoves": 19,
+            "plops": 2,
+            "reachableStates": 216,
+            "solutionLength": 9,
+            "trapMoves": 0,
+            "walls": 4
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-FD91AEE433BC",
+      "name": "Level 69",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [4, 1],
+        [1, 2],
+        [3, 2],
+        [0, 3],
+        [3, 3],
+        [0, 4],
+        [1, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x333F6219FFEBEC36",
+        "generatorParams": "w=5 h=5 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "LLDDRRDLR",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 30.11,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.333,
+            "coordinationMoves": 7,
+            "deadEndRatio": 0.0163,
+            "deadEndStates": 3,
+            "forcedSteps": 7,
+            "misleadingMoves": 19,
+            "plops": 2,
+            "reachableStates": 184,
+            "solutionLength": 9,
+            "trapMoves": 0,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-03797E1BFE3F",
+      "name": "Level 70",
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [1, 2],
+        [2, 2],
+        [1, 3],
+        [0, 4],
+        [1, 4],
+        [2, 4],
+        [4, 4],
+        [0, 5],
+        [1, 5],
+        [2, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [3, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [0, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x1424CE24936C1BB1",
+        "generatorParams": "w=5 h=6 plops=3 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DDDRULLLUU",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 30.14,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.1,
+            "coordinationMoves": 3,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 9,
+            "misleadingMoves": 20,
+            "plops": 3,
+            "reachableStates": 4314,
+            "solutionLength": 10,
+            "trapMoves": 0,
+            "walls": 11
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-E949D37D7F99",
+      "name": "Level 71",
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [2, 3],
+        [3, 3],
+        [4, 3],
+        [2, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [0, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x1D123DC70E73947D",
+        "generatorParams": "w=5 h=6 plops=3 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DDLLRULUUU",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 30.48,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.3,
+            "coordinationMoves": 3,
+            "deadEndRatio": 0.0287,
+            "deadEndStates": 198,
+            "forcedSteps": 7,
+            "misleadingMoves": 19,
+            "plops": 3,
+            "reachableStates": 6908,
+            "solutionLength": 10,
+            "trapMoves": 0,
+            "walls": 4
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-90F8EC3EDEBA",
+      "name": "Level 72",
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 2],
+        [3, 4],
+        [2, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [0, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x0DC8F4962429CE87",
+        "generatorParams": "w=5 h=6 plops=3 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "URDRRDLLDD",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 31.6,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.8,
+            "coordinationMoves": 3,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 8,
+            "misleadingMoves": 25,
+            "plops": 3,
+            "reachableStates": 12968,
+            "solutionLength": 10,
+            "trapMoves": 0,
+            "walls": 3
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-839E28A0D528",
+      "name": "Level 73",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [5, 0],
+        [0, 2],
+        [1, 2],
+        [2, 4],
+        [4, 4],
+        [2, 5],
+        [3, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x0AB432AA7866953F",
+        "generatorParams": "w=6 h=6 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "LUDDRRUDDD",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 31.85,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.6,
+            "coordinationMoves": 3,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 8,
+            "misleadingMoves": 24,
+            "plops": 3,
+            "reachableStates": 14267,
+            "solutionLength": 10,
+            "trapMoves": 0,
+            "walls": 8
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-55BD7E665371",
+      "name": "Level 74",
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [3, 0],
+        [4, 0],
+        [2, 1],
+        [3, 1],
+        [4, 1],
+        [3, 2],
+        [4, 2],
+        [0, 4],
+        [1, 4],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 3]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [1, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [0, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xBCB0EBAFFB802062",
+        "generatorParams": "w=5 h=6 plops=3 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "LUULLDRDDR",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 31.87,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.1,
+            "coordinationMoves": 4,
+            "deadEndRatio": 0.0077,
+            "deadEndStates": 36,
+            "forcedSteps": 7,
+            "misleadingMoves": 18,
+            "plops": 3,
+            "reachableStates": 4647,
+            "solutionLength": 10,
+            "trapMoves": 0,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-93E7DD06A193",
+      "name": "Level 75",
+      "width": 7,
+      "height": 7,
+      "walls": [
+        [2, 0],
+        [2, 1],
+        [5, 1],
+        [6, 1],
+        [4, 2],
+        [0, 3],
+        [3, 4],
+        [5, 4],
+        [0, 6]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [1, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 6]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xA1D1BF9863C929EA",
+        "generatorParams": "w=7 h=7 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "LUULRRRDD",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 32.42,
+          "category": "Hard",
+          "metrics": {
+            "area": 49,
+            "avgBranching": 3.222,
+            "coordinationMoves": 4,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 8,
+            "misleadingMoves": 19,
+            "plops": 3,
+            "reachableStates": 47332,
+            "solutionLength": 9,
+            "trapMoves": 0,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-8037769C0C33",
+      "name": "Level 76",
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [4, 0],
+        [0, 1],
+        [2, 1],
+        [1, 2],
+        [2, 3],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 5]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [1, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xBCB2CE0026F8DC9A",
+        "generatorParams": "w=5 h=6 plops=3 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "RRURDDRD",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 32.48,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.625,
+            "coordinationMoves": 5,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 6,
+            "misleadingMoves": 19,
+            "plops": 3,
+            "reachableStates": 8989,
+            "solutionLength": 8,
+            "trapMoves": 0,
+            "walls": 6
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-7BEB5289A9B0",
+      "name": "Level 77",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [3, 1],
+        [4, 1],
+        [1, 2],
+        [2, 2],
+        [1, 3],
+        [5, 3],
+        [4, 4],
+        [5, 4],
+        [0, 5],
+        [1, 5],
+        [4, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xEFF67B5C1E2CF138",
+        "generatorParams": "w=6 h=6 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "LLUURURDRURDD",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 32.71,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.154,
+            "coordinationMoves": 6,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 11,
+            "misleadingMoves": 25,
+            "plops": 2,
+            "reachableStates": 511,
+            "solutionLength": 13,
+            "trapMoves": 0,
+            "walls": 12
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-6D36C7347298",
+      "name": "Level 78",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [3, 0],
+        [5, 0],
+        [3, 3],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [5, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [5, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x54F10A9AA5DCB91C",
+        "generatorParams": "w=6 h=6 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DDDDULUUULL",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 33.24,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.636,
+            "coordinationMoves": 3,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 7,
+            "misleadingMoves": 25,
+            "plops": 3,
+            "reachableStates": 22807,
+            "solutionLength": 11,
+            "trapMoves": 0,
+            "walls": 5
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-9AC9E0EE4268",
+      "name": "Level 79",
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [1, 0],
+        [2, 0],
+        [2, 2]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xF33C959D1F695B6A",
+        "generatorParams": "w=5 h=5 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "UUULDDDLLRRRDR",
+        "solutionLength": 14,
+        "difficulty": {
+          "score": 33.8,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.429,
+            "coordinationMoves": 6,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 9,
+            "misleadingMoves": 29,
+            "plops": 2,
+            "reachableStates": 419,
+            "solutionLength": 14,
+            "trapMoves": 0,
+            "walls": 3
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-E7784F444E21",
+      "name": "Level 80",
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [2, 0],
+        [1, 1],
+        [1, 2]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 3]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x26184B8F53E627B7",
+        "generatorParams": "w=5 h=6 plops=3 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DDDUUURRLLLD",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 34.9,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.25,
+            "coordinationMoves": 5,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 12,
+            "misleadingMoves": 27,
+            "plops": 3,
+            "reachableStates": 5772,
+            "solutionLength": 12,
+            "trapMoves": 0,
+            "walls": 4
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-10513401F36C",
+      "name": "Level 81",
+      "width": 7,
+      "height": 7,
+      "walls": [
+        [2, 0],
+        [4, 0],
+        [0, 1],
+        [2, 2],
+        [5, 3],
+        [3, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x06522826A8DB85C0",
+        "generatorParams": "w=7 h=7 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "RUURLUURU",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 35.09,
+          "category": "Hard",
+          "metrics": {
+            "area": 49,
+            "avgBranching": 3.778,
+            "coordinationMoves": 5,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 8,
+            "misleadingMoves": 24,
+            "plops": 3,
+            "reachableStates": 62462,
+            "solutionLength": 9,
+            "trapMoves": 0,
+            "walls": 6
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-8975CD45FFA3",
+      "name": "Level 82",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [2, 0],
+        [5, 0],
+        [0, 1],
+        [2, 1],
+        [0, 2],
+        [5, 2],
+        [1, 3],
+        [3, 3],
+        [0, 5],
+        [2, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [3, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x90F93763C1FDEC1E",
+        "generatorParams": "w=6 h=6 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "RRDLDDDUULU",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 35.46,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.455,
+            "coordinationMoves": 5,
+            "deadEndRatio": 0.0011,
+            "deadEndStates": 12,
+            "forcedSteps": 10,
+            "misleadingMoves": 26,
+            "plops": 3,
+            "reachableStates": 10712,
+            "solutionLength": 11,
+            "trapMoves": 0,
+            "walls": 11
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-A4F87A136457",
+      "name": "Level 83",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [4, 0],
+        [0, 1],
+        [1, 5],
+        [3, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x514E8C09B3B09437",
+        "generatorParams": "w=6 h=6 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DLLRDDUUUUL",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 36.07,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.545,
+            "coordinationMoves": 5,
+            "deadEndRatio": 0.0461,
+            "deadEndStates": 782,
+            "forcedSteps": 9,
+            "misleadingMoves": 26,
+            "plops": 3,
+            "reachableStates": 16968,
+            "solutionLength": 11,
+            "trapMoves": 0,
+            "walls": 6
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-AAC03AD0395C",
+      "name": "Level 84",
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [0, 1],
+        [1, 3],
+        [3, 3],
+        [0, 5],
+        [1, 5],
+        [2, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x07C08C87EBEFED2B",
+        "generatorParams": "w=5 h=6 plops=3 walls=0.15 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "UULURDRRURR",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 36.22,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.182,
+            "coordinationMoves": 6,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 8,
+            "misleadingMoves": 21,
+            "plops": 3,
+            "reachableStates": 9046,
+            "solutionLength": 11,
+            "trapMoves": 0,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-E4B05B019CE7",
+      "name": "Level 85",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [5, 0],
+        [2, 1],
+        [0, 3],
+        [2, 4],
+        [4, 4],
+        [0, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [5, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x4CD7337F4B0238BD",
+        "generatorParams": "w=6 h=6 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "ULLLLUURUDD",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 36.31,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.727,
+            "coordinationMoves": 5,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 8,
+            "misleadingMoves": 27,
+            "plops": 3,
+            "reachableStates": 16772,
+            "solutionLength": 11,
+            "trapMoves": 0,
+            "walls": 8
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-82133862EE55",
+      "name": "Level 86",
+      "width": 7,
+      "height": 7,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [5, 0],
+        [0, 4],
+        [2, 5],
+        [4, 5],
+        [0, 6],
+        [1, 6],
+        [4, 6],
+        [6, 6]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [6, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [6, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [6, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xF099CDE1CC02F0DF",
+        "generatorParams": "w=7 h=7 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "LUULLLURURR",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 37.15,
+          "category": "Hard",
+          "metrics": {
+            "area": 49,
+            "avgBranching": 3.727,
+            "coordinationMoves": 5,
+            "deadEndRatio": 0.0051,
+            "deadEndStates": 206,
+            "forcedSteps": 7,
+            "misleadingMoves": 26,
+            "plops": 3,
+            "reachableStates": 40500,
+            "solutionLength": 11,
+            "trapMoves": 0,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-2F7996D3FEEC",
+      "name": "Level 87",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [4, 0],
+        [0, 1],
+        [3, 1],
+        [1, 2],
+        [5, 2],
+        [1, 3],
+        [3, 4],
+        [0, 5],
+        [1, 5],
+        [2, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x8AE0E414FEBEC9A9",
+        "generatorParams": "w=6 h=6 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "LDLLDDLLUURRDRRU",
+        "solutionLength": 16,
+        "difficulty": {
+          "score": 37.88,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 2.688,
+            "coordinationMoves": 8,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 14,
+            "misleadingMoves": 25,
+            "plops": 2,
+            "reachableStates": 609,
+            "solutionLength": 16,
+            "trapMoves": 0,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-3C1B620B64D3",
+      "name": "Level 88",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [4, 0],
+        [5, 0],
+        [3, 1],
+        [4, 1],
+        [5, 1],
+        [2, 2],
+        [5, 4],
+        [2, 5],
+        [4, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 3]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x9E4BCE479BF42DA9",
+        "generatorParams": "w=6 h=6 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "RDLLURRRULLU",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 38.24,
+          "category": "Expert",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.75,
+            "coordinationMoves": 6,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 11,
+            "misleadingMoves": 31,
+            "plops": 3,
+            "reachableStates": 10254,
+            "solutionLength": 12,
+            "trapMoves": 0,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-83F80DF59E1B",
+      "name": "Level 89",
+      "width": 7,
+      "height": 7,
+      "walls": [
+        [2, 2],
+        [1, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 6]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [3, 6]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [6, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [5, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xF6F75C66D33771F6",
+        "generatorParams": "w=7 h=7 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "UUULDRRDDDDR",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 38.67,
+          "category": "Expert",
+          "metrics": {
+            "area": 49,
+            "avgBranching": 3.833,
+            "coordinationMoves": 5,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 5,
+            "misleadingMoves": 27,
+            "plops": 3,
+            "reachableStates": 82768,
+            "solutionLength": 12,
+            "trapMoves": 0,
+            "walls": 2
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-B92A5E2D4C8F",
+      "name": "Level 90",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [5, 0],
+        [4, 2],
+        [3, 3],
+        [2, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [0, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xDB813F1CD55A66B5",
+        "generatorParams": "w=6 h=6 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "RRRRUULDLLD",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 38.89,
+          "category": "Expert",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.636,
+            "coordinationMoves": 7,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 10,
+            "misleadingMoves": 28,
+            "plops": 3,
+            "reachableStates": 20939,
+            "solutionLength": 11,
+            "trapMoves": 0,
+            "walls": 5
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-9801A3E478E6",
+      "name": "Level 91",
+      "width": 7,
+      "height": 7,
+      "walls": [
+        [1, 0],
+        [6, 1],
+        [0, 2],
+        [3, 3],
+        [0, 4],
+        [1, 4],
+        [0, 5],
+        [5, 5],
+        [6, 6]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [6, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [0, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xF1A5BAD11CB94646",
+        "generatorParams": "w=7 h=7 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "UUDRLDLULLDLL",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 38.93,
+          "category": "Expert",
+          "metrics": {
+            "area": 49,
+            "avgBranching": 3.692,
+            "coordinationMoves": 5,
+            "deadEndRatio": 0.0015,
+            "deadEndStates": 76,
+            "forcedSteps": 10,
+            "misleadingMoves": 31,
+            "plops": 3,
+            "reachableStates": 52102,
+            "solutionLength": 13,
+            "trapMoves": 0,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-64ED192E4073",
+      "name": "Level 92",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 2],
+        [1, 2],
+        [4, 2],
+        [3, 3],
+        [2, 4],
+        [1, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xAE2D185436641DCE",
+        "generatorParams": "w=6 h=6 plops=2 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "RDRDDLLURRUULDDUU",
+        "solutionLength": 17,
+        "difficulty": {
+          "score": 39.47,
+          "category": "Expert",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.059,
+            "coordinationMoves": 8,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 16,
+            "misleadingMoves": 34,
+            "plops": 2,
+            "reachableStates": 729,
+            "solutionLength": 17,
+            "trapMoves": 0,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-299330165464",
+      "name": "Level 93",
+      "width": 7,
+      "height": 7,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [2, 0],
+        [3, 0],
+        [4, 0],
+        [6, 0],
+        [0, 1],
+        [1, 1],
+        [2, 1],
+        [3, 1],
+        [3, 2],
+        [2, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [6, 3]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [6, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [5, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [1, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x7F3D83E0C950FA98",
+        "generatorParams": "w=7 h=7 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DDDRULULDLLULU",
+        "solutionLength": 14,
+        "difficulty": {
+          "score": 41.59,
+          "category": "Expert",
+          "metrics": {
+            "area": 49,
+            "avgBranching": 3.786,
+            "coordinationMoves": 6,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 10,
+            "misleadingMoves": 35,
+            "plops": 3,
+            "reachableStates": 32678,
+            "solutionLength": 14,
+            "trapMoves": 0,
+            "walls": 12
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-14039ADB1533",
+      "name": "Level 94",
+      "width": 7,
+      "height": 7,
+      "walls": [
+        [0, 1],
+        [1, 1],
+        [2, 1],
+        [6, 1],
+        [5, 2],
+        [1, 3],
+        [2, 3],
+        [3, 3],
+        [3, 4],
+        [5, 4],
+        [0, 5],
+        [2, 5],
+        [5, 5],
+        [0, 6],
+        [1, 6],
+        [6, 6]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [5, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [6, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [6, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [6, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xE71264FC1930279B",
+        "generatorParams": "w=7 h=7 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DLLUUURURUURD",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 42.57,
+          "category": "Expert",
+          "metrics": {
+            "area": 49,
+            "avgBranching": 3.385,
+            "coordinationMoves": 8,
+            "deadEndRatio": 0.0464,
+            "deadEndStates": 802,
+            "forcedSteps": 13,
+            "misleadingMoves": 31,
+            "plops": 3,
+            "reachableStates": 17298,
+            "solutionLength": 13,
+            "trapMoves": 0,
+            "walls": 16
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-DA37EA7CA945",
+      "name": "Level 95",
+      "width": 7,
+      "height": 7,
+      "walls": [
+        [0, 0],
+        [0, 1],
+        [3, 1],
+        [4, 1],
+        [5, 1],
+        [5, 2],
+        [6, 2],
+        [0, 3],
+        [4, 3],
+        [0, 4],
+        [1, 4],
+        [5, 5],
+        [6, 5],
+        [2, 6]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 6]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [1, 6]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xD54FEB7B491605C0",
+        "generatorParams": "w=7 h=7 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DRRUURULLUDDDDR",
+        "solutionLength": 15,
+        "difficulty": {
+          "score": 43.24,
+          "category": "Expert",
+          "metrics": {
+            "area": 49,
+            "avgBranching": 3.4,
+            "coordinationMoves": 7,
+            "deadEndRatio": 0.0078,
+            "deadEndStates": 224,
+            "forcedSteps": 13,
+            "misleadingMoves": 34,
+            "plops": 3,
+            "reachableStates": 28660,
+            "solutionLength": 15,
+            "trapMoves": 0,
+            "walls": 14
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-4A6B41145F14",
+      "name": "Level 96",
+      "width": 7,
+      "height": 7,
+      "walls": [
+        [0, 0],
+        [2, 0],
+        [3, 0],
+        [4, 0],
+        [5, 0],
+        [6, 0],
+        [6, 1],
+        [0, 2],
+        [3, 2],
+        [0, 3],
+        [2, 3],
+        [4, 3],
+        [1, 5],
+        [3, 6]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 6]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 6]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [3, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [5, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [5, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x9877C01BF0D2F7F4",
+        "generatorParams": "w=7 h=7 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DRDLLLLRURRD",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 43.67,
+          "category": "Expert",
+          "metrics": {
+            "area": 49,
+            "avgBranching": 3.667,
+            "coordinationMoves": 9,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 12,
+            "misleadingMoves": 32,
+            "plops": 3,
+            "reachableStates": 31924,
+            "solutionLength": 12,
+            "trapMoves": 0,
+            "walls": 14
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-B0F75FA3B61D",
+      "name": "Level 97",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [1, 1],
+        [4, 1],
+        [3, 3],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 3]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0x7DCE1B34C692223B",
+        "generatorParams": "w=6 h=6 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "DDLLURURRDDUL",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 46.05,
+          "category": "Expert",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.846,
+            "coordinationMoves": 10,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 10,
+            "misleadingMoves": 34,
+            "plops": 3,
+            "reachableStates": 21290,
+            "solutionLength": 13,
+            "trapMoves": 0,
+            "walls": 6
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-BF183C4509B9",
+      "name": "Level 98",
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 1],
+        [1, 1],
+        [0, 4],
+        [3, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [5, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [1, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xC0FC3CFF26F41A9E",
+        "generatorParams": "w=6 h=6 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "UUURULULLDRDDL",
+        "solutionLength": 14,
+        "difficulty": {
+          "score": 46.56,
+          "category": "Expert",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.643,
+            "coordinationMoves": 10,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 11,
+            "misleadingMoves": 34,
+            "plops": 3,
+            "reachableStates": 23962,
+            "solutionLength": 14,
+            "trapMoves": 0,
+            "walls": 4
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-A8D75DE7F156",
+      "name": "Level 99",
+      "width": 7,
+      "height": 7,
+      "walls": [
+        [3, 0],
+        [4, 0],
+        [5, 0],
+        [6, 0],
+        [4, 1],
+        [5, 1],
+        [6, 1],
+        [0, 2],
+        [1, 2],
+        [6, 2],
+        [2, 3],
+        [0, 4],
+        [6, 4],
+        [3, 5],
+        [4, 5],
+        [5, 5],
+        [6, 5],
+        [4, 6],
+        [5, 6],
+        [6, 6]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [5, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 6]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [0, 6]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xA7DE71772CFE6A44",
+        "generatorParams": "w=7 h=7 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "UURRURULLLULUULU",
+        "solutionLength": 16,
+        "difficulty": {
+          "score": 50.93,
+          "category": "Expert",
+          "metrics": {
+            "area": 49,
+            "avgBranching": 3.812,
+            "coordinationMoves": 11,
+            "deadEndRatio": 0.0037,
+            "deadEndStates": 54,
+            "forcedSteps": 12,
+            "misleadingMoves": 41,
+            "plops": 3,
+            "reachableStates": 14612,
+            "solutionLength": 16,
+            "trapMoves": 0,
+            "walls": 20
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-A96A69A94796",
+      "name": "Level 100",
+      "width": 7,
+      "height": 7,
+      "walls": [
+        [2, 0],
+        [4, 0],
+        [6, 0],
+        [2, 1],
+        [5, 2],
+        [2, 4],
+        [1, 5],
+        [2, 5],
+        [4, 5],
+        [5, 5],
+        [5, 6],
+        [6, 6]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 6]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 1,
+        "seed": "0xC50E0962C34D1891",
+        "generatorParams": "w=7 h=7 plops=3 walls=0.2 target=any minLen=4 maxLen=60 solverStates=300000 attempt=1",
+        "solverVersion": 1,
+        "solution": "UULUUUULLRDDRDRR",
+        "solutionLength": 16,
+        "difficulty": {
+          "score": 52.66,
+          "category": "Expert",
+          "metrics": {
+            "area": 49,
+            "avgBranching": 3.75,
+            "coordinationMoves": 12,
+            "deadEndRatio": 0,
+            "deadEndStates": 0,
+            "forcedSteps": 13,
+            "misleadingMoves": 41,
+            "plops": 3,
+            "reachableStates": 43138,
+            "solutionLength": 16,
+            "trapMoves": 0,
+            "walls": 12
+          }
+        }
+      }
+    }
+  ]
+}
