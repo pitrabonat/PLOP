@@ -94,4 +94,8 @@ Bundle id placeholder: `com.plop.sleepypuzzle` — change before publishing.
 
 ## Known constraints
 - macOS 15.5 supports Xcode up to 16.4 (iOS 18.5 SDK). App Store uploads require Xcode 26+, which needs macOS Tahoe 26.2+. Upgrade macOS before shipping to the App Store.
-- Physical iPhone testing requires an Apple ID in Xcode (free account works for personal-device testing).
+- Xcode 16.4 is installed at `/Volumes/PLOP_DEV/Xcode/Xcode.app` (license accepted). Use it via `DEVELOPER_DIR` (no `sudo xcode-select`).
+- The test iPhone (iPhone 15 Pro Max) runs **iOS 26.6.1**; Xcode 16.4 cannot install/debug on iOS 26 ("no DDI"). Real-iPhone testing needs macOS Tahoe 26.2+ and Xcode 26.x.
+- Xcode builds that compile storyboards (Unity's LaunchScreen) require the iOS platform component (`xcodebuild -downloadPlatform iOS`), which also installs a simulator runtime (~8 GB on the **internal** SSD). Not installed yet to save internal space. Without it, all code (IL2CPP + UnityFramework) compiles; only the LaunchScreen storyboards fail.
+- Xiaomi/HyperOS test phone blocks `adb install` unless Developer options → "Install via USB" is enabled; fallback: `adb push` the APK to `/sdcard/Download` and install from Files.
+- Physical iPhone testing requires an Apple ID in Xcode → Settings → Accounts (free Personal Team works).
