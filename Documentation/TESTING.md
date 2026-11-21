@@ -73,6 +73,12 @@ the labels remain clear at minimum volume.
 The APK is 44,646,700 bytes (29% smaller than the Phase 3 dev APK).
 Both its APK v2 signature and 16 KB ZIP alignment passed verification.
 `dumpsys meminfo` measured 255,875 KiB of PSS after emulator relaunch.
+SurfaceFlinger TimeStats sampled the game layer during repeated swipes.
+The pre-slider-fix rehearsal with no other build running showed median
+intervals of 33 ms in 30 FPS mode and 24 ms in the larger 60 FPS sample.
+The final APK showed longer intervals while the host was also building iOS
+(66 ms at 30 FPS and 46–50 ms at 60 FPS). These samples describe
+emulator pacing under the observed host load.
 Build, test and Android platform logs are under
 `/Volumes/PLOP_DEV/Builds/Logs/phase4/`.
 

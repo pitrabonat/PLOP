@@ -24,7 +24,8 @@ The checkout is on `feature/visual-production`, based on `f5c5cac`
 The Phase 3 scene launched in Unity before edits and reacted to keyboard
 input. The Phase 3 APK installed and solved Level 1 by touch in the emulator.
 The [baseline screenshot](Documentation/Previews/phase3-android-baseline.png)
-records that running build.
+records that running build. The Phase 4 Editor session reopened at the saved
+Level 2 with the production HUD.
 
 - Unity compiled the production presentation. .NET and Unity EditMode
   each passed 92 tests. Unity PlayMode passed 29, including loading, solving,

@@ -51,3 +51,6 @@ See [PROJECT_STATE.md](PROJECT_STATE.md) for verification and remaining device Q
 - Built and verified the 44.6 MB Android development APK. Offline touch
   play, Hint, Undo, completion, Next Level and relaunch passed in the
   emulator. Both audio volumes and the 30 FPS cap persisted.
+- Re-exported the final simulator player and built it in Xcode 26.3.
+  Captured the finished HUD on iPhone 15 Pro Max and iPhone SE. The
+  production scene reopened in Unity Play Mode at the saved Level 2.
