@@ -118,16 +118,29 @@ namespace Plop.EditorTools
         }
 
         /// iOS Xcode project for the iOS Simulator -> Builds/iOS/PLOP-Xcode-Sim.
-        /// Restores the Device SDK setting afterwards so project settings stay device-ready.
+        /// Set PLOP_IOS_SIM_EXPORT to choose a separate output directory.
         [MenuItem("PLOP/Build/iOS Xcode Project (Simulator)")]
         public static void ExportIOSSimulator()
         {
+            var path = Environment.GetEnvironmentVariable("PLOP_IOS_SIM_EXPORT");
+            if (string.IsNullOrWhiteSpace(path)) path = Path.Combine(BuildsRoot, "iOS", "PLOP-Xcode-Sim");
+            path = Path.GetFullPath(path);
             EnsureBootScene();
-            PlayerSettings.iOS.sdkVersion = iOSSdkVersion.SimulatorSDK;
-            // Apple silicon Mac + arm64-only simulator runtime: build arm64 simulator binaries (Unity default is x86_64).
-            PlayerSettings.iOS.simulatorSdkArchitecture = AppleMobileArchitectureSimulator.ARM64;
-            try { Build(BuildTarget.iOS, Path.Combine(BuildsRoot, "iOS", "PLOP-Xcode-Sim"), BuildOptions.Development); }
-            finally { PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK; AssetDatabase.SaveAssets(); }
+
+            var previousSdk = PlayerSettings.iOS.sdkVersion;
+            var previousArchitecture = PlayerSettings.iOS.simulatorSdkArchitecture;
+            try
+            {
+                PlayerSettings.iOS.sdkVersion = iOSSdkVersion.SimulatorSDK;
+                PlayerSettings.iOS.simulatorSdkArchitecture = AppleMobileArchitectureSimulator.ARM64;
+                Build(BuildTarget.iOS, path, BuildOptions.Development);
+            }
+            finally
+            {
+                PlayerSettings.iOS.sdkVersion = previousSdk;
+                PlayerSettings.iOS.simulatorSdkArchitecture = previousArchitecture;
+                AssetDatabase.SaveAssets();
+            }
         }
 
         static void Build(BuildTarget target, string path, BuildOptions options)

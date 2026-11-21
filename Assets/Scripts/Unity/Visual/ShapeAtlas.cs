@@ -22,7 +22,7 @@ namespace Plop.Presentation
         public const float PebbleRadius = 0.22f * PebbleSize;  // 22% of block width
         public const float NestSize = 0.88f;
         public const float NestRadius = 0.24f * NestSize;
-        public const float PanelRadius = 0.40f;          // board container corner radius (world units)
+        public const float PanelRadius = 0.46f;          // board container corner radius (world units)
         public const float PanelShadowBlur = 0.22f;
 
         private static readonly int[] Buckets = { 64, 96, 128, 160, 192, 256 };
@@ -71,7 +71,6 @@ namespace Plop.Presentation
             public Vector4 Border;          // 9-slice border in pixels (L, B, R, T)
             public float X0, Y0;            // world-space coordinate of the bottom-left pixel corner (relative to pivot)
             public Painter Paint;
-            public Color[] Pixels;
             public RectInt Slot;
         }
 
@@ -80,22 +79,23 @@ namespace Plop.Presentation
             PixelsPerUnit = ppu;
             var specs = new List<Spec>();
             AddBoardShapes(specs);
-            for (int c = 0; c < PlopPalette.SlotCount; c++) { AddNest(specs, c); AddPlop(specs, c); }
+            AddFaceShapes(specs);
+            for (int c = 0; c < PlopPalette.SlotCount; c++)
+            {
+                AddNest(specs, c);
+                AddPlop(specs, c);
+            }
 
-            foreach (var s in specs) Rasterize(s, ppu);
             int width = ppu >= 192 ? 2048 : 1024;
             int height = Pack(specs, width);
+            var all = new Color32[width * height];
+            foreach (var spec in specs) Rasterize(spec, ppu, all, width);
             Texture = new Texture2D(width, height, TextureFormat.RGBA32, false)
             {
                 name = "PLOP ShapeAtlas " + ppu,
                 filterMode = FilterMode.Bilinear,
                 wrapMode = TextureWrapMode.Clamp
             };
-            var all = new Color32[width * height];
-            foreach (var s in specs)
-                for (int y = 0; y < s.H; y++)
-                    for (int x = 0; x < s.W; x++)
-                        all[(s.Slot.y + y) * width + s.Slot.x + x] = s.Pixels[y * s.W + x];
             Texture.SetPixels32(all);
             Texture.Apply(false, true); // upload, then free the CPU copy
 
@@ -105,7 +105,6 @@ namespace Plop.Presentation
                     SpriteMeshType.FullRect, s.Border);
                 sprite.name = s.Key;
                 _sprites[s.Key] = sprite;
-                s.Pixels = null;
             }
         }
 
@@ -127,17 +126,17 @@ namespace Plop.Presentation
             return h;
         }
 
-        private static void Rasterize(Spec s, int ppu)
+        private static void Rasterize(Spec spec, int ppu, Color32[] atlas, int width)
         {
             float pixel = 1f / ppu;
-            s.Pixels = new Color[s.W * s.H];
-            for (int py = 0; py < s.H; py++)
+            for (int py = 0; py < spec.H; py++)
             {
-                float y = s.Y0 + (py + 0.5f) * pixel;
-                for (int px = 0; px < s.W; px++)
+                float y = spec.Y0 + (py + 0.5f) * pixel;
+                int start = (spec.Slot.y + py) * width + spec.Slot.x;
+                for (int px = 0; px < spec.W; px++)
                 {
-                    float x = s.X0 + (px + 0.5f) * pixel;
-                    s.Pixels[py * s.W + px] = s.Paint(x, y, pixel);
+                    float x = spec.X0 + (px + 0.5f) * pixel;
+                    atlas[start + px] = spec.Paint(x, y, pixel);
                 }
             }
         }
@@ -157,54 +156,55 @@ namespace Plop.Presentation
 
         private void AddBoardShapes(List<Spec> specs)
         {
-            // Floor tile: soft rounded square with a whisper of vertical shading.
-            float th = TileSize * 0.5f;
+            // Floor tiles have a molded lip and a satin center. The edge and gap stay on the same grid.
+            float tileHalf = TileSize * 0.5f;
+            var tileEdge = Color.Lerp(PlopPalette.TileShade, PlopPalette.BoardPanel, 0.35f);
             specs.Add(Make("tile", -0.5f, -0.5f, 1f, 1f, (x, y, px) =>
             {
-                var c = PlopPalette.Tile.WithAlpha(0f);
                 float d = TileDistance(x, y);
-                var fill = Color.Lerp(PlopPalette.TileShade, PlopPalette.Tile, Mathf.SmoothStep(0f, 1f, (y + th) / (TileSize * 0.7f)));
-                return Sdf.Over(c, fill, Sdf.Coverage(d, px));
+                float inside = Sdf.Coverage(d, px);
+                if (inside <= 0f) return PlopPalette.Tile.WithAlpha(0f);
+                float lit = Mathf.SmoothStep(0f, 1f, (y + tileHalf) / TileSize);
+                var face = Color.Lerp(PlopPalette.TileShade, PlopPalette.Tile, Mathf.Lerp(0.58f, 1f, lit));
+                var edge = Color.Lerp(tileEdge, PlopPalette.Highlight, lit * 0.68f);
+                var fill = Color.Lerp(edge, face, Mathf.SmoothStep(0f, 1f, -d / 0.057f));
+                return Sdf.Over(fill.WithAlpha(0f), fill, inside);
             }));
 
-            // Pebble (wall): toy block with a darker side, soft tinted drop shadow and a gentle top highlight.
-            float ph = PebbleSize * 0.5f;
-            specs.Add(Make("pebble", -0.5f, -0.72f, 1f, 1.22f, (x, y, px) =>
+            // A rounded pebble with a visible lower side and a broad reflected highlight on top.
+            float pebbleHalf = PebbleSize * 0.5f;
+            specs.Add(Make("pebble", -0.5f, -0.67f, 1f, 1.17f, (x, y, px) =>
             {
                 var c = PlopPalette.PebbleSide.WithAlpha(0f);
-                c = Sdf.Over(c, PlopPalette.Shadow, 0.22f * Sdf.Soft(Sdf.RoundBox(x, y, 0, -0.13f, ph, ph * 0.92f, PebbleRadius), 0.09f));
-                c = Sdf.Over(c, PlopPalette.PebbleSide, Sdf.Coverage(Sdf.RoundBox(x, y, 0, -0.06f, ph, ph, PebbleRadius), px));
-                float top = PebbleTopDistance(x, y);
-                var topColor = Color.Lerp(PlopPalette.PebbleTop, PlopPalette.PebbleHighlight, Mathf.Clamp01((y + 0.1f) / 0.55f) * 0.55f);
-                c = Sdf.Over(c, topColor, Sdf.Coverage(top, px));
-                c = Sdf.Over(c, PlopPalette.Highlight, 0.45f * Sdf.Soft(Sdf.Ellipse(x, y, -0.12f, 0.24f, 0.15f, 0.045f), 0.035f) * Sdf.Coverage(top, px));
-                return c;
+                float contact = Sdf.RoundBox(x, y, 0f, -0.14f, pebbleHalf, pebbleHalf * 0.92f, PebbleRadius);
+                c = Sdf.Over(c, PlopPalette.Shadow, 0.22f * Sdf.Soft(contact, 0.085f));
+                float side = Sdf.RoundBox(x, y, 0f, -0.068f, pebbleHalf, pebbleHalf, PebbleRadius);
+                c = Sdf.Over(c, PlopPalette.PebbleSide, Sdf.Coverage(side, px));
+
+                float d = PebbleTopDistance(x, y);
+                float inside = Sdf.Coverage(d, px);
+                if (inside <= 0f) return c;
+                float lit = Mathf.SmoothStep(0f, 1f, (y + pebbleHalf) / PebbleSize);
+                var fill = Color.Lerp(PlopPalette.PebbleTop, PlopPalette.PebbleHighlight, 0.68f * lit);
+                var edge = Color.Lerp(PlopPalette.PebbleSide, PlopPalette.Highlight, 0.65f * lit);
+                fill = Color.Lerp(edge, fill, Mathf.SmoothStep(0f, 1f, -d / 0.072f));
+                c = Sdf.Over(c, fill, inside);
+                float sheen = Sdf.Ellipse(x, y, -0.13f, 0.23f, 0.19f, 0.075f);
+                return Sdf.Over(c, PlopPalette.Highlight, 0.34f * inside * Sdf.Soft(sheen, 0.065f));
             }));
 
-            // Plop ground shadow (tinted, soft).
-            specs.Add(Make("plopShadow", -0.42f, -0.16f, 0.84f, 0.32f, (x, y, px) =>
-                Sdf.Over(PlopPalette.Shadow.WithAlpha(0f), PlopPalette.Shadow, 0.26f * Sdf.Soft(Sdf.Ellipse(x, y, 0, 0, 0.29f, 0.075f), 0.07f))));
-
-            // Eyes: Ink ovals with a small warm glint; closed eyes are soft lower arcs.
-            specs.Add(Make("eye", -0.07f, -0.08f, 0.14f, 0.16f, (x, y, px) =>
-            {
-                var c = PlopPalette.Ink.WithAlpha(0f);
-                float d = Sdf.Ellipse(x, y, 0, 0, 0.040f, 0.054f);
-                c = Sdf.Over(c, PlopPalette.Ink, Sdf.Coverage(d, px));
-                c = Sdf.Over(c, PlopPalette.Highlight, 0.95f * Sdf.Coverage(Sdf.Circle(x, y, 0.013f, 0.021f, 0.0135f), px));
-                return c;
-            }));
-            specs.Add(Make("eyeClosed", -0.08f, -0.06f, 0.16f, 0.12f, (x, y, px) =>
-                Sdf.Over(PlopPalette.Ink.WithAlpha(0f), PlopPalette.Ink, Sdf.Coverage(Sdf.LowerArc(x, y, 0, 0.022f, 0.042f, 1.05f, 0.0105f), px))));
-            specs.Add(Make("cheek", -0.08f, -0.06f, 0.16f, 0.12f, (x, y, px) =>
-                Sdf.Over(PlopPalette.Berry.WithAlpha(0f), Color.Lerp(PlopPalette.Berry, PlopPalette.Ink, 0.08f), 0.55f * Sdf.Soft(Sdf.Ellipse(x, y, 0, 0, 0.045f, 0.027f), 0.022f))));
-
-            // Board container: 9-sliced rounded panel + its soft shadow. Border = corner radius.
+            // The board's flat center and outer lip stretch separately across the 9-slice.
             int rPx = Mathf.CeilToInt(PanelRadius * PixelsPerUnit);
             float size = (2 * rPx + 2) / (float)PixelsPerUnit;
+            var panelEdge = Color.Lerp(PlopPalette.BoardPanel, PlopPalette.PebbleSide, 0.22f);
             var panel = Make("panel", -size * 0.5f, -size * 0.5f, size, size, (x, y, px) =>
-                Sdf.Over(PlopPalette.BoardPanel.WithAlpha(0f), PlopPalette.BoardPanel,
-                    Sdf.Coverage(Sdf.RoundBox(x, y, 0, 0, size * 0.5f, size * 0.5f, PanelRadius), px)));
+            {
+                float d = Sdf.RoundBox(x, y, 0f, 0f, size * 0.5f, size * 0.5f, PanelRadius);
+                float lit = Mathf.SmoothStep(0f, 1f, y / size + 0.5f);
+                var edge = Color.Lerp(panelEdge, PlopPalette.Highlight, 0.70f * lit);
+                var fill = Color.Lerp(edge, PlopPalette.BoardPanel, Mathf.SmoothStep(0f, 1f, -d / 0.105f));
+                return Sdf.Over(fill.WithAlpha(0f), fill, Sdf.Coverage(d, px));
+            });
             panel.Border = new Vector4(rPx, rPx, rPx, rPx);
             specs.Add(panel);
 
@@ -213,53 +213,101 @@ namespace Plop.Presentation
             float inner = shadowSize * 0.5f - PanelShadowBlur;
             var panelShadow = Make("panelShadow", -shadowSize * 0.5f, -shadowSize * 0.5f, shadowSize, shadowSize, (x, y, px) =>
                 Sdf.Over(PlopPalette.Shadow.WithAlpha(0f), PlopPalette.Shadow,
-                    Sdf.Soft(Sdf.RoundBox(x, y, 0, 0, inner, inner, PanelRadius), PanelShadowBlur)));
+                    Sdf.Soft(Sdf.RoundBox(x, y, 0f, 0f, inner, inner, PanelRadius), PanelShadowBlur)));
             panelShadow.Border = new Vector4(sPx, sPx, sPx, sPx);
             specs.Add(panelShadow);
         }
 
-        /// <summary>Nest: a pillow — rounded outer cushion, softer inner well, subtle rim and top highlight.</summary>
+        private void AddFaceShapes(List<Spec> specs)
+        {
+            specs.Add(Make("plopShadow", -0.42f, -0.16f, 0.84f, 0.32f, (x, y, px) =>
+                Sdf.Over(PlopPalette.Shadow.WithAlpha(0f), PlopPalette.Shadow,
+                    0.28f * Sdf.Soft(Sdf.Ellipse(x, y, 0f, 0f, 0.28f, 0.068f), 0.068f))));
+
+            specs.Add(Make("eye", -0.07f, -0.08f, 0.14f, 0.16f, (x, y, px) =>
+            {
+                var ink = PlopPalette.Ink;
+                var c = Sdf.Over(ink.WithAlpha(0f), ink, Sdf.Coverage(Sdf.Ellipse(x, y, 0f, 0f, 0.034f, 0.050f), px));
+                return Sdf.Over(c, PlopPalette.Highlight, 0.96f * Sdf.Coverage(Sdf.Circle(x, y, -0.010f, 0.021f, 0.013f), px));
+            }));
+            specs.Add(Make("eyeClosed", -0.08f, -0.06f, 0.16f, 0.12f, (x, y, px) =>
+                Sdf.Over(PlopPalette.Ink.WithAlpha(0f), PlopPalette.Ink,
+                    Sdf.Coverage(Sdf.LowerArc(x, y, 0f, 0.020f, 0.043f, 1.1f, 0.012f), px))));
+
+            var cheek = Color.Lerp(PlopPalette.Berry, PlopPalette.Ink, 0.10f);
+            specs.Add(Make("cheek", -0.08f, -0.06f, 0.16f, 0.12f, (x, y, px) =>
+                Sdf.Over(cheek.WithAlpha(0f), cheek, 0.60f * Sdf.Soft(Sdf.Ellipse(x, y, 0f, 0f, 0.047f, 0.025f), 0.024f))));
+
+            var mouth = PlopPalette.Ink.WithAlpha(0.91f);
+            specs.Add(Make("mouth", -0.075f, -0.052f, 0.15f, 0.104f, (x, y, px) =>
+                Sdf.Over(mouth.WithAlpha(0f), mouth,
+                    Sdf.Coverage(Sdf.LowerArc(x, y, 0f, 0.015f, 0.034f, 1f, 0.0115f), px))));
+            specs.Add(Make("mouthSleep", -0.06f, -0.05f, 0.12f, 0.10f, (x, y, px) =>
+                Sdf.Over(mouth.WithAlpha(0f), mouth,
+                    Sdf.Coverage(Sdf.Ellipse(x, y, 0f, -0.006f, 0.017f, 0.012f), px))));
+            specs.Add(Make("mouthBump", -0.06f, -0.05f, 0.12f, 0.10f, (x, y, px) =>
+                Sdf.Over(mouth.WithAlpha(0f), mouth,
+                    Sdf.Coverage(Sdf.Ellipse(x, y, 0f, 0f, 0.020f, 0.026f), px))));
+        }
+
+        /// <summary>A soft pillow with a rounded hem and a shallow inset for the sleeping Plop.</summary>
         private void AddNest(List<Spec> specs, int colorId)
         {
             Color outer = PlopPalette.NestOuter(colorId), innerColor = PlopPalette.NestInner(colorId);
-            Color rim = Color.Lerp(outer, PlopPalette.Ink, 0.10f);
+            Color piping = Color.Lerp(outer, PlopPalette.Ink, 0.16f);
+            Color reflected = Color.Lerp(outer, PlopPalette.Highlight, 0.70f);
             float h = NestSize * 0.5f;
             specs.Add(Make(NestKey(colorId), -0.5f, -0.5f, 1f, 1f, (x, y, px) =>
             {
                 var c = outer.WithAlpha(0f);
-                float d = Sdf.RoundBox(x, y, 0, 0, h, h, NestRadius);
-                var cushion = Color.Lerp(rim, outer, Mathf.Clamp01(-d / 0.045f));
-                c = Sdf.Over(c, cushion, Sdf.Coverage(d, px));
-                float well = Sdf.RoundBox(x, y, 0, -0.015f, h * 0.62f, h * 0.58f, NestRadius * 0.62f);
-                var wellColor = Color.Lerp(innerColor, Color.Lerp(innerColor, outer, 0.35f), Mathf.Clamp01((0.18f - y) / 0.4f));
-                c = Sdf.Over(c, wellColor, Sdf.Soft(well, 0.03f));
-                c = Sdf.Over(c, PlopPalette.Highlight, 0.35f * Sdf.Soft(Sdf.Ellipse(x, y, -0.10f, 0.30f, 0.16f, 0.035f), 0.03f) * Sdf.Coverage(d, px));
-                return c;
+                float contact = Sdf.RoundBox(x, y, 0f, -0.035f, h - 0.016f, h - 0.024f, NestRadius);
+                c = Sdf.Over(c, PlopPalette.Shadow, 0.24f * Sdf.Soft(contact, 0.040f));
+
+                float d = Sdf.RoundBox(x, y, 0f, 0f, h, h, NestRadius);
+                float inside = Sdf.Coverage(d, px);
+                if (inside <= 0f) return c;
+                float light = Mathf.SmoothStep(0f, 1f, (y + h) / NestSize);
+                var cushion = Color.Lerp(piping, reflected, light * 0.65f);
+                c = Sdf.Over(c, Color.Lerp(cushion, outer, Mathf.SmoothStep(0f, 1f, -d / 0.080f)), inside);
+
+                float well = Sdf.RoundBox(x, y, 0f, -0.015f, h * 0.64f, h * 0.59f, NestRadius * 0.66f);
+                float wellLight = Mathf.SmoothStep(0f, 1f, (0.20f - y) / 0.42f);
+                var inset = Color.Lerp(Color.Lerp(outer, piping, 0.30f), Color.Lerp(innerColor, reflected, wellLight * 0.30f),
+                    Mathf.SmoothStep(0f, 1f, -well / 0.067f));
+                c = Sdf.Over(c, inset, Sdf.Soft(well, 0.022f));
+                float highlight = Sdf.Ellipse(x, y, -0.10f, 0.314f, 0.17f, 0.043f);
+                return Sdf.Over(c, PlopPalette.Highlight, 0.44f * inside * Sdf.Soft(highlight, 0.044f));
             }));
         }
 
-        /// <summary>
-        /// Plop body: a soft gumdrop (smooth union of a rounded base and a dome), lighter on top, slightly
-        /// deeper at the rim, gently translucent, with a warm specular highlight. Pivot = ground contact point.
-        /// </summary>
+        /// <summary>Shared jelly shape with baked rim, inner light and glaze for each palette slot.</summary>
         private void AddPlop(List<Spec> specs, int colorId)
         {
             Color body = PlopPalette.PlopBody(colorId);
-            Color top = Color.Lerp(body, PlopPalette.Milk, 0.30f);
-            Color bottom = Color.Lerp(body, PlopPalette.Ink, 0.10f);
-            Color rim = Color.Lerp(body, PlopPalette.Ink, 0.16f);
+            Color bright = Color.Lerp(body, PlopPalette.Milk, 0.33f);
+            Color rim = Color.Lerp(body, PlopPalette.Ink, 0.23f);
+            Color bounce = Color.Lerp(body, PlopPalette.Honey, 0.17f);
             specs.Add(Make(PlopKey(colorId), -0.48f, -0.06f, 0.96f, 0.86f, (x, y, px) =>
             {
                 float d = BodyDistance(x, y);
-                var c = body.WithAlpha(0f);
-                var fill = Color.Lerp(bottom, top, Mathf.SmoothStep(0f, 1f, (y - 0.02f) / 0.66f));
-                fill = Color.Lerp(rim, fill, Mathf.Clamp01(-d / 0.05f));       // soft deeper rim
-                fill.a = Mathf.Lerp(1f, 0.93f, Mathf.Clamp01(-d / 0.12f));     // slightly translucent jelly core
-                c = Sdf.Over(c, fill, Sdf.Coverage(d, px));
                 float inside = Sdf.Coverage(d, px);
-                c = Sdf.Over(c, PlopPalette.Highlight, 0.78f * inside * Sdf.Soft(Sdf.Ellipse(x, y, -0.15f, 0.53f, 0.085f, 0.05f), 0.025f));
-                c = Sdf.Over(c, PlopPalette.Highlight, 0.65f * inside * Sdf.Coverage(Sdf.Circle(x, y, -0.04f, 0.60f, 0.018f), px));
-                return c;
+                var c = body.WithAlpha(0f);
+                if (inside <= 0f) return c;
+                float light = Mathf.SmoothStep(0f, 1f, (y + 0.1f) / 0.72f);
+                var fill = Color.Lerp(Color.Lerp(body, rim, 0.34f), bright, light);
+                var edge = Color.Lerp(rim, bright, Mathf.Lerp(0.20f, 0.80f, light));
+                fill = Color.Lerp(edge, fill, Mathf.SmoothStep(0f, 1f, -d / 0.058f));
+                fill.a = Mathf.Lerp(0.99f, 0.89f, Mathf.Clamp01(-d / 0.13f));
+                c = Sdf.Over(c, fill, inside);
+
+                float innerLight = Sdf.Ellipse(x, y, 0.065f, 0.16f, 0.21f, 0.091f);
+                c = Sdf.Over(c, bounce, 0.40f * inside * Sdf.Soft(innerLight, 0.104f));
+                float softbox = Sdf.Ellipse(x + (y - 0.54f) * 0.32f, y, -0.160f, 0.535f, 0.125f, 0.062f);
+                c = Sdf.Over(c, PlopPalette.Highlight, 0.40f * inside * Sdf.Soft(softbox, 0.055f));
+                float glaze = Sdf.Ellipse(x + (y - 0.54f) * 0.40f, y, -0.181f, 0.554f, 0.079f, 0.033f);
+                c = Sdf.Over(c, PlopPalette.Highlight, 0.78f * inside * Sdf.Soft(glaze, 0.019f));
+                return Sdf.Over(c, PlopPalette.Highlight,
+                    0.69f * inside * Sdf.Coverage(Sdf.Circle(x, y, -0.063f, 0.604f, 0.017f), px));
             }));
         }
 
@@ -274,9 +322,10 @@ namespace Plop.Presentation
         /// <summary>Distance to the Plop silhouette (units, origin = ground center).</summary>
         public static float BodyDistance(float x, float y)
         {
-            float baseShape = Sdf.RoundBox(x, y, 0f, 0.22f, 0.38f, 0.22f, 0.20f);
-            float dome = Sdf.Circle(x, y, 0f, 0.37f, 0.31f);
-            return Sdf.SmoothMin(baseShape, dome, 0.10f);
+            // Weight sits on the broad foot. The crown leans slightly as if the jelly has relaxed.
+            float baseShape = Sdf.RoundBox(x, y, 0.012f, 0.202f, 0.373f, 0.202f, 0.184f);
+            float crown = Sdf.Ellipse(x + Mathf.Max(0f, y - 0.28f) * 0.17f, y, -0.043f, 0.353f, 0.303f, 0.347f);
+            return Sdf.SmoothMin(baseShape, crown, 0.095f);
         }
     }
 }

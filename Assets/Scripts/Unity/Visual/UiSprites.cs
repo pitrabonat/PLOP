@@ -12,15 +12,15 @@ namespace Plop.Presentation
         private const float PixelsPerUnit = 200f;
         private static Sprite _pill, _pillShadow, _card, _cardShadow;
 
-        /// <summary>Corner radius 64 canvas units (a 128-unit-tall button becomes a perfect pill).</summary>
-        public static Sprite Pill => _pill != null ? _pill : (_pill = Rounded("ui-pill", 128, 0));
-        public static Sprite PillShadow => _pillShadow != null ? _pillShadow : (_pillShadow = Rounded("ui-pill-shadow", 128, 40));
-        /// <summary>Corner radius 44 canvas units.</summary>
-        public static Sprite Card => _card != null ? _card : (_card = Rounded("ui-card", 88, 0));
-        public static Sprite CardShadow => _cardShadow != null ? _cardShadow : (_cardShadow = Rounded("ui-card-shadow", 88, 56));
+        /// <summary>The shared capsule corner radius in canvas units.</summary>
+        public static Sprite Pill => _pill != null ? _pill : (_pill = Rounded("ui-pill", (int)(HudTheme.PillRadius * 2), 0));
+        public static Sprite PillShadow => _pillShadow != null ? _pillShadow : (_pillShadow = Rounded("ui-pill-shadow", (int)(HudTheme.PillRadius * 2), (int)(HudTheme.PillShadowSpread * 2)));
+        /// <summary>The shared rounded modal/card corner radius.</summary>
+        public static Sprite Card => _card != null ? _card : (_card = Rounded("ui-card", (int)(HudTheme.CardRadius * 2), 0));
+        public static Sprite CardShadow => _cardShadow != null ? _cardShadow : (_cardShadow = Rounded("ui-card-shadow", (int)(HudTheme.CardRadius * 2), (int)(HudTheme.CardShadowSpread * 2)));
 
         /// <summary>Canvas units a shadow sprite extends beyond the shape on each side.</summary>
-        public static float ShadowSpread(Sprite shadow) => shadow == _pillShadow ? 20f : shadow == _cardShadow ? 28f : 0f;
+        public static float ShadowSpread(Sprite shadow) => shadow == _pillShadow ? HudTheme.PillShadowSpread : shadow == _cardShadow ? HudTheme.CardShadowSpread : 0f;
 
         /// <summary>White rounded square, radius r px; with blur > 0 a soft shadow mask instead.</summary>
         private static Sprite Rounded(string name, int radiusPx, int blurPx)

@@ -12,9 +12,12 @@ namespace Plop.Presentation
     /// <summary>Rounded, safe-area HUD for gameplay, hints and choosing unlocked levels.</summary>
     public sealed class GameHud : MonoBehaviour
     {
-        public event Action UndoClicked, RestartClicked, NextClicked, HintClicked, LevelsClicked, ToggleFrameRateClicked;
+        public event Action UndoClicked, RestartClicked, NextClicked, HintClicked, LevelsClicked;
+        public event Action SettingsClicked, SettingsClosed, ButtonActivated;
+        public event Action<PlopGameController.FrameRateMode> FrameRateChanged;
+        public event Action<float> MusicChanged, SoundChanged;
         public event Action<int> LevelChosen;
-        public event Action PickerInteracted;
+        public event Action ModalInteracted;
         public event Action LayoutChanged;
 
         private const int PageSize = 10;
@@ -22,23 +25,34 @@ namespace Plop.Presentation
         private readonly Text[] _levelLabels = new Text[PageSize];
         private readonly RectTransform[] _levelSlots = new RectTransform[PageSize];
 
-        private Text _title, _moves, _instruction, _hintStatus, _primaryLabel, _frameRateLabel, _pageLabel;
+        private Text _title, _moves, _instruction, _hintStatus, _primaryLabel, _pageLabel;
+        private Text _musicPercent, _soundPercent;
+        private Slider _music, _sound;
+        private Image _primaryIcon;
         private Button _undo, _primary, _previousPage, _nextPage;
-        private RectTransform _safe, _card, _levelPicker;
+        private Button _rate30, _rate60;
+        private RectTransform _safe, _card, _levelPicker, _settings;
+        private RectTransform _pickerPanel, _settingsPanel;
+        private CanvasGroup _gameplayGroup;
         private CanvasGroup _cardGroup;
         private Coroutine _cardAnim;
-        private Font _font;
+        private Font _font, _displayFont;
+        private static readonly Vector2 PickerSize = new Vector2(880, 980);
+        private static readonly Vector2 SettingsSize = new Vector2(840, 652);
         private IReadOnlyList<LevelDefinition> _pickerLevels;
         private Func<int, bool> _isUnlocked, _isCompleted;
         private int _page, _currentIndex;
         private bool _completed, _canAdvance;
 
         public bool IsChoosingLevel => _levelPicker != null && _levelPicker.gameObject.activeSelf;
+        public bool IsSettingsOpen => _settings != null && _settings.gameObject.activeSelf;
+        public bool BlocksGameplayInput => IsChoosingLevel || IsSettingsOpen;
 
         private void Awake()
         {
             EnsureEventSystem();
-            _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _font = Resources.Load<Font>("Typography/Nunito-Text") ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _displayFont = Resources.Load<Font>("Typography/Nunito-Display") ?? _font;
 
             var canvasGo = new GameObject("HUD Canvas", typeof(RectTransform));
             canvasGo.transform.SetParent(transform, false);
@@ -48,53 +62,67 @@ namespace Plop.Presentation
             var scaler = canvasGo.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = BoardLayout.ReferenceResolution;
-            scaler.matchWidthOrHeight = 0.5f;
+            scaler.matchWidthOrHeight = HudTheme.CanvasMatch;
             canvasGo.AddComponent<GraphicRaycaster>();
 
             _safe = NewRect("SafeArea", canvasGo.transform);
             _safe.gameObject.AddComponent<RectChangeNotifier>().Changed += OnRectChanged;
             ApplySafeArea();
 
+            var gameplay = NewRect("Play controls", _safe);
+            _gameplayGroup = gameplay.gameObject.AddComponent<CanvasGroup>();
             var topCenter = new Vector2(0.5f, 1f);
-            var header = NewRect("Header controls", _safe);
+            var header = NewRect("Header controls", gameplay);
             header.anchorMin = header.anchorMax = topCenter;
-            header.anchoredPosition = new Vector2(0, -56);
-            header.sizeDelta = new Vector2(820, 80);
-            MakePill(header, "Levels", new Vector2(-302, 0), new Vector2(216, 80), PlopPalette.ButtonFill, () => LevelsClicked?.Invoke());
-            var rate = MakePill(header, "60 FPS", new Vector2(302, 0), new Vector2(216, 80), PlopPalette.ButtonFill,
-                () => ToggleFrameRateClicked?.Invoke());
-            _frameRateLabel = rate.GetComponentInChildren<Text>();
-            _title = MakeText(_safe, "Title", 58, FontStyle.Bold, PlopPalette.Ink, topCenter, new Vector2(0, -135), new Vector2(900, 80));
-            _moves = MakeText(_safe, "Moves", 38, FontStyle.Normal, PlopPalette.MutedText, topCenter, new Vector2(0, -192), new Vector2(900, 52));
-            _instruction = MakeText(_safe, "Instruction", 31, FontStyle.Normal, PlopPalette.Ink, topCenter, new Vector2(0, -253), new Vector2(820, 72));
+            header.anchoredPosition = new Vector2(0, -64);
+            header.sizeDelta = new Vector2(856, HudTheme.HeaderButtonHeight);
+            MakePill(header, "Levels", new Vector2(-308, 0), new Vector2(213, HudTheme.HeaderButtonHeight),
+                PlopPalette.ButtonFill, () => LevelsClicked?.Invoke(), icon: HudIcons.Kind.Levels, fontSize: HudTheme.Control);
+            MakeText(header, "Game name", 47, FontStyle.Bold, PlopPalette.Ink, new Vector2(0.5f, 0.5f),
+                Vector2.zero, new Vector2(200, 72)).text = "PLOP!";
+            MakePill(header, "Settings", new Vector2(308, 0), new Vector2(224, HudTheme.HeaderButtonHeight),
+                PlopPalette.ButtonFill, () => SettingsClicked?.Invoke(), icon: HudIcons.Kind.Settings, fontSize: HudTheme.Control);
+
+            _title = MakeText(gameplay, "Title", HudTheme.Display, FontStyle.Bold, PlopPalette.Ink, topCenter,
+                new Vector2(0, -159), new Vector2(846, 98));
+            _moves = MakeText(gameplay, "Moves", 37, FontStyle.Normal, HudTheme.SecondaryText, topCenter,
+                new Vector2(0, -223), new Vector2(800, 55));
+            _instruction = MakeText(gameplay, "Instruction", HudTheme.Caption, FontStyle.Normal, PlopPalette.Ink, topCenter,
+                new Vector2(0, -281), new Vector2(790, 76));
             _instruction.horizontalOverflow = HorizontalWrapMode.Wrap;
 
             var bottomCenter = new Vector2(0.5f, 0f);
-            var buttonsRow = NewRect("Buttons", _safe);
+            var buttonsRow = NewRect("Buttons", gameplay);
             buttonsRow.anchorMin = buttonsRow.anchorMax = bottomCenter;
-            buttonsRow.sizeDelta = new Vector2(864, 122);
-            buttonsRow.anchoredPosition = new Vector2(0, 92);
-            var buttonSize = new Vector2(252, 122);
-            _undo = MakePill(buttonsRow, "Undo", new Vector2(-273, 0), buttonSize, PlopPalette.ButtonFill, () => UndoClicked?.Invoke());
-            MakePill(buttonsRow, "Restart", Vector2.zero, buttonSize, PlopPalette.ButtonFill, () => RestartClicked?.Invoke());
-            _primary = MakePill(buttonsRow, "Hint", new Vector2(273, 0), buttonSize, PlopPalette.Berry, PrimaryClicked);
+            buttonsRow.sizeDelta = new Vector2(852, HudTheme.FooterButtonHeight);
+            buttonsRow.anchoredPosition = new Vector2(0, 91);
+            var buttonSize = new Vector2(252, HudTheme.FooterButtonHeight);
+            _undo = MakePill(buttonsRow, "Undo", new Vector2(-271, 0), buttonSize, PlopPalette.ButtonFill,
+                () => UndoClicked?.Invoke(), icon: HudIcons.Kind.Undo);
+            MakePill(buttonsRow, "Restart", Vector2.zero, buttonSize, PlopPalette.ButtonFill,
+                () => RestartClicked?.Invoke(), icon: HudIcons.Kind.Restart);
+            _primary = MakePill(buttonsRow, "Hint", new Vector2(271, 0), buttonSize, PlopPalette.Berry,
+                PrimaryClicked, icon: HudIcons.Kind.Hint);
             _primaryLabel = _primary.GetComponentInChildren<Text>();
-            _hintStatus = MakeText(_safe, "Hint status", 38, FontStyle.Bold, PlopPalette.Ink, bottomCenter,
-                new Vector2(0, 228), new Vector2(850, 90));
+            _primaryIcon = _primary.transform.Find("Icon").GetComponent<Image>();
+            _hintStatus = MakeText(gameplay, "Hint status", 38, FontStyle.Bold, PlopPalette.Ink, bottomCenter,
+                new Vector2(0, 220), new Vector2(823, 82));
 
-            _card = NewRect("Completion card", _safe);
+            _card = NewRect("Completion card", gameplay);
             _card.anchorMin = _card.anchorMax = bottomCenter;
-            _card.sizeDelta = new Vector2(790, 126);
-            _card.anchoredPosition = new Vector2(0, 233);
+            _card.sizeDelta = new Vector2(791, 108);
+            _card.anchoredPosition = new Vector2(0, 221);
             _cardGroup = _card.gameObject.AddComponent<CanvasGroup>();
             _cardGroup.blocksRaycasts = false;
-            AddShadow(_card, UiSprites.CardShadow, new Vector2(0, -8), 0.16f);
-            AddCardBackground(_card);
-            MakeText(_card, "Completion message", 48, FontStyle.Bold, PlopPalette.Ink, new Vector2(0.5f, 0.5f),
-                Vector2.zero, new Vector2(720, 100)).text = "All Plops asleep!";
+            AddShadow(_card, UiSprites.CardShadow, HudTheme.ShadowOffset, HudTheme.CardShadow);
+            AddCardBackground(_card, Color.Lerp(PlopPalette.ButtonFill, PlopPalette.Mint, 0.33f));
+            MakeText(_card, "Completion message", HudTheme.Heading, FontStyle.Bold, PlopPalette.Ink, new Vector2(0.5f, 0.5f),
+                Vector2.zero, new Vector2(720, 96)).text = "Sweet Dreams!";
             _card.gameObject.SetActive(false);
 
             BuildLevelPicker();
+            BuildSettings();
+            FitModals();
         }
 
         public void SetLevel(string title, string instruction)
@@ -106,7 +134,28 @@ namespace Plop.Presentation
 
         public void SetMoves(int moves) => _moves.text = moves == 1 ? "1 move" : moves + " moves";
         public void SetCanUndo(bool canUndo) => _undo.interactable = canUndo;
-        public void SetFrameRate(PlopGameController.FrameRateMode mode) => _frameRateLabel.text = (int)mode + " FPS";
+        public void SetFrameRate(PlopGameController.FrameRateMode mode)
+        {
+            _rate30.image.color = mode == PlopGameController.FrameRateMode.Fps30 ? PlopPalette.Berry : PlopPalette.Milk;
+            _rate60.image.color = mode == PlopGameController.FrameRateMode.Fps60 ? PlopPalette.Berry : PlopPalette.Milk;
+        }
+
+        public void SetVolumes(float music, float sound)
+        {
+            _music.SetValueWithoutNotify(music);
+            _sound.SetValueWithoutNotify(sound);
+            _musicPercent.text = Percent(music);
+            _soundPercent.text = Percent(sound);
+        }
+
+        public void ShowSettings() => SetModal(_settings, true);
+
+        public void CloseSettings()
+        {
+            if (!IsSettingsOpen) return;
+            SetModal(_settings, false);
+            SettingsClosed?.Invoke();
+        }
 
         public void SetHint(string message, bool searching)
         {
@@ -118,14 +167,16 @@ namespace Plop.Presentation
         {
             _completed = completed;
             _canAdvance = canAdvance;
-            _primaryLabel.text = completed ? (canAdvance ? "Next" : "Levels") : "Hint";
+            _primaryLabel.text = completed ? (canAdvance ? "Next Level" : "Levels") : "Hint";
+            _primaryLabel.fontSize = completed && canAdvance ? HudTheme.Control : HudTheme.Action;
+            _primaryIcon.sprite = HudIcons.Get(!completed ? HudIcons.Kind.Hint : canAdvance ? HudIcons.Kind.Next : HudIcons.Kind.Levels);
             if (_cardAnim != null)
             {
                 StopCoroutine(_cardAnim);
                 _cardAnim = null;
             }
             _card.gameObject.SetActive(completed);
-            if (completed) _cardAnim = StartCoroutine(PopIn(_card, _cardGroup, 0.45f));
+            if (completed) _cardAnim = StartCoroutine(PopIn(_card, _cardGroup));
         }
 
         private void PrimaryClicked()
@@ -144,37 +195,24 @@ namespace Plop.Presentation
             _currentIndex = currentIndex;
             _page = currentIndex / PageSize;
             RenderLevelPage();
-            _levelPicker.gameObject.SetActive(true);
-            EventSystem.current?.SetSelectedGameObject(null);
+            SetModal(_levelPicker, true);
         }
 
         public void CloseLevelPicker()
         {
             if (!IsChoosingLevel) return;
-            _levelPicker.gameObject.SetActive(false);
-            EventSystem.current?.SetSelectedGameObject(null);
-            PickerInteracted?.Invoke();
+            SetModal(_levelPicker, false);
         }
 
         private void BuildLevelPicker()
         {
-            _levelPicker = NewRect("Level picker", _safe);
-            // Capture pointer events over the background while the modal is visible.
-            var blocker = _levelPicker.gameObject.AddComponent<Image>();
-            blocker.color = Color.clear;
+            _levelPicker = BuildModal("Level picker", PickerSize, out _pickerPanel);
+            var panel = _pickerPanel;
 
-            var panel = NewRect("Level picker card", _levelPicker);
-            panel.anchorMin = new Vector2(0.04f, 0.5f);
-            panel.anchorMax = new Vector2(0.96f, 0.5f);
-            panel.offsetMin = new Vector2(0, -490);
-            panel.offsetMax = new Vector2(0, 490);
-            AddShadow(panel, UiSprites.CardShadow, new Vector2(0, -8), 0.22f);
-            AddCardBackground(panel);
-
-            MakeText(panel, "Picker title", 52, FontStyle.Bold, PlopPalette.Ink, new Vector2(0.42f, 1f),
+            MakeText(panel, "Picker title", HudTheme.Heading, FontStyle.Bold, PlopPalette.Ink, new Vector2(0.40f, 1f),
                 new Vector2(0, -74), new Vector2(460, 80)).text = "Choose a level";
-            MakePill(panel, "Close", new Vector2(0, -74), new Vector2(172, 79), PlopPalette.Milk,
-                CloseLevelPicker, new Vector2(0.85f, 1f));
+            MakePill(panel, "Close", new Vector2(0, -74), new Vector2(173, HudTheme.ModalButtonHeight), PlopPalette.Milk,
+                CloseLevelPicker, new Vector2(0.85f, 1f), fontSize: HudTheme.Control);
 
             for (int slot = 0; slot < PageSize; slot++)
             {
@@ -183,7 +221,7 @@ namespace Plop.Presentation
                 float y = -204 - slot / 2 * 138;
                 _levelSlots[slot] = NewRect("Level slot " + slot, panel);
                 _levelButtons[slot] = MakePill(_levelSlots[slot], "Level", new Vector2(0, y), new Vector2(340, 102),
-                    PlopPalette.Milk, () => LevelChosen?.Invoke(_page * PageSize + offset), new Vector2(x, 1f));
+                    PlopPalette.Milk, () => LevelChosen?.Invoke(_page * PageSize + offset), new Vector2(x, 1f), fontSize: HudTheme.Control);
                 _levelLabels[slot] = _levelButtons[slot].GetComponentInChildren<Text>();
             }
 
@@ -200,7 +238,7 @@ namespace Plop.Presentation
         {
             _page += offset;
             RenderLevelPage();
-            PickerInteracted?.Invoke();
+            ModalInteracted?.Invoke();
         }
 
         private void RenderLevelPage()
@@ -226,14 +264,128 @@ namespace Plop.Presentation
             _pageLabel.text = (start + 1) + "–" + end + " of " + _pickerLevels.Count;
         }
 
-        private static void AddCardBackground(RectTransform parent)
+        private void BuildSettings()
         {
-            var body = NewRect("Body", parent);
-            var image = body.gameObject.AddComponent<Image>();
-            image.sprite = UiSprites.Card;
+            _settings = BuildModal("Settings", SettingsSize, out _settingsPanel);
+            var panel = _settingsPanel;
+            var title = MakeText(panel, "Settings title", HudTheme.Heading, FontStyle.Bold, PlopPalette.Ink, new Vector2(0.12f, 1f),
+                new Vector2(177, -70), new Vector2(352, 80));
+            title.alignment = TextAnchor.MiddleLeft;
+            title.text = "Settings";
+            MakePill(panel, "Done", new Vector2(0, -70), new Vector2(168, HudTheme.ModalButtonHeight),
+                PlopPalette.Milk, CloseSettings, new Vector2(0.84f, 1f), fontSize: HudTheme.Control);
+
+            _music = MakeVolume(panel, "Music", -180, out _musicPercent, value =>
+            {
+                _musicPercent.text = Percent(value);
+                MusicChanged?.Invoke(value);
+                ModalInteracted?.Invoke();
+            });
+            _sound = MakeVolume(panel, "Sound", -309, out _soundPercent, value =>
+            {
+                _soundPercent.text = Percent(value);
+                SoundChanged?.Invoke(value);
+                ModalInteracted?.Invoke();
+            });
+
+            var center = new Vector2(0.5f, 1f);
+            MakeText(panel, "Frame rate title", HudTheme.Control, FontStyle.Bold, PlopPalette.Ink, center,
+                new Vector2(0, -456), new Vector2(670, 53)).text = "Frame rate";
+            _rate30 = MakePill(panel, "30 FPS", new Vector2(-171, -546), new Vector2(308, 94), PlopPalette.Milk,
+                () => FrameRateChanged?.Invoke(PlopGameController.FrameRateMode.Fps30), center);
+            _rate60 = MakePill(panel, "60 FPS", new Vector2(171, -546), new Vector2(308, 94), PlopPalette.Milk,
+                () => FrameRateChanged?.Invoke(PlopGameController.FrameRateMode.Fps60), center);
+            _settings.gameObject.SetActive(false);
+        }
+
+        private Slider MakeVolume(Transform panel, string label, float y, out Text percent, Action<float> changed)
+        {
+            var anchor = new Vector2(0.5f, 1f);
+            var name = MakeText(panel, label + " label", HudTheme.Control, FontStyle.Bold, PlopPalette.Ink, anchor,
+                new Vector2(-162, y), new Vector2(338, 54));
+            name.alignment = TextAnchor.MiddleLeft;
+            name.text = label;
+            percent = MakeText(panel, label + " value", HudTheme.Caption, FontStyle.Normal, HudTheme.SecondaryText, anchor,
+                new Vector2(268, y), new Vector2(124, 54));
+            percent.alignment = TextAnchor.MiddleRight;
+
+            var root = NewRect(label + " volume", panel);
+            root.anchorMin = root.anchorMax = anchor;
+            root.anchoredPosition = new Vector2(0, y - 57);
+            root.sizeDelta = new Vector2(696, 84);
+            root.gameObject.AddComponent<Image>().color = Color.clear;
+            var slider = root.gameObject.AddComponent<Slider>();
+
+            var rail = NewRect("Track", root);
+            rail.anchorMin = rail.anchorMax = new Vector2(0.5f, 0.5f);
+            rail.sizeDelta = new Vector2(646, 24);
+            AddRoundedImage(rail, UiSprites.Pill, Color.Lerp(PlopPalette.Milk, PlopPalette.Shadow, 0.19f));
+            var fill = NewRect("Fill", rail);
+            AddRoundedImage(fill, UiSprites.Pill, PlopPalette.Mint);
+
+            var bounds = NewRect("Handle bounds", root);
+            bounds.offsetMin = new Vector2(25, 0);
+            bounds.offsetMax = new Vector2(-25, 0);
+            var thumb = NewRect("Handle", bounds);
+            thumb.anchorMin = thumb.anchorMax = new Vector2(0, 0.5f);
+            thumb.sizeDelta = new Vector2(60, 60);
+            var image = AddRoundedImage(thumb, UiSprites.Pill, PlopPalette.Berry);
+
+            slider.fillRect = fill;
+            slider.handleRect = thumb;
+            slider.targetGraphic = image;
+            slider.onValueChanged.AddListener(value => changed(value));
+            return slider;
+        }
+
+        private static string Percent(float value) => Mathf.RoundToInt(value * 100f) + "%";
+
+        private RectTransform BuildModal(string name, Vector2 size, out RectTransform panel)
+        {
+            var container = NewRect(name, _safe);
+            var blocker = container.gameObject.AddComponent<Image>();
+            blocker.color = PlopPalette.Ink.WithAlpha(0.18f);
+            panel = NewRect(name + " card", container);
+            panel.anchorMin = panel.anchorMax = new Vector2(0.5f, 0.5f);
+            panel.sizeDelta = size;
+            AddShadow(panel, UiSprites.CardShadow, HudTheme.ShadowOffset, HudTheme.CardShadow);
+            AddCardBackground(panel, PlopPalette.ButtonFill);
+            return container;
+        }
+
+        private void SetModal(RectTransform modal, bool open)
+        {
+            modal.gameObject.SetActive(open);
+            _gameplayGroup.interactable = _gameplayGroup.blocksRaycasts = !BlocksGameplayInput;
+            EventSystem.current?.SetSelectedGameObject(null);
+            ModalInteracted?.Invoke();
+        }
+
+        private void FitModals()
+        {
+            if (_pickerPanel == null || _settingsPanel == null) return;
+            FitModal(_pickerPanel, PickerSize);
+            FitModal(_settingsPanel, SettingsSize);
+        }
+
+        private void FitModal(RectTransform panel, Vector2 nominal)
+        {
+            var space = _safe.rect.size - Vector2.one * (2 * HudTheme.ModalMargin);
+            float scale = Mathf.Clamp(Mathf.Min(space.x / nominal.x, space.y / nominal.y), 0.25f, 1f);
+            panel.localScale = new Vector3(scale, scale, 1f);
+        }
+
+        private static void AddCardBackground(RectTransform parent, Color color)
+            => AddRoundedImage(NewRect("Body", parent), UiSprites.Card, color);
+
+        private static Image AddRoundedImage(RectTransform rect, Sprite sprite, Color color)
+        {
+            var image = rect.gameObject.AddComponent<Image>();
+            image.sprite = sprite;
             image.type = Image.Type.Sliced;
-            image.color = PlopPalette.ButtonFill;
+            image.color = color;
             image.raycastTarget = false;
+            return image;
         }
 
         /// <summary>Header + footer reserve in canvas reference units (consumed by BoardLayout).</summary>
@@ -244,6 +396,7 @@ namespace Plop.Presentation
         private void OnRectChanged()
         {
             ApplySafeArea();
+            FitModals();
             LayoutChanged?.Invoke();
         }
 
@@ -260,14 +413,12 @@ namespace Plop.Presentation
             _safe.offsetMin = _safe.offsetMax = Vector2.zero;
         }
 
-        /// <summary>Card entrance after the Plops' completion hop: short delay, gentle scale + fade.</summary>
-        private static IEnumerator PopIn(RectTransform rt, CanvasGroup group, float delay)
+        private static IEnumerator PopIn(RectTransform rt, CanvasGroup group)
         {
             group.alpha = 0f;
             rt.localScale = new Vector3(0.94f, 0.94f, 1f);
-            float t0 = Time.unscaledTime + delay;
-            while (Time.unscaledTime < t0) yield return null;
-            const float duration = 0.22f;
+            float t0 = Time.unscaledTime;
+            const float duration = HudTheme.CompletionEntrance;
             for (float u = 0f; u < 1f; u = (Time.unscaledTime - t0) / duration)
             {
                 float e = 1f - (1f - u) * (1f - u);
@@ -309,9 +460,9 @@ namespace Plop.Presentation
             rt.anchoredPosition = pos;
             rt.sizeDelta = box;
             var t = rt.gameObject.AddComponent<Text>();
-            t.font = _font;
+            t.font = style == FontStyle.Bold ? _displayFont : _font;
             t.fontSize = size;
-            t.fontStyle = style;
+            t.fontStyle = _font == _displayFont ? style : FontStyle.Normal;
             t.alignment = TextAnchor.MiddleCenter;
             t.color = color;
             t.raycastTarget = false;
@@ -333,7 +484,8 @@ namespace Plop.Presentation
             rt.SetAsFirstSibling();
         }
 
-        private Button MakePill(RectTransform parent, string label, Vector2 pos, Vector2 size, Color fill, Action onClick, Vector2? anchor = null)
+        private Button MakePill(RectTransform parent, string label, Vector2 pos, Vector2 size, Color fill,
+            Action onClick, Vector2? anchor = null, HudIcons.Kind? icon = null, int fontSize = HudTheme.Action)
         {
             var rt = NewRect(label + " Button", parent);
             rt.anchorMin = rt.anchorMax = anchor ?? new Vector2(0.5f, 0.5f);
@@ -343,13 +495,13 @@ namespace Plop.Presentation
             // the shadow is a sibling placed behind the button so it does not squish with the press
             var shadowHolder = NewRect(label + " Shadow", parent);
             shadowHolder.anchorMin = shadowHolder.anchorMax = rt.anchorMin;
-            shadowHolder.anchoredPosition = pos + new Vector2(0, -7);
+            shadowHolder.anchoredPosition = pos + HudTheme.ShadowOffset;
             float spread = UiSprites.ShadowSpread(UiSprites.PillShadow);
             shadowHolder.sizeDelta = size + new Vector2(2 * spread, 2 * spread);
             var shadowImg = shadowHolder.gameObject.AddComponent<Image>();
             shadowImg.sprite = UiSprites.PillShadow;
             shadowImg.type = Image.Type.Sliced;
-            shadowImg.color = PlopPalette.Shadow.WithAlpha(0.18f);
+            shadowImg.color = PlopPalette.Shadow.WithAlpha(HudTheme.ButtonShadow);
             shadowImg.raycastTarget = false;
             shadowHolder.SetSiblingIndex(rt.GetSiblingIndex());
 
@@ -362,14 +514,32 @@ namespace Plop.Presentation
             colors.normalColor = Color.white;
             colors.highlightedColor = Color.white;
             colors.selectedColor = Color.white;
-            colors.pressedColor = new Color(0.94f, 0.92f, 0.90f);
-            colors.disabledColor = new Color(1f, 1f, 1f, 0.5f);
-            colors.fadeDuration = 0.08f;
+            colors.pressedColor = PlopPalette.ButtonPressed;
+            colors.disabledColor = PlopPalette.ButtonDisabled;
+            colors.fadeDuration = HudTheme.TintDuration;
             button.colors = colors;
-            button.onClick.AddListener(() => onClick());
+            button.onClick.AddListener(() =>
+            {
+                ButtonActivated?.Invoke();
+                onClick();
+            });
             rt.gameObject.AddComponent<PressScale>();
 
-            var text = MakeText(rt, "Label", 42, FontStyle.Bold, PlopPalette.Ink, new Vector2(0.5f, 0.5f), Vector2.zero, size);
+            var center = new Vector2(0.5f, 0.5f);
+            if (icon.HasValue)
+            {
+                var glyph = NewRect("Icon", rt);
+                glyph.anchorMin = glyph.anchorMax = center;
+                glyph.anchoredPosition = new Vector2(-size.x * 0.34f, 0);
+                glyph.sizeDelta = Vector2.one * HudTheme.Icon;
+                var iconImage = glyph.gameObject.AddComponent<Image>();
+                iconImage.sprite = HudIcons.Get(icon.Value);
+                iconImage.color = PlopPalette.Ink;
+                iconImage.raycastTarget = false;
+            }
+
+            var text = MakeText(rt, "Label", fontSize, FontStyle.Bold, PlopPalette.Ink, center,
+                new Vector2(icon.HasValue ? 19f : 0f, 0), size);
             text.text = label;
             return button;
         }

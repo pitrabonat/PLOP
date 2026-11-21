@@ -55,7 +55,7 @@ named to avoid shadowing the global `Unity.*` namespaces), `Plop.LevelLab`, `Plo
 SwipeInput ──Direction──▶ PlopGameController ──TryMove──▶ GameEngine (Core)
 GameHud ──Undo/Restart/Next/Hint──▶      │                          │
                                      ◀────── GameEvent ────────┘
-                         BoardView.Play(events) / Sync(state)   GameHud.SetMoves/SetCompleted
+                  BoardView.Play(events) / Sync(state)   PlopAudio.PlayMove(events)   GameHud
 ```
 
 - `PlopGameController` owns the engine and routes input; contains **no rules**.
@@ -66,6 +66,10 @@ GameHud ──Undo/Restart/Next/Hint──▶      │                          
 - `SwipeInput` — Input System callbacks (touch or mouse swipe, arrows/WASD, Z/Backspace, R, H, N/Enter).
 - `GameHud` — uGUI built in code (rounded 9-sliced pills/card from `UiSprites`, `PressScale`), inside
   `Screen.safeArea`; text changes only on events. `RectChangeNotifier` reports screen/safe-area changes.
+- `PlopAudio` maps swipe events to deduplicated synthesized cues and owns
+  the independent effects/music sources. Settings changes go through the HUD
+  and save their gains as local preferences. Playback suspends in the background.
+- `HudTheme` and `HudIcons` share canvas geometry, typography and icons across the HUD and modal cards.
 - `BoardLayout` — pure portrait layout math: fits the board between header and footer in the safe area.
 - `LevelLibrary` — loads `Resources/Levels/PLOP_Pack_001.json` without the dev block.
 - `LevelProgress` — stores completed and unlocked level IDs and a resume ID in one pack-specific

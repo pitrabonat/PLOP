@@ -30,6 +30,15 @@ namespace Plop.Tests.PlayMode
         }
 
         [Test]
+        public void MascotOutline_HasAnOffCenterCrownAndRoundedFoot()
+        {
+            Assert.Less(ShapeAtlas.BodyDistance(-0.19f, 0.61f), 0f);
+            Assert.Greater(ShapeAtlas.BodyDistance(0.19f, 0.61f), 0.03f);
+            Assert.Less(ShapeAtlas.BodyDistance(0f, 0.024f), 0f, "the base meets the ground");
+            Assert.Greater(ShapeAtlas.BodyDistance(0.355f, 0.024f), 0.03f, "the base cuts away its bottom corners");
+        }
+
+        [Test]
         public void Atlas_SharesOneTexture_ForBatching_AndScalesWithDensity()
         {
             var low = ShapeAtlas.ForDensity(90f);
@@ -37,7 +46,7 @@ namespace Plop.Tests.PlayMode
             Assert.Less(low.PixelsPerUnit, high.PixelsPerUnit);
             var tex = low.Texture;
             foreach (var key in new[] { "tile", "pebble", "panel", "panelShadow", "plopShadow", "eye", "eyeClosed", "cheek",
-                                        ShapeAtlas.NestKey(0), ShapeAtlas.PlopKey(2) })
+                                        "mouth", "mouthBump", "mouthSleep", ShapeAtlas.NestKey(0), ShapeAtlas.PlopKey(2) })
                 Assert.AreSame(tex, low.Get(key).texture, key + " must live in the shared atlas texture");
             Assert.AreSame(low, ShapeAtlas.ForDensity(90f), "atlases are cached per density bucket");
             Assert.Greater(low.Get("panel").border.x, 0f, "board panel is 9-sliced");
@@ -49,6 +58,114 @@ namespace Plop.Tests.PlayMode
         {
             Assert.Greater(UiSprites.Pill.border.x, 0f);
             Assert.Greater(UiSprites.Card.border.y, 0f);
+        }
+
+        [Test]
+        public void PlopRecoil_LeavesTheRootOnTheGridAndSnapsItsExpression()
+        {
+            var scene = new GameObject("Recoil test");
+            try
+            {
+                var atlas = ShapeAtlas.ForDensity(90f);
+                var view = new PlopView(scene.transform, atlas, colorId: 0, seed: 2);
+                var pose = view.Root.Find("Pose");
+                var mouth = pose.Find("Body/Mouth").GetComponent<SpriteRenderer>();
+                var eye = pose.Find("Body/EyeL").GetComponent<SpriteRenderer>();
+                var cell = new Vector3(1f, 2f, 0f);
+                view.Snap(cell, false);
+
+                view.StartBump(Vector2.right, 10f);
+                view.Tick(10.078f);
+                Assert.AreEqual(cell, view.Root.localPosition);
+                Assert.Greater(pose.localPosition.x, 0.05f);
+                Assert.AreSame(atlas.Get("mouthBump"), mouth.sprite);
+
+                view.Tick(10.131f);
+                Assert.AreEqual(cell, view.Root.localPosition);
+                Assert.Less(pose.localPosition.x, 0f, "rebound briefly overshoots the resting pose");
+
+                view.Snap(cell, true);
+                Assert.AreEqual(Vector3.zero, pose.localPosition);
+                Assert.AreSame(atlas.Get("eyeClosed"), eye.sprite);
+                Assert.AreSame(atlas.Get("mouthSleep"), mouth.sprite);
+
+                view.Snap(cell, false);
+                Assert.AreSame(atlas.Get("eye"), eye.sprite);
+                Assert.AreSame(atlas.Get("mouth"), mouth.sprite);
+            }
+            finally
+            {
+                Object.Destroy(scene);
+            }
+        }
+
+        [Test]
+        public void PlopMove_CompressesBeforeTravelAndCanRetargetMidSlide()
+        {
+            var scene = new GameObject("Slide test");
+            try
+            {
+                var view = new PlopView(scene.transform, ShapeAtlas.ForDensity(90f), colorId: 1, seed: 3);
+                var body = view.Root.Find("Pose/Body");
+                view.Snap(Vector3.zero, false);
+                view.StartMove(Vector3.right, Vector2.right, 20f);
+                view.Tick(20.012f);
+                Assert.AreEqual(Vector3.zero, view.Root.localPosition);
+                Assert.Less(body.localScale.x, body.localScale.y, "horizontal anticipation squashes the toy");
+
+                view.Tick(20.070f);
+                var inFlight = view.Root.localPosition;
+                Assert.That(inFlight.x, Is.InRange(0.15f, 0.98f));
+                var newCell = new Vector3(1f, 1f, 0f);
+                view.StartMove(newCell, Vector2.up, 20.070f);
+                view.Tick(20.071f);
+                Assert.AreEqual(inFlight, view.Root.localPosition);
+                view.Tick(20.250f);
+                Assert.AreEqual(newCell, view.Root.localPosition);
+                Assert.IsFalse(view.IsMoving);
+            }
+            finally
+            {
+                Object.Destroy(scene);
+            }
+        }
+
+        [Test]
+        public void PlopSleep_WaitsForLandingAndUndoClearsThePendingCelebration()
+        {
+            var scene = new GameObject("Sleep test");
+            try
+            {
+                var atlas = ShapeAtlas.ForDensity(90f);
+                var view = new PlopView(scene.transform, atlas, colorId: 0, seed: 1);
+                var eye = view.Root.Find("Pose/Body/EyeL").GetComponent<SpriteRenderer>();
+                var mouth = view.Root.Find("Pose/Body/Mouth").GetComponent<SpriteRenderer>();
+                view.Snap(Vector3.zero, false);
+                view.StartMove(Vector3.up, Vector2.up, 30f);
+                view.QueueSleep(30f);
+                view.StartHop(30.23f);
+
+                view.Tick(30.08f);
+                Assert.IsFalse(view.SleepJustStarted);
+                Assert.AreSame(atlas.Get("eye"), eye.sprite);
+
+                view.Tick(30.16f);
+                Assert.IsTrue(view.SleepJustStarted);
+                Assert.AreEqual(Vector3.up, view.Root.localPosition);
+                view.Tick(30.36f);
+                Assert.AreSame(atlas.Get("eyeClosed"), eye.sprite);
+                Assert.AreSame(atlas.Get("mouthSleep"), mouth.sprite);
+
+                view.Snap(Vector3.zero, false);
+                view.Tick(30.37f);
+                Assert.AreEqual(Vector3.zero, view.Root.localPosition);
+                Assert.IsFalse(view.IsBusy(30.37f));
+                Assert.AreSame(atlas.Get("eye"), eye.sprite);
+            }
+            finally
+            {
+                Object.Destroy(scene);
+            }
         }
 
         private static readonly (int w, int h, Rect safe, string name)[] Screens =

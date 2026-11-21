@@ -2,26 +2,27 @@ using UnityEngine;
 
 namespace Plop.Presentation
 {
-    /// <summary>
-    /// Visual-only jelly Plop: shadow, body (gumdrop sprite), cheeks and eyes. Animation is pure math on
-    /// transforms driven by <see cref="BoardView"/> — no physics, no per-frame allocation. The root position
-    /// always ends exactly on the logical cell supplied by gameplay events; squash, hops and breathing only
-    /// touch the body's local transform.
-    /// </summary>
+    /// <summary>Animates the shared jelly toy and its face from board events.</summary>
     public sealed class PlopView
     {
-        public const float MoveDuration = 0.13f;
-        public const float BumpDuration = 0.17f;
+        public const float MoveDuration = 0.155f;
+        public const float BumpDuration = 0.185f;
         public const float LandDuration = 0.24f;
-        public const float SleepDuration = 0.45f;
-        public const float HopDuration = 0.40f;
-        private const float BodyScale = 0.95f;
-        private const float GroundY = -0.30f;   // body pivot (ground contact) relative to cell center
+        public const float SleepDuration = 0.38f;
+        public const float HopDuration = 0.30f;
+        internal const float CelebrationDelay = MoveDuration + 0.07f;
+        internal const float CelebrationStagger = 0.053f;
+
+        private const float AnticipationDuration = 0.018f;
+        private const float BlinkDuration = 0.14f;
+        private const float BumpImpactTime = 0.42f;
+        private const float BodyScale = 0.97f;
+        private const float GroundY = -0.30f;
 
         public readonly Transform Root;
-        private readonly Transform _body, _eyeL, _eyeR, _cheekL, _cheekR, _shadow;
-        private readonly SpriteRenderer _bodyR, _eyeLR, _eyeRR, _cheekLR, _cheekRR, _shadowR;
-        private readonly Sprite _eyeOpen, _eyeClosed;
+        private readonly Transform _pose, _body, _eyeL, _eyeR, _cheekL, _cheekR, _mouth, _shadow;
+        private readonly SpriteRenderer _bodyR, _eyeLR, _eyeRR, _cheekLR, _cheekRR, _mouthR, _shadowR;
+        private readonly Sprite _eyeOpen, _eyeClosed, _mouthAwake, _mouthSleep, _mouthBump;
 
         private Vector3 _from, _to;
         private Vector2 _moveDir, _bumpDir, _landDir, _look;
@@ -31,39 +32,47 @@ namespace Plop.Presentation
         private bool _asleep, _sleepPending;
         private uint _rng;
 
-        public bool IsMoving => _moveT0 >= 0f || _bumpT0 >= 0f;
+        internal bool IsSliding => _moveT0 >= 0f;
+        public bool IsMoving => IsSliding || _bumpT0 >= 0f;
         public bool IsBusy(float now) => IsMoving || _landT0 >= 0f || _hopT0 >= 0f || _sleepPending ||
-                                          (_sleepT0 >= 0f && now - _sleepT0 < SleepDuration);
+                                         (_sleepT0 >= 0f && now - _sleepT0 < SleepDuration);
         public Vector3 Target => _to;
-        /// <summary>Set by BoardView when a pending sleep starts (to pulse the nest).</summary>
         public bool SleepJustStarted { get; private set; }
 
         public PlopView(Transform parent, ShapeAtlas atlas, int colorId, int seed)
         {
             Root = new GameObject("Plop").transform;
             Root.SetParent(parent, false);
-            _shadow = Child("Shadow", Root, atlas.Get("plopShadow"), out _shadowR);
+            _pose = new GameObject("Pose").transform;
+            _pose.SetParent(Root, false);
+            _shadow = Child("Shadow", _pose, atlas.Get("plopShadow"), out _shadowR);
             _shadow.localPosition = new Vector3(0f, GroundY + 0.005f, 0f);
-            _body = Child("Body", Root, atlas.Get(ShapeAtlas.PlopKey(colorId)), out _bodyR);
+            _body = Child("Body", _pose, atlas.Get(ShapeAtlas.PlopKey(colorId)), out _bodyR);
             _body.localPosition = new Vector3(0f, GroundY, 0f);
+
             _cheekL = Child("CheekL", _body, atlas.Get("cheek"), out _cheekLR);
             _cheekR = Child("CheekR", _body, atlas.Get("cheek"), out _cheekRR);
             _eyeOpen = atlas.Get("eye");
             _eyeClosed = atlas.Get("eyeClosed");
             _eyeL = Child("EyeL", _body, _eyeOpen, out _eyeLR);
             _eyeR = Child("EyeR", _body, _eyeOpen, out _eyeRR);
+            _mouthAwake = atlas.Get("mouth");
+            _mouthSleep = atlas.Get("mouthSleep");
+            _mouthBump = atlas.Get("mouthBump");
+            _mouth = Child("Mouth", _body, _mouthAwake, out _mouthR);
+
             _rng = (uint)(seed * 747796405 + 2891336453);
             _phase = Rand() * Mathf.PI * 2f;
-            _nextBlink = 1.0f + Rand() * 3f;
-            ApplyFace(Vector2.zero, 1f);
+            _nextBlink = Time.unscaledTime + 1f + Rand() * 3f;
+            ApplyFace(Vector2.zero, 1f, 0f, 0f);
         }
 
-        private static Transform Child(string name, Transform parent, Sprite sprite, out SpriteRenderer r)
+        private static Transform Child(string name, Transform parent, Sprite sprite, out SpriteRenderer renderer)
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
-            r = go.AddComponent<SpriteRenderer>();
-            r.sprite = sprite;
+            renderer = go.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
             return go.transform;
         }
 
@@ -73,107 +82,111 @@ namespace Plop.Presentation
             return (_rng >> 8) / 16777216f;
         }
 
-        /// <summary>Depth order: rows nearer the bottom of the screen draw in front.</summary>
         public void SetSortingBase(int order)
         {
             _shadowR.sortingOrder = order + 2;
             _bodyR.sortingOrder = order + 10;
             _cheekLR.sortingOrder = order + 11;
             _cheekRR.sortingOrder = order + 11;
+            _mouthR.sortingOrder = order + 12;
             _eyeLR.sortingOrder = order + 12;
             _eyeRR.sortingOrder = order + 12;
         }
 
-        // ------------------------------------------------------------------ commands
-
+        /// <summary>Immediately restores a gameplay snapshot and clears transient animation.</summary>
         public void Snap(Vector3 position, bool asleep)
         {
             _from = _to = position;
-            Root.localPosition = position;
-            _moveT0 = _bumpT0 = _landT0 = _hopT0 = -1f;
+            _moveT0 = _bumpT0 = _landT0 = _hopT0 = _sleepT0 = _blinkT0 = -1f;
             _sleepPending = false;
             _asleep = asleep;
-            _sleepT0 = asleep ? -1000f : -1f;
             _look = Vector2.zero;
+            _nextBlink = Time.unscaledTime + 1f + Rand() * 3f;
+            Tick(Time.unscaledTime);
         }
 
         public void StartMove(Vector3 to, Vector2 dir, float now)
         {
-            _from = Root.localPosition - BumpOffset(now); // continue smoothly from where it is drawn
+            _from = Root.localPosition;
             _to = to;
             _moveDir = dir;
             _moveT0 = now;
-            _bumpT0 = -1f;
-            _landT0 = -1f;
-            _look = dir * 0.032f;
-            _lookUntil = now + 0.7f;
+            _bumpT0 = _landT0 = -1f;
+            _look = dir * 0.033f;
+            _lookUntil = now + 0.46f;
         }
 
         public void StartBump(Vector2 dir, float now)
         {
-            if (_asleep) return;
+            if (_asleep || _sleepPending) return;
             _bumpDir = dir;
             _bumpT0 = now;
-            _look = dir * 0.032f;
-            _lookUntil = now + 0.6f;
+            _look = dir * 0.033f;
+            _lookUntil = now + 0.33f;
         }
 
-        /// <summary>Falls asleep when the current move lands (or now, if not moving).</summary>
         public void QueueSleep(float now)
         {
-            if (_moveT0 >= 0f) _sleepPending = true;
-            else BeginSleep(now);
+            _sleepPending = true;
+            if (!IsSliding) _sleepT0 = now;
         }
 
-        public void StartHop(float startTime) { if (_hopT0 < 0f) _hopT0 = startTime; }
-
-        private void BeginSleep(float now)
+        public void StartHop(float startTime)
         {
-            _asleep = true;
-            _sleepPending = false;
-            _sleepT0 = now;
-            SleepJustStarted = true;
+            if (_hopT0 < 0f) _hopT0 = startTime;
         }
-
-        // ------------------------------------------------------------------ per-frame
 
         public void Tick(float now)
         {
             SleepJustStarted = false;
 
-            // ---- position (authoritative target comes from gameplay events) ----
-            Vector3 pos = _to;
-            if (_moveT0 >= 0f)
+            // The root follows the board's supplied endpoints. Every other offset stays on a child.
+            Vector3 position = _to;
+            float moveTime = IsSliding ? now - _moveT0 : MoveDuration;
+            if (IsSliding)
             {
-                float u = (now - _moveT0) / MoveDuration;
-                if (u >= 1f)
+                float travel = (moveTime - AnticipationDuration) / (MoveDuration - AnticipationDuration);
+                if (travel >= 1f)
                 {
                     _moveT0 = -1f;
                     _landT0 = now;
                     _landDir = _moveDir;
-                    if (_sleepPending) BeginSleep(now);
                 }
-                else pos = Vector3.LerpUnclamped(_from, _to, EaseOutCubic(u));
+                else position = Vector3.LerpUnclamped(_from, _to, EaseOutCubic(Mathf.Clamp01(travel)));
             }
-            Root.localPosition = pos + BumpOffset(now);
+            Root.localPosition = position;
 
-            // ---- body deformation ----
-            float sx = 1f, sy = 1f, lift = 0f;
-            float sleepAmount = !_asleep ? 0f : _sleepT0 < 0f ? 1f : Smooth((now - _sleepT0) / SleepDuration);
-
-            float breathPeriod = _asleep ? 3.4f : 2.6f;
-            float b = Mathf.Sin(now * (2f * Mathf.PI / breathPeriod) + _phase);
-            float amp = Mathf.Lerp(0.018f, 0.030f, sleepAmount);
-            sy *= 1f + amp * b;
-            sx *= 1f - amp * 0.65f * b;
-            sy *= 1f - 0.12f * sleepAmount;   // sleeping Plops relax and flatten a little
-            sx *= 1f + 0.07f * sleepAmount;
-
-            if (_moveT0 >= 0f)
+            if (_sleepPending && !IsSliding)
             {
-                float u = Mathf.Clamp01((now - _moveT0) / MoveDuration);
-                float along = 1f - 0.10f * Mathf.Max(0f, 1f - u / 0.2f)                    // tiny squash at start
-                              + 0.15f * Mathf.Sin(Mathf.PI * Mathf.Clamp01((u - 0.08f) / 0.92f)); // stretch in flight
+                _asleep = true;
+                _sleepPending = false;
+                if (_sleepT0 < 0f) _sleepT0 = now;
+                SleepJustStarted = true;
+            }
+
+            float recoil = BumpAmount(now);
+            _pose.localPosition = (Vector3)(_bumpDir * (0.083f * recoil));
+
+            float asleep = !_asleep ? 0f : _sleepT0 < 0f ? 1f : Smooth((now - _sleepT0) / SleepDuration);
+            float breathPeriod = Mathf.Lerp(2.7f, 3.9f, asleep);
+            float breath = Mathf.Sin(now * (2f * Mathf.PI / breathPeriod) + _phase);
+            float breathScale = Mathf.Lerp(0.024f, 0.013f, asleep) * breath;
+            float sx = 1f - breathScale * 0.65f + 0.10f * asleep;
+            float sy = 1f + breathScale - 0.16f * asleep;
+            float lift = -0.021f * asleep;
+            float tilt = 1.25f * Mathf.Sin(now * 1.79f + _phase) * (1f - 0.8f * asleep);
+
+            if (IsSliding)
+            {
+                float along;
+                if (moveTime < AnticipationDuration)
+                    along = 1f - 0.13f * Smooth(moveTime / AnticipationDuration);
+                else
+                {
+                    float travel = Mathf.Clamp01((moveTime - AnticipationDuration) / (MoveDuration - AnticipationDuration));
+                    along = 1f - 0.13f * Mathf.Max(0f, 1f - travel * 6f) + 0.18f * Mathf.Sin(Mathf.PI * travel);
+                    tilt -= 5f * _moveDir.x * Mathf.Sin(Mathf.PI * travel);
+                }
                 ApplyAxis(_moveDir, along, ref sx, ref sy);
             }
             else if (_landT0 >= 0f)
@@ -182,83 +195,106 @@ namespace Plop.Presentation
                 if (u >= 1f) _landT0 = -1f;
                 else
                 {
-                    float along = 1f - 0.11f * Mathf.Exp(-3f * u) * Mathf.Cos(3f * Mathf.PI * u) * (1f - u); // settle wobble
+                    float envelope = (1f - u) * (1f - u);
+                    float along = 1f - 0.12f * Mathf.Cos(3f * Mathf.PI * u) * envelope;
                     ApplyAxis(_landDir, along, ref sx, ref sy);
                 }
             }
 
-            if (_bumpT0 >= 0f)
-            {
-                float u = Mathf.Clamp01((now - _bumpT0) / BumpDuration);
-                ApplyAxis(_bumpDir, 1f - 0.16f * Mathf.Sin(Mathf.PI * u), ref sx, ref sy);
-            }
+            if (recoil != 0f)
+                ApplyAxis(_bumpDir, 1f - 0.19f * recoil, ref sx, ref sy);
 
-            if (_hopT0 >= 0f && now >= _hopT0)
-            {
-                float u = (now - _hopT0) / HopDuration;
-                if (u >= 1f)
-                {
-                    _hopT0 = -1f;
-                    _landT0 = now;
-                    _landDir = Vector2.up;
-                }
-                else
-                {
-                    lift = 0.20f * Mathf.Sin(Mathf.PI * u);
-                    sy *= 1f + 0.08f * Mathf.Sin(Mathf.PI * u);
-                    sx *= 1f - 0.05f * Mathf.Sin(Mathf.PI * u);
-                }
-            }
+            float celebration = Celebration(now);
+            lift += celebration * 0.096f;
+            sy += celebration * 0.07f;
+            sx -= celebration * 0.05f;
 
             _body.localPosition = new Vector3(0f, GroundY + lift, 0f);
+            _body.localRotation = Quaternion.AngleAxis(tilt, Vector3.forward);
             _body.localScale = new Vector3(sx * BodyScale, sy * BodyScale, 1f);
-            float shadowScale = sx * (1f - 1.2f * lift);
+            float shadowScale = sx * (1f - 1.2f * Mathf.Max(0f, lift));
             _shadow.localScale = new Vector3(shadowScale, shadowScale, 1f);
 
-            // ---- face: blink, look direction, closed eyes when asleep ----
-            float eyeOpen = 1f;
-            if (_asleep) eyeOpen = 1f;
-            else
+            float eyeOpen = _asleep ? Mathf.Lerp(1f, 0.12f, Smooth(asleep / 0.38f)) : Blink(now);
+            Vector2 look = Vector2.Lerp(_look, Vector2.zero, Smooth((now - _lookUntil) / 0.29f)) * (1f - asleep);
+            ApplyFace(look, eyeOpen, asleep, recoil);
+        }
+
+        private float Blink(float now)
+        {
+            if (now >= _nextBlink)
             {
-                if (now >= _nextBlink) { _blinkT0 = now; _nextBlink = now + 2.4f + Rand() * 3.2f; }
-                if (_blinkT0 >= 0f)
-                {
-                    float u = (now - _blinkT0) / 0.14f;
-                    if (u >= 1f) _blinkT0 = -1f;
-                    else eyeOpen = 1f - 0.9f * Mathf.Sin(Mathf.PI * u);
-                }
+                _blinkT0 = now;
+                _nextBlink = now + 2.6f + Rand() * 3.7f;
             }
-            if (now > _lookUntil) _look = Vector2.Lerp(_look, Vector2.zero, 0.15f);
-            var eyeSprite = _asleep ? _eyeClosed : _eyeOpen;
-            if (_eyeLR.sprite != eyeSprite) { _eyeLR.sprite = eyeSprite; _eyeRR.sprite = eyeSprite; }
-            ApplyFace(_asleep ? Vector2.zero : _look, eyeOpen);
+            if (_blinkT0 < 0f) return 1f;
+            float u = (now - _blinkT0) / BlinkDuration;
+            if (u < 1f) return 1f - 0.91f * Mathf.Sin(Mathf.PI * u);
+            _blinkT0 = -1f;
+            return 1f;
         }
 
-        private Vector3 BumpOffset(float now)
+        private float BumpAmount(float now)
         {
-            if (_bumpT0 < 0f) return Vector3.zero;
+            if (_bumpT0 < 0f) return 0f;
             float u = (now - _bumpT0) / BumpDuration;
-            if (u >= 1f) { _bumpT0 = -1f; return Vector3.zero; }
-            return (Vector3)(_bumpDir * (0.09f * Mathf.Sin(Mathf.PI * u)));
+            if (u >= 1f)
+            {
+                _bumpT0 = -1f;
+                return 0f;
+            }
+            if (u < BumpImpactTime) return Mathf.Sin(Mathf.PI * 0.5f * u / BumpImpactTime);
+            float rebound = (u - BumpImpactTime) / (1f - BumpImpactTime);
+            float envelope = (1f - rebound) * (1f - rebound);
+            return Mathf.Cos(Mathf.PI * 1.65f * rebound) * envelope;
         }
 
-        private void ApplyFace(Vector2 look, float eyeOpen)
+        private float Celebration(float now)
         {
-            _eyeL.localPosition = new Vector3(-0.105f + look.x, 0.40f + look.y, 0f);
-            _eyeR.localPosition = new Vector3(0.105f + look.x, 0.40f + look.y, 0f);
-            var eyeScale = new Vector3(1f, Mathf.Max(0.08f, eyeOpen), 1f);
-            _eyeL.localScale = eyeScale;
-            _eyeR.localScale = eyeScale;
-            _cheekL.localPosition = new Vector3(-0.205f + look.x * 0.5f, 0.30f + look.y * 0.5f, 0f);
-            _cheekR.localPosition = new Vector3(0.205f + look.x * 0.5f, 0.30f + look.y * 0.5f, 0f);
+            if (_hopT0 < 0f || now < _hopT0) return 0f;
+            float u = (now - _hopT0) / HopDuration;
+            if (u < 1f) return Mathf.Sin(Mathf.PI * u);
+            _hopT0 = -1f;
+            _landT0 = now;
+            _landDir = Vector2.up;
+            return 0f;
         }
 
-        /// <summary>Stretches along the movement axis and conserves area across it.</summary>
+        private void ApplyFace(Vector2 look, float eyeOpen, float asleep, float recoil)
+        {
+            bool closed = _asleep && asleep >= 0.38f;
+            Sprite eyeSprite = closed ? _eyeClosed : _eyeOpen;
+            if (_eyeLR.sprite != eyeSprite)
+            {
+                _eyeLR.sprite = eyeSprite;
+                _eyeRR.sprite = eyeSprite;
+            }
+            Sprite mouthSprite = closed ? _mouthSleep : recoil > 0.58f ? _mouthBump : _mouthAwake;
+            if (_mouthR.sprite != mouthSprite) _mouthR.sprite = mouthSprite;
+
+            float faceOffset = -0.022f * asleep;
+            _eyeL.localPosition = new Vector3(-0.111f + look.x, 0.386f + look.y + faceOffset, 0f);
+            _eyeR.localPosition = new Vector3(0.100f + look.x, 0.382f + look.y + faceOffset, 0f);
+            var eyeScale = new Vector3(1f, closed ? 1f : Mathf.Max(0.08f, eyeOpen), 1f);
+            _eyeL.localScale = _eyeR.localScale = eyeScale;
+            _mouth.localPosition = new Vector3(-0.005f + look.x * 0.75f, 0.271f + look.y * 0.65f + faceOffset, 0f);
+            _cheekL.localPosition = new Vector3(-0.202f + look.x * 0.5f, 0.296f + look.y * 0.5f + faceOffset, 0f);
+            _cheekR.localPosition = new Vector3(0.190f + look.x * 0.5f, 0.296f + look.y * 0.5f + faceOffset, 0f);
+        }
+
         private static void ApplyAxis(Vector2 dir, float along, ref float sx, ref float sy)
         {
             float across = 1f / Mathf.Sqrt(Mathf.Max(0.3f, along));
-            if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y)) { sx *= along; sy *= across; }
-            else { sy *= along; sx *= across; }
+            if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
+            {
+                sx *= along;
+                sy *= across;
+            }
+            else
+            {
+                sy *= along;
+                sx *= across;
+            }
         }
 
         private static float EaseOutCubic(float t) { t = 1f - t; return 1f - t * t * t; }

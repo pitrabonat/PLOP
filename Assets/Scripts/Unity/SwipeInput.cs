@@ -10,7 +10,7 @@ namespace Plop.Presentation
     /// <summary>
     /// Event-driven input (Input System callbacks, no Update polling):
     ///  * swipe with touch or mouse drag (press -> release, dominant axis),
-    ///  * arrow keys / WASD for moves, Z/Backspace undo, R restart, H hint, N/Enter next level.
+    ///  * arrow keys / WASD for moves, Z/Backspace undo, R restart, H hint, N/Enter next level, Esc close a menu.
     /// Taps and gestures that start over interactive UI never move the board.
     /// </summary>
     public sealed class SwipeInput : MonoBehaviour
@@ -23,6 +23,7 @@ namespace Plop.Presentation
         public event Action RestartRequested;
         public event Action NextRequested;
         public event Action HintRequested;
+        public event Action DismissRequested;
 
         private InputAction _press;
         private InputAction[] _actions;
@@ -47,7 +48,8 @@ namespace Plop.Presentation
                 Key("Undo", () => UndoRequested?.Invoke(), "<Keyboard>/z", "<Keyboard>/backspace"),
                 Key("Restart", () => RestartRequested?.Invoke(), "<Keyboard>/r"),
                 Key("Hint", () => HintRequested?.Invoke(), "<Keyboard>/h"),
-                Key("Next", () => NextRequested?.Invoke(), "<Keyboard>/n", "<Keyboard>/enter")
+                Key("Next", () => NextRequested?.Invoke(), "<Keyboard>/n", "<Keyboard>/enter"),
+                Key("Dismiss", () => DismissRequested?.Invoke(), "<Keyboard>/escape")
             };
         }
 

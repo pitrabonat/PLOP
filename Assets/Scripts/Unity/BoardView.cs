@@ -143,7 +143,7 @@ namespace Plop.Presentation
                         break;
                     case GameEventType.LevelCompleted:
                         for (int i = 0; i < _plops.Count; i++)
-                            _plops[i].StartHop(now + PlopView.MoveDuration + PlopView.SleepDuration * 0.6f + i * 0.07f);
+                            _plops[i].StartHop(now + PlopView.CelebrationDelay + i * PlopView.CelebrationStagger);
                         break;
                 }
             }
@@ -156,12 +156,17 @@ namespace Plop.Presentation
             for (int i = 0; i < _plops.Count; i++)
             {
                 var p = _plops[i];
+                bool wasSliding = p.IsSliding;
                 p.Tick(now);
+                bool landed = wasSliding && !p.IsSliding;
+                if (!landed && !p.SleepJustStarted) continue;
+
+                int row = Mathf.RoundToInt(p.Target.y + (_level.Height - 1) * 0.5f);
+                if (landed) p.SetSortingBase(RowOrder(row));
                 if (p.SleepJustStarted)
                 {
-                    var cell = _level.CellIndex(Mathf.RoundToInt(p.Target.x + (_level.Width - 1) * 0.5f),
-                                                Mathf.RoundToInt(p.Target.y + (_level.Height - 1) * 0.5f));
-                    if (_nestByCell.TryGetValue(cell, out var nest)) StartPulse(nest, now);
+                    int column = Mathf.RoundToInt(p.Target.x + (_level.Width - 1) * 0.5f);
+                    if (_nestByCell.TryGetValue(_level.CellIndex(column, row), out var nest)) StartPulse(nest, now);
                 }
             }
             for (int i = 0; i < _pulseNest.Length; i++)

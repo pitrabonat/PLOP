@@ -4,19 +4,34 @@ A cozy mobile puzzle game for **Android** and **iOS**, built with **Unity 6.3 LT
 
 Repository: https://github.com/pitrabonat/PLOP
 
-> Phase 3 adds the verified 100-level campaign, saved progression, and hints that adapt to the current board.
+> Phase 4 brings production jelly characters, a molded puzzle board, a refreshed
+> HUD, and original audio to the verified 100-level campaign.
 >
-> [Project state](PROJECT_STATE.md) · [Architecture](ARCHITECTURE.md) ·
-> [Rules](Documentation/GAME_RULES.md) · [Generation](Documentation/LEVEL_GENERATION.md) ·
+> [Gameplay previews](Documentation/Previews/README.md) · [Project state](PROJECT_STATE.md) ·
+> [Architecture](ARCHITECTURE.md) · [Rules](Documentation/GAME_RULES.md) ·
 > [Testing](Documentation/TESTING.md) · [Development log](DEVELOPMENT_LOG.md)
 
 ## Play
 
-Open `Assets/Scenes/Gameplay.unity` and press Play. Swipe, mouse drag, or use the
-arrow keys or WASD to move all awake Plops. **Z** or **Backspace** undoes, **R**
-restarts, **H** requests a hint, and **N** or **Enter** advances after completion.
-Open **Levels** to replay unlocked puzzles and tap the FPS button to switch
-between 30 and 60 FPS.
+Open the PLOP project in Unity 6000.3.29f1 and choose **PLOP → Play Game**.
+You can also open `Assets/Scenes/Gameplay.unity` and press Play. Focus the
+Game tab, then drag across the board or use the arrow keys or WASD. **Z**
+or **Backspace** undoes, **R** restarts, **H** requests a hint, and **N** or
+**Enter** advances after completion. Open **Levels** to replay unlocked puzzles
+and **Settings** to change sound, music or frame rate.
+
+## Install the Android development APK
+
+The Phase 4 development APK is at
+`/Volumes/PLOP_DEV/Builds/Android/Phase4/PLOP-phase4-dev.apk`.
+With an ADB-authorized Android phone connected through USB, run:
+
+```bash
+adb install -r /Volumes/PLOP_DEV/Builds/Android/Phase4/PLOP-phase4-dev.apk
+```
+
+Then tap **PLOP!** on the phone. On this Mac, ADB is at
+`~/Library/Android/sdk/platform-tools/adb`.
 
 ## Quick start
 

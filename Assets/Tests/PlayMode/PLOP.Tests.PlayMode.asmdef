@@ -6,6 +6,7 @@
         "PLOP.Solver",
         "PLOP.Unity",
         "Unity.InputSystem",
+        "UnityEngine.UI",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

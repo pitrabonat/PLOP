@@ -17,7 +17,7 @@ Tests use only NUnit features available in Unity's NUnit 3.5 fork.
 |---|---|---|---|---|
 | dotnet test (net10.0) | 92 | 92 | 0 | 0 |
 | Unity 6000.3.29f1 EditMode | 92 | 92 | 0 | 0 |
-| Unity 6000.3.29f1 PlayMode | 22 | 22 | 0 | 0 |
+| Unity 6000.3.29f1 PlayMode | 29 | 29 | 0 | 0 |
 
 An earlier mutation check (inverting the front-to-back ordering rule) made 4 rule tests fail, confirming the tests
 detect rule regressions; the code was restored afterwards.
@@ -47,11 +47,13 @@ detect rule regressions; the code was restored afterwards.
 | Verified solution replay / shipped pack | `Batch_ProducesUniqueVerifiedLevels`, `ShippedLevelPack_IsValidAndVerified` |
 | Gameplay integration | `GameplayPrototypeTests` (movement, completion, unlocks, replay, persistence, migration, input and current-state hint cancellation) |
 | Full catalog integration | `ProductionCatalogTests` loads every board from Resources, solves, Undoes, Restarts, replays and advances through the controller |
-| Visual foundation | `VisualFoundationTests.*`: corner radii within the style guide, tile/pebble outlines geometrically rounded, one shared atlas texture (batching), density buckets, 9-sliced panel/UI, layout fits 7 screen profiles × 9 board sizes inside the free safe area |
+| Visual production | `VisualFoundationTests` covers rounded silhouettes, shared atlas, density, nine-slicing, 7 screen profiles × 9 board sizes, anticipation, rapid retargeting, recoil, and clearing the sleep pose |
+| Settings and completion | `ProductionHudTests` covers modal input capture, independent audio sliders, 30/60 FPS control and immediate Next Level |
+| Audio | `PlopAudioTests` covers synthesized clips and independence of the effects/music controls |
 
 ## Android smoke test
 
-The ARM64 IL2CPP development APK installed on the API 37 emulator. In airplane
+The Phase 3 ARM64 IL2CPP development APK installed on the API 37 emulator. In airplane
 mode, a touch swipe solved Level 1, Next unlocked Level 2, and a force-stop
 and relaunch preserved completion, the resume level, and the selected 30 FPS
 cap. The Levels picker replayed Level 1. After a deliberate detour, the

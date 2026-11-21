@@ -12,7 +12,7 @@ Shared guidance for Claude Code, Codex, and other contributors. Start with
 - **Targets:** Android (IL2CPP, ARM64, min API 26, target = highest installed) and iOS (min iOS 15.0)
 - **Orientation:** Portrait only
 - **Repository:** https://github.com/pitrabonat/PLOP (remote `origin`, branch `main`; public)
-- **Status:** Phase 3 campaign, Level Lab, saved progression, and verified hints. See PROJECT_STATE.md for current verification.
+- **Status:** Phase 4 visual production, responsive controls and audio over the Phase 3 campaign. See PROJECT_STATE.md for verification.
 - **Visual style:** "Soft Toy Minimalism" — see `Documentation/VISUAL_STYLE.md` (palette, corner radii, animation).
 - **Docs:** `Documentation/` — ARCHITECTURE, GAME_RULES, SOLVER, LEVEL_GENERATION, LEVEL_FORMAT, VISUAL_STYLE, TESTING, DEVELOPMENT_LOG.
 
@@ -42,12 +42,12 @@ Rules:
 ## Directory architecture
 ```
 Assets/
-  Scenes/            Gameplay.unity = build entry scene (prototype); Boot.unity = URP 2D template scene
+  Scenes/            Gameplay.unity = play and build entry scene; Boot.unity = URP 2D template scene
   Scripts/
     Core/            PLOP.Core        — pure C# rules/state/engine/validation/JSON (NO UnityEngine)
     Solver/          PLOP.Solver      — BFS solver + state-space analyzer (NO UnityEngine)
     LevelGeneration/ PLOP.Generation  — PRNG, generator, verifier, duplicates, difficulty (NO UnityEngine)
-    Unity/           PLOP.Unity       — presentation: BoardView, SwipeInput, GameHud, PlopGameController
+    Unity/           PLOP.Unity       — board and character art, HUD, input, audio, PlopGameController
     LevelLab/Editor/ PLOP.LevelLab    — editor-only Level Lab window (PLOP → Level Lab)
     Editor/          build + scene setup scripts (PlopBuild, PlopSceneSetup)
     Gameplay/ UI/ SaveSystem/          reserved (empty)
@@ -56,7 +56,7 @@ Assets/
   Levels/Resources/Levels/PLOP_Pack_001.json — shipped level pack (100 verified levels)
   Art/ Audio/ Animations/ Materials/ Prefabs/ Settings/
 DotNet/              Plop.Lib (netstandard2.1 build of Core/Solver/Generation), Plop.Tests, Plop.Bench
-Documentation/       design & technical docs (+ benchmarks/)
+Documentation/       design & technical docs, benchmarks and running-game previews
 ```
 
 ## Architecture rules (do not break)
@@ -97,6 +97,13 @@ Documentation/       design & technical docs (+ benchmarks/)
 - Git + Git LFS (`git lfs install` done for the user).
 - ADB: `~/Library/Android/sdk/platform-tools/adb` (same version, 37.0.1, as Unity's bundled one).
 
+## Play in Unity
+
+Open the existing project and choose **PLOP → Play Game**, or open
+`Assets/Scenes/Gameplay.unity` and click Play. Drag in the Game tab or use
+arrow keys/WASD. Settings contains independent music/sound sliders and the
+30/60 FPS cap.
+
 ## Tests, levels and benchmark
 ```bash
 export NUGET_PACKAGES=/Volumes/PLOP_DEV/Cache/NuGet          # keep NuGet cache off the internal SSD
@@ -128,6 +135,7 @@ adb install -r /Volumes/PLOP_DEV/Builds/Android/PLOP-dev.apk
 adb shell monkey -p com.plop.sleepypuzzle -c android.intent.category.LAUNCHER 1
 export DEVELOPER_DIR=/Volumes/PLOP_DEV/Xcode/Xcode-26.3.app/Contents/Developer
 # iOS Simulator: export (arm64 simulator) -> build -> run in "PLOP iPhone 15 Pro Max" simulator
+# Set PLOP_IOS_SIM_EXPORT to export to a separate verification directory.
 "$UNITY" -batchmode -quit -projectPath "$PROJ" -buildTarget iOS -executeMethod Plop.EditorTools.PlopBuild.ExportIOSSimulator -logFile -
 xcodebuild -project /Volumes/PLOP_DEV/Builds/iOS/PLOP-Xcode-Sim/Unity-iPhone.xcodeproj -scheme Unity-iPhone \
   -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \

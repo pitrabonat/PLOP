@@ -7,7 +7,7 @@ namespace Plop.Presentation
     /// <summary>Soft tactile press: the control squishes slightly while held. Event-driven, no Update.</summary>
     public sealed class PressScale : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
     {
-        public float PressedScale = 0.95f;
+        public float PressedScale = HudTheme.PressedScale;
         private Selectable _selectable;
 
         private void Awake() => _selectable = GetComponent<Selectable>();

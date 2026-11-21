@@ -41,6 +41,7 @@ namespace Plop.Presentation
         private BoardView _board;
         private SwipeInput _input;
         private GameHud _hud;
+        private PlopAudio _audio;
         private Camera _camera;
         private float _lastActivity;
 
@@ -63,6 +64,7 @@ namespace Plop.Presentation
             _board = new GameObject("Board").AddComponent<BoardView>();
             _board.transform.SetParent(transform, false);
             _input = gameObject.AddComponent<SwipeInput>();
+            _audio = gameObject.AddComponent<PlopAudio>();
             _hud = gameObject.AddComponent<GameHud>();
 
             _engine.EventRaised += OnEngineEvent;
@@ -71,14 +73,20 @@ namespace Plop.Presentation
             _input.RestartRequested += Restart;
             _input.NextRequested += NextLevel;
             _input.HintRequested += OnHintRequested;
+            _input.DismissRequested += DismissModal;
             _hud.UndoClicked += Undo;
             _hud.RestartClicked += Restart;
             _hud.NextClicked += NextLevel;
             _hud.HintClicked += OnHintRequested;
-            _hud.ToggleFrameRateClicked += ToggleFrameRate;
+            _hud.SettingsClicked += ShowSettings;
+            _hud.SettingsClosed += _audio.SavePreferences;
+            _hud.ButtonActivated += _audio.PlayButton;
+            _hud.MusicChanged += _audio.SetMusicVolume;
+            _hud.SoundChanged += _audio.SetSoundVolume;
+            _hud.FrameRateChanged += SetFrameRateMode;
             _hud.LevelsClicked += ShowLevelPicker;
             _hud.LevelChosen += index => TrySelectLevel(index);
-            _hud.PickerInteracted += MarkActive;
+            _hud.ModalInteracted += MarkActive;
             _hud.SetFrameRate(targetFrameRate);
             _hud.LayoutChanged += Relayout;
         }
@@ -95,6 +103,7 @@ namespace Plop.Presentation
             _debugPreview = debugLevel > 0 || !string.IsNullOrEmpty(debugMoves);
 #endif
             _progress = new LevelProgress(_levels, SavesProgress ? levelPackResource : null);
+            _audio.Initialize(SavesProgress);
             _index = _progress.ResumeIndex();
             if (rememberProgress)
             {
@@ -164,9 +173,6 @@ namespace Plop.Presentation
             MarkActive();
         }
 
-        private void ToggleFrameRate() =>
-            SetFrameRateMode(targetFrameRate == FrameRateMode.Fps60 ? FrameRateMode.Fps30 : FrameRateMode.Fps60);
-
         /// <summary>Replaces the level list (used by tests and tools) and loads the first level.</summary>
         public void UseLevels(List<LevelDefinition> levels, int startIndex = 0)
         {
@@ -178,35 +184,37 @@ namespace Plop.Presentation
 
         public void Move(Direction direction)
         {
-            if (!_engine.HasLevel || _hud.IsChoosingLevel) return;
+            if (!_engine.HasLevel || _hud.BlocksGameplayInput) return;
             MarkActive();
             var result = _engine.TryMove(direction);
-            if (result.Status != MoveStatus.Ignored) _board.Play(result.Events);
+            if (result.Status == MoveStatus.Ignored) return;
+            _board.Play(result.Events);
+            _audio.PlayMove(result.Events);
         }
 
         public void Undo()
         {
-            if (_hud.IsChoosingLevel) return;
+            if (_hud.BlocksGameplayInput) return;
             MarkActive();
             _engine.Undo();
         }
 
         public void Restart()
         {
-            if (_hud.IsChoosingLevel) return;
+            if (_hud.BlocksGameplayInput) return;
             MarkActive();
             _engine.Restart();
         }
 
         public void NextLevel()
         {
-            if (_hud.IsChoosingLevel || !_engine.IsCompleted) return;
+            if (_hud.BlocksGameplayInput || !_engine.IsCompleted) return;
             TrySelectLevel(_index + 1);
         }
 
         public bool TrySelectLevel(int index)
         {
-            if (!IsLevelUnlocked(index)) return false;
+            if (_hud.IsSettingsOpen || !IsLevelUnlocked(index)) return false;
             _hud.CloseLevelPicker();
             if (index == _index && !_engine.IsCompleted) return true;
             _index = index;
@@ -217,10 +225,23 @@ namespace Plop.Presentation
 
         private void ShowLevelPicker()
         {
-            if (_levels.Count == 0) return;
+            if (_levels.Count == 0 || _hud.BlocksGameplayInput) return;
             InvalidateHint();
-            MarkActive();
             _hud.ShowLevels(_levels, IsLevelUnlocked, IsLevelCompleted, _index);
+        }
+
+        private void ShowSettings()
+        {
+            if (_hud.BlocksGameplayInput) return;
+            InvalidateHint();
+            _hud.SetVolumes(_audio.MusicVolume, _audio.SoundVolume);
+            _hud.ShowSettings();
+        }
+
+        private void DismissModal()
+        {
+            _hud.CloseSettings();
+            _hud.CloseLevelPicker();
         }
 
         private void OnHintRequested() => _ = RequestHintAsync();
@@ -229,7 +250,7 @@ namespace Plop.Presentation
         public async Task<Direction?> RequestHintAsync()
         {
             if (!isActiveAndEnabled || !_engine.HasLevel || _engine.IsCompleted ||
-                _hud.IsChoosingLevel || _hintWork != null)
+                _hud.BlocksGameplayInput || _hintWork != null)
                 return null;
 
             var level = _engine.Level;
