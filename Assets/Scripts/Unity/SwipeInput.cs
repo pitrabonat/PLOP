@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using Plop.Core;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 namespace Plop.Presentation
@@ -8,8 +10,8 @@ namespace Plop.Presentation
     /// <summary>
     /// Event-driven input (Input System callbacks, no Update polling):
     ///  * swipe with touch or mouse drag (press -> release, dominant axis),
-    ///  * arrow keys / WASD for moves, Z/Backspace undo, R restart, N/Enter next level.
-    /// Taps (tiny drags) never move, so UI buttons can be pressed safely.
+    ///  * arrow keys / WASD for moves, Z/Backspace undo, R restart, H hint, N/Enter next level.
+    /// Taps and gestures that start over interactive UI never move the board.
     /// </summary>
     public sealed class SwipeInput : MonoBehaviour
     {
@@ -20,68 +22,95 @@ namespace Plop.Presentation
         public event Action UndoRequested;
         public event Action RestartRequested;
         public event Action NextRequested;
+        public event Action HintRequested;
 
-        private InputAction _press, _up, _down, _left, _right, _undo, _restart, _next;
+        private InputAction _press;
+        private InputAction[] _actions;
+        private readonly List<RaycastResult> _uiHits = new List<RaycastResult>();
+        private PointerEventData _pointerEvent;
+        private EventSystem _eventSystem;
         private Vector2 _pressStart;
-        private bool _pressing;
+        private Pointer _activePointer;
 
         private void Awake()
         {
             _press = new InputAction("Press", InputActionType.Button, "<Pointer>/press");
-            _up = Key("Up", "<Keyboard>/upArrow", "<Keyboard>/w");
-            _down = Key("Down", "<Keyboard>/downArrow", "<Keyboard>/s");
-            _left = Key("Left", "<Keyboard>/leftArrow", "<Keyboard>/a");
-            _right = Key("Right", "<Keyboard>/rightArrow", "<Keyboard>/d");
-            _undo = Key("Undo", "<Keyboard>/z", "<Keyboard>/backspace");
-            _restart = Key("Restart", "<Keyboard>/r");
-            _next = Key("Next", "<Keyboard>/n", "<Keyboard>/enter");
-
             _press.started += OnPressStarted;
             _press.canceled += OnPressReleased;
-            _up.performed += _ => DirectionRequested?.Invoke(Direction.Up);
-            _down.performed += _ => DirectionRequested?.Invoke(Direction.Down);
-            _left.performed += _ => DirectionRequested?.Invoke(Direction.Left);
-            _right.performed += _ => DirectionRequested?.Invoke(Direction.Right);
-            _undo.performed += _ => UndoRequested?.Invoke();
-            _restart.performed += _ => RestartRequested?.Invoke();
-            _next.performed += _ => NextRequested?.Invoke();
+            _actions = new[]
+            {
+                _press,
+                Key("Up", () => DirectionRequested?.Invoke(Direction.Up), "<Keyboard>/upArrow", "<Keyboard>/w"),
+                Key("Down", () => DirectionRequested?.Invoke(Direction.Down), "<Keyboard>/downArrow", "<Keyboard>/s"),
+                Key("Left", () => DirectionRequested?.Invoke(Direction.Left), "<Keyboard>/leftArrow", "<Keyboard>/a"),
+                Key("Right", () => DirectionRequested?.Invoke(Direction.Right), "<Keyboard>/rightArrow", "<Keyboard>/d"),
+                Key("Undo", () => UndoRequested?.Invoke(), "<Keyboard>/z", "<Keyboard>/backspace"),
+                Key("Restart", () => RestartRequested?.Invoke(), "<Keyboard>/r"),
+                Key("Hint", () => HintRequested?.Invoke(), "<Keyboard>/h"),
+                Key("Next", () => NextRequested?.Invoke(), "<Keyboard>/n", "<Keyboard>/enter")
+            };
         }
 
-        private static InputAction Key(string name, params string[] bindings)
+        private static InputAction Key(string name, Action action, params string[] bindings)
         {
-            var a = new InputAction(name, InputActionType.Button);
-            foreach (var b in bindings) a.AddBinding(b);
-            return a;
+            var input = new InputAction(name, InputActionType.Button);
+            foreach (var binding in bindings) input.AddBinding(binding);
+            input.performed += _ => action();
+            return input;
         }
 
-        private void OnEnable() { foreach (var a in All()) a.Enable(); }
-        private void OnDisable() { foreach (var a in All()) a.Disable(); }
+        private void OnEnable()
+        {
+            foreach (var action in _actions) action.Enable();
+        }
+
+        private void OnDisable()
+        {
+            _activePointer = null;
+            foreach (var action in _actions) action.Disable();
+        }
 
         private void OnDestroy()
         {
-            foreach (var a in All()) a.Dispose();
+            foreach (var action in _actions) action.Dispose();
         }
-
-        private InputAction[] All() => new[] { _press, _up, _down, _left, _right, _undo, _restart, _next };
 
         private void OnPressStarted(InputAction.CallbackContext ctx)
         {
-            var pointer = Pointer.current;
+            var pointer = ctx.control.device as Pointer;
             if (pointer == null) return;
             _pressStart = pointer.position.ReadValue();
-            _pressing = true;
+            if (!PressHitsUI(_pressStart)) _activePointer = pointer;
         }
 
         private void OnPressReleased(InputAction.CallbackContext ctx)
         {
-            if (!_pressing) return;
-            _pressing = false;
-            var pointer = Pointer.current;
-            if (pointer == null) return;
+            var pointer = _activePointer;
+            _activePointer = null;
+            if (pointer == null || pointer != ctx.control.device) return;
             Vector2 delta = pointer.position.ReadValue() - _pressStart;
             float min = Mathf.Min(Screen.width, Screen.height) * minSwipeFraction;
-            var dir = SwipeToDirection(delta, min);
-            if (dir.HasValue) DirectionRequested?.Invoke(dir.Value);
+            var direction = SwipeToDirection(delta, min);
+            if (direction.HasValue) DirectionRequested?.Invoke(direction.Value);
+        }
+
+        private bool PressHitsUI(Vector2 position)
+        {
+            var eventSystem = EventSystem.current;
+            if (eventSystem == null) return false;
+            if (_eventSystem != eventSystem)
+            {
+                _eventSystem = eventSystem;
+                _pointerEvent = new PointerEventData(eventSystem);
+            }
+
+            // The UI input module processes events later in the frame. Raycast the actual press position.
+            _pointerEvent.Reset();
+            _pointerEvent.position = position;
+            eventSystem.RaycastAll(_pointerEvent, _uiHits);
+            bool hasHits = _uiHits.Count > 0;
+            _uiHits.Clear();
+            return hasHits;
         }
 
         /// <summary>Maps a screen-space drag to a direction, or null for taps. Screen Y grows upwards like grid Y.</summary>

@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Plop.Core;
+using Plop.Solver;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Plop.Presentation
 {
     /// <summary>
-    /// Prototype gameplay controller: owns the <see cref="GameEngine"/>, routes input to it, and forwards
-    /// engine events to the views. Contains no game rules. Everything is event-driven; the only per-frame
-    /// work is the short move interpolation coroutine and the idle render throttle check.
+    /// Gameplay controller: owns the <see cref="GameEngine"/>, routes input to it, and forwards
+    /// engine events to the views. Saves campaign progress and runs bounded hints on request.
+    /// The controller's per-frame work is limited to the idle render throttle check.
     /// </summary>
     public sealed class PlopGameController : MonoBehaviour
     {
@@ -25,10 +28,16 @@ namespace Plop.Presentation
         [SerializeField] private string levelPackResource = LevelLibrary.DefaultPack;
         [SerializeField] private bool rememberProgress = true;
 
-        private const string ProgressKey = "plop.levelIndex";
+        private const string FrameRateKey = "plop.frameRate";
+        private const int HintMaxStates = 300_000;
+        private const int HintMaxMilliseconds = 200;
         private readonly GameEngine _engine = new GameEngine();
         private List<LevelDefinition> _levels = new List<LevelDefinition>();
         private int _index;
+        private LevelProgress _progress;
+        private bool _debugPreview;
+        private CancellationTokenSource _hintWork;
+        private bool _hintVisible;
         private BoardView _board;
         private SwipeInput _input;
         private GameHud _hud;
@@ -41,6 +50,11 @@ namespace Plop.Presentation
         public BoardView Board => _board;
         public int LevelIndex => _index;
         public int LevelCount => _levels.Count;
+        public FrameRateMode CurrentFrameRateMode => targetFrameRate;
+        private bool SavesProgress => rememberProgress && !_debugPreview;
+
+        public bool IsLevelUnlocked(int index) => _progress?.IsUnlocked(index) == true;
+        public bool IsLevelCompleted(int index) => _progress?.IsCompleted(index) == true;
 
         private void Awake()
         {
@@ -56,26 +70,47 @@ namespace Plop.Presentation
             _input.UndoRequested += Undo;
             _input.RestartRequested += Restart;
             _input.NextRequested += NextLevel;
+            _input.HintRequested += OnHintRequested;
             _hud.UndoClicked += Undo;
             _hud.RestartClicked += Restart;
             _hud.NextClicked += NextLevel;
+            _hud.HintClicked += OnHintRequested;
+            _hud.ToggleFrameRateClicked += ToggleFrameRate;
+            _hud.LevelsClicked += ShowLevelPicker;
+            _hud.LevelChosen += index => TrySelectLevel(index);
+            _hud.PickerInteracted += MarkActive;
+            _hud.SetFrameRate(targetFrameRate);
             _hud.LayoutChanged += Relayout;
         }
 
         private void Start()
         {
-            if (_levels.Count > 0) return; // already given levels (tests)
+            if (_progress != null) return; // catalog supplied by tests or tools
             _levels = LevelLibrary.Load(levelPackResource);
             if (_levels.Count == 0) return;
-            _index = rememberProgress ? Mathf.Clamp(PlayerPrefs.GetInt(ProgressKey, 0), 0, _levels.Count - 1) : 0;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            // Dev-only screenshot/demo hook: PlayerPrefs "plop.debug.level" (1-based) and "plop.debug.moves" ("RRUD").
-            int debugLevel = PlayerPrefs.GetInt("plop.debug.level", 0);
+            // Screenshot/demo settings must never grant durable progress.
+            int debugLevel = rememberProgress ? PlayerPrefs.GetInt("plop.debug.level", 0) : 0;
+            string debugMoves = rememberProgress ? PlayerPrefs.GetString("plop.debug.moves", "") : "";
+            _debugPreview = debugLevel > 0 || !string.IsNullOrEmpty(debugMoves);
+#endif
+            _progress = new LevelProgress(_levels, SavesProgress ? levelPackResource : null);
+            _index = _progress.ResumeIndex();
+            if (rememberProgress)
+            {
+                int savedRate = PlayerPrefs.GetInt(FrameRateKey, (int)targetFrameRate);
+                if (savedRate == 30 || savedRate == 60)
+                {
+                    targetFrameRate = (FrameRateMode)savedRate;
+                    ApplyFrameRate();
+                    _hud.SetFrameRate(targetFrameRate);
+                }
+            }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (debugLevel > 0) _index = Mathf.Clamp(debugLevel - 1, 0, _levels.Count - 1);
 #endif
             LoadCurrent();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            string debugMoves = PlayerPrefs.GetString("plop.debug.moves", "");
             if (!string.IsNullOrEmpty(debugMoves)) StartCoroutine(PlayDebugMoves(debugMoves));
 #endif
         }
@@ -92,6 +127,17 @@ namespace Plop.Presentation
         }
 #endif
 
+        private void OnDisable()
+        {
+            InvalidateHint();
+            OnDemandRendering.renderFrameInterval = 1;
+        }
+
+        private void OnApplicationPause(bool paused)
+        {
+            if (paused) InvalidateHint();
+        }
+
         private void OnDestroy()
         {
             _engine.EventRaised -= OnEngineEvent;
@@ -100,41 +146,159 @@ namespace Plop.Presentation
 
         public void ApplyFrameRate()
         {
-            QualitySettings.vSyncCount = 0; // targetFrameRate is ignored on mobile when vSync is on
+            QualitySettings.vSyncCount = 0; // Use the same cap in the Editor and on mobile.
             Application.targetFrameRate = (int)targetFrameRate;
         }
 
         public void SetFrameRateMode(FrameRateMode mode)
         {
+            if (mode != FrameRateMode.Fps30 && mode != FrameRateMode.Fps60) return;
             targetFrameRate = mode;
             ApplyFrameRate();
+            _hud.SetFrameRate(mode);
+            if (SavesProgress)
+            {
+                PlayerPrefs.SetInt(FrameRateKey, (int)mode);
+                PlayerPrefs.Save();
+            }
+            MarkActive();
         }
+
+        private void ToggleFrameRate() =>
+            SetFrameRateMode(targetFrameRate == FrameRateMode.Fps60 ? FrameRateMode.Fps30 : FrameRateMode.Fps60);
 
         /// <summary>Replaces the level list (used by tests and tools) and loads the first level.</summary>
         public void UseLevels(List<LevelDefinition> levels, int startIndex = 0)
         {
-            _levels = levels ?? new List<LevelDefinition>();
+            _levels = levels == null ? new List<LevelDefinition>() : new List<LevelDefinition>(levels);
+            _progress = new LevelProgress(_levels);
             _index = Mathf.Clamp(startIndex, 0, Mathf.Max(0, _levels.Count - 1));
             if (_levels.Count > 0) LoadCurrent();
         }
 
         public void Move(Direction direction)
         {
-            if (!_engine.HasLevel) return;
+            if (!_engine.HasLevel || _hud.IsChoosingLevel) return;
             MarkActive();
             var result = _engine.TryMove(direction);
             if (result.Status != MoveStatus.Ignored) _board.Play(result.Events);
         }
 
-        public void Undo() { MarkActive(); _engine.Undo(); }
-        public void Restart() { MarkActive(); _engine.Restart(); }
+        public void Undo()
+        {
+            if (_hud.IsChoosingLevel) return;
+            MarkActive();
+            _engine.Undo();
+        }
+
+        public void Restart()
+        {
+            if (_hud.IsChoosingLevel) return;
+            MarkActive();
+            _engine.Restart();
+        }
 
         public void NextLevel()
         {
-            if (_levels.Count == 0) return;
-            _index = (_index + 1) % _levels.Count;
-            if (rememberProgress) { PlayerPrefs.SetInt(ProgressKey, _index); PlayerPrefs.Save(); }
+            if (_hud.IsChoosingLevel || !_engine.IsCompleted) return;
+            TrySelectLevel(_index + 1);
+        }
+
+        public bool TrySelectLevel(int index)
+        {
+            if (!IsLevelUnlocked(index)) return false;
+            _hud.CloseLevelPicker();
+            if (index == _index && !_engine.IsCompleted) return true;
+            _index = index;
+            _progress.Visit(index, SavesProgress);
             LoadCurrent();
+            return true;
+        }
+
+        private void ShowLevelPicker()
+        {
+            if (_levels.Count == 0) return;
+            InvalidateHint();
+            MarkActive();
+            _hud.ShowLevels(_levels, IsLevelUnlocked, IsLevelCompleted, _index);
+        }
+
+        private void OnHintRequested() => _ = RequestHintAsync();
+
+        /// <summary>Finds and verifies a direction for the current board without applying it.</summary>
+        public async Task<Direction?> RequestHintAsync()
+        {
+            if (!isActiveAndEnabled || !_engine.HasLevel || _engine.IsCompleted ||
+                _hud.IsChoosingLevel || _hintWork != null)
+                return null;
+
+            var level = _engine.Level;
+            var state = _engine.GetState();
+            var work = new CancellationTokenSource();
+            _hintWork = work;
+            ShowHint("Looking for a hint…", true);
+            MarkActive();
+            try
+            {
+                var token = work.Token;
+                var result = await Task.Run(() => FindHint(level, state, token));
+                if (work.IsCancellationRequested || this == null || !isActiveAndEnabled ||
+                    _engine.Level != level || !_engine.CurrentState.Equals(state))
+                    return null;
+
+                MarkActive();
+                if (result.Status == SolverStatus.Solved && result.Moves.Length > 0)
+                {
+                    Direction direction = result.Moves[0];
+                    ShowHint("Try swiping " + direction.ToString().ToLowerInvariant() + ".");
+                    return direction;
+                }
+
+                ShowHint(result.Status == SolverStatus.ProvenUnsolvable
+                    ? "No route from here. Try Undo."
+                    : "No hint available. Try Undo.");
+                return null;
+            }
+            catch (System.Exception exception)
+            {
+                if (!work.IsCancellationRequested && this != null && isActiveAndEnabled)
+                {
+                    Debug.LogWarning("[PLOP] Hint failed: " + exception.GetType().Name);
+                    ShowHint("No hint available. Try Undo.");
+                }
+                return null;
+            }
+            finally
+            {
+                _hintWork = null;
+                work.Dispose();
+            }
+        }
+
+        private static SolverResult FindHint(LevelDefinition level, GameState state, CancellationToken cancellation)
+        {
+            var result = BfsSolver.Solve(level, state, new SolverOptions
+            {
+                MaxStates = HintMaxStates,
+                MaxMilliseconds = HintMaxMilliseconds,
+                Cancellation = cancellation
+            });
+            if (!cancellation.IsCancellationRequested && result.Status == SolverStatus.Solved &&
+                !BfsSolver.VerifySolution(level, result.Moves, state))
+                return new SolverResult { Status = SolverStatus.InvalidLevel };
+            return result;
+        }
+
+        private void ShowHint(string hint, bool searching = false)
+        {
+            _hintVisible = hint != null;
+            _hud.SetHint(hint, searching);
+        }
+
+        private void InvalidateHint()
+        {
+            _hintWork?.Cancel();
+            if (_hintVisible) ShowHint(null);
         }
 
         private void LoadCurrent()
@@ -150,24 +314,28 @@ namespace Plop.Presentation
             {
                 case GameEventType.LevelLoaded:
                     _board.Build(_engine.Level, _engine.CurrentState, ShapeAtlas.ForDensity(FitCamera()));
-                    _hud.SetLevel(_engine.Level.Name);
+                    InvalidateHint();
+                    _hud.SetLevel(_engine.Level.Name, _engine.Level.Instruction);
                     _hud.SetMoves(0);
                     _hud.SetCanUndo(false);
-                    _hud.SetCompleted(false, 0);
+                    _hud.SetCompleted(false, false);
                     break;
                 case GameEventType.MoveUndone:
                 case GameEventType.LevelRestarted:
+                    InvalidateHint();
                     _board.Sync(_engine.CurrentState);
                     _hud.SetMoves(_engine.MoveCount);
                     _hud.SetCanUndo(_engine.CanUndo);
-                    _hud.SetCompleted(false, 0);
+                    _hud.SetCompleted(false, false);
                     break;
                 case GameEventType.PlopMoved:
+                    InvalidateHint();
                     _hud.SetMoves(e.MoveCount);
                     _hud.SetCanUndo(true);
                     break;
                 case GameEventType.LevelCompleted:
-                    _hud.SetCompleted(true, e.MoveCount);
+                    _progress.Complete(_index, SavesProgress);
+                    _hud.SetCompleted(true, IsLevelUnlocked(_index + 1));
                     PlopLog.Info("Completed " + _engine.Level.Id + " in " + e.MoveCount);
                     break;
             }

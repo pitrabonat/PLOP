@@ -100,7 +100,9 @@ namespace Plop.EditorTools
         {
             EnsureBootScene();
             EditorUserBuildSettings.buildAppBundle = false;
-            var path = Path.Combine(BuildsRoot, "Android", "PLOP-dev.apk");
+            var path = Environment.GetEnvironmentVariable("PLOP_ANDROID_APK");
+            if (string.IsNullOrWhiteSpace(path)) path = Path.Combine(BuildsRoot, "Android", "PLOP-dev.apk");
+            path = Path.GetFullPath(path);
             Build(BuildTarget.Android, path, BuildOptions.Development);
         }
 

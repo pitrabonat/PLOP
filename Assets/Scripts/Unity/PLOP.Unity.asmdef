@@ -3,6 +3,7 @@
     "rootNamespace": "Plop.Presentation",
     "references": [
         "PLOP.Core",
+        "PLOP.Solver",
         "Unity.InputSystem",
         "UnityEngine.UI"
     ],

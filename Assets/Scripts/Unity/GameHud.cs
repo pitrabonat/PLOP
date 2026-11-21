@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using Plop.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
@@ -7,25 +9,31 @@ using UnityEngine.UI;
 
 namespace Plop.Presentation
 {
-    /// <summary>
-    /// Gameplay HUD in "Soft Toy Minimalism", built in code (uGUI): level title + move counter at the top,
-    /// rounded pill Undo / Restart at the bottom, and a small completion card with a "Next" action that
-    /// replaces the button row. Everything lives inside Screen.safeArea; sizes are canvas reference units
-    /// (1080×1920, match 0.5), the same values <see cref="BoardLayout"/> reserves for the board.
-    /// Text changes only on gameplay events.
-    /// </summary>
+    /// <summary>Rounded, safe-area HUD for gameplay, hints and choosing unlocked levels.</summary>
     public sealed class GameHud : MonoBehaviour
     {
-        public event Action UndoClicked, RestartClicked, NextClicked;
-        /// <summary>Raised when the screen size or safe area changes (resize, split screen, rotation).</summary>
+        public event Action UndoClicked, RestartClicked, NextClicked, HintClicked, LevelsClicked, ToggleFrameRateClicked;
+        public event Action<int> LevelChosen;
+        public event Action PickerInteracted;
         public event Action LayoutChanged;
 
-        private Text _title, _moves, _cardTitle, _cardSubtitle;
-        private Button _undo, _restart, _next;
-        private RectTransform _safe, _buttonsRow, _card;
+        private const int PageSize = 10;
+        private readonly Button[] _levelButtons = new Button[PageSize];
+        private readonly Text[] _levelLabels = new Text[PageSize];
+        private readonly RectTransform[] _levelSlots = new RectTransform[PageSize];
+
+        private Text _title, _moves, _instruction, _hintStatus, _primaryLabel, _frameRateLabel, _pageLabel;
+        private Button _undo, _primary, _previousPage, _nextPage;
+        private RectTransform _safe, _card, _levelPicker;
         private CanvasGroup _cardGroup;
         private Coroutine _cardAnim;
         private Font _font;
+        private IReadOnlyList<LevelDefinition> _pickerLevels;
+        private Func<int, bool> _isUnlocked, _isCompleted;
+        private int _page, _currentIndex;
+        private bool _completed, _canAdvance;
+
+        public bool IsChoosingLevel => _levelPicker != null && _levelPicker.gameObject.activeSelf;
 
         private void Awake()
         {
@@ -47,61 +55,185 @@ namespace Plop.Presentation
             _safe.gameObject.AddComponent<RectChangeNotifier>().Changed += OnRectChanged;
             ApplySafeArea();
 
-            // ---- header ----
-            _title = MakeText(_safe, "Title", 58, FontStyle.Bold, PlopPalette.Ink, new Vector2(0.5f, 1f), new Vector2(0, -92), new Vector2(900, 90));
-            _moves = MakeText(_safe, "Moves", 38, FontStyle.Normal, PlopPalette.MutedText, new Vector2(0.5f, 1f), new Vector2(0, -160), new Vector2(900, 60));
+            var topCenter = new Vector2(0.5f, 1f);
+            var header = NewRect("Header controls", _safe);
+            header.anchorMin = header.anchorMax = topCenter;
+            header.anchoredPosition = new Vector2(0, -56);
+            header.sizeDelta = new Vector2(820, 80);
+            MakePill(header, "Levels", new Vector2(-302, 0), new Vector2(216, 80), PlopPalette.ButtonFill, () => LevelsClicked?.Invoke());
+            var rate = MakePill(header, "60 FPS", new Vector2(302, 0), new Vector2(216, 80), PlopPalette.ButtonFill,
+                () => ToggleFrameRateClicked?.Invoke());
+            _frameRateLabel = rate.GetComponentInChildren<Text>();
+            _title = MakeText(_safe, "Title", 58, FontStyle.Bold, PlopPalette.Ink, topCenter, new Vector2(0, -135), new Vector2(900, 80));
+            _moves = MakeText(_safe, "Moves", 38, FontStyle.Normal, PlopPalette.MutedText, topCenter, new Vector2(0, -192), new Vector2(900, 52));
+            _instruction = MakeText(_safe, "Instruction", 31, FontStyle.Normal, PlopPalette.Ink, topCenter, new Vector2(0, -253), new Vector2(820, 72));
+            _instruction.horizontalOverflow = HorizontalWrapMode.Wrap;
 
-            // ---- footer: pill buttons ----
-            _buttonsRow = NewRect("Buttons", _safe);
-            _buttonsRow.anchorMin = _buttonsRow.anchorMax = new Vector2(0.5f, 0f);
-            _buttonsRow.sizeDelta = new Vector2(760, BoardLayout.FooterHeight);
-            _buttonsRow.anchoredPosition = new Vector2(0, BoardLayout.FooterHeight * 0.5f);
-            _undo = MakePill(_buttonsRow, "Undo", new Vector2(-180, -10), new Vector2(320, 128), PlopPalette.ButtonFill, () => UndoClicked?.Invoke());
-            _restart = MakePill(_buttonsRow, "Restart", new Vector2(180, -10), new Vector2(320, 128), PlopPalette.ButtonFill, () => RestartClicked?.Invoke());
+            var bottomCenter = new Vector2(0.5f, 0f);
+            var buttonsRow = NewRect("Buttons", _safe);
+            buttonsRow.anchorMin = buttonsRow.anchorMax = bottomCenter;
+            buttonsRow.sizeDelta = new Vector2(864, 122);
+            buttonsRow.anchoredPosition = new Vector2(0, 92);
+            var buttonSize = new Vector2(252, 122);
+            _undo = MakePill(buttonsRow, "Undo", new Vector2(-273, 0), buttonSize, PlopPalette.ButtonFill, () => UndoClicked?.Invoke());
+            MakePill(buttonsRow, "Restart", Vector2.zero, buttonSize, PlopPalette.ButtonFill, () => RestartClicked?.Invoke());
+            _primary = MakePill(buttonsRow, "Hint", new Vector2(273, 0), buttonSize, PlopPalette.Berry, PrimaryClicked);
+            _primaryLabel = _primary.GetComponentInChildren<Text>();
+            _hintStatus = MakeText(_safe, "Hint status", 38, FontStyle.Bold, PlopPalette.Ink, bottomCenter,
+                new Vector2(0, 228), new Vector2(850, 90));
 
-            // ---- completion card (replaces the button row) ----
-            _card = NewRect("CompletionCard", _safe);
-            _card.anchorMin = _card.anchorMax = new Vector2(0.5f, 0f);
-            _card.sizeDelta = new Vector2(940, 220);
-            _card.anchoredPosition = new Vector2(0, BoardLayout.FooterHeight * 0.5f - 6);
+            _card = NewRect("Completion card", _safe);
+            _card.anchorMin = _card.anchorMax = bottomCenter;
+            _card.sizeDelta = new Vector2(790, 126);
+            _card.anchoredPosition = new Vector2(0, 233);
             _cardGroup = _card.gameObject.AddComponent<CanvasGroup>();
-            AddShadow(_card, UiSprites.CardShadow, new Vector2(0, -8), 0.16f); // first child = drawn behind
-            var body = NewRect("Body", _card);
-            var cardBg = body.gameObject.AddComponent<Image>();
-            cardBg.sprite = UiSprites.Card;
-            cardBg.type = Image.Type.Sliced;
-            cardBg.color = PlopPalette.ButtonFill;
-            _cardTitle = MakeText(body, "CardTitle", 48, FontStyle.Bold, PlopPalette.Ink, new Vector2(0f, 0.5f), new Vector2(300, 34), new Vector2(520, 70));
-            _cardTitle.alignment = TextAnchor.MiddleLeft;
-            _cardTitle.text = "Sweet dreams!";
-            _cardSubtitle = MakeText(body, "CardSubtitle", 34, FontStyle.Normal, PlopPalette.MutedText, new Vector2(0f, 0.5f), new Vector2(300, -32), new Vector2(520, 56));
-            _cardSubtitle.alignment = TextAnchor.MiddleLeft;
-            _next = MakePill(body, "Next", new Vector2(250, 0), new Vector2(300, 128), PlopPalette.Berry, () => NextClicked?.Invoke());
+            _cardGroup.blocksRaycasts = false;
+            AddShadow(_card, UiSprites.CardShadow, new Vector2(0, -8), 0.16f);
+            AddCardBackground(_card);
+            MakeText(_card, "Completion message", 48, FontStyle.Bold, PlopPalette.Ink, new Vector2(0.5f, 0.5f),
+                Vector2.zero, new Vector2(720, 100)).text = "All Plops asleep!";
             _card.gameObject.SetActive(false);
+
+            BuildLevelPicker();
         }
 
-        // ------------------------------------------------------------------ API
+        public void SetLevel(string title, string instruction)
+        {
+            _title.text = title;
+            _instruction.text = instruction ?? "";
+            _instruction.gameObject.SetActive(!string.IsNullOrWhiteSpace(instruction));
+        }
 
-        public void SetLevel(string title) => _title.text = title;
         public void SetMoves(int moves) => _moves.text = moves == 1 ? "1 move" : moves + " moves";
         public void SetCanUndo(bool canUndo) => _undo.interactable = canUndo;
+        public void SetFrameRate(PlopGameController.FrameRateMode mode) => _frameRateLabel.text = (int)mode + " FPS";
 
-        public void SetCompleted(bool completed, int moves)
+        public void SetHint(string message, bool searching)
         {
-            if (completed)
+            _hintStatus.text = message ?? "";
+            _primary.interactable = !searching;
+        }
+
+        public void SetCompleted(bool completed, bool canAdvance)
+        {
+            _completed = completed;
+            _canAdvance = canAdvance;
+            _primaryLabel.text = completed ? (canAdvance ? "Next" : "Levels") : "Hint";
+            if (_cardAnim != null)
             {
-                _cardSubtitle.text = "All Plops asleep · " + (moves == 1 ? "1 move" : moves + " moves");
-                _buttonsRow.gameObject.SetActive(false);
-                _card.gameObject.SetActive(true);
-                if (_cardAnim != null) StopCoroutine(_cardAnim);
-                _cardAnim = StartCoroutine(PopIn(_card, _cardGroup, 0.45f));
+                StopCoroutine(_cardAnim);
+                _cardAnim = null;
             }
-            else
+            _card.gameObject.SetActive(completed);
+            if (completed) _cardAnim = StartCoroutine(PopIn(_card, _cardGroup, 0.45f));
+        }
+
+        private void PrimaryClicked()
+        {
+            if (!_completed) HintClicked?.Invoke();
+            else if (_canAdvance) NextClicked?.Invoke();
+            else LevelsClicked?.Invoke();
+        }
+
+        public void ShowLevels(IReadOnlyList<LevelDefinition> levels, Func<int, bool> isUnlocked,
+            Func<int, bool> isCompleted, int currentIndex)
+        {
+            _pickerLevels = levels;
+            _isUnlocked = isUnlocked;
+            _isCompleted = isCompleted;
+            _currentIndex = currentIndex;
+            _page = currentIndex / PageSize;
+            RenderLevelPage();
+            _levelPicker.gameObject.SetActive(true);
+            EventSystem.current?.SetSelectedGameObject(null);
+        }
+
+        public void CloseLevelPicker()
+        {
+            if (!IsChoosingLevel) return;
+            _levelPicker.gameObject.SetActive(false);
+            EventSystem.current?.SetSelectedGameObject(null);
+            PickerInteracted?.Invoke();
+        }
+
+        private void BuildLevelPicker()
+        {
+            _levelPicker = NewRect("Level picker", _safe);
+            // Capture pointer events over the background while the modal is visible.
+            var blocker = _levelPicker.gameObject.AddComponent<Image>();
+            blocker.color = Color.clear;
+
+            var panel = NewRect("Level picker card", _levelPicker);
+            panel.anchorMin = new Vector2(0.04f, 0.5f);
+            panel.anchorMax = new Vector2(0.96f, 0.5f);
+            panel.offsetMin = new Vector2(0, -490);
+            panel.offsetMax = new Vector2(0, 490);
+            AddShadow(panel, UiSprites.CardShadow, new Vector2(0, -8), 0.22f);
+            AddCardBackground(panel);
+
+            MakeText(panel, "Picker title", 52, FontStyle.Bold, PlopPalette.Ink, new Vector2(0.42f, 1f),
+                new Vector2(0, -74), new Vector2(460, 80)).text = "Choose a level";
+            MakePill(panel, "Close", new Vector2(0, -74), new Vector2(172, 79), PlopPalette.Milk,
+                CloseLevelPicker, new Vector2(0.85f, 1f));
+
+            for (int slot = 0; slot < PageSize; slot++)
             {
-                if (_cardAnim != null) { StopCoroutine(_cardAnim); _cardAnim = null; }
-                _card.gameObject.SetActive(false);
-                _buttonsRow.gameObject.SetActive(true);
+                int offset = slot;
+                float x = slot % 2 == 0 ? 0.265f : 0.735f;
+                float y = -204 - slot / 2 * 138;
+                _levelSlots[slot] = NewRect("Level slot " + slot, panel);
+                _levelButtons[slot] = MakePill(_levelSlots[slot], "Level", new Vector2(0, y), new Vector2(340, 102),
+                    PlopPalette.Milk, () => LevelChosen?.Invoke(_page * PageSize + offset), new Vector2(x, 1f));
+                _levelLabels[slot] = _levelButtons[slot].GetComponentInChildren<Text>();
             }
+
+            _previousPage = MakePill(panel, "Back", new Vector2(0, 79), new Vector2(170, 80), PlopPalette.Milk,
+                () => ChangeLevelPage(-1), new Vector2(0.20f, 0));
+            _nextPage = MakePill(panel, "More", new Vector2(0, 79), new Vector2(170, 80), PlopPalette.Milk,
+                () => ChangeLevelPage(1), new Vector2(0.80f, 0));
+            _pageLabel = MakeText(panel, "Level range", 32, FontStyle.Normal, PlopPalette.MutedText,
+                new Vector2(0.5f, 0), new Vector2(0, 79), new Vector2(350, 65));
+            _levelPicker.gameObject.SetActive(false);
+        }
+
+        private void ChangeLevelPage(int offset)
+        {
+            _page += offset;
+            RenderLevelPage();
+            PickerInteracted?.Invoke();
+        }
+
+        private void RenderLevelPage()
+        {
+            int start = _page * PageSize;
+            int end = Mathf.Min(start + PageSize, _pickerLevels.Count);
+            for (int slot = 0; slot < PageSize; slot++)
+            {
+                int index = start + slot;
+                var button = _levelButtons[slot];
+                bool present = index < end;
+                _levelSlots[slot].gameObject.SetActive(present);
+                if (!present) continue;
+
+                bool unlocked = _isUnlocked(index);
+                bool done = _isCompleted(index);
+                button.interactable = unlocked;
+                _levelLabels[slot].text = "Level " + (index + 1) + (done ? " · Done" : unlocked ? "" : " · Locked");
+                button.image.color = index == _currentIndex ? PlopPalette.Berry : done ? PlopPalette.Mint : PlopPalette.Milk;
+            }
+            _previousPage.interactable = _page > 0;
+            _nextPage.interactable = end < _pickerLevels.Count;
+            _pageLabel.text = (start + 1) + "–" + end + " of " + _pickerLevels.Count;
+        }
+
+        private static void AddCardBackground(RectTransform parent)
+        {
+            var body = NewRect("Body", parent);
+            var image = body.gameObject.AddComponent<Image>();
+            image.sprite = UiSprites.Card;
+            image.type = Image.Type.Sliced;
+            image.color = PlopPalette.ButtonFill;
+            image.raycastTarget = false;
         }
 
         /// <summary>Header + footer reserve in canvas reference units (consumed by BoardLayout).</summary>
@@ -201,10 +333,10 @@ namespace Plop.Presentation
             rt.SetAsFirstSibling();
         }
 
-        private Button MakePill(RectTransform parent, string label, Vector2 pos, Vector2 size, Color fill, Action onClick)
+        private Button MakePill(RectTransform parent, string label, Vector2 pos, Vector2 size, Color fill, Action onClick, Vector2? anchor = null)
         {
             var rt = NewRect(label + " Button", parent);
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.anchorMin = rt.anchorMax = anchor ?? new Vector2(0.5f, 0.5f);
             rt.anchoredPosition = pos;
             rt.sizeDelta = size;
 

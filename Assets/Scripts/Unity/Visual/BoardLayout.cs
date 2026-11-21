@@ -11,8 +11,8 @@ namespace Plop.Presentation
     public static class BoardLayout
     {
         public static readonly Vector2 ReferenceResolution = new Vector2(1080, 1920);
-        public const float HeaderHeight = 230f;     // reference units below the safe-area top
-        public const float FooterHeight = 270f;     // reference units above the safe-area bottom
+        public const float HeaderHeight = 298f;     // reference units below the safe-area top
+        public const float FooterHeight = 322f;     // reference units above the safe-area bottom
         public const float SideMarginFraction = 0.045f; // of screen width (rounded display corners)
         public const float MinVirtualCells = 5.2f;  // small boards are not blown up beyond ~5.2 cells across
         public const float PanelPadding = 0.30f;    // world units of container around the grid
