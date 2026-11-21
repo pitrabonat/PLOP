@@ -11,15 +11,15 @@ The same NUnit test files run in two environments:
 (`Unity` = `/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/Unity.app/Contents/MacOS/Unity`; close the Editor first.)
 Tests use only NUnit features available in Unity's NUnit 3.5 fork.
 
-## Latest results (2026-11-20, all actually executed)
+## Latest results (2026-11-21, executed)
 
 | Run | Total | Passed | Failed | Skipped |
 |---|---|---|---|---|
-| dotnet test (net10.0) | 84 | 84 | 0 | 0 |
-| Unity 6000.3.29f1 EditMode | 84 | 84 | 0 | 0 |
-| Unity 6000.3.29f1 PlayMode | 17 | 17 | 0 | 0 |
+| dotnet test (net10.0) | 92 | 92 | 0 | 0 |
+| Unity 6000.3.29f1 EditMode | 92 | 92 | 0 | 0 |
+| Unity 6000.3.29f1 PlayMode | 22 | 22 | 0 | 0 |
 
-A mutation check (inverting the front-to-back ordering rule) made 4 rule tests fail, confirming the tests
+An earlier mutation check (inverting the front-to-back ordering rule) made 4 rule tests fail, confirming the tests
 detect rule regressions; the code was restored afterwards.
 
 ## Coverage map
@@ -43,14 +43,23 @@ detect rule regressions; the code was restored afterwards.
 | Generator reproducibility, validity, diagnostics, budget, target difficulty | `GenerationTests.Generator_*`, `GeneratedLevels_*` |
 | PRNG | `SplitMix64_MatchesReferenceValues`, `SplitMix64_NextInt_InRange` |
 | Duplicate detection (8 symmetries + recolor, rules preserved) | `Duplicates_DetectedUnderAllSymmetriesAndRecoloring`, `Generator_WithRegistry_*` |
-| Difficulty | `Difficulty_*` |
+| Difficulty and graph-backed quality | `Difficulty_*`, `PuzzleQualityTests` |
 | Verified solution replay / shipped pack | `Batch_ProducesUniqueVerifiedLevels`, `ShippedLevelPack_IsValidAndVerified` |
-| Unity prototype integration | `GameplayPrototypeTests.*` (move/animate/complete/undo/restart/next, pack loads from Resources, swipe mapping) |
+| Gameplay integration | `GameplayPrototypeTests` (movement, completion, unlocks, replay, persistence, migration, input and current-state hint cancellation) |
+| Full catalog integration | `ProductionCatalogTests` loads every board from Resources, solves, Undoes, Restarts, replays and advances through the controller |
 | Visual foundation | `VisualFoundationTests.*`: corner radii within the style guide, tile/pebble outlines geometrically rounded, one shared atlas texture (batching), density buckets, 9-sliced panel/UI, layout fits 7 screen profiles × 9 board sizes inside the free safe area |
+
+## Android smoke test
+
+The ARM64 IL2CPP development APK installed on the API 37 emulator. In airplane
+mode, a touch swipe solved Level 1, Next unlocked Level 2, and a force-stop
+and relaunch preserved completion, the resume level, and the selected 30 FPS
+cap. The Levels picker replayed Level 1. After a deliberate detour, the
+hint changed from right to down.
 
 ## Not covered by automated tests
 
 - The Level Lab window UI (compiles in Unity; its logic calls tested Core/Solver/Generation APIs) —
   needs a manual check in the Editor.
 - Real touch input on devices and visual appearance of the scene (PlayMode tests call controller methods).
-- Device performance profiling (only desktop .NET micro-measurements so far; see SOLVER.md / ARCHITECTURE.md).
+- Device performance profiling (desktop measurements are recorded in the [production benchmark](benchmarks/generation_benchmark_v2.md)).

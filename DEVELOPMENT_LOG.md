@@ -1,0 +1,29 @@
+# Development log
+
+Previous Unity scaffold, gameplay and visual foundation milestones are recorded
+in the [historical development log](Documentation/DEVELOPMENT_LOG.md).
+
+## 2026-11-21 · Phase 3 puzzle intelligence and progression
+
+- Started from the visual foundation at `ee033b2` and tagged that commit
+  `checkpoint/pre-puzzle-intelligence`.
+- Shipped 10 authored tutorials and 90 seeded puzzles across four difficulty
+  bands. Added graph-backed measures of coordination, required detours and
+  settlement order, and rejection of one-wall variants.
+- Reproduced all 100 boards byte-for-byte with seed `0x504C4F5021`. Strict
+  verification passed on every board. See the
+  [generation benchmark](Documentation/benchmarks/generation_benchmark_v2.md).
+- Expanded Level Lab with filtered inspection, manual pack ordering and edits,
+  guarded production saves, and generation of the ordered campaign.
+- Added ID-based unlocks, completion and replay, plus an on-demand current-board
+  hint and persistent 30/60 FPS selection. Legacy saves preserve access.
+- The Android emulator exposed a directional tutorial line that conflicted
+  with a verified hint after a detour. Changed that tutorial to explain the
+  goal and regenerated the same boards with their original IDs.
+- Final .NET and Unity EditMode each passed 92 tests. Unity PlayMode passed
+  22, including all 100 boards through the controller. Android ARM64 IL2CPP
+  built and the offline emulator verified hints, progression and replay.
+- Restored the .NET harness project files to version control so a fresh
+  checkout builds the same engine-free code and tests.
+
+See [PROJECT_STATE.md](PROJECT_STATE.md) for verification and remaining device QA.

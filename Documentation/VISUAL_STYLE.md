@@ -76,17 +76,20 @@ the same duration, so Plops never desynchronize or overlap. Undo/Restart/Load sn
 
 ## HUD (`GameHud`)
 
-- Header (safe-area top): level title (Ink, bold 58) and move counter ("3 moves", muted 38).
-- Footer: two pill buttons, Undo and Restart, with tinted soft shadows, color-tint press state and a 5%
-  press squish (`PressScale`). Undo is disabled while there is nothing to undo.
-- Completion: a small rounded card — "Sweet dreams!", "All Plops asleep · N moves", Berry **Next** pill —
-  replaces the button row, fading/scaling in after the Plops' hop.
+- Header controls open the level picker and switch between 30 and 60 FPS. Below
+  them sit the level title, move count and the tutorial instruction when present.
+- The footer has rounded Undo, Restart and Hint pills. Completion leaves Undo
+  and Restart available and changes the right-hand pill to Next or Levels.
+- Hints show a verified swipe direction above the footer. The completion card
+  animates into this area after the Plops' hop.
+- The picker pages through ten entries at a time and distinguishes current,
+  completed and locked levels.
 - Built in code; layout in canvas reference units (1080×1920, match 0.5). Text changes only on events.
 
 ## Responsive layout (`BoardLayout`)
 
 - Everything sits inside `Screen.safeArea` (notches, Dynamic Island, punch holes, home indicator).
-- The board fits the region between header (230 reference units) and footer (270) with a side margin of
+- The board fits the region between header (298 reference units) and footer (322) with a side margin of
   4.5% of the screen width (keeps it off rounded display corners); cells stay square; the board is centered
   in that region via camera offset; small boards are not blown up (≥ 5.2 cells of virtual width).
 - Screen/safe-area changes are detected event-driven (`RectChangeNotifier.OnRectTransformDimensionsChange`)

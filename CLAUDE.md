@@ -1,6 +1,8 @@
 # CLAUDE.md — PLOP! (Sleepy Puzzle)
 
-Guidance for Claude Code and other contributors working in this repository.
+Shared guidance for Claude Code, Codex, and other contributors. Start with
+[PROJECT_STATE.md](PROJECT_STATE.md) for the verified handoff, then use
+[ARCHITECTURE.md](ARCHITECTURE.md) and the [development log](DEVELOPMENT_LOG.md).
 
 ## Project
 - **Name:** PLOP! — Sleepy Puzzle (Unity project folder: `PLOP`)
@@ -10,9 +12,7 @@ Guidance for Claude Code and other contributors working in this repository.
 - **Targets:** Android (IL2CPP, ARM64, min API 26, target = highest installed) and iOS (min iOS 15.0)
 - **Orientation:** Portrait only
 - **Repository:** https://github.com/pitrabonat/PLOP (remote `origin`, branch `main`; public)
-- **Status:** Gameplay foundation implemented: deterministic core simulation, BFS solver, procedural generator,
-  Level Lab, placeholder Unity prototype, 100-level pack. No final art, ads, analytics or monetization —
-  do not add ad/analytics SDKs without explicit approval.
+- **Status:** Phase 3 campaign, Level Lab, saved progression, and verified hints. See PROJECT_STATE.md for current verification.
 - **Visual style:** "Soft Toy Minimalism" — see `Documentation/VISUAL_STYLE.md` (palette, corner radii, animation).
 - **Docs:** `Documentation/` — ARCHITECTURE, GAME_RULES, SOLVER, LEVEL_GENERATION, LEVEL_FORMAT, VISUAL_STYLE, TESTING, DEVELOPMENT_LOG.
 
@@ -72,6 +72,14 @@ Documentation/       design & technical docs (+ benchmarks/)
   JSON breaking change → `LevelSerializer.SchemaVersion`.
 - Levels that cannot be verified within budget are rejected — never assumed solvable.
 
+## Handoff and Git
+
+- Check the branch and working tree before edits. Keep an identifiable checkpoint
+  for significant work, use meaningful commits, and preserve existing changes.
+- Use one coding agent as the working-tree editor. Update `PROJECT_STATE.md`
+  and `DEVELOPMENT_LOG.md` after milestones and record executed verification.
+- Keep generated levels and Unity .meta changes with the source changes they belong to.
+
 ## Conventions
 - Namespaces: `Plop.<Area>` (e.g. `Plop.Core`, `Plop.Solver`); editor code in `Plop.EditorTools`.
 - One public type per file; file name = type name. PascalCase types/methods, `_camelCase` private fields, `[SerializeField] private` over public fields.
@@ -92,16 +100,18 @@ Documentation/       design & technical docs (+ benchmarks/)
 ## Tests, levels and benchmark
 ```bash
 export NUGET_PACKAGES=/Volumes/PLOP_DEV/Cache/NuGet          # keep NuGet cache off the internal SSD
-dotnet test DotNet/Plop.Tests/Plop.Tests.csproj                # fast: 84 tests in ~1 s
-dotnet run -c Release --project DotNet/Plop.Bench -- --count 100 \
-  --pack Assets/Levels/Resources/Levels/PLOP_Pack_001.json --report Documentation/benchmarks/generation_benchmark_v1.md
+dotnet test DotNet/Plop.Tests/Plop.Tests.csproj                # fast engine-free tests
+dotnet run -c Release --project DotNet/Plop.Bench -- --production \
+  --pack Assets/Levels/Resources/Levels/PLOP_Pack_001.json \
+  --report Documentation/benchmarks/generation_benchmark_v2.md
+dotnet run -c Release --project DotNet/Plop.Bench -- --verify-production Assets/Levels/Resources/Levels/PLOP_Pack_001.json
 dotnet run -c Release --project DotNet/Plop.Bench -- --perf Assets/Levels/Resources/Levels/PLOP_Pack_001.json
 UNITY=/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/Unity.app/Contents/MacOS/Unity
 "$UNITY" -batchmode -nographics -projectPath "$PWD" -runTests -testPlatform EditMode -testResults /Volumes/PLOP_DEV/Builds/Logs/editmode.xml
 "$UNITY" -batchmode -projectPath "$PWD" -runTests -testPlatform PlayMode -testResults /Volumes/PLOP_DEV/Builds/Logs/playmode.xml
 "$UNITY" -batchmode -quit -projectPath "$PWD" -executeMethod Plop.EditorTools.PlopSceneSetup.CreateGameplayScene
 ```
-Level Lab: Unity menu **PLOP → Level Lab** (edit, generate, solve, replay, metrics, import/export, packs, batches).
+Level Lab: Unity menu **PLOP → Level Lab** (edit, generate, solve, replay, metrics, import/export, batch generation, filters and manual catalog ordering).
 
 ## Build instructions
 GUI: Unity menu **PLOP → Build → Android APK (Development)** / **iOS Xcode Project (Device)** / **iOS Xcode Project (Simulator)**.
@@ -111,6 +121,7 @@ CLI (quit any open Editor on this project first):
 UNITY=/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/Unity.app/Contents/MacOS/Unity
 PROJ=/Volumes/PLOP_DEV/Unity/Projects/PLOP
 # Android dev APK -> /Volumes/PLOP_DEV/Builds/Android/PLOP-dev.apk
+# Set PLOP_ANDROID_APK to use a separate output path for a verification build.
 "$UNITY" -batchmode -quit -projectPath "$PROJ" -buildTarget Android -executeMethod Plop.EditorTools.PlopBuild.BuildAndroid -logFile -
 # Install & launch on a connected phone
 adb install -r /Volumes/PLOP_DEV/Builds/Android/PLOP-dev.apk

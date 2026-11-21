@@ -5,9 +5,9 @@
 | Assembly (asmdef) | Folder | Depends on | UnityEngine? | Ships in player? |
 |---|---|---|---|---|
 | `PLOP.Core` | `Assets/Scripts/Core` | — | **No** (`noEngineReferences`) | yes |
-| `PLOP.Solver` | `Assets/Scripts/Solver` | Core | **No** | yes (for future hints) |
+| `PLOP.Solver` | `Assets/Scripts/Solver` | Core | **No** | yes (for hints) |
 | `PLOP.Generation` | `Assets/Scripts/LevelGeneration` | Core, Solver | **No** | compiled in, never called at runtime |
-| `PLOP.Unity` | `Assets/Scripts/Unity` | Core, Input System, uGUI | yes | yes |
+| `PLOP.Unity` | `Assets/Scripts/Unity` | Core, Solver, Input System, uGUI | yes | yes |
 | `PLOP.LevelLab` | `Assets/Scripts/LevelLab/Editor` | Core, Solver, Generation | yes (Editor) | **no** (Editor platform only) |
 | `PLOP.Tests` | `Assets/Tests/EditMode` | Core, Solver, Generation, NUnit | Editor | no |
 | `PLOP.Tests.PlayMode` | `Assets/Tests/PlayMode` | Core, Solver, Unity, NUnit | yes | no (test assembly) |
@@ -53,7 +53,7 @@ named to avoid shadowing the global `Unity.*` namespaces), `Plop.LevelLab`, `Plo
 
 ```
 SwipeInput ──Direction──▶ PlopGameController ──TryMove──▶ GameEngine (Core)
-GameHud ──Undo/Restart/Next──▶      │                          │
+GameHud ──Undo/Restart/Next/Hint──▶      │                          │
                                      ◀────── GameEvent ────────┘
                          BoardView.Play(events) / Sync(state)   GameHud.SetMoves/SetCompleted
 ```
@@ -63,26 +63,32 @@ GameHud ──Undo/Restart/Next──▶      │                          │
   9-sliced rounded container) and drives `PlopView`s (jelly Plops: squash & stretch, landing wobble, bump,
   idle breathing/blinking, sleep, completion hop) from `GameEvent`s in a single allocation-free `Update`;
   `Sync` snaps after undo/restart/load. See VISUAL_STYLE.md.
-- `SwipeInput` — Input System callbacks (pointer press/release swipe, arrows/WASD, Z/Backspace, R, N/Enter).
+- `SwipeInput` — Input System callbacks (touch or mouse swipe, arrows/WASD, Z/Backspace, R, H, N/Enter).
 - `GameHud` — uGUI built in code (rounded 9-sliced pills/card from `UiSprites`, `PressScale`), inside
   `Screen.safeArea`; text changes only on events. `RectChangeNotifier` reports screen/safe-area changes.
 - `BoardLayout` — pure portrait layout math: fits the board between header and footer in the safe area.
 - `LevelLibrary` — loads `Resources/Levels/PLOP_Pack_001.json` without the dev block.
+- `LevelProgress` — stores completed and unlocked level IDs and a resume ID in one pack-specific
+  PlayerPrefs record. Completion unlocks the next puzzle immediately. Legacy positional saves
+  preserve access through that position and resume the prior board when its ID survives. They
+  grant zero historical completions because the previous Next shortcut could skip unsolved puzzles.
 - `PlopPalette` — Soft Toy Minimalism colors and the gameplay-color → palette-slot mapping.
 - `ShapeAtlas` / `UiSprites` / `Sdf` — SDF-rasterized rounded sprites at screen-appropriate density.
 
 ## Performance design
 
-- No generation or solving during gameplay; the pack is precomputed.
-- Gameplay is event-driven; per frame there is only (a) the ~0.12 s move interpolation coroutine while a move
-  animates and (b) a constant-time idle check that lowers `OnDemandRendering.renderFrameInterval`
-  (default: render every 3rd frame when idle; input still processed every frame).
-- `Application.targetFrameRate` 60 or 30 (`PlopGameController.SetFrameRateMode`), `vSyncCount = 0`.
-- No physics; no per-frame allocations in gameplay code. `TryMove` allocates ~170 B per **command**
-  (history snapshot + event array), measured with `dotnet run --project DotNet/Plop.Bench -- --perf …`.
-- Development logging (`PlopLog.Info`) is compiled out of release players (`[Conditional]`).
-- Solver hint support: `BfsSolver.Solve` accepts `CancellationToken` / time / state budgets so it can run
-  on a worker thread (`Task.Run`) without blocking gameplay. Not wired to UI yet.
+- The pack is precomputed. An explicit hint request schedules one cancelable
+  BFS on a worker with a 300,000-state and 200 ms search budget. The worker
+  verifies the proposed route through `GameEngine` from the same snapshot.
+  Moving, undoing, restarting, changing levels or disabling gameplay invalidates
+  the result. The controller only displays a direction for the unchanged board.
+- Gameplay and HUD updates are event-driven. `BoardView.Update` drives the
+  toy animations. Idle rendering defaults to every third frame once visuals
+  settle, with input processed at the selected 30 or 60 FPS.
+- No physics or normal-gameplay generation. Frame-rate preference and progress
+  save only on player actions. Development logging compiles out of release builds.
+- Desktop solver and per-command measurements are available through
+  `dotnet run --project DotNet/Plop.Bench -- --perf <pack>`.
 
 ## Extension points
 
@@ -91,5 +97,4 @@ GameHud ──Undo/Restart/Next──▶      │                          │
   state (e.g. toggled buttons), add it to `GameState` and `StateCodec` (and bump `SolverInfo.Version`).
 - Art/animation: replace sprites in `ShapeAtlas` or `PlopView` (e.g. with authored character art) without
   touching gameplay; events already carry everything needed.
-- Hints: run `BfsSolver.Solve(level, engine.CurrentState)` off the main thread.
 - Difficulty tuning: `DifficultyWeights` (weights + thresholds) — no code changes needed.

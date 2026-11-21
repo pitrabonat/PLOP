@@ -4,18 +4,19 @@ A cozy mobile puzzle game for **Android** and **iOS**, built with **Unity 6.3 LT
 
 Repository: https://github.com/pitrabonat/PLOP
 
-> Status: gameplay foundation — deterministic simulation, solver, procedural generator, Level Lab,
-> placeholder prototype scene (`Assets/Scenes/Gameplay.unity`) and a 100-level pack. Placeholder graphics only.
+> Phase 3 adds the verified 100-level campaign, saved progression, and hints that adapt to the current board.
 >
-> Docs: [Architecture](Documentation/ARCHITECTURE.md) · [Rules](Documentation/GAME_RULES.md) ·
-> [Solver](Documentation/SOLVER.md) · [Generation](Documentation/LEVEL_GENERATION.md) ·
-> [Level format](Documentation/LEVEL_FORMAT.md) · [Testing](Documentation/TESTING.md) ·
-> [Dev log](Documentation/DEVELOPMENT_LOG.md)
+> [Project state](PROJECT_STATE.md) · [Architecture](ARCHITECTURE.md) ·
+> [Rules](Documentation/GAME_RULES.md) · [Generation](Documentation/LEVEL_GENERATION.md) ·
+> [Testing](Documentation/TESTING.md) · [Development log](DEVELOPMENT_LOG.md)
 
-## Play the prototype
+## Play
 
-Open `Assets/Scenes/Gameplay.unity` and press Play. Controls: swipe / mouse-drag or arrow keys & WASD to move
-all awake Plops; Z or Backspace = Undo; R = Restart; N or Enter = Next level (also on-screen buttons).
+Open `Assets/Scenes/Gameplay.unity` and press Play. Swipe, mouse drag, or use the
+arrow keys or WASD to move all awake Plops. **Z** or **Backspace** undoes, **R**
+restarts, **H** requests a hint, and **N** or **Enter** advances after completion.
+Open **Levels** to replay unlocked puzzles and tap the FPS button to switch
+between 30 and 60 FPS.
 
 ## Quick start
 
@@ -33,11 +34,11 @@ Before unplugging SanDisk: quit Unity/VS Code/Xcode, run `plop-eject`, then ejec
 | Path | Purpose |
 |---|---|
 | `Assets/Art`, `Audio`, `Animations`, `Materials`, `Prefabs` | Content |
-| `Assets/Scenes` | Scenes (`Boot.unity` is the build entry scene) |
-| `Assets/Scripts/{Core,Gameplay,LevelGeneration,Solver,UI,SaveSystem}` | Runtime code (empty) |
+| `Assets/Scenes` | Scenes (`Gameplay.unity` is the build entry scene) |
+| `Assets/Scripts/{Core,Solver,LevelGeneration,Unity,LevelLab}` | Rules, tools and presentation |
 | `Assets/Scripts/Editor` | Editor-only tooling (build script) |
 | `Assets/Levels` | Level data |
-| `Tests/` | Test plans/notes (Unity test assemblies go under `Assets/Tests` when added) |
+| `Assets/Tests` | Unity EditMode and PlayMode suites |
 | `Documentation/` | Design & technical docs |
 
 See [CLAUDE.md](CLAUDE.md) for conventions, storage paths and build commands.
