@@ -14,7 +14,7 @@ namespace Plop.Generation
         private const int AttemptsPerSlot = 400;
         private static readonly string[] TutorialInstructions =
         {
-            "Swipe right to reach the matching Nest.",
+            "Swipe the Plop into its matching Nest.",
             "Each swipe moves a Plop one tile.",
             "Combine swipes to reach the Nest.",
             "Go around the pebble.",

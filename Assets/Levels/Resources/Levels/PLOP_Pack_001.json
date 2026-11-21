@@ -6,7 +6,7 @@
       "schemaVersion": 1,
       "id": "PLOP-A77A222A745E",
       "name": "Level 1",
-      "instruction": "Swipe right to reach the matching Nest.",
+      "instruction": "Swipe the Plop into its matching Nest.",
       "width": 4,
       "height": 4,
       "walls": [],

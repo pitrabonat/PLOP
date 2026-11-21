@@ -21,8 +21,8 @@ Seed `0x504C4F5021`, generator v2, solver v1, .NET 10.0.15. Single-threaded desk
 | Solver failures (proven unsolvable) | 5 |
 | Search-budget failures | 0 |
 | Duplicate rejection rate | 0.18% of candidates |
-| Generation duration | 1.49 s |
-| Avg generation time per candidate | 2.67 ms |
+| Generation duration | 1.48 s |
+| Avg generation time per candidate | 2.65 ms |
 | Solution length avg / min / max | 10.5 / 1 / 20 |
 | Difficulty Tutorial | 4 |
 | Difficulty Easy | 6 |
