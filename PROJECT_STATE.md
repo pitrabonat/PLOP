@@ -31,6 +31,8 @@ The Android IL2CPP development build and offline emulator smoke test passed.
   `/Volumes/PLOP_DEV/Builds/Android/Phase3/PLOP-phase3-dev.apk`.
   The API 37 emulator in airplane mode verified swipe input, an updated hint
   after a detour, completion and unlocks, replay, relaunch and 30 FPS persistence.
+  The revised APK displayed the goal-based tutorial and a verified down hint
+  after an upward detour. Following the hint completed Level 1 in three swipes.
   Build logs and Unity test XML are in `/Volumes/PLOP_DEV/Builds/Logs/phase3`.
 - The previous iOS Simulator build and launch are recorded in the
   [historical log](Documentation/DEVELOPMENT_LOG.md).
@@ -39,6 +41,8 @@ The Android IL2CPP development build and offline emulator smoke test passed.
 
 - Difficulty calibration, touch feel, battery use and thermals need physical
   device playtests. Level Lab authoring actions need a manual editor pass.
+- The revised APK's first launch on a newly booted emulator returned to the
+  launcher during Android overlay updates. The retry loaded and played.
 - The Phase 3 iOS player build and simulator smoke test are pending. The
   previous test iPhone is MDM-managed and blocked developer app launches.
 - Legacy progress records only an index. The migration preserves unlocked
