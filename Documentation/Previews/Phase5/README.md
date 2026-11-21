@@ -1,6 +1,7 @@
 # PLOP! Phase 5 previews
 
-These captures came from the running Unity Android development player.
+These captures came from the running Unity development player on the
+Android emulator and iOS Simulator.
 
 | Capture | Portrait size |
 |---|---|
@@ -12,7 +13,9 @@ These captures came from the running Unity Android development player.
 | [Level 8 compact profile](compact-level8.png) | 720×1280 |
 | [Berry Plop close-up](plop-close-up.png) | Native-pixel crop from 1440×3200 |
 | [Level 8 recovery modal](deadlock.png) | 1080×1920 |
+| [Level 29 completion](completion.png) | 1080×1920 |
 | [Settings](settings.png) | 1080×1920 |
+| [Level 8 recovery on the iPhone 15 Pro Max simulator](ios-deadlock.png) | 1290×2796 |
 
 The [visual gap analysis](../../VISUAL_GAP_ANALYSIS.md) compares the running
 game with the supplied composition and material references.

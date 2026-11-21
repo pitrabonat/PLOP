@@ -66,7 +66,7 @@ The game rules and the production pack match the Phase 4 checkpoint.
 
 The signed ARM64 APK is at
 `/Volumes/PLOP_DEV/Builds/Android/Phase5/PLOP-phase5-dev.apk`.
-It is 44,949,426 bytes, uses APK signature scheme v2, and passed the
+It is 44,948,830 bytes, uses APK signature scheme v2, and passed the
 16 KB ZIP alignment check. The API 37 emulator installed and loaded
 the native player and its proof tables for all 100 levels. ADB showed
 the emulator as the sole device during the run.
@@ -77,6 +77,8 @@ triggered Level 8 recovery. Undo restored the previous one-move state,
 Keep playing retained the deadlocked two-move state, and Restart restored
 zero moves. A normal save run advanced to Level 2 and retained the
 level, the 30 FPS preference and both muted volumes after relaunch.
+The final APK rendered the corrected **Sweet Dreams!** heading after
+Level 29’s nine-move solution and advanced to Level 30 by touch.
 
 SurfaceFlinger TimeStats recorded the game surface while swiping in Level 1
 at 1080×1920 on the first Phase 5 build. Unity’s Settings and stored cap were
@@ -93,6 +95,15 @@ reported 265,627 KiB PSS and 391,088 KiB RSS. These readings describe the
 hosted development player. Physical-device frame pacing, power draw,
 temperature and audio mixing remain unmeasured. Raw logs are under
 `/Volumes/PLOP_DEV/Builds/Logs/phase5/`.
+
+## Phase 5 iOS compatibility
+
+Unity exported the Phase 5 ARM64 iOS Simulator project. Xcode 26.3 built
+and ran it on the iPhone 15 Pro Max simulator with simulator signing disabled.
+Level 8 reproduced the recovery card at 1290×2796 with all three actions
+within the safe area. This compatibility build preceded the Android
+completion-heading correction. The modal scrim follows the safe-area bounds
+on this profile. Signed physical iOS installation was outside this check.
 
 ## Phase 4 iOS Simulator
 

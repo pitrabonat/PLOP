@@ -32,6 +32,11 @@ choose **PLOP → Play Game** or press Play in `Assets/Scenes/Gameplay.unity`.
 - The 44.9 MB ARM64 development APK passed signature and alignment checks
   and launched in the API 37 emulator. The measured emulator frame pacing
   varied at the 60 FPS cap. Physical-device profiling remains open.
+  The final rebuild rendered the corrected completion title and advanced
+  from Level 29 to Level 30 by touch.
+- Xcode 26.3 built and ran the Phase 5 iOS compatibility export before the
+  completion heading correction. Level 8’s recovery card rendered inside
+  the iPhone 15 Pro Max safe area.
 - Build and device verification are recorded in
   [Documentation/TESTING.md](Documentation/TESTING.md).
   The [visual gap analysis](Documentation/VISUAL_GAP_ANALYSIS.md)
