@@ -263,8 +263,10 @@ namespace Plop.Presentation
             _cardGroup = _completion.gameObject.AddComponent<CanvasGroup>();
             AddShadow(_completion, UiSprites.CardShadow, HudTheme.ShadowOffset, HudTheme.CardShadow);
             AddCardBackground(_completion, HudTheme.CompletionSurface);
-            MakeText(_completion, "Completion message", HudTheme.Heading, FontStyle.Bold, HudTheme.Ink,
-                Vector2.one * 0.5f, new Vector2(0, 48), new Vector2(590, 69)).text = "Sweet Dreams!";
+            var message = MakeText(_completion, "Completion message", HudTheme.Heading, FontStyle.Bold, HudTheme.Ink,
+                Vector2.one * 0.5f, new Vector2(0, 48), new Vector2(590, 86));
+            message.verticalOverflow = VerticalWrapMode.Overflow;
+            message.text = "Sweet Dreams!";
             MakeButton(_completion, "Replay", new Vector2(-161, -43), new Vector2(252, 76), PlopPalette.ButtonFill,
                 () => RestartClicked?.Invoke(), icon: HudIcons.Kind.Restart, fontSize: HudTheme.Control, touchHeight: 114f);
             var advance = MakeButton(_completion, "Next Level", new Vector2(130, -43), new Vector2(297, 76),

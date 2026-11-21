@@ -63,7 +63,12 @@ namespace Plop.Tests.PlayMode
                 Assert.IsFalse(hud.BlocksGameplayInput);
                 controller.Move(Direction.Right);
                 Assert.IsTrue(controller.Engine.IsCompleted);
-                Assert.IsTrue(root.GetComponentsInChildren<Text>().Any(text => text.text == "Sweet Dreams!"));
+                var completionMessage = root.GetComponentsInChildren<Text>().Single(text => text.name == "Completion message");
+                Assert.AreEqual("Sweet Dreams!", completionMessage.text);
+                generator.Invalidate();
+                generator.Populate(completionMessage.text,
+                    completionMessage.GetGenerationSettings(completionMessage.rectTransform.rect.size));
+                Assert.Greater(generator.vertexCount, 4, "The completion heading must generate visible glyphs.");
                 FindButton(root, "Next Level").onClick.Invoke();
                 Assert.AreEqual(1, controller.LevelIndex);
             }
