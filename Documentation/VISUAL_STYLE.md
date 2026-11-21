@@ -8,7 +8,8 @@ system serves every board and each Plop color.
 
 | Token | Value | Use |
 |---|---|---|
-| Milk | `#F7F2EB` | Screen and secondary controls |
+| Play background | `#FCE8D9` | Warm canvas behind the tray |
+| Milk | `#F7F2EB` | Secondary controls |
 | Berry | `#E9AEC4` | Berry Plop and primary action |
 | Mint | `#A8D7CD` | Mint Plop, slider fill and completion tint |
 | Lilac | `#B6ADE3` | Lilac Plop |
@@ -23,11 +24,11 @@ Sky and Peach slots. Nests use softened versions of those same colors.
 
 | Piece | Geometry | Material treatment |
 |---|---|---|
-| Floor tile | 0.92-cell edge, corner radius 19% of edge | Satin center and rounded molded lip |
-| Pebble wall | 0.86-cell edge, corner radius 22% of edge | Toy-block profile with soft sides and highlight |
-| Nest | 0.88-cell edge, corner radius 24% of edge | Padded rim, inset well and a tinted edge |
-| Board tray | Nine-sliced, 0.46-world-unit corner radius | Raised rim with inset face and baked shadow |
-| Plop | Common asymmetric gel silhouette | Off-center crown, rounded foot, gel rim and gentle highlights |
+| Floor tile | Generously rounded square with a raised face | Warm ivory, subtle upper-left bevel light and a soft contact edge |
+| Pebble wall | Rounded toy-block footprint with a visible skirt | Smoky lavender and shallow pits give the obstacle a matte, molded surface |
+| Nest | Pinched pillow with raised corners and a recessed center | Glossy matched color with a small cream crescent and padded seams |
+| Board tray | Nine-sliced frame and recessed interior | Cream rim over warm peach, with a directional inset shadow |
+| Plop | Shared asymmetric dome with a gently lobed foot | Large oval eyes, a bright softbox reflection, tint variations and diffuse floor bounce |
 
 `ShapeAtlas` rasterizes signed-distance masks with one-pixel edge coverage
 straight into a shared RGBA upload buffer. It caches textures by screen
@@ -55,16 +56,18 @@ snap the view to the saved state and clear any unfinished motion.
 
 `HudTheme` sets canvas dimensions, corner radii, gaps, type scale, shadow
 offset, press feedback and completion timing. The reference canvas is
-1080 × 1920 with a 0.5 width/height match. The board fits between the 326-unit
-header and 294-unit footer inside the safe area. The modal card scales down on
-compact windows. Rounded capsules use a 58-unit design radius and cards use
-a 50-unit radius. Control glyphs share a small baked alpha strip.
+1080 × 1920 with a 0.5 width/height match. The tray aims for 87.5% of
+safe width on small boards and uses both dimensions to fit taller boards.
+The level badge and move chip sit above the tray, with icon-led controls
+underneath. Raised cream controls, plum icon ink and a pink move accent
+follow the portrait reference. Compact windows scale the modal cards.
 
-The top area presents Levels, Settings, the current level, moves and any
-tutorial instruction. Undo, Restart and Hint are available along the bottom.
-Completion says **Sweet Dreams!** and offers Next Level. Settings contains
-independent Music and Sound sliders and the 30/60 FPS choice. Open menus
-capture board input.
+Level selection and Settings flank the PLOP! wordmark. Contextual tutorial
+text joins the badge only when needed. Undo, Restart and Hint remain visible
+during ordinary play. **Sweet Dreams!** uses a compact action card. The
+deadlock card shows a worried Plop and offers Undo Move, Restart Level and
+Keep playing. Settings retains independent Music and Sound sliders and the
+30/60 FPS choice.
 
 The HUD embeds Nunito weights 500 and 800 as static Latin subsets. The source
 revision is `8c6a9bb9732545b9ed53f29ec5e1ab0ff53c4e6f` and the SIL OFL 1.1

@@ -12,7 +12,7 @@ Shared guidance for Claude Code, Codex, and other contributors. Start with
 - **Targets:** Android (IL2CPP, ARM64, min API 26, target = highest installed) and iOS (min iOS 15.0)
 - **Orientation:** Portrait only
 - **Repository:** https://github.com/pitrabonat/PLOP (remote `origin`, branch `main`; public)
-- **Status:** Phase 4 visual production, responsive controls and audio over the Phase 3 campaign. See PROJECT_STATE.md for verification.
+- **Status:** Phase 5 portrait visual overhaul and automatic deadlock recovery. See PROJECT_STATE.md for verification.
 - **Visual style:** "Soft Toy Minimalism" — see `Documentation/VISUAL_STYLE.md` (palette, corner radii, animation).
 - **Docs:** `Documentation/` — ARCHITECTURE, GAME_RULES, SOLVER, LEVEL_GENERATION, LEVEL_FORMAT, VISUAL_STYLE, TESTING, DEVELOPMENT_LOG.
 
@@ -53,7 +53,8 @@ Assets/
     Gameplay/ UI/ SaveSystem/          reserved (empty)
   Tests/EditMode/    PLOP.Tests          — NUnit tests (also run by DotNet/Plop.Tests)
   Tests/PlayMode/    PLOP.Tests.PlayMode — Unity integration tests
-  Levels/Resources/Levels/PLOP_Pack_001.json — shipped level pack (100 verified levels)
+  Levels/Resources/Levels/PLOP_Pack_001.json  — shipped level pack (100 verified levels)
+  Levels/Resources/Levels/PLOP_Deadlocks_001.bytes — generated exact deadlock data
   Art/ Audio/ Animations/ Materials/ Prefabs/ Settings/
 DotNet/              Plop.Lib (netstandard2.1 build of Core/Solver/Generation), Plop.Tests, Plop.Bench
 Documentation/       design & technical docs, benchmarks and running-game previews
@@ -67,7 +68,10 @@ Documentation/       design & technical docs, benchmarks and running-game previe
   a Plop's root position comes only from `PlopMoved.To` / `Sync(state)`; animation touches child transforms.
 - Visual rule: no sharp corners. New board/UI shapes go into `ShapeAtlas` / `UiSprites` as SDF shapes with
   radii as fractions of the cell; colors only from `PlopPalette`; no pure black shadows or pure white highlights.
-- No generation/solving at runtime in `Update`; the pack is precomputed. Hints must run off the main thread.
+- No generation or solver search in `Update`. Runtime uses exact, versioned
+  deadlock proofs from the sidecar and expands keys only for the current level.
+  Hints and the bounded automatic fallback run off the main thread. Cancellation
+  or a search limit leaves the result unknown.
 - Any change that can alter generated output bumps `GeneratorInfo.Version`; solver output → `SolverInfo.Version`;
   JSON breaking change → `LevelSerializer.SchemaVersion`.
 - Levels that cannot be verified within budget are rejected — never assumed solvable.
@@ -112,6 +116,9 @@ dotnet run -c Release --project DotNet/Plop.Bench -- --production \
   --pack Assets/Levels/Resources/Levels/PLOP_Pack_001.json \
   --report Documentation/benchmarks/generation_benchmark_v2.md
 dotnet run -c Release --project DotNet/Plop.Bench -- --verify-production Assets/Levels/Resources/Levels/PLOP_Pack_001.json
+dotnet run -c Release --project DotNet/Plop.Bench -- --deadlocks \
+  Assets/Levels/Resources/Levels/PLOP_Pack_001.json \
+  Assets/Levels/Resources/Levels/PLOP_Deadlocks_001.bytes 100000
 dotnet run -c Release --project DotNet/Plop.Bench -- --perf Assets/Levels/Resources/Levels/PLOP_Pack_001.json
 UNITY=/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/Unity.app/Contents/MacOS/Unity
 "$UNITY" -batchmode -nographics -projectPath "$PWD" -runTests -testPlatform EditMode -testResults /Volumes/PLOP_DEV/Builds/Logs/editmode.xml

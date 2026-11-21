@@ -9,7 +9,9 @@ describes the system boundaries and [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md) rec
   Inspect the Git branch and working tree before editing. Preserve unrelated edits.
   Have one coding agent modify the working tree at a time.
 - Keep Core, Solver and Generation free of UnityEngine. Engine, solver and tools
-  use `MoveRules.Apply`. Generate and verify content offline.
+  use `MoveRules.Apply`. Generate and verify content offline. Regenerate the
+  deadlock sidecar when rules, state encoding or campaign geometry change.
+  Show recovery only for an exact offline proof or a completed solver search.
 - Preserve rounded Soft Toy Minimalism and use the existing palette, SDF shapes,
   and event-driven views for new interface elements. Use PLOP → Play Game to
   preview the production gameplay scene in the Editor.

@@ -15,9 +15,9 @@ Tests use only NUnit features available in Unity's NUnit 3.5 fork.
 
 | Run | Total | Passed | Failed | Skipped |
 |---|---|---|---|---|
-| dotnet test (net10.0) | 92 | 92 | 0 | 0 |
-| Unity 6000.3.29f1 EditMode | 92 | 92 | 0 | 0 |
-| Unity 6000.3.29f1 PlayMode | 29 | 29 | 0 | 0 |
+| dotnet test (net10.0) | 98 | 98 | 0 | 0 |
+| Unity 6000.3.29f1 EditMode | 98 | 98 | 0 | 0 |
+| Unity 6000.3.29f1 PlayMode | 40 | 40 | 0 | 0 |
 
 An earlier mutation check (inverting the front-to-back ordering rule) made 4 rule tests fail, confirming the tests
 detect rule regressions; the code was restored afterwards.
@@ -50,6 +50,17 @@ detect rule regressions; the code was restored afterwards.
 | Visual production | `VisualFoundationTests` covers rounded silhouettes, shared atlas, density, nine-slicing, 7 screen profiles × 9 board sizes, anticipation, rapid retargeting, recoil, and clearing the sleep pose |
 | Settings and completion | `ProductionHudTests` covers title glyphs, modal input capture, round slider handles at zero, independent audio sliders, 30/60 FPS control and immediate Next Level |
 | Audio | `PlopAudioTests` covers synthesized clips and independence of the effects/music controls |
+| Portrait fit | `ResponsivePortraitTests` checks 1080×1920, 1170×2532, 1440×3200 and 720×1280, plus asymmetric insets and tall or wide boards |
+| Deadlock proofs | `DeadlockCatalogTests` covers exact solvable and proven-deadlocked states, incomplete graphs, unknown states, geometry changes and corrupt data |
+| Recovery UI | `DeadlockRecoveryTests` checks production Level 8’s movable trap, Undo, Restart, dismissal, a bounded search, completion priority, superseded swipes and a pending result during level changes |
+
+## Phase 5 level verification
+
+Strict production catalog verification passed. The deadlock sidecar regenerated
+byte-for-byte at a deterministic 100,000-state budget per level. Full analysis
+classified 913,919 states across all 100 levels. It found 10,490 proven dead
+ends across 51 levels. The largest graph has 77,196 states.
+The game rules and the production pack match the Phase 4 checkpoint.
 
 ## Phase 4 iOS Simulator
 

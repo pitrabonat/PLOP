@@ -5,7 +5,7 @@
 | Assembly (asmdef) | Folder | Depends on | UnityEngine? | Ships in player? |
 |---|---|---|---|---|
 | `PLOP.Core` | `Assets/Scripts/Core` | — | **No** (`noEngineReferences`) | yes |
-| `PLOP.Solver` | `Assets/Scripts/Solver` | Core | **No** | yes (for hints) |
+| `PLOP.Solver` | `Assets/Scripts/Solver` | Core | **No** | yes (hints and deadlock proofs) |
 | `PLOP.Generation` | `Assets/Scripts/LevelGeneration` | Core, Solver | **No** | compiled in, never called at runtime |
 | `PLOP.Unity` | `Assets/Scripts/Unity` | Core, Solver, Input System, uGUI | yes | yes |
 | `PLOP.LevelLab` | `Assets/Scripts/LevelLab/Editor` | Core, Solver, Generation | yes (Editor) | **no** (Editor platform only) |
@@ -70,8 +70,13 @@ GameHud ──Undo/Restart/Next/Hint──▶      │                          
   the independent effects/music sources. Settings changes go through the HUD
   and save their gains as local preferences. Playback suspends in the background.
 - `HudTheme` and `HudIcons` share canvas geometry, typography and icons across the HUD and modal cards.
-- `BoardLayout` — pure portrait layout math: fits the board between header and footer in the safe area.
-- `LevelLibrary` — loads `Resources/Levels/PLOP_Pack_001.json` without the dev block.
+- `BoardLayout` — pure portrait tray fit with 6.25% side margins in the safe
+  area. It fits the complete tray against both dimensions with one scale.
+  The HUD places its badges and action dock relative to those bounds.
+- `LevelLibrary` loads the ordered pack and its generated binary deadlock
+  sidecar. `DeadlockCatalog` checks format, integrity, and geometry identity,
+  then decodes a single level at selection. The complete 100-level sidecar
+  uses 926,071 bytes on disk and exact canonical keys at runtime.
 - `LevelProgress` — stores completed and unlocked level IDs and a resume ID in one pack-specific
   PlayerPrefs record. Completion unlocks the next puzzle immediately. Legacy positional saves
   preserve access through that position and resume the prior board when its ID survives. They
@@ -86,6 +91,11 @@ GameHud ──Undo/Restart/Next/Hint──▶      │                          
   verifies the proposed route through `GameEngine` from the same snapshot.
   Moving, undoing, restarting, changing levels or disabling gameplay invalidates
   the result. The controller only displays a direction for the unchanged board.
+- A state-changing swipe checks the current level's index with an
+  allocation-free binary search. Full graph traversal and reverse reachability
+  use the same `MoveRules.Apply` as Core. Unknown states debounce to a
+  20,000-state, 80 ms cancelable fallback. Completion, revision checks and a
+  motion barrier keep old results and overlays off the new board.
 - Gameplay and HUD updates are event-driven. `BoardView.Update` drives the
   toy animations. Idle rendering defaults to every third frame once visuals
   settle, with input processed at the selected 30 or 60 FPS.
