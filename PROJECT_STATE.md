@@ -24,7 +24,23 @@ The checkout is on `feature/visual-production`, based on `f5c5cac`
 The Phase 3 scene launched in Unity before edits and reacted to keyboard
 input. The Phase 3 APK installed and solved Level 1 by touch in the emulator.
 The [baseline screenshot](Documentation/Previews/phase3-android-baseline.png)
-records that running build. Phase 4 builds and device checks are under way.
+records that running build.
+
+- Unity compiled the production presentation. .NET and Unity EditMode
+  each passed 92 tests. Unity PlayMode passed 29, including loading, solving,
+  undoing, restarting, and advancing through all 100 shipped levels.
+- Unity exported the ARM64 iOS Simulator project to
+  `/Volumes/PLOP_DEV/Builds/iOS/Phase4/PLOP-Xcode-Sim`. Xcode 26.3 built it
+  with simulator signing disabled. The iPhone 15 Pro Max ran Level 29 and
+  showed the sleeping Plops and completion screen after nine moves.
+- The [previews](Documentation/Previews/README.md) include the revised
+  level heading and completion UI.
+- The first Phase 4 Android APK built successfully. A disconnect interrupted
+  the rebuild with the revised heading. The mounted-volume recovery and
+  updated Android build are in progress.
+
+The main production commit is `2f3a055`. The title layout correction and
+its regression assertion are in `e0d3017`.
 
 ## Resume
 

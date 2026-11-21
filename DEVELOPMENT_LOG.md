@@ -41,3 +41,6 @@ See [PROJECT_STATE.md](PROJECT_STATE.md) for verification and remaining device Q
   preview also exposed clipping in the new level-title font. Increased its
   layout space and added a glyph-generation assertion. Unity EditMode passed
   92/92, PlayMode passed 29/29, and .NET passed 92/92.
+- The revised ARM64 iOS Simulator export built under Xcode 26.3. Captured
+  Level 29 before and after its nine-move solution on iPhone 15 Pro Max.
+  The screenshots show the level heading and the completion action.

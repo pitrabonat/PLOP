@@ -51,6 +51,14 @@ detect rule regressions; the code was restored afterwards.
 | Settings and completion | `ProductionHudTests` covers modal input capture, independent audio sliders, 30/60 FPS control and immediate Next Level |
 | Audio | `PlopAudioTests` covers synthesized clips and independence of the effects/music controls |
 
+## Phase 4 iOS Simulator
+
+Unity exported ARM64 and Xcode 26.3 built the development player with
+simulator signing disabled. The iPhone 15 Pro Max ran Level 29 and replayed
+its nine-move solution. The captured portrait images show the corrected
+heading, safe-area layout, sleeping Plops and **Sweet Dreams!** completion.
+[Running game previews](Previews/README.md)
+
 ## Android smoke test
 
 The Phase 3 ARM64 IL2CPP development APK installed on the API 37 emulator. In airplane
