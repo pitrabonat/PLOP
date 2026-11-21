@@ -169,7 +169,8 @@ namespace Plop.Presentation
             _completed = completed;
             _canAdvance = canAdvance;
             _primaryLabel.text = completed ? (canAdvance ? "Next Level" : "Levels") : "Hint";
-            _primaryLabel.fontSize = completed && canAdvance ? HudTheme.Control : HudTheme.Action;
+            _primaryLabel.fontSize = completed && canAdvance ? 35 : HudTheme.Action;
+            _primaryLabel.rectTransform.anchoredPosition = new Vector2(completed && canAdvance ? 24f : 19f, 0f);
             _primaryIcon.sprite = HudIcons.Get(!completed ? HudIcons.Kind.Hint : canAdvance ? HudIcons.Kind.Next : HudIcons.Kind.Levels);
             if (_cardAnim != null)
             {
@@ -319,18 +320,23 @@ namespace Plop.Presentation
 
             var rail = NewRect("Track", root);
             rail.anchorMin = rail.anchorMax = new Vector2(0.5f, 0.5f);
-            rail.sizeDelta = new Vector2(646, 24);
-            AddRoundedImage(rail, UiSprites.Pill, Color.Lerp(PlopPalette.Milk, PlopPalette.Shadow, 0.19f));
+            rail.sizeDelta = new Vector2(646, HudTheme.VolumeTrackRadius * 2f);
+            AddRoundedImage(rail, UiSprites.VolumeTrack, Color.Lerp(PlopPalette.Milk, PlopPalette.Shadow, 0.19f));
             var fill = NewRect("Fill", rail);
-            AddRoundedImage(fill, UiSprites.Pill, PlopPalette.Mint);
+            AddRoundedImage(fill, UiSprites.VolumeTrack, PlopPalette.Mint);
 
             var bounds = NewRect("Handle bounds", root);
-            bounds.offsetMin = new Vector2(25, 0);
-            bounds.offsetMax = new Vector2(-25, 0);
+            // Slider drives the handle's vertical anchors to stretch. Its container supplies the height.
+            bounds.anchorMin = new Vector2(0f, 0.5f);
+            bounds.anchorMax = new Vector2(1f, 0.5f);
+            bounds.anchoredPosition = Vector2.zero;
+            bounds.sizeDelta = new Vector2(-50f, HudTheme.VolumeHandleSize);
             var thumb = NewRect("Handle", bounds);
-            thumb.anchorMin = thumb.anchorMax = new Vector2(0, 0.5f);
-            thumb.sizeDelta = new Vector2(60, 60);
+            thumb.anchorMin = Vector2.zero;
+            thumb.anchorMax = Vector2.up;
+            thumb.sizeDelta = new Vector2(HudTheme.VolumeHandleSize, 0f);
             var image = AddRoundedImage(thumb, UiSprites.Pill, PlopPalette.Berry);
+            image.type = Image.Type.Simple;
 
             slider.fillRect = fill;
             slider.handleRect = thumb;

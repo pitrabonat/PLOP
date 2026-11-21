@@ -10,7 +10,7 @@ namespace Plop.Presentation
     public static class UiSprites
     {
         private const float PixelsPerUnit = 200f;
-        private static Sprite _pill, _pillShadow, _card, _cardShadow;
+        private static Sprite _pill, _pillShadow, _card, _cardShadow, _volumeTrack;
 
         /// <summary>The shared capsule corner radius in canvas units.</summary>
         public static Sprite Pill => _pill != null ? _pill : (_pill = Rounded("ui-pill", (int)(HudTheme.PillRadius * 2), 0));
@@ -18,6 +18,9 @@ namespace Plop.Presentation
         /// <summary>The shared rounded modal/card corner radius.</summary>
         public static Sprite Card => _card != null ? _card : (_card = Rounded("ui-card", (int)(HudTheme.CardRadius * 2), 0));
         public static Sprite CardShadow => _cardShadow != null ? _cardShadow : (_cardShadow = Rounded("ui-card-shadow", (int)(HudTheme.CardRadius * 2), (int)(HudTheme.CardShadowSpread * 2)));
+
+        public static Sprite VolumeTrack => _volumeTrack != null ? _volumeTrack :
+            (_volumeTrack = Rounded("ui-volume-track", (int)(HudTheme.VolumeTrackRadius * 2), 0));
 
         /// <summary>Canvas units a shadow sprite extends beyond the shape on each side.</summary>
         public static float ShadowSpread(Sprite shadow) => shadow == _pillShadow ? HudTheme.PillShadowSpread : shadow == _cardShadow ? HudTheme.CardShadowSpread : 0f;

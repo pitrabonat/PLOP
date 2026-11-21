@@ -12,6 +12,8 @@ namespace Plop.Presentation
         internal const float ModalMargin = 30f;
         internal const float PillRadius = 58f;
         internal const float CardRadius = 50f;
+        internal const float VolumeTrackRadius = 12f;
+        internal const float VolumeHandleSize = 60f;
         internal const float PillShadowSpread = 17f;
         internal const float CardShadowSpread = 26f;
         internal static readonly Vector2 ShadowOffset = new Vector2(0, -6);

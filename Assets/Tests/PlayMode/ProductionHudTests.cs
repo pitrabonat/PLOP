@@ -43,6 +43,15 @@ namespace Plop.Tests.PlayMode
                 Assert.IsNull(hint.Result);
 
                 var sliders = root.GetComponentsInChildren<Slider>();
+                foreach (var slider in sliders)
+                {
+                    slider.value = 0f;
+                    Canvas.ForceUpdateCanvases();
+                    var handle = slider.handleRect.rect;
+                    Assert.That(handle.width, Is.GreaterThan(0f));
+                    Assert.That(handle.height, Is.EqualTo(handle.width).Within(0.1f),
+                        "Slider anchors must not stretch the thumb into the volume label.");
+                }
                 sliders.Single(s => s.name == "Music volume").value = 0.2f;
                 sliders.Single(s => s.name == "Sound volume").value = 0f;
                 Assert.AreEqual(0.2f, audio.MusicVolume);
