@@ -84,7 +84,8 @@ namespace Plop.Presentation
                 PlopPalette.ButtonFill, () => SettingsClicked?.Invoke(), icon: HudIcons.Kind.Settings, fontSize: HudTheme.Control);
 
             _title = MakeText(gameplay, "Title", HudTheme.Display, FontStyle.Bold, PlopPalette.Ink, topCenter,
-                new Vector2(0, -159), new Vector2(846, 98));
+                new Vector2(0, -159), new Vector2(846, 120));
+            _title.verticalOverflow = VerticalWrapMode.Overflow;
             _moves = MakeText(gameplay, "Moves", 37, FontStyle.Normal, HudTheme.SecondaryText, topCenter,
                 new Vector2(0, -223), new Vector2(800, 55));
             _instruction = MakeText(gameplay, "Instruction", HudTheme.Caption, FontStyle.Normal, PlopPalette.Ink, topCenter,

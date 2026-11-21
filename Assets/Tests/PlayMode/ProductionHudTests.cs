@@ -28,6 +28,12 @@ namespace Plop.Tests.PlayMode
                 var hud = root.GetComponent<GameHud>();
                 var audio = root.GetComponent<PlopAudio>();
 
+                var title = root.GetComponentsInChildren<Text>().Single(text => text.name == "Title");
+                Assert.AreEqual("modal", title.text);
+                var generator = new TextGenerator();
+                generator.Populate(title.text, title.GetGenerationSettings(title.rectTransform.rect.size));
+                Assert.Greater(generator.vertexCount, 4, "The level heading must fit and generate visible glyphs.");
+
                 FindButton(root, "Settings").onClick.Invoke();
                 Assert.IsTrue(hud.IsSettingsOpen);
                 controller.Move(Direction.Right);

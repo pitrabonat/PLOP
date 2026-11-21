@@ -27,3 +27,17 @@ in the [historical development log](Documentation/DEVELOPMENT_LOG.md).
   checkout builds the same engine-free code and tests.
 
 See [PROJECT_STATE.md](PROJECT_STATE.md) for verification and remaining device QA.
+
+## 2026-11-21 · Phase 4 playable experience and visual production
+
+- Started from `f5c5cac` and tagged it `checkpoint/pre-visual-production`.
+  Confirmed the production scene in Unity and completed Level 1 by touch on
+  the Android emulator with the Phase 3 APK.
+- Reworked the board and animated jelly characters in the shared SDF atlas,
+  added responsive Settings and completion controls, and introduced original
+  synthesized effects and music. The core rules, solver and level catalog
+  match the Phase 3 checkpoint.
+- Fixed a board-sizing regression detected by PlayMode. The first simulator
+  preview also exposed clipping in the new level-title font. Increased its
+  layout space and added a glyph-generation assertion. Unity EditMode passed
+  92/92, PlayMode passed 29/29, and .NET passed 92/92.
