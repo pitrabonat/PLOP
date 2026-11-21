@@ -15,6 +15,7 @@ namespace Plop.Bench
     ///   dotnet run -c Release --project DotNet/Plop.Bench -- --count 100 [--seed 0x504C4F5021] [--pack path.json] [--report path.md]
     ///   dotnet run -c Release --project DotNet/Plop.Bench -- --production [--pack path.json] [--report path.md]
     ///   dotnet run -c Release --project DotNet/Plop.Bench -- --verify-production path.json
+    ///   dotnet run -c Release --project DotNet/Plop.Bench -- --deadlocks pack.json output.bytes [maxStatesPerLevel]
     /// </summary>
     public static class Program
     {
@@ -38,6 +39,7 @@ namespace Plop.Bench
                     case "--explore": explore = int.Parse(args[++i]); break;
                     case "--perf": return Perf(args[++i]);
                     case "--production": production = true; break;
+                    case "--deadlocks": return BuildDeadlocks(args.Skip(i + 1).ToArray());
                     case "--verify-production":
                         var levels = LevelSerializer.PackFromJson(File.ReadAllText(args[++i]));
                         var verification = LevelVerifier.VerifyProductionPack(levels);
@@ -202,6 +204,80 @@ namespace Plop.Bench
                 report.AppendLine($"| {start}–{end} | {stage.Count} | {stage.Min(m => m.Solution.Length)}–{stage.Max(m => m.Solution.Length)} | " +
                     $"{stage.Min(m => m.Difficulty.Score):0.0}–{stage.Max(m => m.Difficulty.Score):0.0} | {dips} | {wallUse} | {coordination} | {away} | {order} |");
             }
+        }
+
+        private static int BuildDeadlocks(string[] args)
+        {
+            int maxStates = 100_000;
+            if (args.Length < 2 || args.Length > 3 ||
+                (args.Length == 3 && (!int.TryParse(args[2], out maxStates) || maxStates < 1 || maxStates > 2_000_000)))
+            {
+                Console.Error.WriteLine("Usage: --deadlocks pack.json output.bytes [maxStatesPerLevel, 1–2000000]");
+                return 2;
+            }
+
+            string input = Path.GetFullPath(args[0]);
+            string output = Path.GetFullPath(args[1]);
+            if (string.Equals(input, output, StringComparison.OrdinalIgnoreCase))
+            {
+                Console.Error.WriteLine("Choose a separate output path for the deadlock catalog.");
+                return 2;
+            }
+
+            var levels = LevelSerializer.PackFromJson(File.ReadAllText(input), includeDevData: false);
+            var validation = LevelValidator.ValidatePack(levels);
+            if (!validation.IsValid)
+            {
+                Console.Error.WriteLine(validation);
+                return 1;
+            }
+
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            byte[] data = DeadlockCatalog.Generate(levels, maxStates, out var analyses);
+            if (!DeadlockCatalog.TryRead(data, out var catalog))
+            {
+                Console.Error.WriteLine("Generated deadlock catalog could not be read.");
+                return 1;
+            }
+
+            var complete = analyses.Where(analysis => analysis.Complete).ToList();
+            for (int i = 0; i < levels.Count; i++)
+            {
+                var level = levels[i];
+                var analysis = analyses[i];
+                var table = catalog.ForLevel(level);
+                if (analysis.Complete &&
+                    (table == null || table.Classify(level.CreateInitialState()) !=
+                        (analysis.Solvable ? DeadlockStatus.Solvable : DeadlockStatus.ProvenDeadlock)))
+                {
+                    Console.Error.WriteLine("Round-trip classification failed for " + level.Id);
+                    return 1;
+                }
+
+                string proof = analysis.Complete ? $"{analysis.DeadEndStates} deadlocks" : "uncovered: " + analysis.Message;
+                Console.WriteLine($"{level.Name} ({level.Id}): {analysis.ReachableStates} states, {proof}, {analysis.ElapsedMs:F1} ms");
+            }
+
+            Console.WriteLine($"Complete {catalog.LevelCount}/{levels.Count} at {maxStates} states per level. " +
+                              $"{complete.Sum(a => (long)a.ReachableStates):N0} exact keys, " +
+                              $"{complete.Sum(a => (long)a.DeadEndStates):N0} deadlock keys, " +
+                              $"{complete.Count(a => a.DeadEndStates > 0)} levels with deadlocks, " +
+                              $"largest graph {complete.Select(a => a.ReachableStates).DefaultIfEmpty().Max():N0} states.");
+            Console.WriteLine($"{data.Length:N0} bytes in {clock.Elapsed.TotalSeconds:F2}s.");
+
+            Directory.CreateDirectory(Path.GetDirectoryName(output));
+            string temporary = output + "." + Guid.NewGuid().ToString("N") + ".tmp";
+            try
+            {
+                File.WriteAllBytes(temporary, data);
+                File.Move(temporary, output, overwrite: true);
+            }
+            finally
+            {
+                File.Delete(temporary);
+            }
+            Console.WriteLine("Wrote " + output);
+            return 0;
         }
 
         private static void WriteOutput(string path, string contents)

@@ -61,6 +61,10 @@ namespace Plop.Solver
         private const int SolutionCountCap = 1_000_000;
 
         public static StateSpaceAnalysis Analyze(LevelDefinition level, int maxStates = 2_000_000)
+            => Analyze(level, maxStates, null);
+
+        // Invoked only after the entire reachable graph has been explored.
+        internal static StateSpaceAnalysis Analyze(LevelDefinition level, int maxStates, Action<ulong, bool> classify)
         {
             var sw = Stopwatch.StartNew();
             var a = new StateSpaceAnalysis();
@@ -180,7 +184,12 @@ namespace Plop.Solver
                 }
             }
 
-            for (int i = 0; i < n; i++) if (dist[i] < 0) a.DeadEndStates++;
+            for (int i = 0; i < n; i++)
+            {
+                bool canFinish = dist[i] >= 0;
+                if (!canFinish) a.DeadEndStates++;
+                classify?.Invoke(keys[i], canFinish);
+            }
             a.StartDistance = dist[0];
 
             if (dist[0] >= 0)
