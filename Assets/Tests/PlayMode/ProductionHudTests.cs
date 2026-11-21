@@ -76,6 +76,6 @@ namespace Plop.Tests.PlayMode
         }
 
         private static Button FindButton(GameObject root, string label) => root.GetComponentsInChildren<Button>()
-            .Single(button => button.GetComponentInChildren<Text>().text == label);
+            .Single(button => button.name == label + " Button");
     }
 }

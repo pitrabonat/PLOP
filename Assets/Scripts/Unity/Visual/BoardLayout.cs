@@ -13,8 +13,7 @@ namespace Plop.Presentation
         public static readonly Vector2 ReferenceResolution = HudTheme.Resolution;
         public const float HeaderHeight = HudTheme.HeaderReserve;     // reference units below the safe-area top
         public const float FooterHeight = HudTheme.FooterReserve;     // reference units above the safe-area bottom
-        public const float SideMarginFraction = 0.045f; // of screen width (rounded display corners)
-        public const float MinVirtualCells = 5.0f;  // small boards are not blown up beyond 5 cells across
+        public const float SideMarginFraction = 0.0625f; // each side of the usable safe width
         public const float PanelPadding = 0.30f;    // world units of container around the grid
 
         public struct Result
@@ -24,7 +23,9 @@ namespace Plop.Presentation
             public float PixelsPerUnit;      // on-screen pixels per grid cell
             public Rect BoardRectPixels;     // where the board container lands on screen
             public Rect AvailablePixels;
+            public Rect SafePixels;
             public float CanvasScale;
+            public float ReserveScale;
         }
 
         /// <summary>Same scale factor CanvasScaler computes for ScaleWithScreenSize, match = 0.5.</summary>
@@ -39,26 +40,29 @@ namespace Plop.Presentation
         {
             if (safeArea.width <= 0 || safeArea.height <= 0) safeArea = new Rect(0, 0, screenW, screenH);
             float scale = CanvasScale(screenW, screenH);
-            float margin = Mathf.Max(screenW * SideMarginFraction, safeArea.xMin, screenW - safeArea.xMax);
+            float margin = safeArea.width * SideMarginFraction;
+            float topReserve = HeaderHeight * scale;
+            float bottomReserve = FooterHeight * scale;
+            // Keep a playable height in shallow editor windows without changing the portrait layout.
+            float reserveScale = Mathf.Min(1f, safeArea.height * 0.49f / (topReserve + bottomReserve));
 
             var available = Rect.MinMaxRect(
-                Mathf.Max(safeArea.xMin, margin),
-                safeArea.yMin + FooterHeight * scale,
-                Mathf.Min(safeArea.xMax, screenW - margin),
-                safeArea.yMax - HeaderHeight * scale);
-            if (available.width < 10f || available.height < 10f)
-                available = new Rect(margin, 0, Mathf.Max(10f, screenW - 2 * margin), screenH);
+                safeArea.xMin + margin,
+                safeArea.yMin + bottomReserve * reserveScale,
+                safeArea.xMax - margin,
+                safeArea.yMax - topReserve * reserveScale);
 
             float boardW = gridW + 2 * PanelPadding, boardH = gridH + 2 * PanelPadding;
-            float fitW = Mathf.Max(boardW, MinVirtualCells), fitH = Mathf.Max(boardH, MinVirtualCells);
-            float ppu = Mathf.Min(available.width / fitW, available.height / fitH);
+            float ppu = Mathf.Min(available.width / boardW, available.height / boardH);
 
             var r = new Result
             {
                 PixelsPerUnit = ppu,
                 OrthographicSize = screenH / (2f * ppu),
                 AvailablePixels = available,
-                CanvasScale = scale
+                SafePixels = safeArea,
+                CanvasScale = scale,
+                ReserveScale = reserveScale
             };
             // Put world (0,0) — the board center — at the center of the available region.
             Vector2 center = available.center;

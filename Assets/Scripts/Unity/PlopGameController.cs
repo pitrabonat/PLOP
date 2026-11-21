@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -6,6 +7,8 @@ using Plop.Core;
 using Plop.Solver;
 using UnityEngine;
 using UnityEngine.Rendering;
+
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("PLOP.Tests.PlayMode")]
 
 namespace Plop.Presentation
 {
@@ -31,6 +34,8 @@ namespace Plop.Presentation
         private const string FrameRateKey = "plop.frameRate";
         private const int HintMaxStates = 300_000;
         private const int HintMaxMilliseconds = 200;
+        private const int DeadlockMaxStates = 20_000;
+        private const int DeadlockMaxMilliseconds = 80;
         private readonly GameEngine _engine = new GameEngine();
         private List<LevelDefinition> _levels = new List<LevelDefinition>();
         private int _index;
@@ -38,6 +43,14 @@ namespace Plop.Presentation
         private bool _debugPreview;
         private CancellationTokenSource _hintWork;
         private bool _hintVisible;
+        private DeadlockCatalog _deadlockCatalog;
+        private DeadlockTable _deadlockTable;
+        private CancellationTokenSource _deadlockWork;
+        private Coroutine _deadlockReveal;
+        private int _deadlockRevision;
+        private bool _deadlockCheckQueued;
+        private bool _applicationPaused;
+        private bool _recheckDeadlockOnResume;
         private BoardView _board;
         private SwipeInput _input;
         private GameHud _hud;
@@ -52,6 +65,8 @@ namespace Plop.Presentation
         public int LevelIndex => _index;
         public int LevelCount => _levels.Count;
         public FrameRateMode CurrentFrameRateMode => targetFrameRate;
+        internal Func<LevelDefinition, GameState, CancellationToken, Task<DeadlockStatus>> DeadlockFallback { get; set; }
+            = SearchForDeadlockAsync;
         private bool SavesProgress => rememberProgress && !_debugPreview;
 
         public bool IsLevelUnlocked(int index) => _progress?.IsUnlocked(index) == true;
@@ -96,6 +111,8 @@ namespace Plop.Presentation
             if (_progress != null) return; // catalog supplied by tests or tools
             _levels = LevelLibrary.Load(levelPackResource);
             if (_levels.Count == 0) return;
+            if (levelPackResource == LevelLibrary.DefaultPack)
+                _deadlockCatalog = LevelLibrary.LoadDeadlocks();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             // Screenshot/demo settings must never grant durable progress.
             int debugLevel = rememberProgress ? PlayerPrefs.GetInt("plop.debug.level", 0) : 0;
@@ -139,12 +156,28 @@ namespace Plop.Presentation
         private void OnDisable()
         {
             InvalidateHint();
+            CancelDeadlockCheck();
+            _recheckDeadlockOnResume = false;
+            if (_hud != null) _hud.CloseDeadlock();
             OnDemandRendering.renderFrameInterval = 1;
         }
 
         private void OnApplicationPause(bool paused)
         {
-            if (paused) InvalidateHint();
+            if (_applicationPaused == paused) return;
+            _applicationPaused = paused;
+            if (paused)
+            {
+                InvalidateHint();
+                _recheckDeadlockOnResume = _deadlockCheckQueued || _deadlockReveal != null ||
+                    _deadlockWork?.IsCancellationRequested == false;
+                CancelDeadlockCheck();
+            }
+            else if (_recheckDeadlockOnResume)
+            {
+                _recheckDeadlockOnResume = false;
+                CheckCurrentDeadlock();
+            }
         }
 
         private void OnDestroy()
@@ -177,6 +210,8 @@ namespace Plop.Presentation
         public void UseLevels(List<LevelDefinition> levels, int startIndex = 0)
         {
             _levels = levels == null ? new List<LevelDefinition>() : new List<LevelDefinition>(levels);
+            CancelDeadlockCheck();
+            _hud.CloseDeadlock();
             _progress = new LevelProgress(_levels);
             _index = Mathf.Clamp(startIndex, 0, Mathf.Max(0, _levels.Count - 1));
             if (_levels.Count > 0) LoadCurrent();
@@ -190,6 +225,7 @@ namespace Plop.Presentation
             if (result.Status == MoveStatus.Ignored) return;
             _board.Play(result.Events);
             _audio.PlayMove(result.Events);
+            if (result.Changed && !result.CompletedLevel) CheckCurrentDeadlock();
         }
 
         public void Undo()
@@ -214,7 +250,7 @@ namespace Plop.Presentation
 
         public bool TrySelectLevel(int index)
         {
-            if (_hud.IsSettingsOpen || !IsLevelUnlocked(index)) return false;
+            if (_hud.IsSettingsOpen || _hud.IsDeadlockOpen || !IsLevelUnlocked(index)) return false;
             _hud.CloseLevelPicker();
             if (index == _index && !_engine.IsCompleted) return true;
             _index = index;
@@ -242,6 +278,121 @@ namespace Plop.Presentation
         {
             _hud.CloseSettings();
             _hud.CloseLevelPicker();
+            _hud.CloseDeadlock();
+        }
+
+        private bool CanCheckDeadlock => isActiveAndEnabled && !_applicationPaused &&
+            _engine.HasLevel && !_engine.IsCompleted;
+
+        private void CheckCurrentDeadlock()
+        {
+            if (!CanCheckDeadlock) return;
+            var known = _deadlockTable?.Classify(_engine.CurrentState) ?? DeadlockStatus.Unknown;
+            if (known == DeadlockStatus.ProvenDeadlock)
+            {
+                RevealDeadlock();
+            }
+            else if (known == DeadlockStatus.Unknown)
+            {
+                _deadlockCheckQueued = true;
+                TryStartDeadlockCheck();
+            }
+        }
+
+        private void TryStartDeadlockCheck()
+        {
+            if (!_deadlockCheckQueued || !CanCheckDeadlock || _deadlockWork != null || _hintWork != null)
+                return;
+            _deadlockCheckQueued = false;
+            _ = CheckUnknownDeadlockAsync(_engine.Level, _engine.GetState(), _deadlockRevision);
+        }
+
+        private async Task CheckUnknownDeadlockAsync(LevelDefinition level, GameState state, int revision)
+        {
+            var work = new CancellationTokenSource();
+            _deadlockWork = work;
+            try
+            {
+                // A short debounce coalesces gesture bursts and lets an explicit hint take priority.
+                await Task.Delay(90, work.Token);
+                var verdict = await DeadlockFallback(level, state, work.Token);
+                if (!work.IsCancellationRequested && this != null && revision == _deadlockRevision &&
+                    CanCheckDeadlock && verdict == DeadlockStatus.ProvenDeadlock)
+                    RevealDeadlock();
+            }
+            catch (OperationCanceledException) when (work.IsCancellationRequested)
+            {
+            }
+            catch (Exception ex)
+            {
+                if (!work.IsCancellationRequested && this != null)
+                    Debug.LogWarning("[PLOP] Deadlock check unavailable: " + ex.GetType().Name);
+            }
+            finally
+            {
+                _deadlockWork = null;
+                work.Dispose();
+                if (this != null) TryStartDeadlockCheck();
+            }
+        }
+
+        private static Task<DeadlockStatus> SearchForDeadlockAsync(LevelDefinition level, GameState state,
+            CancellationToken token) => Task.Run(() =>
+        {
+            // A solver limit, cancellation, or invalid custom board provides no proof.
+            var result = BfsSolver.Solve(level, state, new SolverOptions
+            {
+                MaxStates = DeadlockMaxStates,
+                MaxMilliseconds = DeadlockMaxMilliseconds,
+                Cancellation = token
+            });
+            return ClassifyDeadlockSearchResult(result.Status);
+        }, token);
+
+        internal static DeadlockStatus ClassifyDeadlockSearchResult(SolverStatus status)
+        {
+            switch (status)
+            {
+                case SolverStatus.ProvenUnsolvable: return DeadlockStatus.ProvenDeadlock;
+                case SolverStatus.Solved: return DeadlockStatus.Solvable;
+                default: return DeadlockStatus.Unknown;
+            }
+        }
+
+        private void RevealDeadlock()
+        {
+            if (_deadlockReveal == null && !_hud.IsDeadlockOpen)
+                _deadlockReveal = StartCoroutine(RevealDeadlockAfterMotion(_deadlockRevision));
+        }
+
+        private IEnumerator RevealDeadlockAfterMotion(int revision)
+        {
+            // Wait for the triggering move to be visible before dimming the board.
+            yield return null;
+            while (CanCheckDeadlock && _deadlockRevision == revision)
+            {
+                if (!_board.IsBusy && !_hud.BlocksGameplayInput &&
+                    _hud.ShowDeadlock(_engine.CanUndo, _board.Atlas.Get(ShapeAtlas.WorriedPlopKey)))
+                {
+                    MarkActive();
+                    PlopLog.Info("Deadlock confirmed on " + _engine.Level.Id + " after " + _engine.MoveCount + " moves");
+                    break;
+                }
+                yield return null;
+            }
+            _deadlockReveal = null;
+        }
+
+        private void CancelDeadlockCheck()
+        {
+            ++_deadlockRevision;
+            _deadlockCheckQueued = false;
+            _deadlockWork?.Cancel();
+            if (_deadlockReveal != null)
+            {
+                StopCoroutine(_deadlockReveal);
+                _deadlockReveal = null;
+            }
         }
 
         private void OnHintRequested() => _ = RequestHintAsync();
@@ -257,6 +408,12 @@ namespace Plop.Presentation
             var state = _engine.GetState();
             var work = new CancellationTokenSource();
             _hintWork = work;
+            // Let the requested hint take over the worker budget for this state.
+            if (_deadlockWork?.IsCancellationRequested == false)
+            {
+                _deadlockCheckQueued = true;
+                _deadlockWork.Cancel();
+            }
             ShowHint("Looking for a hint…", true);
             MarkActive();
             try
@@ -268,6 +425,13 @@ namespace Plop.Presentation
                     return null;
 
                 MarkActive();
+                if (_deadlockCheckQueued)
+                {
+                    // The requested hint can answer the same pending proof without a second search.
+                    var verdict = ClassifyDeadlockSearchResult(result.Status);
+                    if (verdict != DeadlockStatus.Unknown) _deadlockCheckQueued = false;
+                    if (verdict == DeadlockStatus.ProvenDeadlock) RevealDeadlock();
+                }
                 if (result.Status == SolverStatus.Solved && result.Moves.Length > 0)
                 {
                     Direction direction = result.Moves[0];
@@ -280,7 +444,7 @@ namespace Plop.Presentation
                     : "No hint available. Try Undo.");
                 return null;
             }
-            catch (System.Exception exception)
+            catch (Exception exception)
             {
                 if (!work.IsCancellationRequested && this != null && isActiveAndEnabled)
                 {
@@ -293,6 +457,7 @@ namespace Plop.Presentation
             {
                 _hintWork = null;
                 work.Dispose();
+                if (this != null) TryStartDeadlockCheck();
             }
         }
 
@@ -334,6 +499,9 @@ namespace Plop.Presentation
             switch (e.Type)
             {
                 case GameEventType.LevelLoaded:
+                    CancelDeadlockCheck();
+                    _hud.CloseDeadlock();
+                    _deadlockTable = _deadlockCatalog?.ForLevel(_engine.Level);
                     _board.Build(_engine.Level, _engine.CurrentState, ShapeAtlas.ForDensity(FitCamera()));
                     InvalidateHint();
                     _hud.SetLevel(_engine.Level.Name, _engine.Level.Instruction);
@@ -343,13 +511,18 @@ namespace Plop.Presentation
                     break;
                 case GameEventType.MoveUndone:
                 case GameEventType.LevelRestarted:
+                    CancelDeadlockCheck();
+                    _hud.CloseDeadlock();
                     InvalidateHint();
                     _board.Sync(_engine.CurrentState);
                     _hud.SetMoves(_engine.MoveCount);
                     _hud.SetCanUndo(_engine.CanUndo);
                     _hud.SetCompleted(false, false);
+                    if (e.Type == GameEventType.MoveUndone && _engine.CanUndo) CheckCurrentDeadlock();
                     break;
                 case GameEventType.PlopMoved:
+                    CancelDeadlockCheck();
+                    _hud.CloseDeadlock();
                     InvalidateHint();
                     _hud.SetMoves(e.MoveCount);
                     _hud.SetCanUndo(true);
@@ -368,9 +541,10 @@ namespace Plop.Presentation
             if (_camera == null) _camera = Camera.main;
             if (_camera == null || !_engine.HasLevel) return 128f;
             var layout = BoardLayout.Compute(Screen.width, Screen.height, Screen.safeArea, _engine.Level.Width, _engine.Level.Height);
+            _hud.SetBoardLayout(layout);
             _camera.orthographic = true;
             _camera.clearFlags = CameraClearFlags.SolidColor;
-            _camera.backgroundColor = PlopPalette.Milk;
+            _camera.backgroundColor = PlopPalette.PlayBackground;
             _camera.orthographicSize = layout.OrthographicSize;
             _camera.transform.position = new Vector3(layout.CameraPosition.x, layout.CameraPosition.y, -10f);
             return layout.PixelsPerUnit;

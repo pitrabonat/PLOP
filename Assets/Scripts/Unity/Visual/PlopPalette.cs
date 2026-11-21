@@ -22,12 +22,16 @@ namespace Plop.Presentation
         public static readonly Color Peach = Hex(0xF1B9A3);
 
         // ---- board ----
-        public static readonly Color BoardPanel = Hex(0xEDE3D7);     // warm, slightly darker milk
-        public static readonly Color Tile = Hex(0xFCF9F4);
-        public static readonly Color TileShade = Hex(0xF3ECE3);
-        public static readonly Color PebbleTop = Hex(0xDFD7DF);      // soft lilac-grey toy block
-        public static readonly Color PebbleSide = Hex(0xC8BECB);
-        public static readonly Color PebbleHighlight = Hex(0xF0EBF0);
+        public static readonly Color PlayBackground = Hex(0xFCE8D9);
+        public static readonly Color BoardPanel = Hex(0xEBC4AE);
+        public static readonly Color TrayRim = Hex(0xF5D5BF);
+        public static readonly Color ContactShadow = Hex(0x996B64);
+        public static readonly Color FaceInk = Hex(0x533143);
+        public static readonly Color Tile = Hex(0xFFF0E3);
+        public static readonly Color TileShade = Hex(0xF2D9C5);
+        public static readonly Color PebbleTop = Hex(0xC8B6C2);      // soft lilac-grey toy block
+        public static readonly Color PebbleSide = Hex(0xA18A96);
+        public static readonly Color PebbleHighlight = Hex(0xDFD0D9);
         public static readonly Color Shadow = Hex(0x7D7184);         // tinted, never black
         public static readonly Color Highlight = Hex(0xFFFCF7);      // warm, never pure white
 
@@ -45,11 +49,17 @@ namespace Plop.Presentation
         public static Color Slot(int colorId) => Slots[Mathf.Clamp(colorId, 0, Slots.Length - 1)];
         public static Color Slot(Core.PlopColor c) => Slot((int)c);
 
-        /// <summary>Plop body: the slot color pulled very slightly toward Ink for readability on light tiles.</summary>
-        public static Color PlopBody(int colorId) => Color.Lerp(Slot(colorId), Ink, 0.07f);
-        /// <summary>Nest pillow (outer) and nest center (inner): the slot color softened toward Milk.</summary>
-        public static Color NestOuter(int colorId) => Color.Lerp(Slot(colorId), Milk, 0.22f);
-        public static Color NestInner(int colorId) => Color.Lerp(Slot(colorId), Milk, 0.62f);
+        // The same identities use a more saturated material pigment on the rendered toys.
+        private static readonly Color[] ToySlots =
+        {
+            Hex(0xF696AF), Hex(0x94D8C6), Hex(0xF1BF7A),
+            Hex(0xC7A4E3), Hex(0x9EC6E8), Hex(0xF0B095)
+        };
+
+        public static Color ToySlot(int colorId) => ToySlots[Mathf.Clamp(colorId, 0, ToySlots.Length - 1)];
+        public static Color PlopBody(int colorId) => Color.Lerp(ToySlot(colorId), Ink, 0.04f);
+        public static Color NestOuter(int colorId) => Color.Lerp(ToySlot(colorId), TrayRim, 0.14f);
+        public static Color NestInner(int colorId) => Color.Lerp(ToySlot(colorId), Highlight, 0.32f);
 
         public static Color Hex(uint rgb, float alpha = 1f) =>
             new Color(((rgb >> 16) & 0xFF) / 255f, ((rgb >> 8) & 0xFF) / 255f, (rgb & 0xFF) / 255f, alpha);

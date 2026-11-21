@@ -30,12 +30,15 @@ namespace Plop.Tests.PlayMode
         }
 
         [Test]
-        public void MascotOutline_HasAnOffCenterCrownAndRoundedFoot()
+        public void MascotOutline_HasADomedCrownAndScallopedFoot()
         {
-            Assert.Less(ShapeAtlas.BodyDistance(-0.19f, 0.61f), 0f);
-            Assert.Greater(ShapeAtlas.BodyDistance(0.19f, 0.61f), 0.03f);
-            Assert.Less(ShapeAtlas.BodyDistance(0f, 0.024f), 0f, "the base meets the ground");
-            Assert.Greater(ShapeAtlas.BodyDistance(0.355f, 0.024f), 0.03f, "the base cuts away its bottom corners");
+            Assert.Less(ShapeAtlas.BodyDistance(-0.235f, 0.64f), 0f, "the dome leans slightly");
+            Assert.Greater(ShapeAtlas.BodyDistance(0.235f, 0.64f), 0.03f);
+            Assert.Less(ShapeAtlas.BodyDistance(0f, 0.024f), 0f, "the middle foot touches the ground");
+            Assert.Greater(ShapeAtlas.BodyDistance(0.355f, 0.024f), 0.014f, "the foot curls off the rounded lower corners");
+            Assert.Greater(ShapeAtlas.BodyDistance(-0.145f, 0.005f), 0f, "the feet have shallow separations");
+            Assert.Less(ShapeAtlas.BodyDistance(0.36f, 0.15f), 0f, "the body fills most of the tile width");
+            Assert.Greater(ShapeAtlas.BodyDistance(0.405f, 0.15f), 0f);
         }
 
         [Test]
@@ -46,7 +49,8 @@ namespace Plop.Tests.PlayMode
             Assert.Less(low.PixelsPerUnit, high.PixelsPerUnit);
             var tex = low.Texture;
             foreach (var key in new[] { "tile", "pebble", "panel", "panelShadow", "plopShadow", "eye", "eyeClosed", "cheek",
-                                        "mouth", "mouthBump", "mouthSleep", ShapeAtlas.NestKey(0), ShapeAtlas.PlopKey(2) })
+                                        "mouth", "mouthBump", "mouthSleep", ShapeAtlas.NestKey(0), ShapeAtlas.PlopKey(2),
+                                        ShapeAtlas.WorriedPlopKey })
                 Assert.AreSame(tex, low.Get(key).texture, key + " must live in the shared atlas texture");
             Assert.AreSame(low, ShapeAtlas.ForDensity(90f), "atlases are cached per density bucket");
             Assert.Greater(low.Get("panel").border.x, 0f, "board panel is 9-sliced");
@@ -168,6 +172,40 @@ namespace Plop.Tests.PlayMode
             }
         }
 
+        [Test]
+        public void PlopSleep_StopsAfterSettlementAndWakesAfterUndo()
+        {
+            var scene = new GameObject("Still sleep test");
+            try
+            {
+                var atlas = ShapeAtlas.ForDensity(90f);
+                var view = new PlopView(scene.transform, atlas, colorId: 2, seed: 4);
+                var body = view.Root.Find("Pose/Body");
+                var eye = body.Find("EyeL").GetComponent<SpriteRenderer>();
+                var cell = new Vector3(0f, 1f, 0f);
+                view.Snap(cell, false);
+                view.QueueSleep(40f);
+                view.Tick(40f);
+                Assert.IsTrue(view.SleepJustStarted);
+                view.Tick(40.5f);
+                var settledScale = body.localScale;
+                var settledRotation = body.localRotation;
+                view.Tick(43f);
+                Assert.AreEqual(settledScale, body.localScale);
+                Assert.AreEqual(settledRotation, body.localRotation);
+                Assert.IsFalse(view.SleepJustStarted);
+                Assert.AreSame(atlas.Get("eyeClosed"), eye.sprite);
+
+                view.Snap(Vector3.zero, false);
+                Assert.AreSame(atlas.Get("eye"), eye.sprite);
+                Assert.AreEqual(Vector3.zero, view.Root.localPosition);
+            }
+            finally
+            {
+                Object.Destroy(scene);
+            }
+        }
+
         private static readonly (int w, int h, Rect safe, string name)[] Screens =
         {
             (1080, 1920, new Rect(0, 0, 1080, 1920), "16:9 no cutout"),
@@ -207,7 +245,7 @@ namespace Plop.Tests.PlayMode
             var small = BoardLayout.Compute(1080, 1920, new Rect(0, 0, 1080, 1920), 4, 4);
             var large = BoardLayout.Compute(1080, 1920, new Rect(0, 0, 1080, 1920), 7, 7);
             Assert.Greater(small.PixelsPerUnit, large.PixelsPerUnit);
-            Assert.LessOrEqual(small.BoardRectPixels.width, 1080 * 0.85f, "4x4 should not fill edge to edge");
+            Assert.LessOrEqual(small.BoardRectPixels.width, 1080 * 0.88f, "4x4 should not fill edge to edge");
         }
     }
 }

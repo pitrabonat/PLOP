@@ -13,11 +13,11 @@ namespace Plop.Presentation
         internal const float CelebrationDelay = MoveDuration + 0.07f;
         internal const float CelebrationStagger = 0.053f;
 
-        private const float AnticipationDuration = 0.018f;
+        private const float AnticipationDuration = 0.024f;
         private const float BlinkDuration = 0.14f;
         private const float BumpImpactTime = 0.42f;
-        private const float BodyScale = 0.97f;
-        private const float GroundY = -0.30f;
+        private const float BodyScale = 0.98f;
+        private const float GroundY = -0.345f;
 
         public readonly Transform Root;
         private readonly Transform _pose, _body, _eyeL, _eyeR, _cheekL, _cheekR, _mouth, _shadow;
@@ -29,7 +29,7 @@ namespace Plop.Presentation
         private float _moveT0 = -1f, _bumpT0 = -1f, _landT0 = -1f, _sleepT0 = -1f, _hopT0 = -1f, _blinkT0 = -1f;
         private float _nextBlink, _lookUntil;
         private readonly float _phase;
-        private bool _asleep, _sleepPending;
+        private bool _asleep, _sleepPending, _sleepPoseFrozen;
         private uint _rng;
 
         internal bool IsSliding => _moveT0 >= 0f;
@@ -98,7 +98,7 @@ namespace Plop.Presentation
         {
             _from = _to = position;
             _moveT0 = _bumpT0 = _landT0 = _hopT0 = _sleepT0 = _blinkT0 = -1f;
-            _sleepPending = false;
+            _sleepPending = _sleepPoseFrozen = false;
             _asleep = asleep;
             _look = Vector2.zero;
             _nextBlink = Time.unscaledTime + 1f + Rand() * 3f;
@@ -133,12 +133,15 @@ namespace Plop.Presentation
 
         public void StartHop(float startTime)
         {
-            if (_hopT0 < 0f) _hopT0 = startTime;
+            if (_hopT0 >= 0f) return;
+            _hopT0 = startTime;
+            _sleepPoseFrozen = false;
         }
 
         public void Tick(float now)
         {
             SleepJustStarted = false;
+            if (_sleepPoseFrozen) return;
 
             // The root follows the board's supplied endpoints. Every other offset stays on a child.
             Vector3 position = _to;
@@ -152,7 +155,7 @@ namespace Plop.Presentation
                     _landT0 = now;
                     _landDir = _moveDir;
                 }
-                else position = Vector3.LerpUnclamped(_from, _to, EaseOutCubic(Mathf.Clamp01(travel)));
+                else position = Vector3.LerpUnclamped(_from, _to, Travel(Mathf.Clamp01(travel)));
             }
             Root.localPosition = position;
 
@@ -168,24 +171,28 @@ namespace Plop.Presentation
             _pose.localPosition = (Vector3)(_bumpDir * (0.083f * recoil));
 
             float asleep = !_asleep ? 0f : _sleepT0 < 0f ? 1f : Smooth((now - _sleepT0) / SleepDuration);
-            float breathPeriod = Mathf.Lerp(2.7f, 3.9f, asleep);
-            float breath = Mathf.Sin(now * (2f * Mathf.PI / breathPeriod) + _phase);
-            float breathScale = Mathf.Lerp(0.024f, 0.013f, asleep) * breath;
-            float sx = 1f - breathScale * 0.65f + 0.10f * asleep;
-            float sy = 1f + breathScale - 0.16f * asleep;
-            float lift = -0.021f * asleep;
-            float tilt = 1.25f * Mathf.Sin(now * 1.79f + _phase) * (1f - 0.8f * asleep);
+            float awake = 1f - asleep;
+            float breath = Mathf.Sin(now * (2f * Mathf.PI / 2.9f) + _phase);
+            float breathScale = 0.028f * breath * awake;
+            float sx = 1f - breathScale * 0.65f + 0.049f * asleep;
+            float sy = 1f + breathScale - 0.17f * asleep;
+            float lift = -0.012f * asleep;
+            float tilt = 0.98f * Mathf.Sin(now * 1.79f + _phase) * awake;
 
             if (IsSliding)
             {
                 float along;
                 if (moveTime < AnticipationDuration)
-                    along = 1f - 0.13f * Smooth(moveTime / AnticipationDuration);
+                {
+                    along = 1f - 0.15f * Smooth(moveTime / AnticipationDuration);
+                }
                 else
                 {
                     float travel = Mathf.Clamp01((moveTime - AnticipationDuration) / (MoveDuration - AnticipationDuration));
-                    along = 1f - 0.13f * Mathf.Max(0f, 1f - travel * 6f) + 0.18f * Mathf.Sin(Mathf.PI * travel);
-                    tilt -= 5f * _moveDir.x * Mathf.Sin(Mathf.PI * travel);
+                    float stretch = Mathf.Sin(Mathf.PI * travel);
+                    along = 1f - 0.15f * Mathf.Max(0f, 1f - travel * 6f) + 0.20f * stretch;
+                    tilt -= 5f * _moveDir.x * stretch;
+                    lift += 0.028f * stretch;
                 }
                 ApplyAxis(_moveDir, along, ref sx, ref sy);
             }
@@ -216,8 +223,10 @@ namespace Plop.Presentation
             _shadow.localScale = new Vector3(shadowScale, shadowScale, 1f);
 
             float eyeOpen = _asleep ? Mathf.Lerp(1f, 0.12f, Smooth(asleep / 0.38f)) : Blink(now);
+            if (!_asleep && recoil > 0f) eyeOpen *= 1f - 0.72f * Smooth(recoil);
             Vector2 look = Vector2.Lerp(_look, Vector2.zero, Smooth((now - _lookUntil) / 0.29f)) * (1f - asleep);
             ApplyFace(look, eyeOpen, asleep, recoil);
+            _sleepPoseFrozen = _asleep && asleep >= 1f && _hopT0 < 0f && _landT0 < 0f && !IsMoving;
         }
 
         private float Blink(float now)
@@ -273,13 +282,13 @@ namespace Plop.Presentation
             if (_mouthR.sprite != mouthSprite) _mouthR.sprite = mouthSprite;
 
             float faceOffset = -0.022f * asleep;
-            _eyeL.localPosition = new Vector3(-0.111f + look.x, 0.386f + look.y + faceOffset, 0f);
-            _eyeR.localPosition = new Vector3(0.100f + look.x, 0.382f + look.y + faceOffset, 0f);
+            _eyeL.localPosition = new Vector3(-0.138f + look.x, 0.407f + look.y + faceOffset, 0f);
+            _eyeR.localPosition = new Vector3(0.122f + look.x, 0.403f + look.y + faceOffset, 0f);
             var eyeScale = new Vector3(1f, closed ? 1f : Mathf.Max(0.08f, eyeOpen), 1f);
             _eyeL.localScale = _eyeR.localScale = eyeScale;
-            _mouth.localPosition = new Vector3(-0.005f + look.x * 0.75f, 0.271f + look.y * 0.65f + faceOffset, 0f);
-            _cheekL.localPosition = new Vector3(-0.202f + look.x * 0.5f, 0.296f + look.y * 0.5f + faceOffset, 0f);
-            _cheekR.localPosition = new Vector3(0.190f + look.x * 0.5f, 0.296f + look.y * 0.5f + faceOffset, 0f);
+            _mouth.localPosition = new Vector3(-0.005f + look.x * 0.75f, 0.300f + look.y * 0.65f + faceOffset, 0f);
+            _cheekL.localPosition = new Vector3(-0.219f + look.x * 0.5f, 0.320f + look.y * 0.5f + faceOffset, 0f);
+            _cheekR.localPosition = new Vector3(0.204f + look.x * 0.5f, 0.319f + look.y * 0.5f + faceOffset, 0f);
         }
 
         private static void ApplyAxis(Vector2 dir, float along, ref float sx, ref float sy)
@@ -297,7 +306,11 @@ namespace Plop.Presentation
             }
         }
 
-        private static float EaseOutCubic(float t) { t = 1f - t; return 1f - t * t * t; }
+        private static float Travel(float t)
+        {
+            float settling = 1f - (1f - t) * (1f - t);
+            return Mathf.Lerp(Smooth(t), settling, 0.45f);
+        }
         private static float Smooth(float t) { t = Mathf.Clamp01(t); return t * t * (3f - 2f * t); }
     }
 }

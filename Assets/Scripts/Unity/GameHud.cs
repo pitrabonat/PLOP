@@ -25,28 +25,36 @@ namespace Plop.Presentation
         private readonly Text[] _levelLabels = new Text[PageSize];
         private readonly RectTransform[] _levelSlots = new RectTransform[PageSize];
 
-        private Text _title, _moves, _instruction, _hintStatus, _primaryLabel, _pageLabel;
+        private Text _title, _moves, _instruction, _hintStatus, _completionActionLabel, _pageLabel;
+        private Text _deadlockTitle, _deadlockDescription;
         private Text _musicPercent, _soundPercent;
         private Slider _music, _sound;
-        private Image _primaryIcon;
-        private Button _undo, _primary, _previousPage, _nextPage;
+        private Image _completionActionIcon, _deadlockMascot;
+        private Button _undo, _hint, _previousPage, _nextPage;
+        private Button _deadlockUndo, _deadlockRestart;
         private Button _rate30, _rate60;
-        private RectTransform _safe, _card, _levelPicker, _settings;
-        private RectTransform _pickerPanel, _settingsPanel;
+        private RectTransform _safe, _header, _status, _footer, _dock, _completion;
+        private RectTransform _levelBadge, _moveBadge;
+        private RectTransform _levelPicker, _settings, _deadlock;
+        private RectTransform _pickerPanel, _settingsPanel, _deadlockPanel;
         private CanvasGroup _gameplayGroup;
         private CanvasGroup _cardGroup;
         private Coroutine _cardAnim;
         private Font _font, _displayFont;
         private static readonly Vector2 PickerSize = new Vector2(880, 980);
         private static readonly Vector2 SettingsSize = new Vector2(840, 652);
+        private static readonly Vector2 DeadlockSize = new Vector2(742, 660);
+        private static readonly Vector2 DeadlockTextOnlySize = new Vector2(742, 524);
         private IReadOnlyList<LevelDefinition> _pickerLevels;
         private Func<int, bool> _isUnlocked, _isCompleted;
         private int _page, _currentIndex;
-        private bool _completed, _canAdvance;
+        private bool _completed, _canAdvance, _hasBoardLayout;
+        private BoardLayout.Result _boardLayout;
 
         public bool IsChoosingLevel => _levelPicker != null && _levelPicker.gameObject.activeSelf;
         public bool IsSettingsOpen => _settings != null && _settings.gameObject.activeSelf;
-        public bool BlocksGameplayInput => IsChoosingLevel || IsSettingsOpen;
+        public bool IsDeadlockOpen => _deadlock != null && _deadlock.gameObject.activeSelf;
+        public bool BlocksGameplayInput => IsChoosingLevel || IsSettingsOpen || IsDeadlockOpen;
 
         private void Awake()
         {
@@ -71,66 +79,104 @@ namespace Plop.Presentation
 
             var gameplay = NewRect("Play controls", _safe);
             _gameplayGroup = gameplay.gameObject.AddComponent<CanvasGroup>();
-            var topCenter = new Vector2(0.5f, 1f);
-            var header = NewRect("Header controls", gameplay);
-            header.anchorMin = header.anchorMax = topCenter;
-            header.anchoredPosition = new Vector2(0, -64);
-            header.sizeDelta = new Vector2(856, HudTheme.HeaderButtonHeight);
-            MakePill(header, "Levels", new Vector2(-308, 0), new Vector2(213, HudTheme.HeaderButtonHeight),
-                PlopPalette.ButtonFill, () => LevelsClicked?.Invoke(), icon: HudIcons.Kind.Levels, fontSize: HudTheme.Control);
-            MakeText(header, "Game name", 47, FontStyle.Bold, PlopPalette.Ink, new Vector2(0.5f, 0.5f),
-                Vector2.zero, new Vector2(200, 72)).text = "PLOP!";
-            MakePill(header, "Settings", new Vector2(308, 0), new Vector2(224, HudTheme.HeaderButtonHeight),
-                PlopPalette.ButtonFill, () => SettingsClicked?.Invoke(), icon: HudIcons.Kind.Settings, fontSize: HudTheme.Control);
-
-            _title = MakeText(gameplay, "Title", HudTheme.Display, FontStyle.Bold, PlopPalette.Ink, topCenter,
-                new Vector2(0, -159), new Vector2(846, 120));
-            _title.verticalOverflow = VerticalWrapMode.Overflow;
-            _moves = MakeText(gameplay, "Moves", 37, FontStyle.Normal, HudTheme.SecondaryText, topCenter,
-                new Vector2(0, -223), new Vector2(800, 55));
-            _instruction = MakeText(gameplay, "Instruction", HudTheme.Caption, FontStyle.Normal, PlopPalette.Ink, topCenter,
-                new Vector2(0, -281), new Vector2(790, 76));
-            _instruction.horizontalOverflow = HorizontalWrapMode.Wrap;
-
+            var center = Vector2.one * 0.5f;
             var bottomCenter = new Vector2(0.5f, 0f);
-            var buttonsRow = NewRect("Buttons", gameplay);
-            buttonsRow.anchorMin = buttonsRow.anchorMax = bottomCenter;
-            buttonsRow.sizeDelta = new Vector2(852, HudTheme.FooterButtonHeight);
-            buttonsRow.anchoredPosition = new Vector2(0, 91);
-            var buttonSize = new Vector2(252, HudTheme.FooterButtonHeight);
-            _undo = MakePill(buttonsRow, "Undo", new Vector2(-271, 0), buttonSize, PlopPalette.ButtonFill,
-                () => UndoClicked?.Invoke(), icon: HudIcons.Kind.Undo);
-            MakePill(buttonsRow, "Restart", Vector2.zero, buttonSize, PlopPalette.ButtonFill,
-                () => RestartClicked?.Invoke(), icon: HudIcons.Kind.Restart);
-            _primary = MakePill(buttonsRow, "Hint", new Vector2(271, 0), buttonSize, PlopPalette.Berry,
-                PrimaryClicked, icon: HudIcons.Kind.Hint);
-            _primaryLabel = _primary.GetComponentInChildren<Text>();
-            _primaryIcon = _primary.transform.Find("Icon").GetComponent<Image>();
-            _hintStatus = MakeText(gameplay, "Hint status", 38, FontStyle.Bold, PlopPalette.Ink, bottomCenter,
-                new Vector2(0, 220), new Vector2(823, 82));
+            _header = NewRect("Header", gameplay);
+            _header.anchorMin = _header.anchorMax = new Vector2(0.5f, 1f);
+            _header.anchoredPosition = new Vector2(0, -80);
+            _header.sizeDelta = new Vector2(HudTheme.HeaderWidth, HudTheme.HeaderButtonHeight);
+            var headerButtonSize = new Vector2(124, HudTheme.HeaderButtonHeight);
+            MakeButton(_header, "Levels", new Vector2(-378, 0), headerButtonSize, PlopPalette.ButtonFill,
+                () => LevelsClicked?.Invoke(), icon: HudIcons.Kind.Levels, touchHeight: HudTheme.PlayTouchHeight, iconOnly: true);
+            var name = MakeText(_header, "Game name", 84, FontStyle.Bold, HudTheme.Ink, center,
+                Vector2.zero, new Vector2(438, 128));
+            name.text = "PLOP!";
+            MakeButton(_header, "Settings", new Vector2(378, 0), headerButtonSize, PlopPalette.ButtonFill,
+                () => SettingsClicked?.Invoke(), icon: HudIcons.Kind.Settings, touchHeight: HudTheme.PlayTouchHeight, iconOnly: true);
 
-            _card = NewRect("Completion card", gameplay);
-            _card.anchorMin = _card.anchorMax = bottomCenter;
-            _card.sizeDelta = new Vector2(791, 108);
-            _card.anchoredPosition = new Vector2(0, 221);
-            _cardGroup = _card.gameObject.AddComponent<CanvasGroup>();
-            _cardGroup.blocksRaycasts = false;
-            AddShadow(_card, UiSprites.CardShadow, HudTheme.ShadowOffset, HudTheme.CardShadow);
-            AddCardBackground(_card, Color.Lerp(PlopPalette.ButtonFill, PlopPalette.Mint, 0.33f));
-            MakeText(_card, "Completion message", HudTheme.Heading, FontStyle.Bold, PlopPalette.Ink, new Vector2(0.5f, 0.5f),
-                Vector2.zero, new Vector2(720, 96)).text = "Sweet Dreams!";
-            _card.gameObject.SetActive(false);
+            _status = NewRect("Board status", gameplay);
+            _status.anchorMin = _status.anchorMax = center;
+            _status.sizeDelta = new Vector2(HudTheme.StatusWidth, 120);
+            _levelBadge = MakeBadge(_status, "Level badge", new Vector2(466, 103), PlopPalette.ButtonFill);
+            _title = MakeText(_levelBadge, "Title", HudTheme.Display, FontStyle.Bold, HudTheme.Ink, center,
+                Vector2.zero, new Vector2(440, 108));
+            _title.verticalOverflow = VerticalWrapMode.Overflow;
+            _moveBadge = MakeBadge(_status, "Move badge", new Vector2(300, 74), HudTheme.MoveSurface);
+            AddGlyph(_moveBadge, HudIcons.Kind.Moves, new Vector2(-100, 0), 47f, HudTheme.ActionInk);
+            _moves = MakeText(_moveBadge, "Moves", 37, FontStyle.Bold, HudTheme.Ink, center,
+                new Vector2(20, 0), new Vector2(235, 62));
+            _instruction = MakeText(_status, "Instruction", HudTheme.Caption, FontStyle.Normal, HudTheme.SecondaryText,
+                center, new Vector2(0, 30), new Vector2(HudTheme.StatusWidth, 70));
+            _instruction.horizontalOverflow = HorizontalWrapMode.Wrap;
+            _instruction.verticalOverflow = VerticalWrapMode.Overflow;
 
+            _dock = NewRect("Action dock", gameplay);
+            _dock.anchorMin = _dock.anchorMax = bottomCenter;
+            _dock.anchoredPosition = new Vector2(0, HudTheme.FooterRestY);
+            _dock.sizeDelta = new Vector2(HudTheme.DeckWidth, HudTheme.FooterButtonHeight);
+            _footer = NewRect("Board actions", _dock);
+            var buttonSize = new Vector2(177, HudTheme.FooterButtonHeight);
+            _undo = MakeButton(_footer, "Undo", new Vector2(-218, 0), buttonSize, PlopPalette.ButtonFill,
+                () => UndoClicked?.Invoke(), icon: HudIcons.Kind.Undo, touchHeight: HudTheme.PlayTouchHeight, stackIcon: true);
+            MakeButton(_footer, "Restart", Vector2.zero, buttonSize, PlopPalette.ButtonFill,
+                () => RestartClicked?.Invoke(), icon: HudIcons.Kind.Restart, touchHeight: HudTheme.PlayTouchHeight, stackIcon: true);
+            _hint = MakeButton(_footer, "Hint", new Vector2(218, 0), buttonSize, HudTheme.HintSurface,
+                () => HintClicked?.Invoke(), icon: HudIcons.Kind.Hint, touchHeight: HudTheme.PlayTouchHeight, stackIcon: true);
+            _hintStatus = MakeText(_footer, "Hint status", 34, FontStyle.Bold, HudTheme.Ink, Vector2.one * 0.5f,
+                new Vector2(0, 111), new Vector2(HudTheme.DeckWidth, 62));
+            _hintStatus.horizontalOverflow = HorizontalWrapMode.Wrap;
+            _hintStatus.verticalOverflow = VerticalWrapMode.Overflow;
+
+            BuildCompletion();
             BuildLevelPicker();
             BuildSettings();
-            FitModals();
+            BuildDeadlock();
+            FitResponsiveElements();
+            PositionPlayControls();
+        }
+
+        public void SetBoardLayout(BoardLayout.Result layout)
+        {
+            _boardLayout = layout;
+            _hasBoardLayout = true;
+            FitPlayRows();
+            PositionPlayControls();
+        }
+
+        private void PositionPlayControls()
+        {
+            const float edgeGap = 10f;
+            bool showInstruction = _instruction.gameObject.activeSelf && _instruction.text.Length > 0;
+            float moveY = showInstruction ? 104f : 49f;
+            float levelY = moveY + 98f;
+            _moveBadge.anchoredPosition = new Vector2(0, moveY);
+            _levelBadge.anchoredPosition = new Vector2(0, levelY);
+            if (!_hasBoardLayout) return;
+
+            float scale = _boardLayout.CanvasScale;
+            float safeBottom = _boardLayout.SafePixels.yMin;
+            float safeHeight = _boardLayout.SafePixels.height / scale;
+            float boardTop = (_boardLayout.BoardRectPixels.yMax - safeBottom) / scale;
+            float boardBottom = (_boardLayout.BoardRectPixels.yMin - safeBottom) / scale;
+            float headerScale = _header.localScale.y;
+            float deckScale = _dock.localScale.y;
+            float headerY = boardTop + edgeGap + levelY * _status.localScale.y + 132f * headerScale;
+            var bottomCenter = new Vector2(0.5f, 0f);
+            _header.anchorMin = _header.anchorMax = bottomCenter;
+            _status.anchorMin = _status.anchorMax = bottomCenter;
+            _header.anchoredPosition = new Vector2(0, Mathf.Min(safeHeight - 80f * headerScale, headerY));
+            _status.anchoredPosition = new Vector2(0, boardTop + edgeGap);
+            _dock.anchoredPosition = new Vector2(0,
+                Mathf.Clamp(boardBottom - 152f * deckScale, HudTheme.FooterRestY * deckScale, 235f));
         }
 
         public void SetLevel(string title, string instruction)
         {
             _title.text = title;
             _instruction.text = instruction ?? "";
-            _instruction.gameObject.SetActive(!string.IsNullOrWhiteSpace(instruction));
+            bool showInstruction = !string.IsNullOrWhiteSpace(instruction);
+            _instruction.gameObject.SetActive(showInstruction);
+            PositionPlayControls();
         }
 
         public void SetMoves(int moves) => _moves.text = moves == 1 ? "1 move" : moves + " moves";
@@ -161,31 +207,114 @@ namespace Plop.Presentation
         public void SetHint(string message, bool searching)
         {
             _hintStatus.text = message ?? "";
-            _primary.interactable = !searching;
+            _hint.interactable = !searching;
+        }
+
+        public bool ShowDeadlock(bool canUndo, Sprite mascot = null)
+        {
+            if (_completed) return false;
+            if (IsDeadlockOpen) return true;
+            if (BlocksGameplayInput) return false;
+
+            _deadlockUndo.interactable = canUndo;
+            _deadlockUndo.image.color = canUndo ? HudTheme.RecoverySurface : PlopPalette.Milk;
+            _deadlockRestart.image.color = canUndo ? PlopPalette.Milk : HudTheme.RecoverySurface;
+
+            bool illustrated = mascot != null;
+            _deadlockMascot.sprite = mascot;
+            _deadlockMascot.gameObject.SetActive(illustrated);
+            _deadlockTitle.rectTransform.anchoredPosition = new Vector2(0, illustrated ? -236f : -100f);
+            _deadlockDescription.rectTransform.anchoredPosition = new Vector2(0, illustrated ? -328f : -192f);
+            _deadlockPanel.sizeDelta = illustrated ? DeadlockSize : DeadlockTextOnlySize;
+            FitModal(_deadlockPanel, _deadlockPanel.sizeDelta);
+            SetModal(_deadlock, true);
+            return true;
+        }
+
+        public void CloseDeadlock()
+        {
+            if (IsDeadlockOpen) SetModal(_deadlock, false);
         }
 
         public void SetCompleted(bool completed, bool canAdvance)
         {
             _completed = completed;
             _canAdvance = canAdvance;
-            _primaryLabel.text = completed ? (canAdvance ? "Next Level" : "Levels") : "Hint";
-            _primaryLabel.fontSize = completed && canAdvance ? 35 : HudTheme.Action;
-            _primaryLabel.rectTransform.anchoredPosition = new Vector2(completed && canAdvance ? 24f : 19f, 0f);
-            _primaryIcon.sprite = HudIcons.Get(!completed ? HudIcons.Kind.Hint : canAdvance ? HudIcons.Kind.Next : HudIcons.Kind.Levels);
+            if (completed) CloseDeadlock();
+            _completionActionLabel.text = canAdvance ? "Next Level" : "Levels";
+            _completionActionIcon.sprite = HudIcons.Get(canAdvance ? HudIcons.Kind.Next : HudIcons.Kind.Levels);
+
             if (_cardAnim != null)
             {
                 StopCoroutine(_cardAnim);
                 _cardAnim = null;
             }
-            _card.gameObject.SetActive(completed);
-            if (completed) _cardAnim = StartCoroutine(PopIn(_card, _cardGroup));
+            _footer.gameObject.SetActive(!completed);
+            _completion.gameObject.SetActive(completed);
+            if (completed) _cardAnim = StartCoroutine(PopIn(_completion, _cardGroup));
         }
 
-        private void PrimaryClicked()
+        private void BuildCompletion()
         {
-            if (!_completed) HintClicked?.Invoke();
-            else if (_canAdvance) NextClicked?.Invoke();
-            else LevelsClicked?.Invoke();
+            _completion = NewRect("Completion card", _dock);
+            _completion.anchorMin = _completion.anchorMax = Vector2.one * 0.5f;
+            _completion.sizeDelta = new Vector2(HudTheme.DeckWidth, 206);
+            _completion.anchoredPosition = new Vector2(0, 12);
+            _cardGroup = _completion.gameObject.AddComponent<CanvasGroup>();
+            AddShadow(_completion, UiSprites.CardShadow, HudTheme.ShadowOffset, HudTheme.CardShadow);
+            AddCardBackground(_completion, HudTheme.CompletionSurface);
+            MakeText(_completion, "Completion message", HudTheme.Heading, FontStyle.Bold, HudTheme.Ink,
+                Vector2.one * 0.5f, new Vector2(0, 48), new Vector2(590, 69)).text = "Sweet Dreams!";
+            MakeButton(_completion, "Replay", new Vector2(-161, -43), new Vector2(252, 76), PlopPalette.ButtonFill,
+                () => RestartClicked?.Invoke(), icon: HudIcons.Kind.Restart, fontSize: HudTheme.Control, touchHeight: 114f);
+            var advance = MakeButton(_completion, "Next Level", new Vector2(130, -43), new Vector2(297, 76),
+                Color.Lerp(PlopPalette.ButtonFill, PlopPalette.Mint, 0.62f),
+                () =>
+                {
+                    if (_canAdvance) NextClicked?.Invoke();
+                    else LevelsClicked?.Invoke();
+                }, icon: HudIcons.Kind.Next, fontSize: HudTheme.Action, touchHeight: 114f);
+            _completionActionLabel = advance.GetComponentInChildren<Text>();
+            _completionActionIcon = advance.transform.Find("Icon").GetComponent<Image>();
+            _completion.gameObject.SetActive(false);
+        }
+
+        private void BuildDeadlock()
+        {
+            _deadlock = BuildModal("Deadlock", DeadlockSize, out _deadlockPanel);
+            var top = new Vector2(0.5f, 1f);
+            var bottom = new Vector2(0.5f, 0f);
+            var portrait = NewRect("Worried Plop", _deadlockPanel);
+            portrait.anchorMin = portrait.anchorMax = top;
+            portrait.anchoredPosition = new Vector2(0, -120);
+            portrait.sizeDelta = new Vector2(150, 136);
+            _deadlockMascot = portrait.gameObject.AddComponent<Image>();
+            _deadlockMascot.preserveAspect = true;
+            _deadlockMascot.raycastTarget = false;
+            _deadlockTitle = MakeText(_deadlockPanel, "Deadlock title", 54, FontStyle.Bold, HudTheme.Ink,
+                top, new Vector2(0, -236), new Vector2(672, 80));
+            _deadlockTitle.text = "Oops, we're stuck!";
+            _deadlockDescription = MakeText(_deadlockPanel, "Deadlock explanation", 36, FontStyle.Normal, HudTheme.SecondaryText,
+                top, new Vector2(0, -328), new Vector2(590, 122));
+            _deadlockDescription.horizontalOverflow = HorizontalWrapMode.Wrap;
+            _deadlockDescription.verticalOverflow = VerticalWrapMode.Overflow;
+            _deadlockDescription.text = "There's no way to get everyone home from here.";
+
+            _deadlockUndo = MakeButton(_deadlockPanel, "Undo Move", new Vector2(-162, 175), new Vector2(292, 100),
+                HudTheme.RecoverySurface, () =>
+                {
+                    CloseDeadlock();
+                    UndoClicked?.Invoke();
+                }, bottom, fontSize: HudTheme.Control, touchHeight: 120f);
+            _deadlockRestart = MakeButton(_deadlockPanel, "Restart Level", new Vector2(153, 175), new Vector2(307, 100),
+                PlopPalette.Milk, () =>
+                {
+                    CloseDeadlock();
+                    RestartClicked?.Invoke();
+                }, bottom, fontSize: HudTheme.Control, touchHeight: 120f);
+            MakeButton(_deadlockPanel, "Keep playing", new Vector2(0, 61), new Vector2(240, 74),
+                PlopPalette.ButtonFill, CloseDeadlock, bottom, fontSize: HudTheme.Caption, touchHeight: 102f);
+            _deadlock.gameObject.SetActive(false);
         }
 
         public void ShowLevels(IReadOnlyList<LevelDefinition> levels, Func<int, bool> isUnlocked,
@@ -211,9 +340,9 @@ namespace Plop.Presentation
             _levelPicker = BuildModal("Level picker", PickerSize, out _pickerPanel);
             var panel = _pickerPanel;
 
-            MakeText(panel, "Picker title", HudTheme.Heading, FontStyle.Bold, PlopPalette.Ink, new Vector2(0.40f, 1f),
+            MakeText(panel, "Picker title", HudTheme.Heading, FontStyle.Bold, HudTheme.Ink, new Vector2(0.40f, 1f),
                 new Vector2(0, -74), new Vector2(460, 80)).text = "Choose a level";
-            MakePill(panel, "Close", new Vector2(0, -74), new Vector2(173, HudTheme.ModalButtonHeight), PlopPalette.Milk,
+            MakeButton(panel, "Close", new Vector2(0, -74), new Vector2(173, HudTheme.ModalButtonHeight), PlopPalette.Milk,
                 CloseLevelPicker, new Vector2(0.85f, 1f), fontSize: HudTheme.Control);
 
             for (int slot = 0; slot < PageSize; slot++)
@@ -222,14 +351,14 @@ namespace Plop.Presentation
                 float x = slot % 2 == 0 ? 0.265f : 0.735f;
                 float y = -204 - slot / 2 * 138;
                 _levelSlots[slot] = NewRect("Level slot " + slot, panel);
-                _levelButtons[slot] = MakePill(_levelSlots[slot], "Level", new Vector2(0, y), new Vector2(340, 102),
+                _levelButtons[slot] = MakeButton(_levelSlots[slot], "Level", new Vector2(0, y), new Vector2(340, 102),
                     PlopPalette.Milk, () => LevelChosen?.Invoke(_page * PageSize + offset), new Vector2(x, 1f), fontSize: HudTheme.Control);
                 _levelLabels[slot] = _levelButtons[slot].GetComponentInChildren<Text>();
             }
 
-            _previousPage = MakePill(panel, "Back", new Vector2(0, 79), new Vector2(170, 80), PlopPalette.Milk,
+            _previousPage = MakeButton(panel, "Back", new Vector2(0, 79), new Vector2(170, 80), PlopPalette.Milk,
                 () => ChangeLevelPage(-1), new Vector2(0.20f, 0));
-            _nextPage = MakePill(panel, "More", new Vector2(0, 79), new Vector2(170, 80), PlopPalette.Milk,
+            _nextPage = MakeButton(panel, "More", new Vector2(0, 79), new Vector2(170, 80), PlopPalette.Milk,
                 () => ChangeLevelPage(1), new Vector2(0.80f, 0));
             _pageLabel = MakeText(panel, "Level range", 32, FontStyle.Normal, PlopPalette.MutedText,
                 new Vector2(0.5f, 0), new Vector2(0, 79), new Vector2(350, 65));
@@ -270,11 +399,11 @@ namespace Plop.Presentation
         {
             _settings = BuildModal("Settings", SettingsSize, out _settingsPanel);
             var panel = _settingsPanel;
-            var title = MakeText(panel, "Settings title", HudTheme.Heading, FontStyle.Bold, PlopPalette.Ink, new Vector2(0.12f, 1f),
+            var title = MakeText(panel, "Settings title", HudTheme.Heading, FontStyle.Bold, HudTheme.Ink, new Vector2(0.12f, 1f),
                 new Vector2(177, -70), new Vector2(352, 80));
             title.alignment = TextAnchor.MiddleLeft;
             title.text = "Settings";
-            MakePill(panel, "Done", new Vector2(0, -70), new Vector2(168, HudTheme.ModalButtonHeight),
+            MakeButton(panel, "Done", new Vector2(0, -70), new Vector2(168, HudTheme.ModalButtonHeight),
                 PlopPalette.Milk, CloseSettings, new Vector2(0.84f, 1f), fontSize: HudTheme.Control);
 
             _music = MakeVolume(panel, "Music", -180, out _musicPercent, value =>
@@ -291,11 +420,11 @@ namespace Plop.Presentation
             });
 
             var center = new Vector2(0.5f, 1f);
-            MakeText(panel, "Frame rate title", HudTheme.Control, FontStyle.Bold, PlopPalette.Ink, center,
+            MakeText(panel, "Frame rate title", HudTheme.Control, FontStyle.Bold, HudTheme.Ink, center,
                 new Vector2(0, -456), new Vector2(670, 53)).text = "Frame rate";
-            _rate30 = MakePill(panel, "30 FPS", new Vector2(-171, -546), new Vector2(308, 94), PlopPalette.Milk,
+            _rate30 = MakeButton(panel, "30 FPS", new Vector2(-171, -546), new Vector2(308, 94), PlopPalette.Milk,
                 () => FrameRateChanged?.Invoke(PlopGameController.FrameRateMode.Fps30), center);
-            _rate60 = MakePill(panel, "60 FPS", new Vector2(171, -546), new Vector2(308, 94), PlopPalette.Milk,
+            _rate60 = MakeButton(panel, "60 FPS", new Vector2(171, -546), new Vector2(308, 94), PlopPalette.Milk,
                 () => FrameRateChanged?.Invoke(PlopGameController.FrameRateMode.Fps60), center);
             _settings.gameObject.SetActive(false);
         }
@@ -303,7 +432,7 @@ namespace Plop.Presentation
         private Slider MakeVolume(Transform panel, string label, float y, out Text percent, Action<float> changed)
         {
             var anchor = new Vector2(0.5f, 1f);
-            var name = MakeText(panel, label + " label", HudTheme.Control, FontStyle.Bold, PlopPalette.Ink, anchor,
+            var name = MakeText(panel, label + " label", HudTheme.Control, FontStyle.Bold, HudTheme.Ink, anchor,
                 new Vector2(-162, y), new Vector2(338, 54));
             name.alignment = TextAnchor.MiddleLeft;
             name.text = label;
@@ -351,7 +480,7 @@ namespace Plop.Presentation
         {
             var container = NewRect(name, _safe);
             var blocker = container.gameObject.AddComponent<Image>();
-            blocker.color = PlopPalette.Ink.WithAlpha(0.18f);
+            blocker.color = HudTheme.Ink.WithAlpha(0.18f);
             panel = NewRect(name + " card", container);
             panel.anchorMin = panel.anchorMax = new Vector2(0.5f, 0.5f);
             panel.sizeDelta = size;
@@ -368,11 +497,28 @@ namespace Plop.Presentation
             ModalInteracted?.Invoke();
         }
 
-        private void FitModals()
+        private void FitResponsiveElements()
         {
-            if (_pickerPanel == null || _settingsPanel == null) return;
+            if (_deadlockPanel == null) return;
             FitModal(_pickerPanel, PickerSize);
             FitModal(_settingsPanel, SettingsSize);
+            FitModal(_deadlockPanel, _deadlockPanel.sizeDelta);
+            FitPlayRows();
+        }
+
+        private void FitPlayRows()
+        {
+            FitRow(_header, HudTheme.HeaderWidth);
+            FitRow(_status, HudTheme.StatusWidth);
+            FitRow(_dock, HudTheme.DeckWidth);
+        }
+
+        private void FitRow(RectTransform row, float width)
+        {
+            float reserve = _hasBoardLayout ? _boardLayout.ReserveScale : 1f;
+            float widthFit = (_safe.rect.width - HudTheme.ModalMargin * 2f) / width;
+            float scale = Mathf.Clamp(Mathf.Min(widthFit, reserve), 0.25f, 1f);
+            row.localScale = new Vector3(scale, scale, 1f);
         }
 
         private void FitModal(RectTransform panel, Vector2 nominal)
@@ -380,6 +526,29 @@ namespace Plop.Presentation
             var space = _safe.rect.size - Vector2.one * (2 * HudTheme.ModalMargin);
             float scale = Mathf.Clamp(Mathf.Min(space.x / nominal.x, space.y / nominal.y), 0.25f, 1f);
             panel.localScale = new Vector3(scale, scale, 1f);
+        }
+
+        private static RectTransform MakeBadge(Transform parent, string name, Vector2 size, Color color)
+        {
+            var badge = NewRect(name, parent);
+            badge.anchorMin = badge.anchorMax = Vector2.one * 0.5f;
+            badge.sizeDelta = size;
+            AddShadow(badge, UiSprites.ControlShadow, HudTheme.ShadowOffset, HudTheme.ButtonShadow);
+            AddRoundedImage(NewRect("Body", badge), UiSprites.Badge, color);
+            return badge;
+        }
+
+        private static Image AddGlyph(RectTransform parent, HudIcons.Kind icon, Vector2 pos, float size, Color color)
+        {
+            var glyph = NewRect("Icon", parent);
+            glyph.anchorMin = glyph.anchorMax = Vector2.one * 0.5f;
+            glyph.anchoredPosition = pos;
+            glyph.sizeDelta = Vector2.one * size;
+            var image = glyph.gameObject.AddComponent<Image>();
+            image.sprite = HudIcons.Get(icon);
+            image.color = color;
+            image.raycastTarget = false;
+            return image;
         }
 
         private static void AddCardBackground(RectTransform parent, Color color)
@@ -403,7 +572,8 @@ namespace Plop.Presentation
         private void OnRectChanged()
         {
             ApplySafeArea();
-            FitModals();
+            FitResponsiveElements();
+            if (_instruction != null) PositionPlayControls();
             LayoutChanged?.Invoke();
         }
 
@@ -491,32 +661,35 @@ namespace Plop.Presentation
             rt.SetAsFirstSibling();
         }
 
-        private Button MakePill(RectTransform parent, string label, Vector2 pos, Vector2 size, Color fill,
-            Action onClick, Vector2? anchor = null, HudIcons.Kind? icon = null, int fontSize = HudTheme.Action)
+        private Button MakeButton(RectTransform parent, string label, Vector2 pos, Vector2 size, Color fill,
+            Action onClick, Vector2? anchor = null, HudIcons.Kind? icon = null, int fontSize = HudTheme.Action,
+            float touchHeight = 0f, bool stackIcon = false, bool iconOnly = false)
         {
             var rt = NewRect(label + " Button", parent);
             rt.anchorMin = rt.anchorMax = anchor ?? new Vector2(0.5f, 0.5f);
             rt.anchoredPosition = pos;
-            rt.sizeDelta = size;
+            rt.sizeDelta = new Vector2(size.x, Mathf.Max(size.y, touchHeight));
+            rt.gameObject.AddComponent<Image>().color = Color.clear;
 
-            // the shadow is a sibling placed behind the button so it does not squish with the press
+            // The cast shadow stays in place as the face responds to a press.
             var shadowHolder = NewRect(label + " Shadow", parent);
             shadowHolder.anchorMin = shadowHolder.anchorMax = rt.anchorMin;
             shadowHolder.anchoredPosition = pos + HudTheme.ShadowOffset;
-            float spread = UiSprites.ShadowSpread(UiSprites.PillShadow);
+            float spread = UiSprites.ShadowSpread(UiSprites.ControlShadow);
             shadowHolder.sizeDelta = size + new Vector2(2 * spread, 2 * spread);
             var shadowImg = shadowHolder.gameObject.AddComponent<Image>();
-            shadowImg.sprite = UiSprites.PillShadow;
+            shadowImg.sprite = UiSprites.ControlShadow;
             shadowImg.type = Image.Type.Sliced;
             shadowImg.color = PlopPalette.Shadow.WithAlpha(HudTheme.ButtonShadow);
             shadowImg.raycastTarget = false;
             shadowHolder.SetSiblingIndex(rt.GetSiblingIndex());
 
-            var img = rt.gameObject.AddComponent<Image>();
-            img.sprite = UiSprites.Pill;
-            img.type = Image.Type.Sliced;
-            img.color = fill;
+            var center = Vector2.one * 0.5f;
+            var face = NewRect("Face", rt);
+            face.anchorMin = face.anchorMax = center;
+            face.sizeDelta = size;
             var button = rt.gameObject.AddComponent<Button>();
+            button.targetGraphic = AddRoundedImage(face, UiSprites.Control, fill);
             var colors = button.colors;
             colors.normalColor = Color.white;
             colors.highlightedColor = Color.white;
@@ -532,22 +705,27 @@ namespace Plop.Presentation
             });
             rt.gameObject.AddComponent<PressScale>();
 
-            var center = new Vector2(0.5f, 0.5f);
             if (icon.HasValue)
             {
-                var glyph = NewRect("Icon", rt);
-                glyph.anchorMin = glyph.anchorMax = center;
-                glyph.anchoredPosition = new Vector2(-size.x * 0.34f, 0);
-                glyph.sizeDelta = Vector2.one * HudTheme.Icon;
-                var iconImage = glyph.gameObject.AddComponent<Image>();
-                iconImage.sprite = HudIcons.Get(icon.Value);
-                iconImage.color = PlopPalette.Ink;
-                iconImage.raycastTarget = false;
+                var kind = icon.Value;
+                Vector2 glyphPosition = iconOnly ? Vector2.zero :
+                    stackIcon ? new Vector2(0, 19) : new Vector2(-size.x * 0.34f, 0);
+                float glyphSize = iconOnly ? 66f : stackIcon ? 64f : HudTheme.Icon;
+                Color ink = kind == HudIcons.Kind.Hint
+                    ? Color.Lerp(HudTheme.Ink, PlopPalette.Honey, 0.44f)
+                    : HudTheme.ActionInk;
+                AddGlyph(rt, kind, glyphPosition, glyphSize, ink);
             }
 
-            var text = MakeText(rt, "Label", fontSize, FontStyle.Bold, PlopPalette.Ink, center,
-                new Vector2(icon.HasValue ? 19f : 0f, 0), size);
-            text.text = label;
+            if (!iconOnly)
+            {
+                Vector2 labelPosition = stackIcon ? new Vector2(0, -35) :
+                    new Vector2(icon.HasValue ? 19f : 0f, 0f);
+                var labelBox = stackIcon ? new Vector2(size.x, 44f) : size;
+                var text = MakeText(rt, "Label", stackIcon ? HudTheme.Caption : fontSize, FontStyle.Bold,
+                    HudTheme.Ink, center, labelPosition, labelBox);
+                text.text = label;
+            }
             return button;
         }
     }

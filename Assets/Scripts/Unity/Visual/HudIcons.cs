@@ -5,10 +5,10 @@ namespace Plop.Presentation
     /// <summary>Small round-ended control glyphs in a single baked alpha sheet.</summary>
     internal static class HudIcons
     {
-        internal enum Kind { Levels, Settings, Undo, Restart, Hint, Next }
+        internal enum Kind { Levels, Settings, Undo, Restart, Hint, Next, Moves }
 
         private const int Size = 64;
-        private const int IconCount = 6;
+        private const int IconCount = 7;
         private static Sprite[] _sprites;
 
         internal static Sprite Get(Kind kind)
@@ -50,16 +50,29 @@ namespace Plop.Presentation
                 case Kind.Levels:
                     return Sdf.RoundBox(Mathf.Abs(p.x - 32f), Mathf.Abs(p.y - 32f), 10, 10, 6.2f, 6.2f, 3.4f);
                 case Kind.Settings:
-                    return Min3(Rail(p, 21, 25), Rail(p, 32, 43), Rail(p, 43, 27));
+                    var q = new Vector2(Mathf.Abs(p.x - 32f), Mathf.Abs(p.y - 32f));
+                    float teeth = Min3(Sdf.Circle(q.x, q.y, 17f, 0f, 6.2f),
+                        Sdf.Circle(q.x, q.y, 0f, 17f, 6.2f), Sdf.Circle(q.x, q.y, 12.8f, 12.8f, 6.1f));
+                    return Mathf.Max(Mathf.Min(q.magnitude - 18f, teeth), 9.2f - q.magnitude);
                 case Kind.Undo:
                     return Min4(Arc(p, 40, 29, 14, -1.55f, 1.55f),
                         Stroke(p, 16, 43, 40, 43), Stroke(p, 16, 43, 26, 52), Stroke(p, 16, 43, 26, 34));
                 case Kind.Restart:
-                    return Min3(Arc(p, 32, 31, 17, -1.55f, 3.16f),
-                        Stroke(p, 15, 30, 11, 43), Stroke(p, 15, 30, 26, 36));
+                    float forward = Min3(Arc(p, 32, 32, 16, 0.22f, 2.80f),
+                        Stroke(p, 48, 35, 47, 46), Stroke(p, 48, 35, 37, 37));
+                    var reverse = new Vector2(64f - p.x, 64f - p.y);
+                    float backward = Min3(Arc(reverse, 32, 32, 16, 0.22f, 2.80f),
+                        Stroke(reverse, 48, 35, 47, 46), Stroke(reverse, 48, 35, 37, 37));
+                    return Mathf.Min(forward, backward);
                 case Kind.Hint:
-                    return Min4(Stroke(p, 32, 16, 32, 48), Stroke(p, 16, 32, 48, 32),
-                        Stroke(p, 24, 24, 40, 40), Stroke(p, 24, 40, 40, 24));
+                    float bulb = Mathf.Max(Sdf.Circle(p.x, p.y, 32, 34, 13),
+                        -Sdf.Circle(p.x, p.y, 32, 34, 7.7f));
+                    return Min4(bulb, Stroke(p, 28, 15, 36, 15),
+                        Stroke(p, 28, 21, 36, 21), Min3(Stroke(p, 32, 51, 32, 56),
+                            Stroke(p, 14, 43, 9, 46), Stroke(p, 50, 43, 55, 46)));
+                case Kind.Moves:
+                    return Mathf.Min(Footprint(p - new Vector2(22, 24), -0.23f),
+                        Footprint(p - new Vector2(42, 39), 0.29f));
                 default:
                     return Min3(Stroke(p, 17, 32, 47, 32), Stroke(p, 47, 32, 35, 44), Stroke(p, 47, 32, 35, 20));
             }
@@ -68,8 +81,14 @@ namespace Plop.Presentation
         private static float Min3(float a, float b, float c) => Mathf.Min(Mathf.Min(a, b), c);
         private static float Min4(float a, float b, float c, float d) => Mathf.Min(Mathf.Min(a, b), Mathf.Min(c, d));
 
-        private static float Rail(Vector2 p, float y, float thumb) =>
-            Mathf.Min(Stroke(p, 15, y, 49, y), Sdf.Circle(p.x, p.y, thumb, y, 4.4f));
+        private static float Footprint(Vector2 p, float tilt)
+        {
+            float across = p.x - p.y * tilt;
+            float forward = p.y + p.x * tilt;
+            float toes = Sdf.RoundBox(across, forward - 4f, 0f, 0f, 7f, 10f, 6.5f);
+            float heel = Sdf.RoundBox(across, forward + 6.3f, 0f, 0f, 5.5f, 6.5f, 4.6f);
+            return Mathf.Min(toes, heel);
+        }
 
         private static float Arc(Vector2 p, float x, float y, float radius, float start, float end)
         {

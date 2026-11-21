@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Plop.Core;
+using Plop.Solver;
 using UnityEngine;
 
 namespace Plop.Presentation
@@ -11,6 +12,17 @@ namespace Plop.Presentation
     public static class LevelLibrary
     {
         public const string DefaultPack = "Levels/PLOP_Pack_001";
+
+        public static DeadlockCatalog LoadDeadlocks()
+        {
+            var asset = Resources.Load<TextAsset>("Levels/PLOP_Deadlocks_001");
+            if (asset == null) return null;
+            bool valid = DeadlockCatalog.TryRead(asset.bytes, out var catalog);
+            Resources.UnloadAsset(asset);
+            if (valid) PlopLog.Info("Loaded deadlock proofs for " + catalog.LevelCount + " levels.");
+            else PlopLog.Info("Deadlock proof data unreadable. Bounded search remains available.");
+            return valid ? catalog : null;
+        }
 
         public static List<LevelDefinition> Load(string resourcePath = DefaultPack)
         {

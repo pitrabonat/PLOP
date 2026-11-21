@@ -13,6 +13,7 @@ namespace Plop.Presentation
     public sealed class BoardView : MonoBehaviour
     {
         private const float NestPulseDuration = 0.35f;
+        private static readonly Color WarmIvoryTint = new Color(0.990f, 0.979f, 0.966f);
 
         private readonly List<GameObject> _static = new List<GameObject>();
         private readonly List<PlopView> _plops = new List<PlopView>();
@@ -68,8 +69,8 @@ namespace Plop.Presentation
             float pad = BoardLayout.PanelPadding;
             var panelSize = new Vector2(level.Width + 2 * pad, level.Height + 2 * pad);
             var shadow = Sliced("BoardShadow", atlas.Get("panelShadow"), panelSize + Vector2.one * (2 * ShapeAtlas.PanelShadowBlur), -1000);
-            shadow.transform.localPosition = new Vector3(0f, -0.10f, 0f);
-            shadow.color = new Color(1f, 1f, 1f, 0.15f); // the baked mask is full strength; keep the lift gentle
+            shadow.transform.localPosition = new Vector3(0.045f, -0.10f, 0f);
+            shadow.color = new Color(1f, 1f, 1f, 0.25f);
             Sliced("BoardPanel", atlas.Get("panel"), panelSize, -990);
 
             // ---- floor tiles, pebbles, nests ----
@@ -87,6 +88,8 @@ namespace Plop.Presentation
                     {
                         var tile = Simple("Tile " + x + "," + y, atlas.Get("tile"), -980);
                         tile.transform.localPosition = CellToLocal(pos);
+                        float variation = ((x * 13 + y * 17 + x * y * 3) % 7) / 6f;
+                        tile.color = Color.Lerp(WarmIvoryTint, Color.white, variation);
                     }
                 }
             }
@@ -174,8 +177,8 @@ namespace Plop.Presentation
                 if (_pulseNest[i] == null) continue;
                 float u = (now - _pulseT0[i]) / NestPulseDuration;
                 if (u >= 1f) { _pulseNest[i].localScale = Vector3.one; _pulseNest[i] = null; continue; }
-                float s = 1f + 0.07f * Mathf.Sin(Mathf.PI * u);
-                _pulseNest[i].localScale = new Vector3(s, s, 1f);
+                float pulse = Mathf.Sin(Mathf.PI * u);
+                _pulseNest[i].localScale = new Vector3(1f + 0.049f * pulse, 1f + 0.023f * pulse, 1f);
             }
         }
 
