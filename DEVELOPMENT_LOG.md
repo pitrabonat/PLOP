@@ -44,3 +44,10 @@ See [PROJECT_STATE.md](PROJECT_STATE.md) for verification and remaining device Q
 - The revised ARM64 iOS Simulator export built under Xcode 26.3. Captured
   Level 29 before and after its nine-move solution on iPhone 15 Pro Max.
   The screenshots show the level heading and the completion action.
+- Confirmed the portrait layout at 750 × 1334 on iPhone SE. Android
+  testing exposed slider anchors that stretched the thumbs over their
+  labels at minimum volume. Fixed the geometry and reran Unity
+  PlayMode (29/29).
+- Built and verified the 44.6 MB Android development APK. Offline touch
+  play, Hint, Undo, completion, Next Level and relaunch passed in the
+  emulator. Both audio volumes and the 30 FPS cap persisted.

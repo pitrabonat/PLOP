@@ -48,7 +48,7 @@ detect rule regressions; the code was restored afterwards.
 | Gameplay integration | `GameplayPrototypeTests` (movement, completion, unlocks, replay, persistence, migration, input and current-state hint cancellation) |
 | Full catalog integration | `ProductionCatalogTests` loads every board from Resources, solves, Undoes, Restarts, replays and advances through the controller |
 | Visual production | `VisualFoundationTests` covers rounded silhouettes, shared atlas, density, nine-slicing, 7 screen profiles × 9 board sizes, anticipation, rapid retargeting, recoil, and clearing the sleep pose |
-| Settings and completion | `ProductionHudTests` covers modal input capture, independent audio sliders, 30/60 FPS control and immediate Next Level |
+| Settings and completion | `ProductionHudTests` covers title glyphs, modal input capture, round slider handles at zero, independent audio sliders, 30/60 FPS control and immediate Next Level |
 | Audio | `PlopAudioTests` covers synthesized clips and independence of the effects/music controls |
 
 ## Phase 4 iOS Simulator
@@ -57,19 +57,28 @@ Unity exported ARM64 and Xcode 26.3 built the development player with
 simulator signing disabled. The iPhone 15 Pro Max ran Level 29 and replayed
 its nine-move solution. The captured portrait images show the corrected
 heading, safe-area layout, sleeping Plops and **Sweet Dreams!** completion.
+The iPhone SE also displayed Level 29 in a 750 × 1334 portrait screenshot.
 [Running game previews](Previews/README.md)
 
-## Android smoke test
+## Phase 4 Android emulator
 
-The Phase 3 ARM64 IL2CPP development APK installed on the API 37 emulator. In airplane
-mode, a touch swipe solved Level 1, Next unlocked Level 2, and a force-stop
-and relaunch preserved completion, the resume level, and the selected 30 FPS
-cap. The Levels picker replayed Level 1. After a deliberate detour, the
-hint changed from right to down.
+The ARM64 IL2CPP development APK installed on the API 37 emulator
+(1080 × 2400). In airplane mode, a detour and Hint showed a route from
+the current board. Undo and a right swipe finished Level 1 in one move
+with both audio sliders at 0%. Next Level opened Level 2. The resumed
+game preserved the completed and unlocked levels, mute settings and the
+selected 30 FPS cap after a force-stop. The Settings screenshot shows
+the labels remain clear at minimum volume.
+
+The APK is 44,646,700 bytes (29% smaller than the Phase 3 dev APK).
+Both its APK v2 signature and 16 KB ZIP alignment passed verification.
+`dumpsys meminfo` measured 255,875 KiB of PSS after emulator relaunch.
+Build, test and Android platform logs are under
+`/Volumes/PLOP_DEV/Builds/Logs/phase4/`.
 
 ## Not covered by automated tests
 
 - The Level Lab window UI (compiles in Unity; its logic calls tested Core/Solver/Generation APIs) —
   needs a manual check in the Editor.
-- Real touch input on devices and visual appearance of the scene (PlayMode tests call controller methods).
-- Device performance profiling (desktop measurements are recorded in the [production benchmark](benchmarks/generation_benchmark_v2.md)).
+- Physical phone input, frame pacing, battery, thermals and audio mix. The emulator verifies the touch flow and settings.
+- The [production benchmark](benchmarks/generation_benchmark_v2.md) records desktop puzzle-engine measurements.
