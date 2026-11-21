@@ -30,6 +30,17 @@ every state. Outputs: `Complete`, `ReachableStates`, `GoalStates`, `DeadEndState
 and `PathStats` along it: misleading moves (state-changing but not closer), trap moves (into dead ends),
 forced steps (single optimal move), average branching. Incomplete analyses must not be used for decisions.
 
+The v2 generator also reads graph evidence for distinct shortest command
+sequences (capped at one million), first-settling Nest groups reachable on a
+completing route, strictly required Nest order pairs, and settlement steps that
+turn a solvable state into a dead end. Two reachability checks prove whether
+every completing route needs a blocked awake Plop while another moves, or a
+move away from the nearest matching Nest by Manhattan distance. Settlement
+uses Nest cells, including for interchangeable same-color Plops.
+
+The BFS result and deterministic U/D/L/R shortest path selection retain
+solver version 1. The generator version covers the additional analysis metadata.
+
 ## Correctness evidence (tests)
 
 - Hand-made cases: straight line, wall-desync puzzle, unreachable nest, lock-step Plops, budget, cancellation,
@@ -39,7 +50,7 @@ forced steps (single optimal move), average branching. Incomplete analyses must 
   search that only uses the public `GameEngine` API**; BFS "unsolvable" verdicts are confirmed by IDDFS
   finding nothing; analyzer distance equals BFS length.
 
-## Measured performance (Apple M4, .NET 10, single thread)
+## Historical performance (v1 pack, Apple M4, .NET 10, single thread)
 
 | Case | Result |
 |---|---|

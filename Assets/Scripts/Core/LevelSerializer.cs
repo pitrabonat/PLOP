@@ -56,6 +56,7 @@ namespace Plop.Core
             w.Key("schemaVersion").Value(SchemaVersion);
             w.Key("id").Value(level.Id);
             w.Key("name").Value(level.Name);
+            if (level.Instruction != null) w.Key("instruction").Value(level.Instruction);
             w.Key("width").Value(level.Width);
             w.Key("height").Value(level.Height);
 
@@ -151,7 +152,7 @@ namespace Plop.Core
             if (includeDevData && o.TryGetValue("dev", out object devObj) && devObj != null)
                 meta = ReadMeta(MiniJson.AsObject(devObj, "dev"));
 
-            return new LevelDefinition(id, name, width, height, walls, plops, nests, meta);
+            return new LevelDefinition(id, name, width, height, walls, plops, nests, meta, MiniJson.GetString(o, "instruction", false));
         }
 
         private static LevelMetadata ReadMeta(Dictionary<string, object> d)

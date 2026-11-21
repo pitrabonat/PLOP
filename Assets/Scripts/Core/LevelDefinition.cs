@@ -43,6 +43,7 @@ namespace Plop.Core
 
         public string Id { get; }
         public string Name { get; }
+        public string Instruction { get; }
         public int Width { get; }
         public int Height { get; }
         public int CellCount => Width * Height;
@@ -62,11 +63,12 @@ namespace Plop.Core
 
         public LevelDefinition(string id, string name, int width, int height,
             IEnumerable<GridPosition> walls, IEnumerable<PlopDefinition> plops, IEnumerable<NestDefinition> nests,
-            LevelMetadata metadata = null)
+            LevelMetadata metadata = null, string instruction = null)
         {
             if (width <= 0 || height <= 0) throw new ArgumentException("Width and height must be positive.");
             Id = id ?? string.Empty;
             Name = name ?? string.Empty;
+            Instruction = string.IsNullOrWhiteSpace(instruction) ? null : instruction.Trim();
             Width = width;
             Height = height;
             Metadata = metadata;
@@ -111,7 +113,7 @@ namespace Plop.Core
 
         /// <summary>Returns a copy of this level with different metadata (geometry is shared semantics, not reference).</summary>
         public LevelDefinition WithMetadata(LevelMetadata metadata, string id = null, string name = null)
-            => new LevelDefinition(id ?? Id, name ?? Name, Width, Height, _wallList, _plops, _nests, metadata);
+            => new LevelDefinition(id ?? Id, name ?? Name, Width, Height, _wallList, _plops, _nests, metadata, Instruction);
 
         /// <summary>Creates the initial mutable state for this level.</summary>
         public GameState CreateInitialState()

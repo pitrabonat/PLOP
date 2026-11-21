@@ -47,20 +47,60 @@ namespace Plop.Generation
 
         /// <summary>Verifies a whole pack: per-level verification, unique ids, no equivalent duplicates.</summary>
         public static VerificationReport VerifyPack(IEnumerable<LevelDefinition> levels, int maxStates = 2_000_000)
+            => VerifyCatalog(levels, maxStates, production: false);
+
+        /// <summary>Checks all shipped boards, including strict shortest replay and exact Undo/Restart.</summary>
+        public static VerificationReport VerifyProductionPack(IEnumerable<LevelDefinition> levels, int maxStates = 2_000_000)
+            => VerifyCatalog(levels, maxStates, production: true);
+
+        private static VerificationReport VerifyCatalog(IEnumerable<LevelDefinition> levels, int maxStates, bool production)
         {
             var report = new VerificationReport();
             var list = new List<LevelDefinition>(levels);
+            if (production && list.Count != ProductionCatalog.LevelCount)
+                report.Errors.Add("Expected " + ProductionCatalog.LevelCount + " levels, found " + list.Count + ".");
             var pack = LevelValidator.ValidatePack(list);
             report.Errors.AddRange(pack.Errors);
+            if (!pack.IsValid) return report;
+
             var registry = new DuplicateRegistry();
             foreach (var level in list)
             {
-                if (!registry.TryAdd(level)) report.Errors.Add("[" + level.Id + "] duplicate of an earlier level (symmetry/recolor).");
+                string prefix = "[" + level.Id + "] ";
+                bool nearDuplicate = production && registry.ContainsNearDuplicate(level);
+                if (!registry.TryAdd(level)) report.Errors.Add(prefix + "Duplicate of an earlier level (symmetry/recolor).");
+                else if (nearDuplicate) report.Errors.Add(prefix + "Only one wall differs from an earlier puzzle.");
+                if (production && level.Id != LevelCanonicalizer.CanonicalId(level))
+                    report.Errors.Add(prefix + "Production level ID must match its canonical board.");
+
                 var single = Verify(level, maxStates);
-                foreach (var e in single.Errors) report.Errors.Add("[" + level.Id + "] " + e);
-                foreach (var wn in single.Warnings) report.Warnings.Add("[" + level.Id + "] " + wn);
+                foreach (var error in single.Errors) report.Errors.Add(prefix + error);
+                var warningTarget = production ? report.Errors : report.Warnings;
+                foreach (var warning in single.Warnings) warningTarget.Add(prefix + warning);
+                if (production && single.IsValid && single.Warnings.Count == 0 && !VerifyHistory(level))
+                    report.Errors.Add(prefix + "Undo or Restart failed while replaying the verified solution.");
             }
             return report;
+        }
+
+        private static bool VerifyHistory(LevelDefinition level)
+        {
+            var engine = new GameEngine();
+            engine.LoadLevel(level);
+            var start = engine.GetState();
+            var moves = DirectionUtil.ParseMoveString(level.Metadata.Solution);
+            for (int i = 0; i < moves.Length; i++)
+            {
+                var previous = engine.GetState();
+                if (!engine.TryMove(moves[i]).Changed || !engine.Undo() ||
+                    engine.MoveCount != i || !engine.CurrentState.Equals(previous) ||
+                    !engine.TryMove(moves[i]).Changed)
+                    return false;
+            }
+
+            if (!engine.IsCompleted || engine.MoveCount != moves.Length) return false;
+            engine.Restart();
+            return engine.MoveCount == 0 && !engine.CanUndo && !engine.IsCompleted && engine.CurrentState.Equals(start);
         }
     }
 }

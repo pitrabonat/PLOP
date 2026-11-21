@@ -9,7 +9,7 @@ namespace Plop.Generation
     public static class GeneratorInfo
     {
         /// <summary>Bump whenever the same seed + settings could produce a different level.</summary>
-        public const int Version = 1;
+        public const int Version = 2;
     }
 
     public sealed class GeneratorSettings
@@ -30,17 +30,43 @@ namespace Plop.Generation
         public int MaxSolutionLength = 60;
         public DifficultyWeights Weights = DifficultyWeights.Default;
 
+        public double MinimumScore = 0;
+        public double MaximumScore = double.PositiveInfinity;
+        public int MinCoordinationMoves;
+        public int MinSolutionTurns;
+        public bool RequireCoordination;
+        public bool RequireWallUse;
+        public bool RequirePlanning;
+        public bool RejectNearDuplicates;
+
+        internal bool MeetsQuality(DifficultyInfo difficulty)
+        {
+            var metrics = difficulty.Metrics;
+            return difficulty.Score >= MinimumScore && difficulty.Score <= MaximumScore
+                && metrics["coordinationMoves"] >= MinCoordinationMoves
+                && (MinSolutionTurns == 0 || metrics["solutionTurns"] >= MinSolutionTurns)
+                && (!RequireCoordination || metrics["requiresCoordination"] > 0)
+                && (!RequireWallUse || metrics["wallInteractionMoves"] > 0 || metrics["wallDetour"] > 0)
+                && (!RequirePlanning || metrics["requiresAwayMove"] > 0
+                    || metrics["requiredSettlementPairs"] > 0 || metrics["deadEndSettlements"] > 0);
+        }
+
         public string Describe() => string.Format(CultureInfo.InvariantCulture,
             "w={0} h={1} plops={2} walls={3:0.###} target={4} minLen={5} maxLen={6} solverStates={7}",
-            Width, Height, PlopCount, WallDensity, TargetDifficulty?.ToString() ?? "any", MinSolutionLength, MaxSolutionLength, SolverMaxStates);
+            Width, Height, PlopCount, WallDensity, TargetDifficulty?.ToString() ?? "any", MinSolutionLength, MaxSolutionLength, SolverMaxStates)
+            + string.Format(CultureInfo.InvariantCulture, " score={0:0.##}..{1:0.##} coordination={2} turns={3} coordinationRequired={4} wallsMatter={5} planning={6} nearDuplicates={7}",
+                MinimumScore, MaximumScore, MinCoordinationMoves, MinSolutionTurns, RequireCoordination, RequireWallUse, RequirePlanning, RejectNearDuplicates);
 
         public void Validate()
         {
             if (Width < 2 || Height < 2 || Width > LevelValidator.MaxSize || Height > LevelValidator.MaxSize)
                 throw new ArgumentException("Board size out of range.");
             if (PlopCount < 1 || PlopCount > PlopColorUtil.Count) throw new ArgumentException("PlopCount must be 1.." + PlopColorUtil.Count + ".");
-            if (WallDensity < 0 || WallDensity > 0.8) throw new ArgumentException("WallDensity must be 0..0.8.");
+            if (!(WallDensity >= 0 && WallDensity <= 0.8)) throw new ArgumentException("WallDensity must be 0..0.8.");
             if (MaxAttempts < 1 || SolverMaxStates < 1) throw new ArgumentException("Budgets must be positive.");
+            if (MinSolutionLength < 0 || MaxSolutionLength < MinSolutionLength ||
+                !(MinimumScore >= 0 && MaximumScore >= MinimumScore) || MinCoordinationMoves < 0 || MinSolutionTurns < 0)
+                throw new ArgumentException("Quality bounds are invalid.");
         }
     }
 
@@ -53,7 +79,9 @@ namespace Plop.Generation
         TooLong,
         DifficultyMismatch,
         Duplicate,
-        VerificationFailed
+        VerificationFailed,
+        QualityMismatch,
+        NearDuplicate
     }
 
     public sealed class GenerationResult
@@ -116,10 +144,22 @@ namespace Plop.Generation
                     continue;
                 }
 
+                if (!settings.MeetsQuality(difficulty))
+                {
+                    result.Rejections[(int)RejectReason.QualityMismatch]++;
+                    continue;
+                }
+
                 string canonical = LevelCanonicalizer.Canonicalize(candidate);
                 if (registry != null && registry.ContainsCanonical(canonical))
                 {
                     result.Rejections[(int)RejectReason.Duplicate]++;
+                    continue;
+                }
+
+                if (settings.RejectNearDuplicates && registry != null && registry.ContainsNearDuplicate(candidate))
+                {
+                    result.Rejections[(int)RejectReason.NearDuplicate]++;
                     continue;
                 }
 

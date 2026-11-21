@@ -78,7 +78,8 @@ crashlytics-build.properties
 # Unity build temp
 /.utmp/
 
-# DotNet harness build output
+# DotNet harness source project files and build output
+!/DotNet/*/*.csproj
 /DotNet/**/bin/
 /DotNet/**/obj/
 /DotNet/**/TestResults/

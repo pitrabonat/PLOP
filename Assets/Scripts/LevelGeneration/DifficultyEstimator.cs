@@ -43,7 +43,7 @@ namespace Plop.Generation
             int plops = level.Plops.Count;
             int area = level.CellCount;
             int walls = level.Walls.Count;
-            int coordination = CountCoordinationMoves(level, analysis.Solution);
+            CountInteractions(level, analysis.Solution, out int coordination, out int wallInteractions);
             double steps = Math.Max(1, len);
             double misleadingPerStep = analysis.Path.MisleadingMoves / steps;
             double trapsPerStep = analysis.Path.TrapMoves / steps;
@@ -74,6 +74,15 @@ namespace Plop.Generation
             info.Metrics["forcedSteps"] = analysis.Path.ForcedSteps;
             info.Metrics["avgBranching"] = Math.Round(analysis.Path.AverageBranching, 3);
             info.Metrics["coordinationMoves"] = coordination;
+            info.Metrics["requiresCoordination"] = analysis.RequiresCoordination ? 1 : 0;
+            info.Metrics["wallInteractionMoves"] = wallInteractions;
+            info.Metrics["wallDetour"] = CountWallDetour(level);
+            info.Metrics["solutionTurns"] = CountTurns(analysis.Solution);
+            info.Metrics["shortestSolutionCount"] = analysis.ShortestSolutionCount;
+            info.Metrics["firstSettlementChoices"] = analysis.FirstSettlementChoices;
+            info.Metrics["requiredSettlementPairs"] = analysis.RequiredSettlementPairs;
+            info.Metrics["deadEndSettlements"] = analysis.DeadEndSettlements;
+            info.Metrics["requiresAwayMove"] = analysis.RequiresAwayMove ? 1 : 0;
             info.Metrics["walls"] = walls;
             info.Metrics["area"] = area;
             return info;
@@ -95,22 +104,90 @@ namespace Plop.Generation
         /// </summary>
         public static int CountCoordinationMoves(LevelDefinition level, Direction[] solution)
         {
-            if (solution == null) return 0;
+            CountInteractions(level, solution, out int coordination, out _);
+            return coordination;
+        }
+
+        private static void CountInteractions(LevelDefinition level, Direction[] solution,
+            out int coordination, out int wallInteractions)
+        {
+            coordination = wallInteractions = 0;
+            if (solution == null) return;
             var engine = new GameEngine();
             engine.LoadLevel(level);
-            int count = 0;
             foreach (var d in solution)
             {
                 var result = engine.TryMove(d);
-                bool moved = false, blocked = false;
+                bool blocked = false, blockedByWall = false;
                 foreach (var e in result.Events)
                 {
-                    if (e.Type == GameEventType.PlopMoved) moved = true;
-                    else if (e.Type == GameEventType.PlopBlocked) blocked = true;
+                    if (e.Type != GameEventType.PlopBlocked) continue;
+                    blocked = true;
+                    blockedByWall |= e.BlockReason == BlockReason.Wall;
                 }
-                if (moved && blocked) count++;
+                if (result.Changed && blocked) coordination++;
+                if (result.Changed && blockedByWall) wallInteractions++;
             }
-            return count;
+        }
+
+        private static int CountTurns(Direction[] solution)
+        {
+            int turns = 0;
+            for (int i = 1; i < solution.Length; i++)
+                if (solution[i - 1] != solution[i]) turns++;
+            return turns;
+        }
+
+        // Independent walking distances to the nearest matching Nest, ignoring other Plops and assignments.
+        private static int CountWallDetour(LevelDefinition level)
+        {
+            if (level.Walls.Count == 0) return 0;
+            var distances = new int[level.CellCount];
+            var queue = new int[level.CellCount];
+            int detour = 0;
+            for (int color = 0; color < PlopColorUtil.Count; color++)
+            {
+                int tail = 0;
+                Array.Fill(distances, -1);
+                foreach (var nest in level.Nests)
+                {
+                    if ((int)nest.Color != color) continue;
+                    int cell = level.CellIndex(nest.Position);
+                    distances[cell] = 0;
+                    queue[tail++] = cell;
+                }
+                for (int head = 0; head < tail; head++)
+                {
+                    int cell = queue[head];
+                    var pos = level.PositionOf(cell);
+                    Visit(pos.X - 1, pos.Y, distances[cell] + 1);
+                    Visit(pos.X + 1, pos.Y, distances[cell] + 1);
+                    Visit(pos.X, pos.Y - 1, distances[cell] + 1);
+                    Visit(pos.X, pos.Y + 1, distances[cell] + 1);
+                }
+                foreach (var plop in level.Plops)
+                {
+                    if ((int)plop.Color != color) continue;
+                    int direct = int.MaxValue;
+                    foreach (var nest in level.Nests)
+                    {
+                        if (nest.Color != plop.Color) continue;
+                        int manhattan = Math.Abs(nest.Position.X - plop.Start.X) + Math.Abs(nest.Position.Y - plop.Start.Y);
+                        direct = Math.Min(direct, manhattan);
+                    }
+                    detour += distances[level.CellIndex(plop.Start)] - direct;
+                }
+
+                void Visit(int x, int y, int distance)
+                {
+                    if (!level.InBounds(x, y)) return;
+                    int cell = level.CellIndex(x, y);
+                    if (distances[cell] >= 0 || level.IsWallCell(cell)) return;
+                    distances[cell] = distance;
+                    queue[tail++] = cell;
+                }
+            }
+            return detour;
         }
     }
 }

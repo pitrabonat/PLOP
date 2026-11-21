@@ -26,6 +26,18 @@ namespace Plop.Solver
         public Direction[] Solution;
         public double ElapsedMs;
         public PathStats Path;
+        /// <summary>Number of distinct shortest command sequences, capped at one million.</summary>
+        public int ShortestSolutionCount;
+        /// <summary>Different first-settling Nest groups among all completing paths.</summary>
+        public int FirstSettlementChoices;
+        /// <summary>Number of Nest pairs whose settlement must occur in a strict order.</summary>
+        public int RequiredSettlementPairs;
+        /// <summary>Transitions from solvable states that settle a Plop and make completion impossible.</summary>
+        public int DeadEndSettlements;
+        /// <summary>Every completing path has an awake Plop move farther from its nearest matching Nest.</summary>
+        public bool RequiresAwayMove;
+        /// <summary>Every completing path has a swipe that blocks one awake Plop while another moves.</summary>
+        public bool RequiresCoordination;
 
         public bool Solvable => Complete && StartDistance >= 0;
         public double DeadEndRatio => ReachableStates == 0 ? 0 : (double)DeadEndStates / ReachableStates;
@@ -46,6 +58,8 @@ namespace Plop.Solver
 
     public static class StateSpaceAnalyzer
     {
+        private const int SolutionCountCap = 1_000_000;
+
         public static StateSpaceAnalysis Analyze(LevelDefinition level, int maxStates = 2_000_000)
         {
             var sw = Stopwatch.StartNew();
@@ -63,16 +77,39 @@ namespace Plop.Solver
             var keys = new List<ulong>(1024) { codec.Encode(start) };
             var index = new Dictionary<ulong, int>(1024) { [keys[0]] = 0 };
             var edges = new List<int>(4096); // 4 per state: target index or -1 for no-op
+            var awayMoves = new List<byte>(1024);
+            var coordinationMoves = new List<byte>(1024);
+            var settledNests = new List<uint>(1024);
+            var nestBits = NestBitsByCell(level);
+            var nestDistances = NearestNestDistances(level);
+            var state = new GameState(start.PlopCount);
             var scratch = new GameState(start.PlopCount);
             var order = new int[start.PlopCount];
 
             for (int head = 0; head < keys.Count; head++)
             {
-                ulong key = keys[head];
+                codec.Decode(keys[head], state);
+                uint settled = 0;
+                for (int id = 0; id < state.PlopCount; id++)
+                    if (state.IsAsleep(id)) settled |= nestBits[state.CellOf(id)];
+                settledNests.Add(settled);
+
+                byte awayDirections = 0, coordinationDirections = 0;
                 for (int d = 0; d < 4; d++)
                 {
-                    codec.Decode(key, scratch);
+                    scratch.CopyFrom(state);
                     if (!MoveRules.Apply(level, scratch, (Direction)d, null, order)) { edges.Add(-1); continue; }
+
+                    // Compare live ids before the codec reorders interchangeable same-color Plops.
+                    for (int id = 0; id < state.PlopCount; id++)
+                    {
+                        if (state.IsAsleep(id)) continue;
+                        int from = state.CellOf(id), to = scratch.CellOf(id);
+                        if (from == to) coordinationDirections |= (byte)(1 << d);
+                        var distances = nestDistances[(int)level.PlopColorOf(id)];
+                        if (distances[to] > distances[from]) awayDirections |= (byte)(1 << d);
+                    }
+
                     ulong next = codec.Encode(scratch);
                     if (!index.TryGetValue(next, out int target))
                     {
@@ -90,6 +127,8 @@ namespace Plop.Solver
                     }
                     edges.Add(target);
                 }
+                awayMoves.Add(awayDirections);
+                coordinationMoves.Add(coordinationDirections);
             }
 
             int n = keys.Count;
@@ -98,14 +137,18 @@ namespace Plop.Solver
 
             // goal states + reverse adjacency (CSR)
             var dist = new int[n];
-            var isGoal = new bool[n];
+            var shortestSolutions = new int[n];
             var queue = new int[n];
+            uint allNests = GameState.AllMask(level.Nests.Count);
             int qTail = 0;
             for (int i = 0; i < n; i++)
             {
                 dist[i] = -1;
-                codec.Decode(keys[i], scratch);
-                if (scratch.AllAsleep) { isGoal[i] = true; dist[i] = 0; queue[qTail++] = i; a.GoalStates++; }
+                if (settledNests[i] != allNests) continue;
+                dist[i] = 0;
+                shortestSolutions[i] = 1;
+                queue[qTail++] = i;
+                a.GoalStates++;
             }
 
             var revCount = new int[n + 1];
@@ -126,9 +169,14 @@ namespace Plop.Solver
                 for (int k = revCount[s]; k < revCount[s + 1]; k++)
                 {
                     int p = revAdj[k];
-                    if (dist[p] >= 0) continue;
-                    dist[p] = dist[s] + 1;
-                    queue[qTail++] = p;
+                    int distance = dist[s] + 1;
+                    if (dist[p] < 0)
+                    {
+                        dist[p] = distance;
+                        queue[qTail++] = p;
+                    }
+                    if (dist[p] == distance)
+                        shortestSolutions[p] = Math.Min(SolutionCountCap, shortestSolutions[p] + shortestSolutions[s]);
                 }
             }
 
@@ -139,6 +187,7 @@ namespace Plop.Solver
             {
                 var path = new List<Direction>();
                 int cur = 0, branchingTotal = 0, steps = 0;
+                bool pathHasAwayMove = false, pathHasCoordination = false;
                 var stats = new PathStats();
                 while (dist[cur] > 0)
                 {
@@ -156,14 +205,104 @@ namespace Plop.Solver
                     branchingTotal += changing;
                     steps++;
                     path.Add((Direction)chosen);
+                    pathHasAwayMove |= (awayMoves[cur] & (1 << chosen)) != 0;
+                    pathHasCoordination |= (coordinationMoves[cur] & (1 << chosen)) != 0;
                     cur = edges[cur * 4 + chosen];
                 }
                 stats.AverageBranching = steps == 0 ? 0 : (double)branchingTotal / steps;
                 a.Path = stats;
                 a.Solution = path.ToArray();
+                a.ShortestSolutionCount = shortestSolutions[0];
+                AnalyzeSettlements(a, edges, dist, settledNests, queue, qTail, level.Nests.Count);
+                a.RequiresAwayMove = pathHasAwayMove && !HasPathWithoutMoves(edges, dist, awayMoves);
+                a.RequiresCoordination = pathHasCoordination && !HasPathWithoutMoves(edges, dist, coordinationMoves);
             }
             a.ElapsedMs = sw.Elapsed.TotalMilliseconds;
             return a;
+        }
+
+        private static uint[] NestBitsByCell(LevelDefinition level)
+        {
+            var bits = new uint[level.CellCount];
+            for (int i = 0; i < level.Nests.Count; i++)
+                bits[level.CellIndex(level.Nests[i].Position)] = 1u << i;
+            return bits;
+        }
+
+        private static int[][] NearestNestDistances(LevelDefinition level)
+        {
+            var distances = new int[PlopColorUtil.Count][];
+            foreach (var nest in level.Nests)
+            {
+                int color = (int)nest.Color;
+                var byCell = distances[color];
+                if (byCell == null)
+                {
+                    byCell = distances[color] = new int[level.CellCount];
+                    Array.Fill(byCell, int.MaxValue);
+                }
+                for (int cell = 0; cell < level.CellCount; cell++)
+                {
+                    var pos = level.PositionOf(cell);
+                    int distance = Math.Abs(pos.X - nest.Position.X) + Math.Abs(pos.Y - nest.Position.Y);
+                    byCell[cell] = Math.Min(byCell[cell], distance);
+                }
+            }
+            return distances;
+        }
+
+        private static bool HasPathWithoutMoves(List<int> edges, int[] dist, List<byte> excludedMoves)
+        {
+            var seen = new bool[dist.Length];
+            var pending = new Queue<int>();
+            seen[0] = true;
+            pending.Enqueue(0);
+            while (pending.Count > 0)
+            {
+                int source = pending.Dequeue();
+                if (dist[source] == 0) return true;
+                for (int d = 0; d < 4; d++)
+                {
+                    int target = edges[source * 4 + d];
+                    if (target < 0 || dist[target] < 0 || seen[target] ||
+                        (excludedMoves[source] & (1 << d)) != 0) continue;
+                    seen[target] = true;
+                    pending.Enqueue(target);
+                }
+            }
+            return false;
+        }
+
+        private static void AnalyzeSettlements(StateSpaceAnalysis analysis, List<int> edges, int[] dist,
+            List<uint> settledNests, int[] solvable, int solvableCount, int nestCount)
+        {
+            var firstGroups = new HashSet<uint>();
+            var maySettleWithout = new uint[nestCount];
+            for (int i = 0; i < solvableCount; i++)
+            {
+                int source = solvable[i];
+                uint before = settledNests[source];
+                for (int d = 0; d < 4; d++)
+                {
+                    int target = edges[source * 4 + d];
+                    if (target < 0) continue;
+                    uint added = settledNests[target] & ~before;
+                    if (added == 0) continue;
+                    if (dist[target] < 0)
+                    {
+                        analysis.DeadEndSettlements++;
+                        continue;
+                    }
+                    if (before == 0) firstGroups.Add(added);
+                    for (int nest = 0; nest < nestCount; nest++)
+                        if ((added & (1u << nest)) != 0) maySettleWithout[nest] |= ~before;
+                }
+            }
+            analysis.FirstSettlementChoices = firstGroups.Count;
+            for (int nest = 0; nest < nestCount; nest++)
+                for (int earlier = 0; earlier < nestCount; earlier++)
+                    if (earlier != nest && (maySettleWithout[nest] & (1u << earlier)) == 0)
+                        analysis.RequiredSettlementPairs++;
         }
     }
 }

@@ -75,10 +75,10 @@ namespace Plop.Generation
             var nests = new List<NestDefinition>();
             foreach (var n in level.Nests) nests.Add(new NestDefinition(n.Color, Transform(t, n.Position, level.Width, level.Height, out nw, out nh)));
             Transform(t, new GridPosition(0, 0), level.Width, level.Height, out nw, out nh);
-            return new LevelDefinition(level.Id, level.Name, nw, nh, walls, plops, nests, level.Metadata);
+            return new LevelDefinition(level.Id, level.Name, nw, nh, walls, plops, nests, level.Metadata, level.Instruction);
         }
 
-        private static string Build(LevelDefinition level, int t)
+        internal static string Build(LevelDefinition level, int t)
         {
             int nw = 0, nh = 0;
             Transform(t, new GridPosition(0, 0), level.Width, level.Height, out nw, out nh);
@@ -119,12 +119,48 @@ namespace Plop.Generation
     public sealed class DuplicateRegistry
     {
         private readonly HashSet<string> _seen = new HashSet<string>(StringComparer.Ordinal);
+        private readonly Dictionary<string, List<string>> _wallsByPlacement =
+            new Dictionary<string, List<string>>(StringComparer.Ordinal);
 
         public int Count => _seen.Count;
-        public bool Contains(LevelDefinition level) => _seen.Contains(LevelCanonicalizer.Canonicalize(level));
-        /// <summary>Adds the level; returns false if an equivalent level was already registered.</summary>
-        public bool TryAdd(LevelDefinition level) => _seen.Add(LevelCanonicalizer.Canonicalize(level));
+        public bool Contains(LevelDefinition level) => ContainsCanonical(LevelCanonicalizer.Canonicalize(level));
+        public bool TryAdd(LevelDefinition level) => TryAddCanonical(LevelCanonicalizer.Canonicalize(level));
         public bool ContainsCanonical(string canonical) => _seen.Contains(canonical);
-        public bool TryAddCanonical(string canonical) => _seen.Add(canonical);
+
+        public bool TryAddCanonical(string canonical)
+        {
+            if (!_seen.Add(canonical)) return false;
+            var placement = PlacementKey(canonical, out string walls);
+            if (!_wallsByPlacement.TryGetValue(placement, out var patterns))
+                _wallsByPlacement.Add(placement, patterns = new List<string>());
+            patterns.Add(walls);
+            return true;
+        }
+
+        /// <summary>Matching Plop/Nest arrangement with at most one changed wall, in any orientation.</summary>
+        public bool ContainsNearDuplicate(LevelDefinition level)
+        {
+            for (int t = 0; t < 8; t++)
+            {
+                var placement = PlacementKey(LevelCanonicalizer.Build(level, t), out string walls);
+                if (!_wallsByPlacement.TryGetValue(placement, out var patterns)) continue;
+                foreach (string pattern in patterns)
+                {
+                    int differences = 0;
+                    for (int i = 0; i < walls.Length && differences <= 1; i++)
+                        if (walls[i] != pattern[i]) differences++;
+                    if (differences <= 1) return true;
+                }
+            }
+            return false;
+        }
+
+        private static string PlacementKey(string canonical, out string walls)
+        {
+            int first = canonical.IndexOf('|');
+            int last = canonical.LastIndexOf('|');
+            walls = canonical.Substring(first + 1, last - first - 1);
+            return canonical.Remove(first + 1, last - first);
+        }
     }
 }

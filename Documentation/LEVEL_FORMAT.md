@@ -28,8 +28,8 @@ Read/written only by `Plop.Core.LevelSerializer` (dependency-free `MiniJson`). O
 ```
 
 - Coordinates are `[x, y]`, origin bottom-left, y up (see GAME_RULES.md).
-- **Runtime-required data:** everything outside `"dev"`. The game loads packs with `includeDevData: false`,
-  ignoring `"dev"` entirely.
+- **Runtime data** lives outside `"dev"`. Optional `"instruction"` is a short
+  tutorial line shown during gameplay. The game loads packs with `includeDevData: false`.
 - **Developer-only data (`"dev"`, optional):** generator version, seed (hex string, avoids JSON number
   precision loss), generator parameters, solver version, verified shortest solution (`U/D/L/R`),
   difficulty score/category/metrics, optional `author`, `notes`.
@@ -41,8 +41,9 @@ Read/written only by `Plop.Core.LevelSerializer` (dependency-free `MiniJson`). O
 { "schemaVersion": 1, "packId": "PLOP_Pack_001", "levels": [ { ...level... }, ... ] }
 ```
 
-Shipped pack: `Assets/Levels/Resources/Levels/PLOP_Pack_001.json` (100 levels, ordered by difficulty score,
+Shipped pack: `Assets/Levels/Resources/Levels/PLOP_Pack_001.json` (100 levels, authored onboarding followed by staged waves,
 named "Level 1".."Level 100"). Loaded at runtime via `Resources.Load<TextAsset>("Levels/PLOP_Pack_001")`.
+Production IDs derive from canonical board geometry and survive renaming and reordering.
 
 ## Game state (save/hint snapshots)
 

@@ -7,5 +7,6 @@ the same `.cs` files. Language version is pinned to C# 9 and the library targets
 ```bash
 export NUGET_PACKAGES=/Volumes/PLOP_DEV/Cache/NuGet   # keep NuGet cache off the internal SSD
 dotnet test DotNet/Plop.Tests/Plop.Tests.csproj
-dotnet run -c Release --project DotNet/Plop.Bench -- --count 100
+dotnet run -c Release --project DotNet/Plop.Bench -- --production
+dotnet run -c Release --project DotNet/Plop.Bench -- --verify-production Assets/Levels/Resources/Levels/PLOP_Pack_001.json
 ```

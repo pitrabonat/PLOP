@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Plop.Core;
+using Plop.Core.Json;
 using Plop.Generation;
 using Plop.Solver;
 using UnityEditor;
@@ -28,6 +29,7 @@ namespace Plop.LevelLab
         // ---- editable level ----
         private string _levelId = "custom-001";
         private string _levelName = "Custom 1";
+        private string _levelInstruction = "";
         private int _width = 5, _height = 5;
         private bool[] _walls = new bool[25];
         private readonly List<(PlopColor color, GridPosition pos)> _plops = new List<(PlopColor, GridPosition)>();
@@ -42,7 +44,7 @@ namespace Plop.LevelLab
         private MessageType _statusType = MessageType.Info;
 
         // ---- generation ----
-        private string _seedText = "1";
+        private string _seedText = $"0x{new BatchSettings().BaseSeed:X}";
         private GeneratorSettings _gen = new GeneratorSettings();
         private int _targetIndex; // 0 = any, 1.. = category + 1
         private int _batchCount = 20;
@@ -58,6 +60,10 @@ namespace Plop.LevelLab
         private string _packPath = DefaultPackPath;
         private List<LevelDefinition> _pack = new List<LevelDefinition>();
         private int _packSelection = -1;
+        private string _packFilter = "";
+        private int _packDifficultyFilter;
+        private static readonly string[] PackDifficultyOptions =
+            { "All difficulties", "Unrated", "Tutorial", "Easy", "Normal", "Hard", "Expert" };
 
         [MenuItem("PLOP/Level Lab", priority = 0)]
         public static void Open()
@@ -93,6 +99,7 @@ namespace Plop.LevelLab
             EditorGUILayout.LabelField("Level", EditorStyles.boldLabel);
             _levelId = EditorGUILayout.TextField("Id", _levelId);
             _levelName = EditorGUILayout.TextField("Name", _levelName);
+            _levelInstruction = EditorGUILayout.TextField("Tutorial instruction", _levelInstruction);
             EditorGUILayout.BeginHorizontal();
             int w = EditorGUILayout.IntField("Size", _width);
             int h = EditorGUILayout.IntField(_height, GUILayout.Width(40));
@@ -154,13 +161,14 @@ namespace Plop.LevelLab
             for (int i = 0; i < _plops.Count; i++) plops.Add(new PlopDefinition(i, _plops[i].color, _plops[i].pos));
             var nests = new List<NestDefinition>();
             foreach (var n in _nests) nests.Add(new NestDefinition(n.color, n.pos));
-            return new LevelDefinition(_levelId, _levelName, _width, _height, walls, plops, nests, _metadata);
+            return new LevelDefinition(_levelId, _levelName, _width, _height, walls, plops, nests, _metadata, _levelInstruction);
         }
 
         private void LoadIntoEditor(LevelDefinition level)
         {
             _levelId = level.Id;
             _levelName = level.Name;
+            _levelInstruction = level.Instruction ?? "";
             _width = level.Width;
             _height = level.Height;
             _walls = new bool[_width * _height];
@@ -170,7 +178,22 @@ namespace Plop.LevelLab
             _nests.Clear();
             foreach (var n in level.Nests) _nests.Add((n.Color, n.Position));
             InvalidateResults();
-            _metadata = level.Metadata;
+            // The editor can reanalyze the draft without changing the catalog entry until it is replaced.
+            var source = level.Metadata;
+            if (source != null)
+            {
+                _metadata = new LevelMetadata
+                {
+                    Author = source.Author,
+                    Notes = source.Notes,
+                    GeneratorVersion = source.GeneratorVersion,
+                    GeneratorParams = source.GeneratorParams,
+                    Seed = source.Seed,
+                    SolverVersion = source.SolverVersion,
+                    Solution = source.Solution,
+                    Difficulty = source.Difficulty
+                };
+            }
             if (_metadata?.Solution != null)
             {
                 try { _solution = DirectionUtil.ParseMoveString(_metadata.Solution); } catch (FormatException) { _solution = null; }
@@ -336,10 +359,11 @@ namespace Plop.LevelLab
             catch (ArgumentException ex) { SetStatus(ex.Message, MessageType.Error); }
         }
 
-        private DuplicateRegistry RegistryFromPack()
+        private DuplicateRegistry RegistryFromPack(int except = -1)
         {
             var registry = new DuplicateRegistry();
-            foreach (var l in _pack) registry.TryAdd(l);
+            for (int i = 0; i < _pack.Count; i++)
+                if (i != except) registry.TryAdd(_pack[i]);
             return registry;
         }
 
@@ -416,9 +440,15 @@ namespace Plop.LevelLab
         {
             try
             {
+                var level = BuildLevel();
                 _replay = new GameEngine();
-                _replay.LoadLevel(BuildLevel());
+                _replay.LoadLevel(level);
                 _replayStep = 0;
+                if (!BfsSolver.VerifySolution(level, _solution))
+                {
+                    _replay = null;
+                    SetStatus("The stored solution failed replay. Solve the level to refresh it.", MessageType.Warning);
+                }
             }
             catch (InvalidLevelException ex) { _replay = null; SetStatus(ex.Message, MessageType.Error); }
         }
@@ -449,20 +479,19 @@ namespace Plop.LevelLab
             try
             {
                 string json = File.ReadAllText(path);
-                if (json.Contains("\"levels\""))
+                var root = MiniJson.AsObject(MiniJson.Parse(json), "Level or pack");
+                if (root.ContainsKey("levels"))
                 {
-                    _pack = LevelSerializer.PackFromJson(json);
-                    _packPath = ToProjectPath(path);
-                    _packSelection = -1;
-                    SetStatus("Loaded pack with " + _pack.Count + " levels.");
+                    UseImportedPack(LevelSerializer.PackFromJson(json), path);
+                    return;
                 }
-                else
-                {
-                    LoadIntoEditor(LevelSerializer.FromJson(json));
-                    SetStatus("Imported level " + _levelId + ".");
-                }
+                var level = LevelSerializer.FromJson(json);
+                var validation = LevelValidator.Validate(level);
+                if (!validation.IsValid) throw new FormatException(validation.ToString());
+                LoadIntoEditor(level);
+                SetStatus("Imported level " + _levelId + ".");
             }
-            catch (Exception ex) when (ex is FormatException || ex is IOException || ex is ArgumentException)
+            catch (Exception ex) when (ex is FormatException || ex is IOException || ex is ArgumentException || ex is UnauthorizedAccessException)
             {
                 SetStatus("Import failed: " + ex.Message, MessageType.Error);
             }
@@ -475,9 +504,16 @@ namespace Plop.LevelLab
             if (!v.IsValid) { SetStatus("Cannot export invalid level: " + v, MessageType.Error); return; }
             string path = EditorUtility.SaveFilePanel("Export PLOP level", "Assets/Levels", level.Id + ".json", "json");
             if (string.IsNullOrEmpty(path)) return;
-            File.WriteAllText(path, LevelSerializer.ToJson(level) + "\n");
-            AssetDatabase.Refresh();
-            SetStatus("Exported " + path);
+            try
+            {
+                if (IsProductionPath(path)) { SetStatus("Save the verified production pack from the Level pack section.", MessageType.Error); return; }
+                WriteJson(path, LevelSerializer.ToJson(level));
+                SetStatus("Exported " + path);
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                SetStatus("Export failed: " + ex.Message, MessageType.Error);
+            }
         }
 
         private void DrawPackSection()
@@ -494,90 +530,200 @@ namespace Plop.LevelLab
             if (GUILayout.Button("Add current level")) AddCurrentToPack();
             if (GUILayout.Button("Verify pack")) VerifyPack();
             EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.BeginHorizontal();
             _batchCount = EditorGUILayout.IntField("Batch count", _batchCount);
             if (GUILayout.Button("Generate batch into pack")) GenerateBatch();
             EditorGUILayout.EndHorizontal();
+            if (GUILayout.Button("Generate " + ProductionCatalog.LevelCount + "-level campaign…")) GenerateCampaign();
+
+            _packFilter = EditorGUILayout.TextField("Filter by name or ID", _packFilter);
+            _packDifficultyFilter = EditorGUILayout.Popup("Difficulty", _packDifficultyFilter, PackDifficultyOptions);
+
+            bool hasSelection = _packSelection >= 0 && MatchesPackFilter(_pack[_packSelection]);
+            EditorGUILayout.BeginHorizontal();
+            using (new EditorGUI.DisabledScope(!hasSelection || _packSelection == 0))
+                if (GUILayout.Button("Move up")) MovePackLevel(-1);
+            using (new EditorGUI.DisabledScope(!hasSelection || _packSelection == _pack.Count - 1))
+                if (GUILayout.Button("Move down")) MovePackLevel(1);
+            using (new EditorGUI.DisabledScope(!hasSelection))
+            {
+                if (GUILayout.Button("Replace selected")) StoreCurrentInPack(_packSelection);
+                if (GUILayout.Button("Remove selected")) RemovePackLevel();
+            }
+            EditorGUILayout.EndHorizontal();
 
             _packScroll = EditorGUILayout.BeginScrollView(_packScroll, GUILayout.Height(160));
+            int shown = 0;
             for (int i = 0; i < _pack.Count; i++)
             {
                 var l = _pack[i];
+                if (!MatchesPackFilter(l)) continue;
+                shown++;
                 string diff = l.Metadata?.Difficulty != null ? l.Metadata.Difficulty.Category + " " + l.Metadata.Difficulty.Score.ToString("0.#") : "?";
                 string label = (i + 1) + ". " + l.Name + "  [" + l.Width + "x" + l.Height + ", " + l.Plops.Count + "p, " + diff + "]";
-                if (GUILayout.Toggle(_packSelection == i, label, "Button") && _packSelection != i)
+                if (GUILayout.Toggle(_packSelection == i, new GUIContent(label, l.Id), "Button") && _packSelection != i)
                 {
                     _packSelection = i;
                     LoadIntoEditor(l);
                 }
             }
             EditorGUILayout.EndScrollView();
+            EditorGUILayout.LabelField(shown + " of " + _pack.Count + " levels", EditorStyles.miniLabel);
+        }
+
+        private bool MatchesPackFilter(LevelDefinition level)
+        {
+            string search = _packFilter.Trim();
+            if (search.Length > 0 && level.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) < 0 &&
+                level.Id.IndexOf(search, StringComparison.OrdinalIgnoreCase) < 0) return false;
+            var difficulty = level.Metadata?.Difficulty;
+            return _packDifficultyFilter == 0 || (difficulty == null
+                ? _packDifficultyFilter == 1
+                : (int)difficulty.Category + 2 == _packDifficultyFilter);
+        }
+
+        private void MovePackLevel(int offset)
+        {
+            int destination = _packSelection + offset;
+            var level = _pack[_packSelection];
+            _pack[_packSelection] = _pack[destination];
+            _pack[destination] = level;
+            _packSelection = destination;
+            SetStatus("Moved " + level.Id + " to position " + (destination + 1) + ". Save to update the file.");
+        }
+
+        private void RemovePackLevel()
+        {
+            var level = _pack[_packSelection];
+            _pack.RemoveAt(_packSelection);
+            _packSelection = -1;
+            SetStatus("Removed " + level.Id + " from the working pack. Save to update the file.");
         }
 
         private void LoadPack()
         {
             try
             {
-                _pack = LevelSerializer.PackFromJson(File.ReadAllText(_packPath));
-                _packSelection = -1;
-                SetStatus("Loaded " + _pack.Count + " levels from " + _packPath);
+                string path = PackFullPath(_packPath);
+                UseImportedPack(LevelSerializer.PackFromJson(File.ReadAllText(path)), path);
             }
-            catch (Exception ex) when (ex is FormatException || ex is IOException)
+            catch (Exception ex) when (ex is FormatException || ex is IOException || ex is ArgumentException || ex is UnauthorizedAccessException)
             {
                 SetStatus("Load failed: " + ex.Message, MessageType.Error);
             }
         }
 
-        private void SavePack()
+        private void UseImportedPack(List<LevelDefinition> pack, string path)
         {
-            var pack = LevelValidator.ValidatePack(_pack);
-            if (!pack.IsValid) { SetStatus("Pack invalid, not saved: " + pack, MessageType.Error); return; }
-            Directory.CreateDirectory(Path.GetDirectoryName(_packPath));
-            File.WriteAllText(_packPath, LevelSerializer.PackToJson(Path.GetFileNameWithoutExtension(_packPath), _pack) + "\n");
-            AssetDatabase.Refresh();
-            SetStatus("Saved " + _pack.Count + " levels to " + _packPath);
+            var validation = LevelValidator.ValidatePack(pack);
+            if (!validation.IsValid) throw new FormatException(validation.ToString());
+            _packPath = ToProjectPath(path);
+            _pack = pack;
+            _packSelection = -1;
+            SetStatus("Loaded " + _pack.Count + " levels from " + _packPath + ".");
         }
 
-        private void AddCurrentToPack()
+        private void SavePack()
+        {
+            try
+            {
+                string path = PackFullPath(_packPath);
+                if (IsProductionPath(path))
+                {
+                    var verified = VerifyWorkingPack(production: true);
+                    if (!verified.IsValid) { SetStatus("Production save failed: " + verified, MessageType.Error); return; }
+                }
+                else
+                {
+                    var validation = LevelValidator.ValidatePack(_pack);
+                    if (!validation.IsValid) { SetStatus("Pack save failed: " + validation, MessageType.Error); return; }
+                }
+                WriteJson(path, LevelSerializer.PackToJson(Path.GetFileNameWithoutExtension(path), _pack));
+                SetStatus("Saved " + _pack.Count + " levels to " + _packPath + ".");
+            }
+            catch (Exception ex) when (ex is IOException || ex is ArgumentException || ex is UnauthorizedAccessException)
+            {
+                SetStatus("Save failed: " + ex.Message, MessageType.Error);
+            }
+        }
+
+        private void AddCurrentToPack() => StoreCurrentInPack(-1);
+
+        private void StoreCurrentInPack(int index)
         {
             var level = BuildLevel();
             var report = LevelVerifier.Verify(level);
-            if (!report.IsValid) { SetStatus("Not added (unverified): " + report, MessageType.Error); return; }
-            if (RegistryFromPack().Contains(level)) { SetStatus("Not added: duplicate of a level already in the pack (incl. symmetry/recolor).", MessageType.Warning); return; }
-            foreach (var l in _pack) if (l.Id == level.Id) { SetStatus("Not added: id '" + level.Id + "' already used.", MessageType.Warning); return; }
-            if (level.Metadata?.Solution == null)
+            if (!report.IsValid) { SetStatus("Catalog edit failed verification: " + report, MessageType.Error); return; }
+            bool production;
+            try
             {
-                var a = report.Analysis;
-                level = level.WithMetadata(new LevelMetadata
-                {
-                    SolverVersion = SolverInfo.Version,
-                    Solution = DirectionUtil.ToMoveString(a.Solution),
-                    Difficulty = DifficultyEstimator.Estimate(level, a),
-                    Author = "Level Lab"
-                });
+                production = !string.IsNullOrWhiteSpace(_packPath) && IsProductionPath(PackFullPath(_packPath));
             }
-            _pack.Add(level);
-            _packSelection = _pack.Count - 1;
-            SetStatus("Added " + level.Id + " (" + report + "). Remember to Save.");
+            catch (ArgumentException ex) { SetStatus("Invalid pack path: " + ex.Message, MessageType.Error); return; }
+            if (production) level = level.WithMetadata(level.Metadata, id: LevelCanonicalizer.CanonicalId(level));
+            var registry = RegistryFromPack(index);
+            if (registry.Contains(level)) { SetStatus("Duplicate of a level already in the pack (including symmetry and recoloring).", MessageType.Warning); return; }
+            if (production && registry.ContainsNearDuplicate(level))
+            {
+                SetStatus("Only one wall differs from another puzzle in the production pack.", MessageType.Warning);
+                return;
+            }
+            for (int i = 0; i < _pack.Count; i++)
+            {
+                if (i == index || _pack[i].Id != level.Id) continue;
+                SetStatus("Level ID '" + level.Id + "' is already used.", MessageType.Warning);
+                return;
+            }
+            if (report.Warnings.Count > 0 || level.Metadata?.Difficulty == null)
+            {
+                var metadata = level.Metadata ?? new LevelMetadata { Author = "Level Lab" };
+                var a = report.Analysis;
+                metadata.SolverVersion = SolverInfo.Version;
+                metadata.Solution = DirectionUtil.ToMoveString(a.Solution);
+                metadata.Difficulty = DifficultyEstimator.Estimate(level, a);
+                level = level.WithMetadata(metadata);
+            }
+            bool replacing = index >= 0;
+            if (replacing) _pack[index] = level;
+            else { index = _pack.Count; _pack.Add(level); }
+            _packSelection = index;
+            LoadIntoEditor(level);
+            SetStatus((replacing ? "Replaced " : "Added ") + "level " + (index + 1) + " (" + level.Id + "). Save to update the file.");
         }
 
         private void VerifyPack()
         {
-            var report = LevelVerifier.VerifyPack(_pack);
-            if (report.IsValid) SetStatus("Pack verified: " + _pack.Count + " levels. " + (report.Warnings.Count > 0 ? report.Warnings.Count + " warning(s): " + string.Join("; ", report.Warnings) : ""));
-            else SetStatus("Pack verification failed: " + report, MessageType.Error);
+            try
+            {
+                var report = VerifyWorkingPack(IsProductionPath(PackFullPath(_packPath)));
+                if (report.IsValid) SetStatus("Pack verified: " + _pack.Count + " levels. " + (report.Warnings.Count > 0 ? report.Warnings.Count + " warning(s): " + string.Join("; ", report.Warnings) : ""));
+                else SetStatus("Pack verification failed: " + report, MessageType.Error);
+            }
+            catch (ArgumentException ex) { SetStatus("Pack verification failed: " + ex.Message, MessageType.Error); }
+        }
+
+        private VerificationReport VerifyWorkingPack(bool production)
+        {
+            EditorUtility.DisplayProgressBar("PLOP Level Lab", "Verifying the working pack…", 0f);
+            try
+            {
+                return production ? LevelVerifier.VerifyProductionPack(_pack) : LevelVerifier.VerifyPack(_pack);
+            }
+            finally { EditorUtility.ClearProgressBar(); }
         }
 
         private void GenerateBatch()
         {
             if (!TryParseSeed(out ulong seed)) { SetStatus("Invalid seed.", MessageType.Error); return; }
-            var cts = new CancellationTokenSource();
+            using var cts = new CancellationTokenSource();
+            int count = Math.Max(1, _batchCount);
             var settings = new BatchSettings
             {
-                TargetCount = Math.Max(1, _batchCount),
+                TargetCount = count,
                 BaseSeed = seed,
                 Profiles = GeneratorProfiles.Default(),
-                MaxCalls = Math.Max(1, _batchCount) * 20,
+                MaxCalls = (int)Math.Min(int.MaxValue, 20L * count),
                 Cancellation = cts.Token
             };
             try
@@ -587,19 +733,71 @@ namespace Plop.LevelLab
                     if (EditorUtility.DisplayCancelableProgressBar("PLOP Level Lab", "Generated " + (i + 1) + "/" + settings.TargetCount, (i + 1f) / settings.TargetCount))
                         cts.Cancel();
                 });
-                int start = _pack.Count;
-                foreach (var l in result.Levels) _pack.Add(l.WithMetadata(l.Metadata, l.Id, "Generated " + (start + 1 + _pack.Count - start)));
+                if (result.Stats.ReplayFailures > 0)
+                {
+                    SetStatus("Batch failed replay verification. The working pack was kept.", MessageType.Error);
+                    return;
+                }
+                foreach (var l in result.Levels) _pack.Add(l.WithMetadata(l.Metadata, l.Id, "Generated " + (_pack.Count + 1)));
                 SetStatus("Batch: accepted " + result.Stats.Accepted + ", candidates " + result.Stats.Candidates + ", duplicates rejected " +
                           result.Stats.Rejections[(int)RejectReason.Duplicate] + ", " + (result.Stats.ElapsedMs / 1000.0).ToString("0.0") + " s. Remember to Save.");
             }
             finally { EditorUtility.ClearProgressBar(); }
         }
 
+        private void GenerateCampaign()
+        {
+            if (!TryParseSeed(out ulong seed)) { SetStatus("Invalid seed.", MessageType.Error); return; }
+            if (_pack.Count > 0 && !EditorUtility.DisplayDialog("Generate a new campaign?",
+                "This replaces the working pack. Click Save afterward to write the new campaign to disk.", "Generate", "Cancel")) return;
+            try
+            {
+                EditorUtility.DisplayProgressBar("PLOP Level Lab", "Generating the ordered campaign…", 0f);
+                var result = ProductionCatalog.Generate(seed);
+                EditorUtility.DisplayProgressBar("PLOP Level Lab", "Verifying the ordered campaign…", 0.9f);
+                var report = LevelVerifier.VerifyProductionPack(result.Levels);
+                if (!report.IsValid || result.Stats.ReplayFailures > 0)
+                {
+                    SetStatus("Campaign verification failed after generating " + result.Levels.Count + " levels. " + report, MessageType.Error);
+                    return;
+                }
+                _pack = result.Levels;
+                _packSelection = -1;
+                SetStatus("Generated " + _pack.Count + " verified levels from " + result.Stats.Candidates + " candidates. Save to update the file.");
+            }
+            finally { EditorUtility.ClearProgressBar(); }
+        }
+
+        private static string ProjectRoot => Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+
+        private static string PackFullPath(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path)) throw new ArgumentException("Enter a pack path.");
+            return Path.GetFullPath(Path.Combine(ProjectRoot, path.Trim()));
+        }
+
+        private static bool IsProductionPath(string path) =>
+            string.Equals(Path.GetFullPath(path), PackFullPath(DefaultPackPath), StringComparison.OrdinalIgnoreCase);
+
         private static string ToProjectPath(string absolute)
         {
-            string root = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+            string root = ProjectRoot + Path.DirectorySeparatorChar;
             string full = Path.GetFullPath(absolute);
-            return full.StartsWith(root, StringComparison.Ordinal) ? full.Substring(root.Length + 1).Replace('\\', '/') : full;
+            return full.StartsWith(root, StringComparison.Ordinal) ? full.Substring(root.Length).Replace('\\', '/') : full;
+        }
+
+        private static void WriteJson(string path, string json)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            string temporary = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
+            try
+            {
+                File.WriteAllText(temporary, json + "\n");
+                if (File.Exists(path)) File.Replace(temporary, path, null);
+                else File.Move(temporary, path);
+            }
+            finally { File.Delete(temporary); }
+            AssetDatabase.Refresh();
         }
 
         private void SetStatus(string message, MessageType type = MessageType.Info)

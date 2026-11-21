@@ -33,9 +33,28 @@ namespace Plop.Generation
         public double AverageSolutionLength;
         public int MinSolutionLength = int.MaxValue;
         public int MaxSolutionLength;
-        public double AverageAnalysisMs;
+        public double AverageCandidateMs;
         public int ReplayFailures;
         public bool StoppedByLimit;
+
+        internal void RecordGeneration(GenerationResult result)
+        {
+            Calls++;
+            Candidates += result.Attempts;
+            if (!result.Success) FailedCalls++;
+            for (int i = 0; i < result.Rejections.Length; i++) Rejections[i] += result.Rejections[i];
+        }
+
+        internal void RecordAcceptance(LevelDefinition level)
+        {
+            var moves = DirectionUtil.ParseMoveString(level.Metadata.Solution);
+            if (!Plop.Solver.BfsSolver.VerifySolution(level, moves)) ReplayFailures++;
+            AverageSolutionLength = (AverageSolutionLength * Accepted + moves.Length) / (Accepted + 1);
+            Accepted++;
+            MinSolutionLength = Math.Min(MinSolutionLength, moves.Length);
+            MaxSolutionLength = Math.Max(MaxSolutionLength, moves.Length);
+            CategoryCounts[(int)level.Metadata.Difficulty.Category]++;
+        }
 
         public int Rejected
         {
@@ -60,7 +79,7 @@ namespace Plop.Generation
             sb.AppendLine("| Search-budget failures | " + Rejections[(int)RejectReason.SearchBudget] + " |");
             sb.AppendLine("| Duplicate rejection rate | " + (DuplicateRejectionRate * 100).ToString("0.00", ci) + "% of candidates |");
             sb.AppendLine("| Generation duration | " + (ElapsedMs / 1000.0).ToString("0.00", ci) + " s |");
-            sb.AppendLine("| Avg analysis time per candidate | " + AverageAnalysisMs.ToString("0.00", ci) + " ms |");
+            sb.AppendLine("| Avg generation time per candidate | " + AverageCandidateMs.ToString("0.00", ci) + " ms |");
             sb.AppendLine("| Solution length avg / min / max | " + AverageSolutionLength.ToString("0.0", ci) + " / " + (Accepted > 0 ? MinSolutionLength : 0) + " / " + MaxSolutionLength + " |");
             foreach (DifficultyCategory c in Enum.GetValues(typeof(DifficultyCategory)))
                 sb.AppendLine("| Difficulty " + c + " | " + CategoryCounts[(int)c] + " |");
@@ -85,9 +104,6 @@ namespace Plop.Generation
             var result = new BatchResult();
             var stats = result.Stats;
             var sw = Stopwatch.StartNew();
-            long totalSolution = 0;
-            double analysisMs = 0;
-            int analyses = 0;
 
             for (int call = 0; result.Levels.Count < settings.TargetCount; call++)
             {
@@ -100,33 +116,18 @@ namespace Plop.Generation
 
                 var profile = settings.Profiles[call % settings.Profiles.Count];
                 ulong seed = SplitMix64.Derive(settings.BaseSeed, (ulong)call);
-                var callSw = Stopwatch.StartNew();
                 var gen = LevelGenerator.Generate(seed, profile, registry);
-                analysisMs += callSw.Elapsed.TotalMilliseconds;
-                analyses += gen.Attempts;
-
-                stats.Calls++;
-                stats.Candidates += gen.Attempts;
-                for (int i = 0; i < gen.Rejections.Length; i++) stats.Rejections[i] += gen.Rejections[i];
-                if (!gen.Success) { stats.FailedCalls++; continue; }
+                stats.RecordGeneration(gen);
+                if (!gen.Success) continue;
 
                 var level = gen.Level;
-                // independent re-verification of the stored solution
-                var moves = DirectionUtil.ParseMoveString(level.Metadata.Solution);
-                if (!Plop.Solver.BfsSolver.VerifySolution(level, moves)) stats.ReplayFailures++;
-
                 result.Levels.Add(level);
-                stats.Accepted++;
-                totalSolution += moves.Length;
-                stats.MinSolutionLength = Math.Min(stats.MinSolutionLength, moves.Length);
-                stats.MaxSolutionLength = Math.Max(stats.MaxSolutionLength, moves.Length);
-                stats.CategoryCounts[(int)level.Metadata.Difficulty.Category]++;
+                stats.RecordAcceptance(level);
                 onAccepted?.Invoke(result.Levels.Count - 1, level);
             }
 
             stats.ElapsedMs = sw.Elapsed.TotalMilliseconds;
-            stats.AverageSolutionLength = stats.Accepted == 0 ? 0 : (double)totalSolution / stats.Accepted;
-            stats.AverageAnalysisMs = analyses == 0 ? 0 : analysisMs / analyses;
+            stats.AverageCandidateMs = stats.Candidates == 0 ? 0 : stats.ElapsedMs / stats.Candidates;
             return result;
         }
     }

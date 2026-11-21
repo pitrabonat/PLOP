@@ -13,7 +13,8 @@ namespace Plop.Bench
     /// <summary>
     /// Usage:
     ///   dotnet run -c Release --project DotNet/Plop.Bench -- --count 100 [--seed 0x504C4F5021] [--pack path.json] [--report path.md]
-    ///   dotnet run -c Release --project DotNet/Plop.Bench -- --explore 200
+    ///   dotnet run -c Release --project DotNet/Plop.Bench -- --production [--pack path.json] [--report path.md]
+    ///   dotnet run -c Release --project DotNet/Plop.Bench -- --verify-production path.json
     /// </summary>
     public static class Program
     {
@@ -25,6 +26,7 @@ namespace Plop.Bench
             ulong seed = new BatchSettings().BaseSeed;
             string pack = null, report = null;
             int explore = 0;
+            bool production = false;
             for (int i = 0; i < args.Length; i++)
             {
                 switch (args[i])
@@ -35,9 +37,16 @@ namespace Plop.Bench
                     case "--report": report = args[++i]; break;
                     case "--explore": explore = int.Parse(args[++i]); break;
                     case "--perf": return Perf(args[++i]);
+                    case "--production": production = true; break;
+                    case "--verify-production":
+                        var levels = LevelSerializer.PackFromJson(File.ReadAllText(args[++i]));
+                        var verification = LevelVerifier.VerifyProductionPack(levels);
+                        Console.WriteLine(verification);
+                        return verification.IsValid ? 0 : 1;
                     default: Console.Error.WriteLine("Unknown argument " + args[i]); return 2;
                 }
             }
+            if (production) return GenerateProduction(seed, pack, report);
             return explore > 0 ? Explore(explore, seed) : Benchmark(count, seed, pack, report);
         }
 
@@ -139,19 +148,67 @@ namespace Plop.Bench
                 md.AppendLine($"| {g.Key} | {g.Count()} |");
 
             Console.WriteLine(md.ToString());
-            if (!string.IsNullOrEmpty(packPath))
+            bool success = verify.IsValid && deterministic && stats.Accepted == count && stats.ReplayFailures == 0;
+            if (success && !string.IsNullOrEmpty(packPath))
+                WriteOutput(packPath, LevelSerializer.PackToJson("PLOP_Pack_001", named) + "\n");
+            if (!string.IsNullOrEmpty(reportPath)) WriteOutput(reportPath, md.ToString());
+            return success ? 0 : 1;
+        }
+
+        private static int GenerateProduction(ulong seed, string packPath, string reportPath)
+        {
+            Console.WriteLine($"Generating the production campaign, base seed 0x{seed:X}, generator v{GeneratorInfo.Version}...");
+            var result = ProductionCatalog.Generate(seed);
+            var verify = LevelVerifier.VerifyProductionPack(result.Levels);
+            string json = LevelSerializer.PackToJson("PLOP_Pack_001", result.Levels) + "\n";
+            bool deterministic = verify.IsValid &&
+                json == LevelSerializer.PackToJson("PLOP_Pack_001", ProductionCatalog.Generate(seed).Levels) + "\n";
+            bool success = verify.IsValid && deterministic && result.Stats.ReplayFailures == 0;
+
+            var report = new StringBuilder();
+            report.AppendLine("# Production campaign generation");
+            report.AppendLine();
+            report.AppendLine($"Seed `0x{seed:X}`, generator v{GeneratorInfo.Version}, solver v{SolverInfo.Version}, .NET {Environment.Version}. Single-threaded desktop run.");
+            report.AppendLine();
+            report.Append(result.Stats.ToMarkdown());
+            report.AppendLine($"| Strict verification (structure, IDs, duplicates, shortest replay, Undo and Restart) | {(verify.IsValid ? "PASS" : "FAIL: " + verify)} |");
+            report.AppendLine($"| Full deterministic regeneration | {(deterministic ? "byte-identical" : "failed")} |");
+            report.AppendLine();
+            report.AppendLine("| Levels | Count | Shortest moves | Score range | Peak-to-recovery dips | Wall use | Forced coordination | Must move away | Forced order or settlement traps |");
+            report.AppendLine("|---|---:|---:|---:|---:|---:|---:|---:|---:|");
+            AppendStage(1, 10);
+            AppendStage(11, 25);
+            AppendStage(26, 50);
+            AppendStage(51, 75);
+            AppendStage(76, 100);
+
+            Console.WriteLine(report.ToString());
+            if (success && !string.IsNullOrEmpty(packPath)) WriteOutput(packPath, json);
+            if (!string.IsNullOrEmpty(reportPath)) WriteOutput(reportPath, report.ToString());
+            return success ? 0 : 1;
+
+            void AppendStage(int start, int end)
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(packPath)));
-                File.WriteAllText(packPath, LevelSerializer.PackToJson("PLOP_Pack_001", named) + "\n");
-                Console.WriteLine("Wrote pack: " + packPath);
+                var stage = result.Levels.Skip(start - 1).Take(end - start + 1).Select(l => l.Metadata).ToList();
+                if (stage.Count == 0) return;
+                double Metric(LevelMetadata m, string key) => m.Difficulty.Metrics[key];
+                int wallUse = stage.Count(m => Metric(m, "wallInteractionMoves") > 0 || Metric(m, "wallDetour") > 0);
+                int coordination = stage.Count(m => Metric(m, "requiresCoordination") > 0);
+                int away = stage.Count(m => Metric(m, "requiresAwayMove") > 0);
+                int order = stage.Count(m => Metric(m, "requiredSettlementPairs") > 0 || Metric(m, "deadEndSettlements") > 0);
+                int dips = 0;
+                for (int i = 4; i < stage.Count; i += 5)
+                    if (stage[i].Difficulty.Score < stage[i - 1].Difficulty.Score) dips++;
+                report.AppendLine($"| {start}–{end} | {stage.Count} | {stage.Min(m => m.Solution.Length)}–{stage.Max(m => m.Solution.Length)} | " +
+                    $"{stage.Min(m => m.Difficulty.Score):0.0}–{stage.Max(m => m.Difficulty.Score):0.0} | {dips} | {wallUse} | {coordination} | {away} | {order} |");
             }
-            if (!string.IsNullOrEmpty(reportPath))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(reportPath)));
-                File.WriteAllText(reportPath, md.ToString());
-                Console.WriteLine("Wrote report: " + reportPath);
-            }
-            return verify.IsValid && deterministic && stats.Accepted == count && stats.ReplayFailures == 0 ? 0 : 1;
+        }
+
+        private static void WriteOutput(string path, string contents)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path)));
+            File.WriteAllText(path, contents);
+            Console.WriteLine("Wrote " + path);
         }
 
         private static bool CheckDeterminism(BatchSettings settings, int calls)
