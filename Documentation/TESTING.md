@@ -62,6 +62,38 @@ classified 913,919 states across all 100 levels. It found 10,490 proven dead
 ends across 51 levels. The largest graph has 77,196 states.
 The game rules and the production pack match the Phase 4 checkpoint.
 
+## Phase 5 Android development player
+
+The signed ARM64 APK is at
+`/Volumes/PLOP_DEV/Builds/Android/Phase5/PLOP-phase5-dev.apk`.
+It is 44,949,426 bytes, uses APK signature scheme v2, and passed the
+16 KB ZIP alignment check. The API 37 emulator installed and loaded
+the native player and its proof tables for all 100 levels. ADB showed
+the emulator as the sole device during the run.
+
+Android portrait captures were inspected at 1080×1920, 1170×2532,
+1440×3200 and 720×1280, including the 7×8 tray of Level 100. A touch swipe
+triggered Level 8 recovery. Undo restored the previous one-move state,
+Keep playing retained the deadlocked two-move state, and Restart restored
+zero moves. A normal save run advanced to Level 2 and retained the
+level, the 30 FPS preference and both muted volumes after relaunch.
+
+SurfaceFlinger TimeStats recorded the game surface while swiping in Level 1
+at 1080×1920 on the first Phase 5 build. Unity’s Settings and stored cap were
+checked for each sample. The later completion heading change is confined
+to the end-of-level card.
+
+| Selected cap | Present intervals | Median | 90th percentile |
+|---|---:|---:|---:|
+| 30 FPS | 99 | 33 ms | 36 ms |
+| 60 FPS | 113 | 33 ms | 50 ms |
+
+The emulator did not sustain the 60 FPS target. At 30 FPS, `dumpsys meminfo`
+reported 265,627 KiB PSS and 391,088 KiB RSS. These readings describe the
+hosted development player. Physical-device frame pacing, power draw,
+temperature and audio mixing remain unmeasured. Raw logs are under
+`/Volumes/PLOP_DEV/Builds/Logs/phase5/`.
+
 ## Phase 4 iOS Simulator
 
 Unity exported ARM64 and Xcode 26.3 built the development player with

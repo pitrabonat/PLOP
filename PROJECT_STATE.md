@@ -29,10 +29,15 @@ choose **PLOP → Play Game** or press Play in `Assets/Scenes/Gameplay.unity`.
   route is a proven trap with a state-changing move still available.
 - Tests cover the four target portrait sizes, a bounded unknown result,
   stale search cancellation, recovery, and completion priority.
+- The 44.9 MB ARM64 development APK passed signature and alignment checks
+  and launched in the API 37 emulator. The measured emulator frame pacing
+  varied at the 60 FPS cap. Physical-device profiling remains open.
 - Build and device verification are recorded in
   [Documentation/TESTING.md](Documentation/TESTING.md).
   The [visual gap analysis](Documentation/VISUAL_GAP_ANALYSIS.md)
-  records the two target concepts and the sprite integration points.
+  records the two target concepts and the sprite integration points. The
+  [Phase 5 previews](Documentation/Previews/Phase5/README.md) show the
+  actual Unity player.
 
 ## Resume
 

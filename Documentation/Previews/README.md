@@ -2,6 +2,8 @@
 
 These images were captured from the running Unity player.
 
+- [Phase 5 portrait visuals and recovery](Phase5/README.md)
+
 - [Phase 4 · Level 29 on iPhone 15 Pro Max](phase4-ios-level29.png)
 - [Phase 4 · Sweet Dreams on iPhone 15 Pro Max](phase4-ios-completion.png)
 - [Phase 4 · Level 29 on iPhone SE](phase4-ios-compact.png)

@@ -39,3 +39,20 @@ one ivory tile, one Pebble, one neutral tintable Plop body, one neutral
 tintable pillow, and separate awake, worried and sleeping face artwork.
 Light the set consistently from the upper left. Pack the production variants
 together and check density, edge padding and contact-shadow layering on phone.
+
+## Review of the running Unity player
+
+The Phase 4 and Phase 5 comparison captures both show the same one-move
+Level 8 state at 1080×1920. The tray grew from about 65.5% to 87.5% of
+the safe width, or 945 pixels in Phase 5. The red Plop spans roughly three quarters of its tile.
+Both faces read above the pillow material and the roomier camera exposes the
+Pebble pits. The raised frame and move chip reproduce the reference’s
+hierarchy, with enough clearance for the tutorial line and three labeled
+touch controls. The recovery card keeps the warm palette and uses a worried
+face from the same atlas.
+
+The target render has environmental foreground props, deeper transmission
+through the jelly and finer fabric gradients. The game uses one baked key
+light, a smaller contact shadow and shallower seams at mobile scale. The
+named atlas slots above describe where authored material masters can fit
+if those details are refined further.
