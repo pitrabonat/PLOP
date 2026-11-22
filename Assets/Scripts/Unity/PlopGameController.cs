@@ -44,7 +44,6 @@ namespace Plop.Presentation
         private LevelProgress _progress;
         private WorldCatalog _worlds = WorldCatalog.Empty;
         private WorldTheme _world;
-        private WorldTheme _newlyUnlockedWorld;
         private WorldBackdrop _backdrop;
         private readonly PlopHaptics _haptics = new PlopHaptics();
         private bool _reducedMotion;
@@ -57,6 +56,7 @@ namespace Plop.Presentation
         private Coroutine _deadlockReveal;
         private int _deadlockRevision;
         private bool _deadlockCheckQueued;
+        private bool _deadlockPresented;
         private bool _applicationPaused;
         private bool _applicationFocused = true;
         private bool _suspended;
@@ -68,6 +68,13 @@ namespace Plop.Presentation
         private PlopAudio _audio;
         private Camera _camera;
         private float _lastActivity;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        private PlopDiagnostics _diagnostics;
+        internal bool IsSuspended => _suspended;
+        internal string DiagnosticState => _hud.IsDeadlockOpen ? "Recovery"
+            : _hud.IsSettingsOpen ? "Settings" : _hud.IsChoosingLevel ? "Level picker"
+            : _engine.IsCompleted ? "Complete" : _board.IsTraveling ? "Traveling" : "Playing";
+#endif
 
         /// <summary>When false, level progress is not read from or written to PlayerPrefs (tests, tools).</summary>
         public bool RememberProgress { get => rememberProgress; set => rememberProgress = value; }
@@ -107,6 +114,9 @@ namespace Plop.Presentation
             _input.NextRequested += NextLevel;
             _input.HintRequested += OnHintRequested;
             _input.DismissRequested += DismissModal;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            _input.DiagnosticsRequested += ToggleDiagnostics;
+#endif
             _hud.UndoClicked += Undo;
             _hud.RestartClicked += Restart;
             _hud.NextClicked += NextLevel;
@@ -116,6 +126,7 @@ namespace Plop.Presentation
             _hud.ButtonActivated += _audio.PlayButton;
             _hud.MusicChanged += _audio.SetMusicVolume;
             _hud.SoundChanged += _audio.SetSoundVolume;
+            _hud.MasterMuteChanged += _audio.SetMasterMuted;
             _hud.FrameRateChanged += SetFrameRateMode;
             _hud.HapticsChanged += SetHaptics;
             _hud.ReducedMotionChanged += SetReducedMotion;
@@ -166,11 +177,25 @@ namespace Plop.Presentation
             _audio.Initialize(SavesProgress, _worlds.ForLevelIndex(_index)?.Ambience ?? WorldAmbience.CozyNest);
             LoadCurrent();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (PlayerPrefs.GetInt(PlopDiagnostics.Preference, 0) == 1) ToggleDiagnostics();
             if (!string.IsNullOrEmpty(debugMoves)) StartCoroutine(PlayDebugMoves(debugMoves));
 #endif
         }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
+        private void ToggleDiagnostics()
+        {
+            if (_diagnostics != null)
+            {
+                Destroy(_diagnostics);
+                _diagnostics = null;
+                return;
+            }
+
+            _diagnostics = gameObject.AddComponent<PlopDiagnostics>();
+            _diagnostics.Inspect(this);
+        }
+
         private IEnumerator PlayDebugMoves(string moves)
         {
             yield return new WaitForSecondsRealtime(1.5f);
@@ -291,7 +316,6 @@ namespace Plop.Presentation
             ClearPendingInput();
             _levels = levels == null ? new List<LevelDefinition>() : new List<LevelDefinition>(levels);
             _worlds = WorldCatalog.Empty;
-            _newlyUnlockedWorld = null;
             CancelDeadlockCheck();
             _hud.CloseDeadlock();
             _progress = new LevelProgress(_levels);
@@ -381,6 +405,7 @@ namespace Plop.Presentation
             ClearPendingInput();
             InvalidateHint();
             _hud.SetVolumes(_audio.MusicVolume, _audio.SoundVolume);
+            _hud.SetMasterMuted(_audio.MasterMuted);
             _hud.SetComfortOptions(HapticsEnabled, ReducedMotionEnabled);
             _hud.ShowSettings();
         }
@@ -399,7 +424,7 @@ namespace Plop.Presentation
 
         private void CheckCurrentDeadlock()
         {
-            if (!CanCheckDeadlock) return;
+            if (!CanCheckDeadlock || _deadlockPresented) return;
             var known = _deadlockTable?.Classify(_engine.CurrentState) ?? DeadlockStatus.Unknown;
             if (known == DeadlockStatus.ProvenDeadlock)
             {
@@ -474,7 +499,7 @@ namespace Plop.Presentation
 
         private void RevealDeadlock()
         {
-            if (_deadlockReveal == null && !_hud.IsDeadlockOpen)
+            if (!_deadlockPresented && _deadlockReveal == null && !_hud.IsDeadlockOpen)
                 _deadlockReveal = StartCoroutine(RevealDeadlockAfterMotion(_deadlockRevision));
         }
 
@@ -487,7 +512,10 @@ namespace Plop.Presentation
                 if (!_board.IsBusy && !_hud.BlocksGameplayInput &&
                     _hud.ShowDeadlock(_engine.CanUndo, _board.Atlas.Get(ShapeAtlas.WorriedPlopKey)))
                 {
+                    _deadlockPresented = true;
                     ClearPendingInput();
+                    InvalidateHint();
+                    _audio.PlayDeadlock();
                     MarkActive();
                     PlopLog.Info("Deadlock confirmed on " + _engine.Level.Id + " after " + _engine.MoveCount + " moves");
                     break;
@@ -549,7 +577,7 @@ namespace Plop.Presentation
                 if (result.Status == SolverStatus.Solved && result.Moves.Length > 0)
                 {
                     Direction direction = result.Moves[0];
-                    ShowHint("Try swiping " + direction.ToString().ToLowerInvariant() + ".");
+                    ShowHint("Try swiping " + direction.ToString().ToLowerInvariant() + ".", direction: direction);
                     return direction;
                 }
 
@@ -589,10 +617,10 @@ namespace Plop.Presentation
             return result;
         }
 
-        private void ShowHint(string hint, bool searching = false)
+        private void ShowHint(string hint, bool searching = false, Direction? direction = null)
         {
             _hintVisible = hint != null;
-            _hud.SetHint(hint, searching);
+            _hud.SetHint(hint, searching, direction);
         }
 
         private void InvalidateHint()
@@ -610,11 +638,6 @@ namespace Plop.Presentation
             _engine.LoadLevel(_levels[_index]);
             if (previousWorld != null && previousWorld != _world && _world != null)
                 _backdrop.PlayReveal();
-            if (_world != null && _world == _newlyUnlockedWorld)
-            {
-                _newlyUnlockedWorld = null;
-                _audio.PlayWorldEntrance();
-            }
             PlopLog.Info("Loaded " + _levels[_index].Id);
         }
 
@@ -645,8 +668,8 @@ namespace Plop.Presentation
             var nextWorld = _worlds.ForLevelIndex(nextIndex);
             if (!nextWasUnlocked && nextUnlocked && nextWorld != null && nextWorld != _world)
             {
-                _newlyUnlockedWorld = nextWorld;
                 _hud.ShowWorldUnlocked(nextWorld.DisplayName, nextWorld.Preview);
+                _audio.PlayWorldUnlock();
                 PlopLog.Info("World unlocked " + nextWorld.Id);
             }
             PlopLog.Info("Completed " + _engine.Level.Id + " in " + moveCount);
@@ -657,6 +680,7 @@ namespace Plop.Presentation
             switch (e.Type)
             {
                 case GameEventType.LevelLoaded:
+                    _deadlockPresented = false;
                     ClearPendingInput();
                     CancelDeadlockCheck();
                     _hud.CloseDeadlock();
@@ -670,6 +694,7 @@ namespace Plop.Presentation
                     break;
                 case GameEventType.MoveUndone:
                 case GameEventType.LevelRestarted:
+                    _deadlockPresented = false;
                     ClearPendingInput();
                     CancelDeadlockCheck();
                     _hud.CloseDeadlock();
@@ -679,9 +704,15 @@ namespace Plop.Presentation
                     _hud.SetMoves(_engine.MoveCount);
                     _hud.SetCanUndo(_engine.CanUndo);
                     _hud.SetCompleted(false, false);
-                    if (e.Type == GameEventType.MoveUndone && _engine.CanUndo) CheckCurrentDeadlock();
+                    if (e.Type == GameEventType.MoveUndone)
+                    {
+                        _audio.PlayUndo();
+                        if (_engine.CanUndo) CheckCurrentDeadlock();
+                    }
+                    else _audio.PlayRestart();
                     break;
                 case GameEventType.PlopMoved:
+                    _deadlockPresented = false;
                     CancelDeadlockCheck();
                     _hud.CloseDeadlock();
                     InvalidateHint();
@@ -739,7 +770,7 @@ namespace Plop.Presentation
 
             // Battery: drop the render rate while nothing is moving (input/UI still processed every frame).
             if (idleRenderInterval > 1 && OnDemandRendering.renderFrameInterval == 1 &&
-                !_board.IsBusy && Time.unscaledTime - _lastActivity > idleDelay)
+                Time.unscaledTime - _lastActivity > idleDelay && !_board.IsBusy)
             {
                 OnDemandRendering.renderFrameInterval = idleRenderInterval;
             }

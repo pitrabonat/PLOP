@@ -26,6 +26,9 @@ namespace Plop.Presentation
         public event Action NextRequested;
         public event Action HintRequested;
         public event Action DismissRequested;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        internal event Action DiagnosticsRequested;
+#endif
 
         private InputAction _press;
         private InputAction[] _actions;
@@ -53,7 +56,10 @@ namespace Plop.Presentation
                 Key("Restart", () => RestartRequested?.Invoke(), "<Keyboard>/r"),
                 Key("Hint", () => HintRequested?.Invoke(), "<Keyboard>/h"),
                 Key("Next", () => NextRequested?.Invoke(), "<Keyboard>/n", "<Keyboard>/enter"),
-                Key("Dismiss", () => DismissRequested?.Invoke(), "<Keyboard>/escape")
+                Key("Dismiss", () => DismissRequested?.Invoke(), "<Keyboard>/escape"),
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                Key("Diagnostics", () => DiagnosticsRequested?.Invoke(), "<Keyboard>/f3"),
+#endif
             };
         }
 

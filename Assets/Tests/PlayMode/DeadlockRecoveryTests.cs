@@ -87,6 +87,35 @@ namespace Plop.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator DismissingAProofPreventsRepeatOnTheUnchangedBoard()
+        {
+            var controller = CreateController();
+            yield return null;
+            for (int i = 0; i < 7; i++)
+            {
+                foreach (var direction in BfsSolver.Solve(controller.Engine.Level).Moves) controller.Move(direction);
+                controller.NextLevel();
+            }
+            controller.SetReducedMotion(true);
+            var hud = _root.GetComponent<GameHud>();
+            controller.Move(Direction.Up);
+            controller.Move(Direction.Left);
+            yield return WaitFor(() => hud.IsDeadlockOpen, "proven Level 8 deadlock");
+            var trapped = controller.Engine.GetState();
+
+            Click("Keep playing");
+            controller.SendMessage("CheckCurrentDeadlock");
+            yield return null;
+            yield return null;
+            Assert.IsFalse(hud.IsDeadlockOpen);
+            Assert.AreEqual(trapped, controller.Engine.CurrentState);
+
+            controller.Undo();
+            controller.Move(Direction.Left);
+            yield return WaitFor(() => hud.IsDeadlockOpen, "new proof after a board change");
+        }
+
+        [UnityTest]
         public IEnumerator SearchLimitDoesNotOpenModalAndDismissDoesNotChangeState()
         {
             var controller = CreateController(LevelText.Parse("limited", "R...r"));

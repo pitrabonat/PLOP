@@ -28,6 +28,9 @@ namespace Plop.Presentation
         internal const float PressedScale = 0.95f;
         internal const float TintDuration = 0.08f;
         internal const float CompletionEntrance = 0.20f;
+        internal const float HintCueDiameter = 66f;
+        internal const float HintCueHoldSeconds = 1.35f;
+        internal const float HintCueFadeSeconds = 0.20f;
         internal const int Display = 76;
         internal const int Heading = 51;
         internal const int Action = 37;
@@ -39,6 +42,9 @@ namespace Plop.Presentation
         internal const float ModalButtonHeight = 86f;
         internal static readonly Color Ink = PlopPalette.Hex(0x633F55);
         internal static readonly Color ActionInk = PlopPalette.Hex(0x805366);
+        internal static readonly Color DisabledText = PlopPalette.Hex(0x806A7B);
+        internal static readonly Color HintCueOutline = PlopPalette.Hex(0xB88973);
+        internal static readonly Color HintCueFill = PlopPalette.Hex(0xFFE5B7);
         internal static readonly Color MoveSurface = PlopPalette.Hex(0xF4DCE9);
         internal static Color HintSurface => Color.Lerp(PlopPalette.ButtonFill, PlopPalette.Honey, 0.18f);
         internal static Color CompletionSurface => Color.Lerp(PlopPalette.ButtonFill, PlopPalette.Mint, 0.30f);

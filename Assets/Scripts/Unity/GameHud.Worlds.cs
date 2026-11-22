@@ -272,6 +272,10 @@ namespace Plop.Presentation
             _worldAnnouncement.gameObject.SetActive(false);
         }
 
-        private void OnDisable() => CancelWorldAnnouncement();
+        private void OnDisable()
+        {
+            CancelWorldAnnouncement();
+            ClearHintCue();
+        }
     }
 }

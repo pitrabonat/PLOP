@@ -3,47 +3,59 @@ using UnityEngine;
 
 namespace Plop.Presentation
 {
-    /// <summary>At most one short native cue for a settled or completed move.</summary>
+    /// <summary>One optional native cue per swipe, with a shared pulse limit.</summary>
     internal sealed class PlopHaptics
     {
-        private double _nextPulse;
+        internal enum Cue : byte { None, Blocked, Move, Settle, Complete }
 
+        private double _nextPulse;
         public bool Enabled { get; set; }
+
+        internal static Cue SelectCue(GameEvent[] events)
+        {
+            if (events == null) return Cue.None;
+            var cue = Cue.None;
+            foreach (var gameEvent in events)
+            {
+                switch (gameEvent.Type)
+                {
+                    case GameEventType.LevelCompleted: return Cue.Complete;
+                    case GameEventType.PlopSettled: cue = Cue.Settle; break;
+                    case GameEventType.PlopMoved: if (cue < Cue.Move) cue = Cue.Move; break;
+                    case GameEventType.PlopBlocked: if (cue == Cue.None) cue = Cue.Blocked; break;
+                }
+            }
+            return cue;
+        }
 
         public void PlayMove(GameEvent[] events)
         {
-            if (!Enabled || events == null) return;
+            if (!Enabled) return;
+            var cue = SelectCue(events);
+            if (cue == Cue.None) return;
+
             double now = Time.unscaledTimeAsDouble;
             if (now < _nextPulse) return;
+            _nextPulse = now + 0.14;
 
-            bool settled = false;
-            bool completed = false;
-            foreach (var gameEvent in events)
-            {
-                settled |= gameEvent.Type == GameEventType.PlopSettled;
-                completed |= gameEvent.Type == GameEventType.LevelCompleted;
-            }
-            if (!settled && !completed) return;
-
-            _nextPulse = now + 0.12;
 #if UNITY_IOS && !UNITY_EDITOR
-            PlopPlayHaptic(completed ? 1 : 0);
+            PlopPlayHaptic((int)cue);
 #elif UNITY_ANDROID && !UNITY_EDITOR
-            QueueAndroidFeedback(completed);
+            QueueAndroidFeedback(cue);
 #endif
         }
 
 #if UNITY_IOS && !UNITY_EDITOR
         [System.Runtime.InteropServices.DllImport("__Internal")]
-        private static extern void PlopPlayHaptic(int completed);
+        private static extern void PlopPlayHaptic(int cue);
 #elif UNITY_ANDROID && !UNITY_EDITOR
-        private static void QueueAndroidFeedback(bool completed)
+        private static void QueueAndroidFeedback(Cue cue)
         {
-            // CONTEXT_CLICK and CLOCK_TICK are supported by the minimum Android API.
-            // performHapticFeedback without override flags respects device preferences.
-            const int contextClick = 6;
+            // These feedback constants are available on the minimum supported API.
+            const int keyboardTap = 3;
             const int clockTick = 4;
-            int feedback = completed ? contextClick : clockTick;
+            const int contextClick = 6;
+            int feedback = cue == Cue.Complete ? contextClick : cue == Cue.Blocked ? keyboardTap : clockTick;
             try
             {
                 using var unity = new AndroidJavaClass("com.unity3d.player.UnityPlayer");

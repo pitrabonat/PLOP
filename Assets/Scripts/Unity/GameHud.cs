@@ -16,7 +16,7 @@ namespace Plop.Presentation
         public event Action SettingsClicked, SettingsClosed, ButtonActivated;
         public event Action<PlopGameController.FrameRateMode> FrameRateChanged;
         public event Action<float> MusicChanged, SoundChanged;
-        public event Action<bool> HapticsChanged, ReducedMotionChanged;
+        public event Action<bool> HapticsChanged, ReducedMotionChanged, MasterMuteChanged;
         public event Action<int> LevelChosen;
         public event Action ModalInteracted;
         public event Action LayoutChanged;
@@ -31,22 +31,27 @@ namespace Plop.Presentation
         private Text _title, _moves, _instruction, _hintStatus, _completionActionLabel, _pageLabel;
         private Text _deadlockTitle, _deadlockDescription;
         private Text _gameName, _worldName, _pickerTitle, _pickerExitLabel, _hapticsLabel, _motionLabel;
-        private Text _musicPercent, _soundPercent;
+        private Text _musicPercent, _soundPercent, _muteLabel, _undoLabel;
         private Slider _music, _sound;
         private Image _completionActionIcon, _deadlockMascot, _levelBadgeBody, _moveBadgeBody;
+        private Image _undoIcon, _rate30Check, _rate60Check;
         private Button _undo, _hint, _previousPage, _nextPage;
         private Button _deadlockUndo, _deadlockRestart;
-        private Button _rate30, _rate60, _hapticsButton, _motionButton;
+        private Button _rate30, _rate60, _hapticsButton, _motionButton, _muteButton;
         private RectTransform _canvasRoot, _safe, _header, _status, _footer, _dock, _completion;
         private RectTransform _levelBadge, _moveBadge;
         private RectTransform _levelPicker, _settings, _deadlock;
         private RectTransform _pickerPanel, _settingsPanel, _deadlockPanel;
         private CanvasGroup _gameplayGroup;
         private CanvasGroup _cardGroup;
-        private Coroutine _cardAnim;
+        private Coroutine _cardAnim, _hintCueAnimation;
+        private RectTransform _hintCue, _hintCueArrow;
+        private CanvasGroup _hintCueGroup;
+        private Direction? _hintDirection;
+        private bool _masterMuted;
         private Font _font, _displayFont;
         private static readonly Vector2 PickerSize = new Vector2(880, 980);
-        private static readonly Vector2 SettingsSize = new Vector2(840, 868);
+        private static readonly Vector2 SettingsSize = new Vector2(840, 982);
         private static readonly Vector2 DeadlockSize = new Vector2(742, 660);
         private static readonly Vector2 DeadlockTextOnlySize = new Vector2(742, 524);
         private IReadOnlyList<LevelDefinition> _pickerLevels;
@@ -129,6 +134,9 @@ namespace Plop.Presentation
             var buttonSize = new Vector2(177, HudTheme.FooterButtonHeight);
             _undo = MakeButton(_footer, "Undo", new Vector2(-218, 0), buttonSize, PlopPalette.ButtonFill,
                 () => UndoClicked?.Invoke(), icon: HudIcons.Kind.Undo, touchHeight: HudTheme.PlayTouchHeight, stackIcon: true);
+            _undoIcon = _undo.transform.Find("Icon").GetComponent<Image>();
+            _undoLabel = _undo.GetComponentInChildren<Text>();
+            SetCanUndo(false);
             MakeButton(_footer, "Restart", Vector2.zero, buttonSize, PlopPalette.ButtonFill,
                 () => RestartClicked?.Invoke(), icon: HudIcons.Kind.Restart, touchHeight: HudTheme.PlayTouchHeight, stackIcon: true);
             _hint = MakeButton(_footer, "Hint", new Vector2(218, 0), buttonSize, HudTheme.HintSurface,
@@ -137,6 +145,7 @@ namespace Plop.Presentation
                 new Vector2(0, 111), new Vector2(HudTheme.DeckWidth, 62));
             _hintStatus.horizontalOverflow = HorizontalWrapMode.Wrap;
             _hintStatus.verticalOverflow = VerticalWrapMode.Overflow;
+            BuildHintCue(gameplay);
 
             BuildCompletion();
             BuildWorldPicker();
@@ -154,6 +163,7 @@ namespace Plop.Presentation
             _hasBoardLayout = true;
             FitPlayRows();
             PositionPlayControls();
+            if (_hintDirection.HasValue) ShowHintCue(_hintDirection.Value);
         }
 
         private void PositionPlayControls()
@@ -204,11 +214,20 @@ namespace Plop.Presentation
         }
 
         public void SetMoves(int moves) => _moves.text = moves == 1 ? "1 move" : moves + " moves";
-        public void SetCanUndo(bool canUndo) => _undo.interactable = canUndo;
+        public void SetCanUndo(bool canUndo)
+        {
+            _undo.interactable = canUndo;
+            _undoIcon.color = canUndo ? HudTheme.ActionInk : HudTheme.DisabledText;
+            _undoLabel.color = canUndo ? HudTheme.Ink : HudTheme.DisabledText;
+        }
+
         public void SetFrameRate(PlopGameController.FrameRateMode mode)
         {
-            _rate30.image.color = mode == PlopGameController.FrameRateMode.Fps30 ? PlopPalette.Berry : PlopPalette.Milk;
-            _rate60.image.color = mode == PlopGameController.FrameRateMode.Fps60 ? PlopPalette.Berry : PlopPalette.Milk;
+            bool is30 = mode == PlopGameController.FrameRateMode.Fps30;
+            _rate30.image.color = is30 ? PlopPalette.Berry : PlopPalette.Milk;
+            _rate60.image.color = is30 ? PlopPalette.Milk : PlopPalette.Berry;
+            _rate30Check.gameObject.SetActive(is30);
+            _rate60Check.gameObject.SetActive(!is30);
         }
 
         public void SetVolumes(float music, float sound)
@@ -217,6 +236,12 @@ namespace Plop.Presentation
             _sound.SetValueWithoutNotify(sound);
             _musicPercent.text = Percent(music);
             _soundPercent.text = Percent(sound);
+        }
+
+        public void SetMasterMuted(bool muted)
+        {
+            _masterMuted = muted;
+            PaintComfortSwitch(_muteButton, _muteLabel, muted);
         }
 
         public void SetComfortOptions(bool haptics, bool reducedMotion)
@@ -230,6 +255,7 @@ namespace Plop.Presentation
 
             foreach (var feedback in _pressFeedback)
                 feedback.enabled = !reducedMotion;
+            if (reducedMotion) _hintCueGroup.alpha = 1f;
             if (!reducedMotion || _cardAnim == null) return;
 
             StopCoroutine(_cardAnim);
@@ -253,10 +279,93 @@ namespace Plop.Presentation
             SettingsClosed?.Invoke();
         }
 
-        public void SetHint(string message, bool searching)
+        public void SetHint(string message, bool searching, Direction? direction = null)
         {
             _hintStatus.text = message ?? "";
             _hint.interactable = !searching;
+            ClearHintCue();
+            if (!direction.HasValue || string.IsNullOrEmpty(message) || searching || BlocksGameplayInput || _completed)
+                return;
+
+            _hintDirection = direction;
+            ShowHintCue(direction.Value);
+        }
+
+        private void BuildHintCue(Transform parent)
+        {
+            _hintCue = NewRect("Directional hint", parent);
+            _hintCue.anchorMin = _hintCue.anchorMax = Vector2.zero;
+            _hintCueGroup = _hintCue.gameObject.AddComponent<CanvasGroup>();
+            _hintCueGroup.blocksRaycasts = false;
+            _hintCueGroup.interactable = false;
+            var edge = AddRoundedImage(NewRect("Outline", _hintCue), UiSprites.Pill, HudTheme.HintCueOutline);
+            edge.type = Image.Type.Simple;
+            var face = NewRect("Face", _hintCue);
+            face.anchorMin = Vector2.one * 0.052f;
+            face.anchorMax = Vector2.one * 0.948f;
+            var fill = AddRoundedImage(face, UiSprites.Badge, HudTheme.HintCueFill);
+            fill.type = Image.Type.Simple;
+            var arrow = AddGlyph(_hintCue, HudIcons.Kind.Next, Vector2.zero, 42f, HudTheme.Ink);
+            _hintCueArrow = arrow.rectTransform;
+            _hintCue.gameObject.SetActive(false);
+        }
+
+        private void ShowHintCue(Direction direction)
+        {
+            if (!_hasBoardLayout || !isActiveAndEnabled) return;
+            var board = _boardLayout.BoardRectPixels;
+            var safe = _boardLayout.SafePixels;
+            float scale = _boardLayout.CanvasScale;
+            // Limit the inward coverage to the tray lip, even when more columns shrink the cells.
+            float radius = Mathf.Min(HudTheme.HintCueDiameter * 0.5f * scale * _boardLayout.ReserveScale,
+                _boardLayout.PixelsPerUnit * 0.19f);
+            float inset = radius * 0.26f;
+            var point = board.center;
+            float angle;
+            switch (direction)
+            {
+                case Direction.Up: point.y = board.yMax - inset; angle = 90f; break;
+                case Direction.Down: point.y = board.yMin + inset; angle = -90f; break;
+                case Direction.Left: point.x = board.xMin + inset; angle = 180f; break;
+                case Direction.Right: point.x = board.xMax - inset; angle = 0f; break;
+                default: return;
+            }
+
+            float diameter = 2f * radius / scale;
+            _hintCue.sizeDelta = Vector2.one * diameter;
+            _hintCue.anchoredPosition = (point - safe.min) / scale;
+            _hintCueArrow.sizeDelta = Vector2.one * (diameter * 0.94f);
+            _hintCueArrow.localRotation = Quaternion.Euler(0f, 0f, angle);
+            if (_hintCue.gameObject.activeSelf) return;
+
+            _hintCueGroup.alpha = 1f;
+            _hintCue.gameObject.SetActive(true);
+            _hintCueAnimation = StartCoroutine(HoldHintCue());
+        }
+
+        private IEnumerator HoldHintCue()
+        {
+            yield return new WaitForSecondsRealtime(HudTheme.HintCueHoldSeconds);
+            float start = Time.unscaledTime;
+            for (float fraction = 0f; !_reducedMotion && fraction < 1f;
+                fraction = (Time.unscaledTime - start) / HudTheme.HintCueFadeSeconds)
+            {
+                _hintCueGroup.alpha = 1f - Mathf.SmoothStep(0f, 1f, fraction);
+                yield return null;
+            }
+            _hintCueAnimation = null;
+            ClearHintCue();
+        }
+
+        private void ClearHintCue()
+        {
+            if (_hintCueAnimation != null)
+            {
+                StopCoroutine(_hintCueAnimation);
+                _hintCueAnimation = null;
+            }
+            _hintDirection = null;
+            if (_hintCue != null) _hintCue.gameObject.SetActive(false);
         }
 
         public bool ShowDeadlock(bool canUndo, Sprite mascot = null)
@@ -289,7 +398,11 @@ namespace Plop.Presentation
         {
             _completed = completed;
             _canAdvance = canAdvance;
-            if (completed) CloseDeadlock();
+            if (completed)
+            {
+                CloseDeadlock();
+                ClearHintCue();
+            }
             _completionActionLabel.text = canAdvance ? "Next Level" : "Levels";
             _completionActionIcon.sprite = HudIcons.Get(canAdvance ? HudIcons.Kind.Next : HudIcons.Kind.Levels);
 
@@ -513,19 +626,30 @@ namespace Plop.Presentation
                 ModalInteracted?.Invoke();
             });
 
+            _muteButton = MakeComfortSwitch(panel, "Master mute", -470, () =>
+            {
+                SetMasterMuted(!_masterMuted);
+                MasterMuteChanged?.Invoke(_masterMuted);
+            }, out _muteLabel);
+            SetMasterMuted(false);
+
             var center = new Vector2(0.5f, 1f);
             MakeText(panel, "Frame rate title", HudTheme.Control, FontStyle.Bold, HudTheme.Ink, center,
-                new Vector2(0, -456), new Vector2(670, 53)).text = "Frame rate";
-            _rate30 = MakeButton(panel, "30 FPS", new Vector2(-171, -546), new Vector2(308, 94), PlopPalette.Milk,
+                new Vector2(0, -562), new Vector2(670, 53)).text = "Frame rate";
+            _rate30 = MakeButton(panel, "30 FPS", new Vector2(-171, -649), new Vector2(308, 94), PlopPalette.Milk,
                 () => FrameRateChanged?.Invoke(PlopGameController.FrameRateMode.Fps30), center);
-            _rate60 = MakeButton(panel, "60 FPS", new Vector2(171, -546), new Vector2(308, 94), PlopPalette.Milk,
+            _rate60 = MakeButton(panel, "60 FPS", new Vector2(171, -649), new Vector2(308, 94), PlopPalette.Milk,
                 () => FrameRateChanged?.Invoke(PlopGameController.FrameRateMode.Fps60), center);
-            _hapticsButton = MakeComfortSwitch(panel, "Haptics", -675, () =>
+            _rate30Check = AddGlyph((RectTransform)_rate30.transform, HudIcons.Kind.Check, new Vector2(-104, 0), 50f, HudTheme.Ink);
+            _rate60Check = AddGlyph((RectTransform)_rate60.transform, HudIcons.Kind.Check, new Vector2(-104, 0), 50f, HudTheme.Ink);
+            SetFrameRate(PlopGameController.FrameRateMode.Fps60);
+
+            _hapticsButton = MakeComfortSwitch(panel, "Haptics", -767, () =>
             {
                 SetComfortOptions(!_haptics, _reducedMotion);
                 HapticsChanged?.Invoke(_haptics);
             }, out _hapticsLabel);
-            _motionButton = MakeComfortSwitch(panel, "Reduced motion", -786, () =>
+            _motionButton = MakeComfortSwitch(panel, "Reduced motion", -879, () =>
             {
                 SetComfortOptions(_haptics, !_reducedMotion);
                 ReducedMotionChanged?.Invoke(_reducedMotion);
@@ -618,6 +742,7 @@ namespace Plop.Presentation
         private void SetModal(RectTransform modal, bool open)
         {
             modal.gameObject.SetActive(open);
+            if (open) ClearHintCue();
             _gameplayGroup.interactable = _gameplayGroup.blocksRaycasts = !BlocksGameplayInput;
             EventSystem.current?.SetSelectedGameObject(null);
             ModalInteracted?.Invoke();
