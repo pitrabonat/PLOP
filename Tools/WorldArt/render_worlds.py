@@ -1,0 +1,363 @@
+#!/usr/bin/env python3
+"""Rasterize the five authored PLOP world backdrops and world-card art.
+
+Run with the Unity project root as the optional first argument. Existing .meta
+files stay in place so art changes retain their Sprite and resource references.
+The painter uses the standard library and never runs in the shipped game.
+"""
+
+import math
+from pathlib import Path
+import random
+import struct
+import sys
+import zlib
+
+
+def rgb(value):
+    return ((value >> 16) & 255, (value >> 8) & 255, value & 255)
+
+
+def mix(a, b, weight):
+    return tuple(round(lo + (hi - lo) * weight) for lo, hi in zip(a, b))
+
+
+def easing(value):
+    t = min(1.0, max(0.0, value))
+    return t * t * (3.0 - 2.0 * t)
+
+
+def png_chunk(tag, data):
+    return struct.pack(">I", len(data)) + tag + data + struct.pack(">I", zlib.crc32(tag + data))
+
+
+class Canvas:
+    def __init__(self, width, height, top, bottom, spotlight, light_at):
+        self.width = width
+        self.height = height
+        self.pixels = bytearray(width * height * 3)
+        self.plane(rgb(top), rgb(bottom), rgb(spotlight), light_at)
+
+    def plane(self, top, bottom, spotlight, light_at):
+        cx, cy = light_at
+        for y in range(self.height):
+            progress = easing(y / self.height)
+            base = mix(top, bottom, progress)
+            light_y = (y / self.height - cy) * 1.52
+            for x in range(self.width):
+                light_x = x / self.width - cx
+                wash = max(0.0, 0.77 - light_x * light_x * 1.33 - light_y * light_y)
+                offset = (y * self.width + x) * 3
+                self.pixels[offset] = round(base[0] + (spotlight[0] - base[0]) * wash)
+                self.pixels[offset + 1] = round(base[1] + (spotlight[1] - base[1]) * wash)
+                self.pixels[offset + 2] = round(base[2] + (spotlight[2] - base[2]) * wash)
+
+    def blend(self, x, y, color, alpha):
+        offset = (y * self.width + x) * 3
+        for channel, tone in enumerate(color):
+            old = self.pixels[offset + channel]
+            self.pixels[offset + channel] = round(old + (tone - old) * alpha)
+
+    def paint(self, cx, cy, hw, hh, angle, radius, face, shade, strength=1.0, feather=1.1, bevel=0.11):
+        sine, cosine = math.sin(math.radians(angle)), math.cos(math.radians(angle))
+        rx = abs(cosine * hw) + abs(sine * hh) + feather
+        ry = abs(sine * hw) + abs(cosine * hh) + feather
+        xmin = max(0, math.floor(cx - rx))
+        xmax = min(self.width, math.ceil(cx + rx))
+        ymin = max(0, math.floor(cy - ry))
+        ymax = min(self.height, math.ceil(cy + ry))
+        shortest = min(hw, hh)
+
+        for y in range(ymin, ymax):
+            delta_y = y + 0.5 - cy
+            for x in range(xmin, xmax):
+                delta_x = x + 0.5 - cx
+                u = delta_x * cosine + delta_y * sine
+                v = delta_y * cosine - delta_x * sine
+                if radius is None:
+                    distance = (math.hypot(u / hw, v / hh) - 1.0) * shortest
+                else:
+                    ax = abs(u) - (hw - radius)
+                    ay = abs(v) - (hh - radius)
+                    distance = math.hypot(max(ax, 0.0), max(ay, 0.0)) + min(0.0, max(ax, ay)) - radius
+                coverage = easing(0.5 - distance / feather)
+                if coverage <= 0.0:
+                    continue
+                light = easing(0.32 + 0.48 * v / hh + 0.16 * u / hw)
+                light += bevel * easing(1.0 + distance / max(1.0, shortest * 0.19))
+                color = mix(face, shade, min(1.0, light))
+                self.blend(x, y, color, strength * coverage)
+
+    def round(self, x, y, w, h, radius, top, bottom, angle=0, opacity=1, feather=1.1, bevel=0.11):
+        self.paint(x, y, w * 0.5, h * 0.5, angle, min(radius, w * 0.5, h * 0.5),
+                   rgb(top), rgb(bottom), opacity, feather, bevel)
+
+    def oval(self, x, y, w, h, top, bottom, angle=0, opacity=1, feather=1.1, bevel=0.11):
+        self.paint(x, y, w * 0.5, h * 0.5, angle, None, rgb(top), rgb(bottom), opacity, feather, bevel)
+
+    def mist(self, x, y, w, h, color, opacity=0.3, angle=0):
+        self.oval(x, y, w, h, color, color, angle, opacity, max(9.0, min(w, h) * 0.62), 0)
+
+    def beam(self, x, y, w, h, color, opacity=0.2, angle=0):
+        self.round(x, y, w, h, w * 0.32, color, color, angle, opacity, w * 0.74, 0)
+
+    def segment(self, x, y, end_x, end_y, width, color, opacity=1):
+        angle = math.degrees(math.atan2(end_y - y, end_x - x))
+        distance = math.hypot(end_x - x, end_y - y)
+        self.round((x + end_x) * 0.5, (y + end_y) * 0.5, distance + width, width,
+                   width * 0.5, color, color, angle, opacity, 1.2, 0)
+
+    def save(self, destination):
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        row_width = self.width * 3
+        # PNG's left filter keeps smooth tonal fields small without affecting the RGB pixels.
+        buffer = bytearray()
+        for row in range(self.height):
+            starts = row_width * row
+            scanline = self.pixels[starts:starts + row_width]
+            buffer.append(1)
+            buffer.extend(scanline[0:3])
+            buffer.extend((scanline[i] - scanline[i - 3]) & 255 for i in range(3, row_width))
+
+        header = struct.pack(">2I5B", self.width, self.height, 8, 2, 0, 0, 0)
+        data = b"\x89PNG\r\n\x1a\n" + png_chunk(b"IHDR", header)
+        data += png_chunk(b"IDAT", zlib.compress(buffer, 9)) + png_chunk(b"IEND", b"")
+        destination.write_bytes(data)
+
+
+def cushion(canvas, x, y, w, h, top, bottom, stitch, angle):
+    canvas.mist(x + 6, y + h * 0.44, w * 1.03, h * 0.52, bottom, 0.28, angle)
+    canvas.round(x, y, w, h, h * 0.40, top, bottom, angle)
+    canvas.round(x, y - 1, w * 0.85, h * 0.76, h * 0.30, stitch, stitch, angle, 0.34, 1.2, 0)
+    canvas.round(x, y - 1, w * 0.82, h * 0.71, h * 0.28, top, bottom, angle, 1)
+    canvas.mist(x - 8, y - h * 0.2, w * 0.55, h * 0.25, top, 0.46, angle)
+
+
+def window(canvas, x, y, w, h, frame, sky, lower, cross):
+    canvas.round(x + 3, y + 7, w + 10, h + 11, 22, lower, lower, opacity=0.22, feather=8)
+    canvas.round(x, y, w, h, 25, frame, cross)
+    inset = 14
+    canvas.round(x, y, w - inset, h - inset, 20, sky, lower)
+    canvas.round(x, y, w - inset, 4, 2, frame, cross, opacity=0.76)
+    canvas.round(x, y, 4, h - inset, 2, frame, cross, opacity=0.76)
+
+
+def dew(canvas, x, y, size):
+    canvas.oval(x + 1, y + 2, size * 0.95, size, 0x549581, 0x6B9F8F, opacity=0.22, feather=2.3)
+    canvas.oval(x, y, size, size * 0.94, 0xEAF9E9, 0xA7D3BC, angle=24, opacity=0.92, bevel=0.03)
+    canvas.oval(x - size * 0.15, y - size * 0.17, size * 0.32, size * 0.24,
+                0xFCFFF1, 0xD9F2E4, opacity=0.74, feather=1.6)
+
+
+def leaf(canvas, x, y, w, h, angle, top, bottom, with_dew=False):
+    canvas.oval(x + 3, y + 5, w, h, bottom, bottom, angle, 0.23, 5.8, 0)
+    canvas.oval(x, y, w, h, top, bottom, angle, feather=1.4)
+    theta = math.radians(angle)
+    scale = w * 0.32
+    vx, vy = math.cos(theta) * scale, math.sin(theta) * scale
+    canvas.segment(x - vx, y - vy, x + vx, y + vy, 1.1, top, 0.70)
+    canvas.mist(x - 2, y - h * 0.11, w * 0.64, h * 0.27, top, 0.42, angle)
+    if with_dew:
+        dew(canvas, x + w * 0.11, y - 2, 9 if w > 60 else 5)
+
+
+def rain(canvas, x, y, length, opacity):
+    canvas.segment(x, y, x - length * 0.32, y + length, 2.3, 0xF7FAFF, opacity)
+    canvas.oval(x - length * 0.33, y + length, 2.3, 3.7,
+                0xF6F8FF, 0xADBFD9, angle=16, opacity=opacity)
+
+
+def toy(canvas, x, y, w, h, top, side, angle):
+    canvas.mist(x + 5, y + h * 0.44, w * 1.10, h * 0.29, side, 0.42, angle)
+    canvas.round(x, y + 5, w, h, h * 0.24, side, side, angle)
+    canvas.round(x - 1, y - 2, w, h - 2, h * 0.24, top, side, angle)
+    canvas.mist(x - w * 0.12, y - h * 0.19, w * 0.44, h * 0.38, top, 0.66, angle)
+
+
+def cloud(canvas, x, y, w, h, top, lower):
+    canvas.mist(x + 4, y + h * 0.23, w * 1.02, h * 0.82, lower, 0.32)
+    canvas.oval(x, y + h * 0.20, w, h * 0.74, top, lower, feather=3.0)
+    canvas.oval(x - w * 0.20, y - h * 0.04, w * 0.51, h * 0.88, top, lower, feather=3.0)
+    canvas.oval(x + w * 0.03, y - h * 0.21, w * 0.51, h * 0.96, top, lower, feather=3.0)
+    canvas.oval(x + w * 0.23, y - h * 0.02, w * 0.42, h * 0.76, top, lower, feather=3.0)
+    canvas.mist(x, y - h * 0.1, w * 0.91, h * 0.67, top, 0.58)
+
+
+def crescent(canvas, x, y, radius):
+    canvas.mist(x, y, 2.9 * radius, 2.9 * radius, 0xFFEBCA, 0.34)
+    inner_x = x + radius * 0.48
+    inner_y = y - radius * 0.36
+    spread = radius * 1.12
+    for py in range(max(0, math.floor(y - spread)), min(canvas.height, math.ceil(y + spread))):
+        for px in range(max(0, math.floor(x - spread)), min(canvas.width, math.ceil(x + spread))):
+            outer = math.hypot(px + 0.50 - x, py + 0.50 - y) - radius
+            cutout = math.hypot(px + 0.50 - inner_x, py + 0.50 - inner_y) - radius * 0.82
+            distance = max(outer, -cutout)
+            coverage = easing(0.50 - distance * 0.53)
+            if coverage > 0:
+                progress = easing((py - y + radius) / (2 * radius))
+                color = mix(rgb(0xFFF8E9), rgb(0xEEDBBE), progress)
+                canvas.blend(px, py, color, 0.90 * coverage)
+
+
+def star(canvas, x, y, size, color, opacity=1):
+    canvas.segment(x - size * 0.5, y, x + size * 0.5, y, max(1.6, size * 0.24), color, opacity)
+    canvas.segment(x, y - size * 0.5, x, y + size * 0.5, max(1.6, size * 0.24), color, opacity)
+
+
+def cozy(canvas, preview):
+    if preview:
+        window(canvas, 78, 53, 106, 117, 0xFFF5E7, 0xFFF2DC, 0xF0CFAF, 0xE4B699)
+        canvas.beam(144, 85, 97, 165, 0xFFEDD0, 0.48, -46)
+        cushion(canvas, 235, 110, 130, 76, 0xF5C6AD, 0xDDAE94, 0xB57D69, -13)
+        cushion(canvas, 166, 132, 98, 53, 0xFFF0CD, 0xE7C8A6, 0xCEAD85, 9)
+        return
+    canvas.beam(176, 98, 112, 324, 0xFFF4DA, 0.32, -52)
+    canvas.beam(221, 71, 62, 229, 0xFFF4D2, 0.24, -48)
+    window(canvas, 95, 29, 120, 137, 0xFFF5E7, 0xFFF3E0, 0xF3D5B6, 0xE6C09E)
+    canvas.round(101, 111, 155, 9, 4.5, 0xFFF3E2, 0xEBBFA4, opacity=0.60)
+    canvas.beam(283, 1001, 568, 93, 0xEEC8AD, 0.29)
+    canvas.mist(69, 1025, 235, 99, 0xC7937B, 0.29)
+    cushion(canvas, 39, 995, 147, 82, 0xF5BDAD, 0xDFAD99, 0xBD8976, -16)
+    cushion(canvas, 118, 1004, 102, 62, 0xFFF0CE, 0xE7C8A6, 0xCEAD85, 10)
+    cushion(canvas, 532, 1004, 156, 83, 0xF5D7BD, 0xE5BA9F, 0xCA9A84, 17)
+    canvas.oval(474, 995, 15, 15, 0xF8E9BD, 0xDFBE8F, opacity=0.78)
+
+
+def garden(canvas, preview):
+    leaf_colors = [(0xD8E7BA, 0x91B48F), (0xE3EEC5, 0xA2C587), (0xB9DFCA, 0x79AF9C)]
+    if preview:
+        canvas.mist(166, 152, 280, 82, 0x92B494, 0.34)
+        for x, y, w, h, angle, index in (
+            (62, 84, 128, 47, -22, 0), (115, 62, 113, 48, -60, 2),
+            (191, 82, 155, 60, -20, 1), (252, 110, 119, 49, 16, 2),
+            (95, 121, 132, 36, 18, 1), (176, 124, 120, 40, 14, 0)
+        ):
+            leaf(canvas, x, y, w, h, angle, *leaf_colors[index], with_dew=True)
+        return
+    canvas.mist(502, 84, 240, 171, 0xBCD7AE, 0.22)
+    canvas.mist(23, 120, 118, 128, 0xD4DDB1, 0.21)
+    canvas.segment(533, -3, 467, 96, 4, 0x8AAF82, 0.56)
+    for x, y, w, h, angle, index in (
+        (473, 51, 74, 26, -145, 0), (518, 58, 72, 26, -52, 2),
+        (453, 84, 65, 24, -146, 1), (507, 20, 74, 24, -150, 0),
+        (34, 19, 98, 34, 30, 2), (59, 4, 73, 27, 32, 1)
+    ):
+        leaf(canvas, x, y, w, h, angle, *leaf_colors[index], with_dew=True)
+    canvas.mist(46, 972, 241, 136, 0x93B686, 0.38)
+    canvas.mist(521, 1001, 235, 118, 0x85AF97, 0.28)
+    for x, y, w, h, angle, index in (
+        (19, 964, 154, 55, -60, 1), (75, 976, 129, 50, -37, 0),
+        (114, 1008, 123, 52, -22, 2), (20, 994, 142, 68, -16, 2),
+        (557, 967, 156, 53, 54, 2), (516, 1003, 133, 48, 26, 1),
+        (462, 1024, 119, 48, 17, 0)
+    ):
+        leaf(canvas, x, y, w, h, angle, *leaf_colors[index], with_dew=w < 145)
+    for x, y, size in ((164, 1011, 13), (441, 995, 12), (155, 983, 7), (421, 1014, 6)):
+        dew(canvas, x, y, size)
+
+
+def rainy(canvas, preview):
+    if preview:
+        window(canvas, 101, 59, 168, 114, 0xEDF0F3, 0xE7F1F8, 0xB3C7DF, 0xC6D1E2)
+        window(canvas, 246, 52, 115, 111, 0xE9EDF5, 0xE0EBF8, 0xC3CFE5, 0xC4CEDF)
+        for x, y, length in ((40, 35, 19), (74, 17, 15), (132, 66, 21), (165, 22, 17),
+                             (214, 13, 19), (236, 58, 16), (281, 46, 24), (72, 70, 22)):
+            rain(canvas, x, y, length, 0.75)
+        cushion(canvas, 227, 136, 118, 50, 0xEAE3E3, 0xB5AEC2, 0xAEA7BB, -7)
+        return
+    window(canvas, 72, 36, 162, 142, 0xEAEEF5, 0xECF1F9, 0xBDCBDF, 0xC2CCD9)
+    window(canvas, 522, 40, 188, 154, 0xEBEFF4, 0xE7EEF9, 0xBDCADE, 0xBCCBDD)
+    canvas.round(72, 116, 173, 9, 4.5, 0xF3EEF0, 0xC4C7D6, opacity=0.69)
+    canvas.round(523, 124, 178, 10, 5, 0xF3EEF2, 0xC8CBD8, opacity=0.70)
+    source = random.Random(204)
+    for _ in range(38):
+        shoulder = source.choice((source.uniform(11, 140), source.uniform(440, 567)))
+        height = source.uniform(12, 135)
+        rain(canvas, shoulder, height, source.uniform(5, 18), source.uniform(0.36, 0.71))
+    canvas.beam(93, 149, 59, 280, 0xF6F0EB, 0.37, -40)
+    canvas.beam(501, 190, 72, 285, 0xF3EBE8, 0.34, 37)
+    canvas.round(288, 1011, 614, 39, 12, 0xE8DFE4, 0xC8C3D3, opacity=0.75)
+    cushion(canvas, 38, 1001, 146, 54, 0xE9E4EB, 0xC4B9CD, 0xB2A6C1, -10)
+    cushion(canvas, 534, 994, 153, 60, 0xE9DEE4, 0xBFADC5, 0xAB9BB2, 11)
+    cushion(canvas, 480, 1011, 102, 41, 0xF8ECE6, 0xD6C4C9, 0xC2ABB4, -7)
+
+
+def lamp(canvas, x, y, scale):
+    canvas.mist(x, y + 15 * scale, 139 * scale, 129 * scale, 0xFFD9A0, 0.67)
+    canvas.segment(x, y - 13 * scale, x, y - 57 * scale, 2.6 * scale, 0xA995AB, 0.83)
+    canvas.oval(x, y + 14 * scale, 54 * scale, 17 * scale, 0xFFF0AE, 0xF6CE87, opacity=0.92)
+    canvas.round(x, y, 47 * scale, 30 * scale, 13 * scale, 0xF4D1A6, 0xC68F93)
+    canvas.round(x, y + 12 * scale, 49 * scale, 8 * scale, 3 * scale, 0xF4D09D, 0xD6A489)
+
+
+def attic(canvas, preview):
+    if preview:
+        lamp(canvas, 223, 48, 1.45)
+        toy(canvas, 105, 116, 78, 63, 0xE2BDD2, 0xAD8CA8, -12)
+        toy(canvas, 160, 126, 67, 47, 0xEBC7A7, 0xC49586, 10)
+        toy(canvas, 79, 85, 45, 38, 0xE8D9DE, 0xB99FBA, 13)
+        canvas.segment(15, 148, 310, 148, 2, 0xB79CB6, 0.25)
+        return
+    canvas.segment(-4, 18, 578, 18, 17, 0xC1A7BC, 0.27)
+    canvas.segment(37, -10, -25, 117, 14, 0xC4ACBF, 0.37)
+    canvas.segment(560, -8, 607, 133, 15, 0xB9A0B5, 0.27)
+    lamp(canvas, 463, 43, 1)
+    canvas.beam(392, 113, 161, 190, 0xFDE5C2, 0.30, 33)
+    canvas.round(288, 1018, 618, 74, 18, 0xD4B6C1, 0xB998AF, opacity=0.49)
+    canvas.segment(49, 985, 178, 1007, 1.5, 0xF1DCDE, 0.50)
+    canvas.segment(415, 1007, 537, 986, 1.5, 0xF1D4D4, 0.47)
+    toy(canvas, 37, 1002, 76, 70, 0xE4BED1, 0xAB8EAA, -13)
+    toy(canvas, 104, 1015, 56, 46, 0xF0CCA7, 0xC69B8A, 9)
+    toy(canvas, 45, 957, 47, 36, 0xEDD8DE, 0xC1A7BD, 9)
+    canvas.oval(512, 998, 122, 62, 0xC6A8B7, 0xA281A2, opacity=0.80)
+    canvas.oval(512, 982, 120, 48, 0xEAD0C8, 0xC4A1AA)
+    canvas.oval(512, 980, 56, 21, 0xC6A4AF, 0xB590A6)
+    canvas.oval(512, 978, 44, 15, 0xE6C2BC, 0xC6A1AC)
+
+
+def moonlit(canvas, preview):
+    if preview:
+        crescent(canvas, 227, 53, 29)
+        cloud(canvas, 74, 106, 172, 60, 0xF9F1F7, 0xCCCAE6)
+        cloud(canvas, 228, 136, 208, 67, 0xFAF7F7, 0xCCCFE8)
+        star(canvas, 96, 36, 15, 0xFBF1D2, 0.94)
+        star(canvas, 175, 53, 9, 0xF9F3E2, 0.92)
+        star(canvas, 289, 29, 8, 0xFFEFCE, 0.85)
+        return
+    crescent(canvas, 434, 52, 30)
+    cloud(canvas, 53, 33, 139, 49, 0xF6F2FC, 0xC9CCE7)
+    cloud(canvas, 510, 996, 210, 83, 0xFAF4FA, 0xD1D1EB)
+    cloud(canvas, 38, 994, 200, 95, 0xF7F5FC, 0xCDD0E9)
+    cloud(canvas, 132, 1034, 230, 90, 0xFFF8F7, 0xD3D5EE)
+    cloud(canvas, 490, 1043, 268, 91, 0xFBF8FC, 0xCCD0E5)
+    for x, y, size in ((142, 51, 14), (268, 31, 7), (385, 99, 10), (489, 89, 11),
+                       (511, 45, 5), (108, 107, 6), (35, 935, 7), (543, 925, 11)):
+        star(canvas, x, y, size, 0xFFF5D9, 0.86)
+    for x, y, size in ((190, 27, 4), (373, 36, 4), (451, 112, 5), (515, 63, 4), (127, 118, 4)):
+        canvas.oval(x, y, size, size * 0.93, 0xFFF9EA, 0xD8D4ED, opacity=0.84)
+
+
+WORLDS = (
+    ("cozy-nest", 0xFBEBDC, 0xF5DBCA, 0xFFF6E7, (0.26, 0.10), cozy),
+    ("dewdrop-garden", 0xE1EFE2, 0xD6E3CA, 0xF5F8DF, (0.31, 0.13), garden),
+    ("rainy-window", 0xDCE7F4, 0xE3DCE7, 0xF0F1EF, (0.39, 0.16), rainy),
+    ("twilight-attic", 0xEBDFED, 0xD6BFD1, 0xFAE8DB, (0.66, 0.11), attic),
+    ("moonlit-clouds", 0xDCE3F7, 0xD0D8F1, 0xF2EEF9, (0.72, 0.12), moonlit),
+)
+
+
+def main(root):
+    resources = root / "Assets" / "Art" / "Resources"
+    for key, top, floor, light, light_at, compose in WORLDS:
+        backdrop = Canvas(576, 1024, top, floor, light, light_at)
+        compose(backdrop, False)
+        backdrop.save(resources / "WorldBackdrops" / f"{key}.png")
+
+        preview = Canvas(320, 160, top, floor, light, light_at)
+        compose(preview, True)
+        preview.save(root / "Assets" / "Art" / "WorldPreviews" / f"{key}.png")
+
+
+if __name__ == "__main__":
+    main(Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[2])
