@@ -52,6 +52,29 @@ completion into animation. Position interpolation runs between authoritative
 endpoints. Child transforms carry the deformation and recoil. Undo and Restart
 snap the view to the saved state and clear any unfinished motion.
 
+## The five Worlds
+
+| World | Levels | Artwork |
+|---|---:|---|
+| Cozy Nest | 1–20 | Morning window, peach light and cream cushions |
+| Dewdrop Garden | 21–40 | Mint and sage foliage with dew along the edges |
+| Rainy Window | 41–60 | Powder blue panes and fine rain trails |
+| Twilight Attic | 61–80 | A warm amber lamp, muted plum and round toy shapes |
+| Moonlit Clouds | 81–100 | Cream clouds, small stars and a crescent in a cool sky |
+
+Each World has a profile with a portrait backdrop, a separately composed
+card preview, board tints, key light, ambience and catalog range. The
+textures are produced offline. The center stays quiet so the tray
+reads at every board size. Entry art fades in briefly with no camera
+motion. Reduced motion applies the new art immediately.
+
+The shared jelly material bakes edge diffusion and compact specular
+reflections into each body. Every matching pair has a distinct silhouette.
+A Plop wears a stamp beside its face, and the Nest’s corner seal stays
+visible when another Plop crosses it. Undo keeps the root aligned with
+the engine and eases the child visuals on short returns. Reduced motion
+clears those offsets and retains a stationary sleeping expression.
+
 ## Interaction and type
 
 `HudTheme` sets canvas dimensions, corner radii, gaps, type scale, shadow

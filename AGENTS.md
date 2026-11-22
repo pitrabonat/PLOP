@@ -13,8 +13,10 @@ describes the system boundaries and [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md) rec
   deadlock sidecar when rules, state encoding or campaign geometry change.
   Show recovery only for an exact offline proof or a completed solver search.
 - Preserve rounded Soft Toy Minimalism and use the existing palette, SDF shapes,
-  and event-driven views for new interface elements. Use PLOP → Play Game to
-  preview the production gameplay scene in the Editor.
+  and event-driven views for new interface elements. Put cosmetic chapter
+  mapping in `Resources/Worlds` and derive unlocks from saved level IDs.
+  Keep non-color matching cues readable and honor reduced motion.
+  Use PLOP → Play Game to preview the production gameplay scene in the Editor.
 - Validate changed content with the .NET suite and Unity. Keep generated project
   settings, caches, and builds out of commits, and commit the Unity asset metadata.
 - Update `PROJECT_STATE.md` and the development log after meaningful milestones

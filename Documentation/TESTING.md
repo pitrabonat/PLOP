@@ -11,13 +11,13 @@ The same NUnit test files run in two environments:
 (`Unity` = `/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/Unity.app/Contents/MacOS/Unity`; close the Editor first.)
 Tests use only NUnit features available in Unity's NUnit 3.5 fork.
 
-## Latest results (2026-11-21, executed)
+## Latest results (2026-11-22, executed)
 
 | Run | Total | Passed | Failed | Skipped |
 |---|---|---|---|---|
 | dotnet test (net10.0) | 98 | 98 | 0 | 0 |
 | Unity 6000.3.29f1 EditMode | 98 | 98 | 0 | 0 |
-| Unity 6000.3.29f1 PlayMode | 40 | 40 | 0 | 0 |
+| Unity 6000.3.29f1 PlayMode | 51 | 51 | 0 | 0 |
 
 An earlier mutation check (inverting the front-to-back ordering rule) made 4 rule tests fail, confirming the tests
 detect rule regressions; the code was restored afterwards.
@@ -53,6 +53,22 @@ detect rule regressions; the code was restored afterwards.
 | Portrait fit | `ResponsivePortraitTests` checks 1080×1920, 1170×2532, 1440×3200 and 720×1280, plus asymmetric insets and tall or wide boards |
 | Deadlock proofs | `DeadlockCatalogTests` covers exact solvable and proven-deadlocked states, incomplete graphs, unknown states, geometry changes and corrupt data |
 | Recovery UI | `DeadlockRecoveryTests` checks production Level 8’s movable trap, Undo, Restart, dismissal, a bounded search, completion priority, superseded swipes and a pending result during level changes |
+
+## Phase 6 campaign and presentation
+
+Strict production verification passed for all 100 original levels.
+PlayMode exercised all four chapter boundaries, the World picker,
+locked rows, the campaign frontier after replay, preference controls,
+five independent ambience profiles, symbol legibility and reduced
+motion. The existing hint, recovery and catalog replay suites passed.
+
+Unity's ProfilerRecorder sampled Level 100 with a 720×1280 render
+target in Editor PlayMode. The board and backdrop reported 87 draw calls,
+87 batches and 86 active sprites in the sampled frame. This measures
+the desktop test scene before HUD rendering. The per-density board
+atlas has a maximum 8 MiB texture at 256 pixels per unit. World
+backdrops render as one sprite and their compressed footprint depends
+on the player format.
 
 ## Phase 5 level verification
 

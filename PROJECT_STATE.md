@@ -1,52 +1,39 @@
 # PLOP! project state
 
-**Phase 5 · Portrait visual overhaul and deadlock recovery**
+**Phase 6 · Visual mastery and themed worlds**
 
-The checkout is on `feature/visual-overhaul-deadlocks`, based on `704a58c`
-(`checkpoint/pre-phase5`). Open the project in Unity `6000.3.29f1` and
-choose **PLOP → Play Game** or press Play in `Assets/Scenes/Gameplay.unity`.
+The project is on `feature/themed-worlds`, based on `a93708f`
+(`checkpoint/pre-phase6`). Open the original project in Unity
+`6000.3.29f1`. Use **PLOP → Play Game** or open
+`Assets/Scenes/Gameplay.unity`.
 
 ## Implemented
 
-- A safe-area portrait fit that targets 87.5% of the safe width for small
-  trays and scales tall or wide boards uniformly within the content region.
-- A deep peach tray, ivory floor tiles, matte Pebbles, moon-emblem pillow
-  Nests, and more prominent glossy jelly Plops. Sprite artwork and faces
-  come from the same per-density atlas. Undo and Restart reset motion.
-- A compact reference-led HUD with Settings, contextual tutorial messages,
-  raised controls, and an immediate **Sweet Dreams!** completion action.
-- A friendly recovery overlay with Undo Move, Restart Level, and dismissal.
-  It appears after movement settles when the current board is proven deadlocked.
-- The original 100-level campaign, saved progress, and 30/60 FPS preferences.
+- Five data-driven Worlds with distinct portrait art, board palettes,
+  lighting and quiet original ambience. Four chapter boundaries follow
+  the confirmed catalog order.
+- **Levels** opens the World picker with previews, ranges, completion,
+  current and locked states. Resume goes to the latest unlocked level.
+  Replays recover their original theme.
+- Refined jelly material, face motion, contact shadows and matching
+  shape stamps. Nest seals remain visible beside an overlapping Plop.
+- Reduced motion, short opt-in native haptics, independent audio gains,
+  and the existing 30/60 FPS settings.
+- Existing exact deadlock recovery and saved ID-based campaign progress.
 
 ## Verification
 
-- .NET 98/98, Unity EditMode 98/98 and Unity PlayMode 40/40. The full
-  PlayMode campaign test replayed all 100 shipped boards. Strict catalog
-  checks and deterministic sidecar regeneration passed.
-- The production sidecar covers all 100 boards. It has 913,919 reachable
-  keys and 10,490 proven deadlocks across 51 levels. Level 8’s `UL`
-  route is a proven trap with a state-changing move still available.
-- Tests cover the four target portrait sizes, a bounded unknown result,
-  stale search cancellation, recovery, and completion priority.
-- The 44.9 MB ARM64 development APK passed signature and alignment checks
-  and launched in the API 37 emulator. The measured emulator frame pacing
-  varied at the 60 FPS cap. Physical-device profiling remains open.
-  The final rebuild rendered the corrected completion title and advanced
-  from Level 29 to Level 30 by touch.
-- Xcode 26.3 built and ran the Phase 5 iOS compatibility export before the
-  completion heading correction. Level 8’s recovery card rendered inside
-  the iPhone 15 Pro Max safe area.
-- Build and device verification are recorded in
-  [Documentation/TESTING.md](Documentation/TESTING.md).
-  The [visual gap analysis](Documentation/VISUAL_GAP_ANALYSIS.md)
-  records the two target concepts and the sprite integration points. The
-  [Phase 5 previews](Documentation/Previews/Phase5/README.md) show the
-  actual Unity player.
+- .NET and Unity EditMode each passed 98 tests. Unity PlayMode passed 51.
+  Strict replay and validation passed for all 100 production levels.
+- The Unity render sample, platform checks and playback details are in
+  [Documentation/TESTING.md](Documentation/TESTING.md). The starting
+  reference and priorities are in
+  [Documentation/PHASE6_VISUAL_PLAN.md](Documentation/PHASE6_VISUAL_PLAN.md).
 
-## Resume
+## Continue development
 
 Read [AGENTS.md](AGENTS.md), [CLAUDE.md](CLAUDE.md), and
-[ARCHITECTURE.md](ARCHITECTURE.md). Use the `--deadlocks` command in
-[CLAUDE.md](CLAUDE.md) to regenerate the sidecar after solver encoding,
-puzzle rules, or level geometry changes.
+[ARCHITECTURE.md](ARCHITECTURE.md). Add Worlds through
+`Assets/Art/Resources/Worlds`. Use the offline art painter to regenerate
+the layered backdrops and previews with their original GUIDs. World
+definitions require no gameplay or save-schema edits.

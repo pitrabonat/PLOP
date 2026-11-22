@@ -82,7 +82,18 @@ GameHud ──Undo/Restart/Next/Hint──▶      │                          
   preserve access through that position and resume the prior board when its ID survives. They
   grant zero historical completions because the previous Next shortcut could skip unsolved puzzles.
 - `PlopPalette` — Soft Toy Minimalism colors and the gameplay-color → palette-slot mapping.
-- `ShapeAtlas` / `UiSprites` / `Sdf` — SDF-rasterized rounded sprites at screen-appropriate density.
+- `ShapeAtlas` / `UiSprites` / `Sdf` bake rounded sprites at screen-appropriate
+  density. Nest seals and Plop stamps carry matching silhouettes on the
+  same atlas as the board and character shading.
+- `WorldCatalog` loads data-driven chapter ranges. `WorldBackdrop` renders a
+  single authored image behind the tray and only animates briefly on entry.
+  Board colors use sprite tints without multiplying atlas variants.
+- Chapter progress is computed from existing level access and completion.
+  The Resume action uses the highest unlocked catalog index independently
+  of the last visited replay. Existing save keys and serialization stay valid.
+- Reduced motion skips presentation tweens and idle motion. `PlopHaptics`
+  requests one short native feedback cue per settlement or completion
+  when the player has enabled it.
 
 ## Performance design
 

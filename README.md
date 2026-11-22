@@ -4,8 +4,8 @@ A cozy mobile puzzle game for **Android** and **iOS**, built with **Unity 6.3 LT
 
 Repository: https://github.com/pitrabonat/PLOP
 
-> Phase 5 gives the 100-level campaign a larger portrait tray, glossy jelly
-> Plops, raised controls, and automatic deadlock recovery.
+> Phase 6 gives PLOP! five playable Worlds, matching shape marks, quieter gel
+> shading, world ambience and reduced-motion controls.
 >
 > [Gameplay previews](Documentation/Previews/README.md) · [Project state](PROJECT_STATE.md) ·
 > [Architecture](ARCHITECTURE.md) · [Rules](Documentation/GAME_RULES.md) ·
@@ -17,19 +17,20 @@ Open the PLOP project in Unity 6000.3.29f1 and choose **PLOP → Play Game**.
 You can also open `Assets/Scenes/Gameplay.unity` and press Play. Focus the
 Game tab, then drag across the board or use the arrow keys or WASD. **Z**
 or **Backspace** undoes, **R** restarts, **H** requests a hint, and **N** or
-**Enter** advances after completion. Open **Levels** to replay unlocked puzzles
-and **Settings** to change sound, music or frame rate. If a move leaves the
+**Enter** advances after completion. Open **Levels** to choose a World or
+return to the campaign frontier with Resume. Use **Settings** to change
+ambience, effects, haptics, reduced motion or frame rate. If a move leaves the
 board without a route to completion, the recovery card offers Undo Move,
 Restart Level, or Keep playing.
 
 ## Install the Android development APK
 
-The Phase 5 development APK location is
-`/Volumes/PLOP_DEV/Builds/Android/Phase5/PLOP-phase5-dev.apk`.
+The Phase 6 development APK location is
+`/Volumes/PLOP_DEV/Builds/Android/Phase6/PLOP-phase6-dev.apk`.
 With an ADB-authorized Android phone connected through USB, run:
 
 ```bash
-adb install -r /Volumes/PLOP_DEV/Builds/Android/Phase5/PLOP-phase5-dev.apk
+adb install -r /Volumes/PLOP_DEV/Builds/Android/Phase6/PLOP-phase6-dev.apk
 ```
 
 Then tap **PLOP!** on the phone. On this Mac, ADB is at

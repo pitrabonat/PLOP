@@ -12,7 +12,7 @@ Shared guidance for Claude Code, Codex, and other contributors. Start with
 - **Targets:** Android (IL2CPP, ARM64, min API 26, target = highest installed) and iOS (min iOS 15.0)
 - **Orientation:** Portrait only
 - **Repository:** https://github.com/pitrabonat/PLOP (remote `origin`, branch `main`; public)
-- **Status:** Phase 5 portrait visual overhaul and automatic deadlock recovery. See PROJECT_STATE.md for verification.
+- **Status:** Phase 6 themed worlds, jelly refinement and accessible feedback. See PROJECT_STATE.md for verification.
 - **Visual style:** "Soft Toy Minimalism" — see `Documentation/VISUAL_STYLE.md` (palette, corner radii, animation).
 - **Docs:** `Documentation/` — ARCHITECTURE, GAME_RULES, SOLVER, LEVEL_GENERATION, LEVEL_FORMAT, VISUAL_STYLE, TESTING, DEVELOPMENT_LOG.
 
@@ -47,7 +47,12 @@ Assets/
     Core/            PLOP.Core        — pure C# rules/state/engine/validation/JSON (NO UnityEngine)
     Solver/          PLOP.Solver      — BFS solver + state-space analyzer (NO UnityEngine)
     LevelGeneration/ PLOP.Generation  — PRNG, generator, verifier, duplicates, difficulty (NO UnityEngine)
-    Unity/           PLOP.Unity       — board and character art, HUD, input, audio, PlopGameController
+    Unity/           PLOP.Unity       — board, HUD, input, world presentation, audio, PlopGameController
+      Worlds/        WorldCatalog, WorldTheme, WorldBackdrop
+  Art/Resources/Worlds/                cosmetic chapter ScriptableObjects
+  Art/Resources/WorldBackdrops/        authored portrait environments
+  Art/WorldPreviews/                   chapter-card sprites
+  Plugins/iOS/                         UIKit haptic bridge
     LevelLab/Editor/ PLOP.LevelLab    — editor-only Level Lab window (PLOP → Level Lab)
     Editor/          build + scene setup scripts (PlopBuild, PlopSceneSetup)
     Gameplay/ UI/ SaveSystem/          reserved (empty)
@@ -105,8 +110,18 @@ Documentation/       design & technical docs, benchmarks and running-game previe
 
 Open the existing project and choose **PLOP → Play Game**, or open
 `Assets/Scenes/Gameplay.unity` and click Play. Drag in the Game tab or use
-arrow keys/WASD. Settings contains independent music/sound sliders and the
-30/60 FPS cap.
+arrow keys/WASD. The Levels button opens Worlds. Resume returns to the
+highest unlocked level after a replay. Settings has independent ambience
+and effects volume, haptics, reduced motion and the 30/60 FPS cap.
+
+## World art and campaign
+
+World assets declare compatible one-based catalog ranges, color accents,
+lighting and audio. Add future cosmetic chapters through these assets.
+Never encode world state in progression saves. To regenerate the shipped
+portrait and card textures from the authored painter, run
+`python3 Tools/WorldArt/render_worlds.py "$PWD"`. Keep sprite GUIDs stable
+and re-check the four portrait profiles.
 
 ## Tests, levels and benchmark
 ```bash

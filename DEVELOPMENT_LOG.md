@@ -79,3 +79,15 @@ See [PROJECT_STATE.md](PROJECT_STATE.md) for verification and remaining device Q
   deadlock scenario on the iPhone 15 Pro Max simulator. Emulator pacing
   and remaining device checks are recorded in
   [the testing notes](Documentation/TESTING.md).
+
+## 2026-11-22 · Phase 6 themed worlds and visual refinement
+
+- Captured the existing portrait game in Unity and verified Level 8's
+  recovery and Undo. Preserved Phase 5 as `checkpoint/pre-phase6`.
+- Authored the five portrait environments and their world cards. Added
+  data-defined chapter palettes, lighting, ambience and ranges.
+- Added a reusable World picker and progress-based reveal, visible
+  matching shapes, refined jelly lighting, interruptible Undo and the
+  comfort settings. Kept progression keyed to existing level IDs.
+- Verified all 100 production levels. .NET and Unity EditMode passed 98
+  tests each. Unity PlayMode passed 51, including every chapter boundary.

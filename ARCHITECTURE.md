@@ -6,7 +6,7 @@
 | Solver | Shortest paths from arbitrary state, exhaustive graph analysis through Core, and versioned exact deadlock proof data |
 | Generation | Offline seeded candidates, puzzle quality metrics, duplicate checks and the ordered production catalog |
 | Level Lab | Editor tools for authoring, inspecting, replaying, filtering, ordering and verifying level packs |
-| Unity | Gameplay scene, swipe input, portrait presentation, audio cues, asynchronous hints, deadlock recovery and local progression |
+| Unity | Gameplay scene, portrait board, themed worlds, campaign navigation, audio and haptics, hints, recovery and progression |
 | Tests | Shared engine-free NUnit tests and Unity PlayMode integration |
 
 The authority for every swipe is `MoveRules.Apply`. Runtime loads the ordered
@@ -27,6 +27,15 @@ version. Unity expands the indexed data for the current board and checks
 state-changing commands. An unknown state can run one bounded background
 search. The controller cancels stale work and checks the current state
 revision before showing a recovery modal after movement settles.
+
+WorldTheme assets map ordered catalog ranges to artwork, light and
+ambience. WorldCatalog resolves the current level before rendering.
+WorldBackdrop covers the camera using one opaque image and reuses the
+gameplay camera. Board palette tints reuse its existing atlas. The
+controller derives chapter access and progress from LevelProgress,
+reveals a newly unlocked chapter once, and retains per-level replay.
+Reduced motion changes presentation only. Haptic cues use Android View
+feedback or UIKit on supported physical devices.
 
 For assembly dependencies, data flow and performance details, see the
 [technical architecture](Documentation/ARCHITECTURE.md). See
