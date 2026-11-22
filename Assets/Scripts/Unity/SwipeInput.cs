@@ -4,6 +4,8 @@ using Plop.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
+using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
 namespace Plop.Presentation
 {
@@ -15,8 +17,8 @@ namespace Plop.Presentation
     /// </summary>
     public sealed class SwipeInput : MonoBehaviour
     {
-        [Tooltip("Minimum swipe length as a fraction of the shorter screen side.")]
-        [SerializeField] private float minSwipeFraction = 0.06f;
+        private const float SwipeDistanceDp = 16f;
+        private const float AxisDominance = 1.25f;
 
         public event Action<Direction> DirectionRequested;
         public event Action UndoRequested;
@@ -31,13 +33,15 @@ namespace Plop.Presentation
         private PointerEventData _pointerEvent;
         private EventSystem _eventSystem;
         private Vector2 _pressStart;
-        private Pointer _activePointer;
+        private ButtonControl _activePress;
+        private bool _pressStartedOnBoard;
 
         private void Awake()
         {
-            _press = new InputAction("Press", InputActionType.Button, "<Pointer>/press");
-            _press.started += OnPressStarted;
-            _press.canceled += OnPressReleased;
+            _press = new InputAction("Swipe press", InputActionType.PassThrough);
+            _press.AddBinding("<Touchscreen>/touch*/press");
+            _press.AddBinding("<Mouse>/leftButton");
+            _press.performed += OnPressChanged;
             _actions = new[]
             {
                 _press,
@@ -68,7 +72,7 @@ namespace Plop.Presentation
 
         private void OnDisable()
         {
-            _activePointer = null;
+            CancelGesture();
             foreach (var action in _actions) action.Disable();
         }
 
@@ -77,23 +81,41 @@ namespace Plop.Presentation
             foreach (var action in _actions) action.Dispose();
         }
 
-        private void OnPressStarted(InputAction.CallbackContext ctx)
+        internal void CancelGesture() => _activePress = null;
+
+        private void OnPressChanged(InputAction.CallbackContext context)
         {
-            var pointer = ctx.control.device as Pointer;
-            if (pointer == null) return;
-            _pressStart = pointer.position.ReadValue();
-            if (!PressHitsUI(_pressStart)) _activePointer = pointer;
+            var press = (ButtonControl)context.control;
+            var touch = press.parent as TouchControl;
+
+            if (press.isPressed)
+            {
+                if (_activePress != null || (touch != null && touch.phase.ReadValue() != TouchPhase.Began))
+                    return;
+                _pressStart = Position(press, touch);
+                _pressStartedOnBoard = !PressHitsUI(_pressStart);
+                _activePress = press;
+                return;
+            }
+
+            if (_activePress != press) return;
+            CancelGesture();
+            if (!_pressStartedOnBoard || (touch != null && touch.phase.ReadValue() != TouchPhase.Ended))
+                return;
+
+            Vector2 delta = Position(press, touch) - _pressStart;
+            var direction = SwipeToDirection(delta, SwipeThreshold(Screen.width, Screen.height, Screen.dpi));
+            if (direction.HasValue) DirectionRequested?.Invoke(direction.Value);
         }
 
-        private void OnPressReleased(InputAction.CallbackContext ctx)
+        private static Vector2 Position(ButtonControl press, TouchControl touch)
+            => touch != null ? touch.position.ReadValue() : ((Mouse)press.device).position.ReadValue();
+
+        internal static float SwipeThreshold(int width, int height, float dpi)
         {
-            var pointer = _activePointer;
-            _activePointer = null;
-            if (pointer == null || pointer != ctx.control.device) return;
-            Vector2 delta = pointer.position.ReadValue() - _pressStart;
-            float min = Mathf.Min(Screen.width, Screen.height) * minSwipeFraction;
-            var direction = SwipeToDirection(delta, min);
-            if (direction.HasValue) DirectionRequested?.Invoke(direction.Value);
+            float shortSide = Mathf.Min(width, height);
+            float distance = dpi >= 72f && dpi <= 1000f ? SwipeDistanceDp * dpi / 160f : shortSide * 0.04f;
+            return Mathf.Clamp(distance, 16f, Mathf.Max(16f, shortSide * 0.08f));
         }
 
         private bool PressHitsUI(Vector2 position)
@@ -118,9 +140,13 @@ namespace Plop.Presentation
         /// <summary>Maps a screen-space drag to a direction, or null for taps. Screen Y grows upwards like grid Y.</summary>
         public static Direction? SwipeToDirection(Vector2 delta, float minDistance)
         {
-            if (delta.magnitude < minDistance) return null;
-            if (Mathf.Abs(delta.x) >= Mathf.Abs(delta.y)) return delta.x > 0 ? Direction.Right : Direction.Left;
-            return delta.y > 0 ? Direction.Up : Direction.Down;
+            float horizontal = Mathf.Abs(delta.x);
+            float vertical = Mathf.Abs(delta.y);
+            float major = Mathf.Max(horizontal, vertical);
+            if (major <= 0f || major < minDistance || major < Mathf.Min(horizontal, vertical) * AxisDominance)
+                return null;
+            if (horizontal > vertical) return delta.x > 0f ? Direction.Right : Direction.Left;
+            return delta.y > 0f ? Direction.Up : Direction.Down;
         }
     }
 }

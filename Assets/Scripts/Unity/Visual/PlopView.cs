@@ -1,3 +1,4 @@
+using Plop.Core;
 using UnityEngine;
 
 namespace Plop.Presentation
@@ -20,6 +21,8 @@ namespace Plop.Presentation
         private const float GroundY = -0.345f;
         internal const float RestoreDuration = 0.12f;
         private const float LandingSqueeze = 0.095f;
+        private const float SoftBumpDuration = 0.16f;
+        private const float InterruptionBlend = 0.048f;
 
         public readonly Transform Root;
         private readonly Transform _pose, _body, _eyeL, _eyeR, _cheekL, _cheekR, _mouth, _shadow;
@@ -33,6 +36,17 @@ namespace Plop.Presentation
         private readonly float _phase;
         private bool _asleep, _sleepPending, _sleepPoseFrozen, _reducedMotion;
         private uint _rng;
+        private bool _softBump;
+        private float _blendT0 = -1f;
+        private Vector3 _blendOffset, _displayedRoot, _displayedOffset;
+        private Vector4 _displayedBody = new Vector4(1f, 1f, 0f, 0f);
+        private Vector4 _blendBody;
+        private float _displayedShadowWidth = 1f;
+        private int _sortingBase = int.MinValue;
+
+        private Vector2 _displayedLook;
+        private float _displayedFaceSleep = -1f, _displayedEyeScale = 1f;
+        private Sprite _displayedEye, _displayedMouth;
 
         internal bool IsSliding => _moveT0 >= 0f;
         public bool IsMoving => IsSliding || _bumpT0 >= 0f;
@@ -63,6 +77,8 @@ namespace Plop.Presentation
             _mouthSleep = atlas.Get("mouthSleep");
             _mouthBump = atlas.Get("mouthBump");
             _mouth = Child("Mouth", _body, _mouthAwake, out _mouthR);
+            _displayedEye = _eyeOpen;
+            _displayedMouth = _mouthAwake;
 
             _rng = (uint)(seed * 747796405 + 2891336453);
             _phase = Rand() * Mathf.PI * 2f;
@@ -87,6 +103,8 @@ namespace Plop.Presentation
 
         public void SetSortingBase(int order)
         {
+            if (_sortingBase == order) return;
+            _sortingBase = order;
             _shadowR.sortingOrder = order + 2;
             _bodyR.sortingOrder = order + 10;
             _cheekLR.sortingOrder = order + 11;
@@ -100,7 +118,7 @@ namespace Plop.Presentation
         public void Snap(Vector3 position, bool asleep)
         {
             _from = _to = position;
-            _moveT0 = _bumpT0 = _landT0 = _hopT0 = _sleepT0 = _blinkT0 = _restoreT0 = -1f;
+            _moveT0 = _bumpT0 = _landT0 = _hopT0 = _sleepT0 = _blinkT0 = _restoreT0 = _blendT0 = -1f;
             _sleepPending = _sleepPoseFrozen = false;
             _asleep = asleep;
             _look = Vector2.zero;
@@ -113,13 +131,18 @@ namespace Plop.Presentation
         /// <summary>The view root restores immediately. A small Undo offset decays on its child pose.</summary>
         public void Restore(Vector3 position, bool asleep, bool ease)
         {
-            Vector3 delta = Root.localPosition + _pose.localPosition - position;
+            Vector3 delta = _displayedRoot + _displayedOffset - position;
+            Vector4 oldBody = _displayedBody;
             Snap(position, asleep);
             if (!ease || _reducedMotion || delta.sqrMagnitude < 0.0025f || delta.sqrMagnitude > 1.21f)
                 return;
+
+            float now = Time.unscaledTime;
             _restoreOffset = delta;
-            _restoreT0 = Time.unscaledTime;
-            _pose.localPosition = delta;
+            _restoreT0 = _blendT0 = now;
+            _blendOffset = delta;
+            _blendBody = oldBody;
+            DisplayPose(position, delta, oldBody);
             _sleepPoseFrozen = false;
         }
 
@@ -132,15 +155,10 @@ namespace Plop.Presentation
 
         private void ApplyStillPose()
         {
-            Root.localPosition = _to;
-            _pose.localPosition = Vector3.zero;
-            _body.localPosition = new Vector3(0f, _asleep ? GroundY - 0.012f : GroundY, 0f);
-            _body.localRotation = Quaternion.identity;
-            _body.localScale = _asleep
-                ? new Vector3(1.049f * BodyScale, 0.83f * BodyScale, 1f)
-                : new Vector3(BodyScale, BodyScale, 1f);
-            float shadowWidth = _asleep ? 1.049f : 1f;
-            _shadow.localScale = new Vector3(shadowWidth, shadowWidth, 1f);
+            var body = _asleep
+                ? new Vector4(1.049f * BodyScale, 0.83f * BodyScale, -0.012f, 0f)
+                : new Vector4(BodyScale, BodyScale, 0f, 0f);
+            DisplayPose(_to, Vector3.zero, body);
             ApplyFace(Vector2.zero, 1f, _asleep ? 1f : 0f, 0f);
         }
 
@@ -151,7 +169,8 @@ namespace Plop.Presentation
                 Snap(to, false);
                 return;
             }
-            _from = Root.localPosition;
+            PreserveInterruptedPose(now);
+            _from = _displayedRoot;
             _to = to;
             _moveDir = dir;
             _moveT0 = now;
@@ -160,13 +179,23 @@ namespace Plop.Presentation
             _lookUntil = now + 0.46f;
         }
 
-        public void StartBump(Vector2 dir, float now)
+        public void StartBump(Vector2 dir, float now, BlockReason reason = BlockReason.Wall)
         {
             if (_reducedMotion || _asleep || _sleepPending) return;
+            PreserveInterruptedPose(now);
+            _softBump = reason == BlockReason.Plop;
             _bumpDir = dir;
             _bumpT0 = now;
             _look = dir * 0.033f;
             _lookUntil = now + 0.33f;
+        }
+
+        private void PreserveInterruptedPose(float now)
+        {
+            if (!IsBusy(now)) return;
+            _blendT0 = now;
+            _blendOffset = _displayedOffset;
+            _blendBody = _displayedBody;
         }
 
         public void QueueSleep(float now)
@@ -206,8 +235,6 @@ namespace Plop.Presentation
                 }
                 else position = Vector3.LerpUnclamped(_from, _to, Travel(Mathf.Clamp01(travel)));
             }
-            Root.localPosition = position;
-
             if (_sleepPending && !IsSliding)
             {
                 _asleep = true;
@@ -217,7 +244,8 @@ namespace Plop.Presentation
             }
 
             float recoil = BumpAmount(now);
-            _pose.localPosition = RestoreOffset(now) + (Vector3)(_bumpDir * (0.083f * recoil));
+            float recoilReach = _softBump ? 0.046f : 0.083f;
+            Vector3 offset = RestoreOffset(now) + (Vector3)(_bumpDir * (recoilReach * recoil));
 
             float asleep = !_asleep ? 0f : _sleepT0 < 0f ? 1f : Smooth((now - _sleepT0) / SleepDuration);
             float awake = 1f - asleep;
@@ -261,25 +289,66 @@ namespace Plop.Presentation
             }
 
             if (recoil != 0f)
-                ApplyAxis(_bumpDir, 1f - 0.19f * recoil, ref sx, ref sy);
+            {
+                float squash = _softBump ? 0.123f : 0.19f;
+                ApplyAxis(_bumpDir, 1f - squash * recoil, ref sx, ref sy);
+            }
 
             float celebration = Celebration(now);
             lift += celebration * 0.096f;
             sy += celebration * 0.07f;
             sx -= celebration * 0.05f;
 
-            _body.localPosition = new Vector3(0f, GroundY + lift, 0f);
-            _body.localRotation = Quaternion.AngleAxis(tilt, Vector3.forward);
-            _body.localScale = new Vector3(sx * BodyScale, sy * BodyScale, 1f);
-            float shadowScale = sx * (1f - 1.2f * Mathf.Max(0f, lift));
-            _shadow.localScale = new Vector3(shadowScale, shadowScale, 1f);
+            var body = new Vector4(sx * BodyScale, sy * BodyScale, lift, tilt);
+            if (_blendT0 >= 0f)
+            {
+                float u = (now - _blendT0) / InterruptionBlend;
+                if (u >= 1f) _blendT0 = -1f;
+                else
+                {
+                    float blend = Smooth(u);
+                    offset = Vector3.LerpUnclamped(_blendOffset, offset, blend);
+                    body = Vector4.LerpUnclamped(_blendBody, body, blend);
+                }
+            }
+            DisplayPose(position, offset, body);
 
             float eyeOpen = _asleep ? Mathf.Lerp(1f, 0.12f, Smooth(asleep / 0.38f)) : Blink(now);
-            if (!_asleep && recoil > 0f) eyeOpen *= 1f - 0.72f * Smooth(recoil);
-            Vector2 look = Vector2.Lerp(_look, Vector2.zero, Smooth((now - _lookUntil) / 0.29f)) * (1f - asleep);
+            if (!_asleep && recoil > 0f) eyeOpen *= 1f - (_softBump ? 0.44f : 0.72f) * Smooth(recoil);
+            float lookTime = (now - _lookUntil) / 0.29f;
+            if (lookTime >= 1f) _look = Vector2.zero;
+            Vector2 look = _look == Vector2.zero
+                ? Vector2.zero
+                : _look * ((1f - Smooth(lookTime)) * (1f - asleep));
             ApplyFace(look, eyeOpen, asleep, recoil);
             _sleepPoseFrozen = _asleep && asleep >= 1f && _hopT0 < 0f && _landT0 < 0f &&
-                               _restoreT0 < 0f && !IsMoving;
+                               _restoreT0 < 0f && _blendT0 < 0f && !IsMoving;
+        }
+
+        private void DisplayPose(Vector3 root, Vector3 offset, Vector4 body)
+        {
+            // Moving and resting views share pose emission. Awake idle still breathes, while
+            // the stationary root, recoil offset, and fixed ground height make no repeated writes.
+            if (!_displayedRoot.Equals(root))
+            {
+                Root.localPosition = root;
+                _displayedRoot = root;
+            }
+            if (!_displayedOffset.Equals(offset))
+            {
+                _pose.localPosition = offset;
+                _displayedOffset = offset;
+            }
+            if (_displayedBody.z != body.z) _body.localPosition = new Vector3(0f, GroundY + body.z, 0f);
+            if (_displayedBody.w != body.w) _body.localRotation = Quaternion.AngleAxis(body.w, Vector3.forward);
+            if (_displayedBody.x != body.x || _displayedBody.y != body.y)
+                _body.localScale = new Vector3(body.x, body.y, 1f);
+            _displayedBody = body;
+
+            float shadowWidth = (body.x / BodyScale) * (1f - 1.2f * Mathf.Max(0f, body.z));
+            if (_displayedShadowWidth == shadowWidth) return;
+            _shadow.localScale = new Vector3(shadowWidth, shadowWidth, 1f);
+            _displayedShadowWidth = shadowWidth;
         }
 
         private Vector3 RestoreOffset(float now)
@@ -308,16 +377,19 @@ namespace Plop.Presentation
         private float BumpAmount(float now)
         {
             if (_bumpT0 < 0f) return 0f;
-            float u = (now - _bumpT0) / BumpDuration;
+            float duration = _softBump ? SoftBumpDuration : BumpDuration;
+            float impact = _softBump ? 0.48f : BumpImpactTime;
+            float u = (now - _bumpT0) / duration;
             if (u >= 1f)
             {
                 _bumpT0 = -1f;
                 return 0f;
             }
-            if (u < BumpImpactTime) return Mathf.Sin(Mathf.PI * 0.5f * u / BumpImpactTime);
-            float rebound = (u - BumpImpactTime) / (1f - BumpImpactTime);
+            if (u < impact) return Mathf.Sin(Mathf.PI * 0.5f * u / impact);
+            float rebound = (u - impact) / (1f - impact);
             float envelope = (1f - rebound) * (1f - rebound);
-            return Mathf.Cos(Mathf.PI * 1.65f * rebound) * envelope;
+            float ringing = _softBump ? 1.18f : 1.65f;
+            return Mathf.Cos(Mathf.PI * ringing * rebound) * envelope;
         }
 
         private float Celebration(float now)
@@ -336,19 +408,31 @@ namespace Plop.Presentation
             bool sleepingFace = _asleep && asleep >= 0.38f;
             bool closed = sleepingFace || (!_asleep && eyeOpen < 0.17f && recoil < 0.3f);
             Sprite eyeSprite = closed ? _eyeClosed : _eyeOpen;
-            if (_eyeLR.sprite != eyeSprite)
+            if (!ReferenceEquals(_displayedEye, eyeSprite))
             {
-                _eyeLR.sprite = eyeSprite;
-                _eyeRR.sprite = eyeSprite;
+                _eyeLR.sprite = _eyeRR.sprite = eyeSprite;
+                _displayedEye = eyeSprite;
             }
-            Sprite mouthSprite = sleepingFace ? _mouthSleep : recoil > 0.58f ? _mouthBump : _mouthAwake;
-            if (_mouthR.sprite != mouthSprite) _mouthR.sprite = mouthSprite;
+            Sprite mouthSprite = sleepingFace ? _mouthSleep : recoil > 0.58f && !_softBump ? _mouthBump : _mouthAwake;
+            if (!ReferenceEquals(_displayedMouth, mouthSprite))
+            {
+                _mouthR.sprite = mouthSprite;
+                _displayedMouth = mouthSprite;
+            }
+
+            float eyeScale = closed ? 1f : Mathf.Max(0.08f, eyeOpen);
+            if (_displayedEyeScale != eyeScale)
+            {
+                _eyeL.localScale = _eyeR.localScale = new Vector3(1f, eyeScale, 1f);
+                _displayedEyeScale = eyeScale;
+            }
+            if (_displayedLook.Equals(look) && _displayedFaceSleep == asleep) return;
+            _displayedLook = look;
+            _displayedFaceSleep = asleep;
 
             float faceOffset = -0.022f * asleep;
             _eyeL.localPosition = new Vector3(-0.138f + look.x, 0.407f + look.y + faceOffset, 0f);
             _eyeR.localPosition = new Vector3(0.122f + look.x, 0.403f + look.y + faceOffset, 0f);
-            var eyeScale = new Vector3(1f, closed ? 1f : Mathf.Max(0.08f, eyeOpen), 1f);
-            _eyeL.localScale = _eyeR.localScale = eyeScale;
             _mouth.localPosition = new Vector3(-0.005f + look.x * 0.75f, 0.300f + look.y * 0.65f + faceOffset, 0f);
             _cheekL.localPosition = new Vector3(-0.219f + look.x * 0.5f, 0.320f + look.y * 0.5f + faceOffset, 0f);
             _cheekR.localPosition = new Vector3(0.204f + look.x * 0.5f, 0.319f + look.y * 0.5f + faceOffset, 0f);

@@ -15,7 +15,7 @@ namespace Plop.Presentation
     /// <summary>
     /// Gameplay controller: owns the <see cref="GameEngine"/>, routes input to it, and forwards
     /// engine events to the views. Saves campaign progress and runs bounded hints on request.
-    /// The controller's per-frame work is limited to the idle render throttle check.
+    /// Input can queue one command while the board finishes its current slide.
     /// </summary>
     public sealed class PlopGameController : MonoBehaviour
     {
@@ -58,7 +58,10 @@ namespace Plop.Presentation
         private int _deadlockRevision;
         private bool _deadlockCheckQueued;
         private bool _applicationPaused;
+        private bool _applicationFocused = true;
+        private bool _suspended;
         private bool _recheckDeadlockOnResume;
+        private Direction? _pendingMove;
         private BoardView _board;
         private SwipeInput _input;
         private GameHud _hud;
@@ -79,7 +82,9 @@ namespace Plop.Presentation
         public int CampaignResumeIndex => _progress?.FrontierIndex() ?? 0;
         internal Func<LevelDefinition, GameState, CancellationToken, Task<DeadlockStatus>> DeadlockFallback { get; set; }
             = SearchForDeadlockAsync;
+        internal Direction? PendingMove => _pendingMove;
         private bool SavesProgress => rememberProgress && !_debugPreview;
+        private bool GameplayBlocked => _suspended || _hud.BlocksGameplayInput;
 
         public bool IsLevelUnlocked(int index) => _progress?.IsUnlocked(index) == true;
         public bool IsLevelCompleted(int index) => _progress?.IsCompleted(index) == true;
@@ -96,7 +101,7 @@ namespace Plop.Presentation
             _hud = gameObject.AddComponent<GameHud>();
 
             _engine.EventRaised += OnEngineEvent;
-            _input.DirectionRequested += Move;
+            _input.DirectionRequested += RequestMove;
             _input.UndoRequested += Undo;
             _input.RestartRequested += Restart;
             _input.NextRequested += NextLevel;
@@ -179,6 +184,7 @@ namespace Plop.Presentation
 
         private void OnDisable()
         {
+            ClearPendingInput();
             InvalidateHint();
             CancelDeadlockCheck();
             _recheckDeadlockOnResume = false;
@@ -188,20 +194,37 @@ namespace Plop.Presentation
 
         private void OnApplicationPause(bool paused)
         {
-            if (_applicationPaused == paused) return;
             _applicationPaused = paused;
-            if (paused)
+            ApplyApplicationActivity();
+        }
+
+        private void OnApplicationFocus(bool focused)
+        {
+            if (!focused) ClearPendingInput();
+            if (!Application.isMobilePlatform) return;
+            _applicationFocused = focused;
+            ApplyApplicationActivity();
+        }
+
+        private void ApplyApplicationActivity()
+        {
+            bool suspended = _applicationPaused || !_applicationFocused;
+            if (_suspended == suspended) return;
+            _suspended = suspended;
+            if (suspended)
             {
+                ClearPendingInput();
                 InvalidateHint();
                 _recheckDeadlockOnResume = _deadlockCheckQueued || _deadlockReveal != null ||
                     _deadlockWork?.IsCancellationRequested == false;
                 CancelDeadlockCheck();
+                return;
             }
-            else if (_recheckDeadlockOnResume)
-            {
-                _recheckDeadlockOnResume = false;
-                CheckCurrentDeadlock();
-            }
+
+            MarkActive();
+            if (!_recheckDeadlockOnResume) return;
+            _recheckDeadlockOnResume = false;
+            CheckCurrentDeadlock();
         }
 
         private void OnDestroy()
@@ -265,6 +288,7 @@ namespace Plop.Presentation
         /// <summary>Replaces the level list (used by tests and tools) and loads the first level.</summary>
         public void UseLevels(List<LevelDefinition> levels, int startIndex = 0)
         {
+            ClearPendingInput();
             _levels = levels == null ? new List<LevelDefinition>() : new List<LevelDefinition>(levels);
             _worlds = WorldCatalog.Empty;
             _newlyUnlockedWorld = null;
@@ -275,9 +299,27 @@ namespace Plop.Presentation
             if (_levels.Count > 0) LoadCurrent();
         }
 
+        internal void RequestMove(Direction direction)
+        {
+            if (GameplayBlocked || !_engine.HasLevel || _engine.IsCompleted) return;
+            MarkActive();
+            if (_board.IsTraveling || _pendingMove.HasValue)
+            {
+                _pendingMove ??= direction;
+                return;
+            }
+            Move(direction);
+        }
+
+        private void ClearPendingInput()
+        {
+            _pendingMove = null;
+            _input?.CancelGesture();
+        }
+
         public void Move(Direction direction)
         {
-            if (!_engine.HasLevel || _hud.BlocksGameplayInput) return;
+            if (!_engine.HasLevel || GameplayBlocked) return;
             MarkActive();
             var result = _engine.TryMove(direction);
             if (result.Status == MoveStatus.Ignored) return;
@@ -289,27 +331,30 @@ namespace Plop.Presentation
 
         public void Undo()
         {
-            if (_hud.BlocksGameplayInput) return;
+            if (GameplayBlocked) return;
+            ClearPendingInput();
             MarkActive();
             _engine.Undo();
         }
 
         public void Restart()
         {
-            if (_hud.BlocksGameplayInput) return;
+            if (GameplayBlocked) return;
+            ClearPendingInput();
             MarkActive();
             _engine.Restart();
         }
 
         public void NextLevel()
         {
-            if (_hud.BlocksGameplayInput || !_engine.IsCompleted) return;
+            if (GameplayBlocked || !_engine.IsCompleted) return;
             TrySelectLevel(_index + 1);
         }
 
         public bool TrySelectLevel(int index)
         {
-            if (_hud.IsSettingsOpen || _hud.IsDeadlockOpen || !IsLevelUnlocked(index)) return false;
+            if (_suspended || _hud.IsSettingsOpen || _hud.IsDeadlockOpen || !IsLevelUnlocked(index)) return false;
+            ClearPendingInput();
             _hud.CloseLevelPicker();
             if (index == _index && !_engine.IsCompleted) return true;
             _index = index;
@@ -320,7 +365,8 @@ namespace Plop.Presentation
 
         private void ShowLevelPicker()
         {
-            if (_levels.Count == 0 || _hud.BlocksGameplayInput) return;
+            if (_levels.Count == 0 || GameplayBlocked) return;
+            ClearPendingInput();
             InvalidateHint();
             if (_worlds.Worlds.Count > 0 && _world != null)
                 _hud.ShowWorlds(_worlds.Worlds, _levels, IsLevelUnlocked, IsLevelCompleted, _index,
@@ -331,7 +377,8 @@ namespace Plop.Presentation
 
         private void ShowSettings()
         {
-            if (_hud.BlocksGameplayInput) return;
+            if (GameplayBlocked) return;
+            ClearPendingInput();
             InvalidateHint();
             _hud.SetVolumes(_audio.MusicVolume, _audio.SoundVolume);
             _hud.SetComfortOptions(HapticsEnabled, ReducedMotionEnabled);
@@ -340,13 +387,14 @@ namespace Plop.Presentation
 
         private void DismissModal()
         {
+            ClearPendingInput();
             _hud.CloseSettings();
             _hud.CloseLevelPicker();
             _hud.CloseDeadlock();
             _hud.CancelWorldAnnouncement();
         }
 
-        private bool CanCheckDeadlock => isActiveAndEnabled && !_applicationPaused &&
+        private bool CanCheckDeadlock => isActiveAndEnabled && !_suspended &&
             _engine.HasLevel && !_engine.IsCompleted;
 
         private void CheckCurrentDeadlock()
@@ -439,6 +487,7 @@ namespace Plop.Presentation
                 if (!_board.IsBusy && !_hud.BlocksGameplayInput &&
                     _hud.ShowDeadlock(_engine.CanUndo, _board.Atlas.Get(ShapeAtlas.WorriedPlopKey)))
                 {
+                    ClearPendingInput();
                     MarkActive();
                     PlopLog.Info("Deadlock confirmed on " + _engine.Level.Id + " after " + _engine.MoveCount + " moves");
                     break;
@@ -466,7 +515,7 @@ namespace Plop.Presentation
         public async Task<Direction?> RequestHintAsync()
         {
             if (!isActiveAndEnabled || !_engine.HasLevel || _engine.IsCompleted ||
-                _hud.BlocksGameplayInput || _hintWork != null)
+                GameplayBlocked || _hintWork != null)
                 return null;
 
             var level = _engine.Level;
@@ -608,6 +657,7 @@ namespace Plop.Presentation
             switch (e.Type)
             {
                 case GameEventType.LevelLoaded:
+                    ClearPendingInput();
                     CancelDeadlockCheck();
                     _hud.CloseDeadlock();
                     _deadlockTable = _deadlockCatalog?.ForLevel(_engine.Level);
@@ -620,6 +670,7 @@ namespace Plop.Presentation
                     break;
                 case GameEventType.MoveUndone:
                 case GameEventType.LevelRestarted:
+                    ClearPendingInput();
                     CancelDeadlockCheck();
                     _hud.CloseDeadlock();
                     InvalidateHint();
@@ -638,6 +689,7 @@ namespace Plop.Presentation
                     _hud.SetCanUndo(true);
                     break;
                 case GameEventType.LevelCompleted:
+                    ClearPendingInput();
                     CompleteCurrentLevel(e.MoveCount);
                     break;
             }
@@ -677,6 +729,14 @@ namespace Plop.Presentation
 
         private void Update()
         {
+            if (_suspended) return;
+            if (_pendingMove.HasValue && !_board.IsTraveling)
+            {
+                var direction = _pendingMove.Value;
+                _pendingMove = null;
+                Move(direction);
+            }
+
             // Battery: drop the render rate while nothing is moving (input/UI still processed every frame).
             if (idleRenderInterval > 1 && OnDemandRendering.renderFrameInterval == 1 &&
                 !_board.IsBusy && Time.unscaledTime - _lastActivity > idleDelay)

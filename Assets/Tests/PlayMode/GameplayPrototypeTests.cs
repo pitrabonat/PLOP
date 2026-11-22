@@ -57,6 +57,79 @@ namespace Plop.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator InputBuffersOneDirectionUntilTravelEnds()
+        {
+            var controller = CreateController(new List<LevelDefinition> { LevelText.Parse("queue", "R....r") });
+            yield return null;
+
+            controller.RequestMove(Direction.Right);
+            controller.RequestMove(Direction.Right);
+            controller.RequestMove(Direction.Left);
+            Assert.AreEqual(1, controller.Engine.MoveCount);
+            Assert.AreEqual(Direction.Right, controller.PendingMove);
+            float deadline = Time.unscaledTime + 2f;
+            while (controller.Engine.MoveCount < 2 && Time.unscaledTime < deadline)
+                yield return null;
+            Assert.AreEqual(2, controller.Engine.MoveCount);
+            Assert.IsNull(controller.PendingMove);
+            Assert.AreEqual(2, controller.Engine.Level.PositionOf(controller.Engine.CurrentState.CellOf(0)).X);
+            yield return WaitForAnimation(controller);
+            AssertViewsMatchState(controller);
+
+            controller.SetReducedMotion(true);
+            controller.Restart();
+            controller.RequestMove(Direction.Right);
+            controller.RequestMove(Direction.Right);
+            Assert.AreEqual(2, controller.Engine.MoveCount);
+            Assert.IsNull(controller.PendingMove);
+            AssertViewsMatchState(controller);
+        }
+
+        [UnityTest]
+        public IEnumerator InputQueueClearsOnUndoRestartPauseAndLevelLoad()
+        {
+            var first = new List<LevelDefinition> { LevelText.Parse("queue-reset", "R....r") };
+            var second = new List<LevelDefinition> { LevelText.Parse("new-level", "R...r") };
+            var controller = CreateController(first);
+            yield return null;
+
+            controller.RequestMove(Direction.Right);
+            controller.RequestMove(Direction.Right);
+            controller.Undo();
+            Assert.IsNull(controller.PendingMove);
+            Assert.AreEqual(0, controller.Engine.MoveCount);
+            yield return WaitForAnimation(controller);
+            AssertViewsMatchState(controller);
+
+            controller.RequestMove(Direction.Right);
+            controller.RequestMove(Direction.Right);
+            controller.Restart();
+            Assert.IsNull(controller.PendingMove);
+            Assert.AreEqual(0, controller.Engine.MoveCount);
+            AssertViewsMatchState(controller);
+
+            controller.RequestMove(Direction.Right);
+            controller.RequestMove(Direction.Right);
+            Assert.NotNull(controller.PendingMove);
+            controller.SendMessage("OnApplicationPause", true);
+            controller.RequestMove(Direction.Right);
+            Assert.IsNull(controller.PendingMove);
+            Assert.AreEqual(1, controller.Engine.MoveCount);
+            controller.SendMessage("OnApplicationPause", false);
+            yield return WaitForAnimation(controller);
+            Assert.AreEqual(1, controller.Engine.MoveCount);
+            AssertViewsMatchState(controller);
+
+            controller.RequestMove(Direction.Right);
+            controller.RequestMove(Direction.Right);
+            Assert.NotNull(controller.PendingMove);
+            controller.UseLevels(second);
+            Assert.IsNull(controller.PendingMove);
+            Assert.AreEqual(0, controller.Engine.MoveCount);
+            AssertViewsMatchState(controller);
+        }
+
+        [UnityTest]
         public IEnumerator PlayLevel_MoveAnimateCompleteUndoRestartNext()
         {
             var levels = new List<LevelDefinition>

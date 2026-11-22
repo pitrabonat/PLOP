@@ -36,6 +36,12 @@ namespace Plop.Presentation
             get { foreach (var p in _plops) if (p.IsMoving) return true; return false; }
         }
 
+        /// <summary>True only while a Plop travels to its target cell, including anticipation.</summary>
+        public bool IsTraveling
+        {
+            get { foreach (var p in _plops) if (p.IsSliding) return true; return false; }
+        }
+
         /// <summary>True while any non-idle animation runs (landing wobble, sleep, hop, nest pulse).</summary>
         public bool IsBusy
         {
@@ -187,7 +193,7 @@ namespace Plop.Presentation
                         break;
                     }
                     case GameEventType.PlopBlocked:
-                        _plops[e.PlopId].StartBump(Delta(e.Direction), now);
+                        _plops[e.PlopId].StartBump(Delta(e.Direction), now, e.BlockReason);
                         break;
                     case GameEventType.PlopSettled:
                         _plops[e.PlopId].QueueSleep(now);
