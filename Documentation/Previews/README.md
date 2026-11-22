@@ -2,6 +2,7 @@
 
 These images were captured from the running Unity player.
 
+- [Phase 6 themed Worlds, gameplay and recovery](Phase6/README.md)
 - [Phase 5 portrait visuals and recovery](Phase5/README.md)
 
 - [Phase 4 · Level 29 on iPhone 15 Pro Max](phase4-ios-level29.png)

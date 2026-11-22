@@ -7,7 +7,7 @@ Repository: https://github.com/pitrabonat/PLOP
 > Phase 6 gives PLOP! five playable Worlds, matching shape marks, quieter gel
 > shading, world ambience and reduced-motion controls.
 >
-> [Gameplay previews](Documentation/Previews/README.md) · [Project state](PROJECT_STATE.md) ·
+> [Phase 6 gameplay previews](Documentation/Previews/Phase6/README.md) · [Project state](PROJECT_STATE.md) ·
 > [Architecture](ARCHITECTURE.md) · [Rules](Documentation/GAME_RULES.md) ·
 > [Testing](Documentation/TESTING.md) · [Development log](DEVELOPMENT_LOG.md)
 

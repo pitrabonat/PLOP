@@ -70,6 +70,54 @@ atlas has a maximum 8 MiB texture at 256 pixels per unit. World
 backdrops render as one sprite and their compressed footprint depends
 on the player format.
 
+### Android development player
+
+The signed ARM64 IL2CPP build is
+`/Volumes/PLOP_DEV/Builds/Android/Phase6/PLOP-phase6-dev.apk`.
+The APK is 45,166,348 bytes. The v2 signature and 16 KB ZIP alignment
+passed verification. Its SHA-256 is
+`f154fd43f164fc1851d97c87464a2f3d7221dfb3809f7e930641e2170447a043`.
+
+In an isolated API 37 emulator with airplane mode enabled, a Phase 5
+touch-play save completed Level 1 and advanced to Level 2. Installing
+Phase 6 over it with `adb install -r` preserved the same resume,
+completed and unlocked level IDs. Play then advanced to Level 3. Both
+haptics and reduced motion stayed enabled after a force-stop and
+cold launch. This checks settings persistence. Tactile feedback
+requires a physical phone.
+
+A separate campaign fixture put the player at Level 20. Four touch
+swipes solved the level, unlocked Dewdrop Garden and let Next Level
+open Level 21. A second fixture at Level 41 checked that a locked
+World ignored a tap, an available World supported replaying Level 21
+and Resume returned to Level 41 with the correct progress. The
+[preview set](Previews/Phase6/README.md) contains live gameplay from
+all five Worlds.
+
+SurfaceFlinger TimeStats recorded the Level 2 game surface during
+touch play at 1080×1920. The selected cap was confirmed in preferences
+for each sample.
+
+| Selected cap | Present intervals | Median | 90th percentile |
+|---|---:|---:|---:|
+| 60 FPS | 103 | 36 ms | 54 ms |
+| 30 FPS | 99 | 36 ms | 58 ms |
+
+The emulator fell short of sustained 60 FPS. At the 30 FPS cap,
+`dumpsys meminfo` measured 268,137 KiB PSS and 390,360 KiB RSS.
+Frame pacing, audio mix, battery and thermals on physical phones
+remain unmeasured. Raw results are under
+`/Volumes/PLOP_DEV/Builds/Logs/phase6/`.
+
+### iOS compatibility
+
+Unity exported the ARM64 simulator player. Xcode 26.3 compiled the
+UIKit haptics bridge and built the player with simulator signing
+disabled. The iPhone 15 Pro Max simulator displayed Level 100 and
+reproduced Level 8's recovery at 1290×2796. The game controls and
+recovery actions fit below the Dynamic Island. Signed installation
+and haptic feel on physical iOS hardware remain unverified.
+
 ## Phase 5 level verification
 
 Strict production catalog verification passed. The deadlock sidecar regenerated

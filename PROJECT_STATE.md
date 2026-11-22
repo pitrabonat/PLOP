@@ -25,10 +25,18 @@ The project is on `feature/themed-worlds`, based on `a93708f`
 
 - .NET and Unity EditMode each passed 98 tests. Unity PlayMode passed 51.
   Strict replay and validation passed for all 100 production levels.
-- The Unity render sample, platform checks and playback details are in
-  [Documentation/TESTING.md](Documentation/TESTING.md). The starting
-  reference and priorities are in
-  [Documentation/PHASE6_VISUAL_PLAN.md](Documentation/PHASE6_VISUAL_PLAN.md).
+- The signed ARM64 Android development APK is at
+  `/Volumes/PLOP_DEV/Builds/Android/Phase6/PLOP-phase6-dev.apk`.
+  An offline, in-place upgrade from Phase 5 kept campaign progress and
+  the Phase 6 comfort settings persisted across a restart.
+- Xcode 26.3 built the ARM64 iOS Simulator export. The iPhone 15 Pro Max
+  simulator displayed Moonlit Clouds and reproduced Level 8 recovery.
+- [Phase 6 previews](Documentation/Previews/Phase6/README.md) include
+  gameplay in each World and portrait captures of the campaign UI.
+- [Testing notes](Documentation/TESTING.md) record Unity profiling and
+  both Android frame-cap samples. Physical-device pacing, haptic feel
+  and battery use remain unmeasured. The starting reference and
+  priorities are in the [visual plan](Documentation/PHASE6_VISUAL_PLAN.md).
 
 ## Continue development
 

@@ -91,3 +91,15 @@ See [PROJECT_STATE.md](PROJECT_STATE.md) for verification and remaining device Q
   comfort settings. Kept progression keyed to existing level IDs.
 - Verified all 100 production levels. .NET and Unity EditMode passed 98
   tests each. Unity PlayMode passed 51, including every chapter boundary.
+- Verified the signed ARM64 Android APK, its 16 KB alignment and an
+  offline Phase 5 upgrade. The previous campaign IDs survived the
+  install. A subsequent cold launch retained the haptics and
+  reduced-motion preferences.
+- Exported and built the ARM64 simulator app in Xcode 26.3. Captured
+  Moonlit Clouds and the proven Level 8 recovery screen on the iPhone
+  15 Pro Max simulator. Profile data and device coverage are in the
+  [testing notes](Documentation/TESTING.md).
+- Verified touch progression from Cozy Nest into Dewdrop Garden.
+  Checked locked-card behavior, replay and Resume in the World picker.
+  Archived the live Android captures and Level 8 gameplay recording
+  with the [Phase 6 previews](Documentation/Previews/Phase6/README.md).
