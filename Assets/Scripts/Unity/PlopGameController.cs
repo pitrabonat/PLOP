@@ -32,6 +32,8 @@ namespace Plop.Presentation
         [SerializeField] private bool rememberProgress = true;
 
         private const string FrameRateKey = "plop.frameRate";
+        private const string HapticsKey = "plop.haptics";
+        private const string ReducedMotionKey = "plop.reducedMotion";
         private const int HintMaxStates = 300_000;
         private const int HintMaxMilliseconds = 200;
         private const int DeadlockMaxStates = 20_000;
@@ -40,6 +42,12 @@ namespace Plop.Presentation
         private List<LevelDefinition> _levels = new List<LevelDefinition>();
         private int _index;
         private LevelProgress _progress;
+        private WorldCatalog _worlds = WorldCatalog.Empty;
+        private WorldTheme _world;
+        private WorldTheme _newlyUnlockedWorld;
+        private WorldBackdrop _backdrop;
+        private readonly PlopHaptics _haptics = new PlopHaptics();
+        private bool _reducedMotion;
         private bool _debugPreview;
         private CancellationTokenSource _hintWork;
         private bool _hintVisible;
@@ -65,6 +73,10 @@ namespace Plop.Presentation
         public int LevelIndex => _index;
         public int LevelCount => _levels.Count;
         public FrameRateMode CurrentFrameRateMode => targetFrameRate;
+        public WorldTheme CurrentWorld => _world;
+        public bool HapticsEnabled => _haptics.Enabled;
+        public bool ReducedMotionEnabled => _reducedMotion;
+        public int CampaignResumeIndex => _progress?.FrontierIndex() ?? 0;
         internal Func<LevelDefinition, GameState, CancellationToken, Task<DeadlockStatus>> DeadlockFallback { get; set; }
             = SearchForDeadlockAsync;
         private bool SavesProgress => rememberProgress && !_debugPreview;
@@ -78,6 +90,7 @@ namespace Plop.Presentation
             _camera = Camera.main;
             _board = new GameObject("Board").AddComponent<BoardView>();
             _board.transform.SetParent(transform, false);
+            _backdrop = gameObject.AddComponent<WorldBackdrop>();
             _input = gameObject.AddComponent<SwipeInput>();
             _audio = gameObject.AddComponent<PlopAudio>();
             _hud = gameObject.AddComponent<GameHud>();
@@ -99,6 +112,8 @@ namespace Plop.Presentation
             _hud.MusicChanged += _audio.SetMusicVolume;
             _hud.SoundChanged += _audio.SetSoundVolume;
             _hud.FrameRateChanged += SetFrameRateMode;
+            _hud.HapticsChanged += SetHaptics;
+            _hud.ReducedMotionChanged += SetReducedMotion;
             _hud.LevelsClicked += ShowLevelPicker;
             _hud.LevelChosen += index => TrySelectLevel(index);
             _hud.ModalInteracted += MarkActive;
@@ -112,7 +127,10 @@ namespace Plop.Presentation
             _levels = LevelLibrary.Load(levelPackResource);
             if (_levels.Count == 0) return;
             if (levelPackResource == LevelLibrary.DefaultPack)
+            {
                 _deadlockCatalog = LevelLibrary.LoadDeadlocks();
+                _worlds = WorldCatalog.Load();
+            }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             // Screenshot/demo settings must never grant durable progress.
             int debugLevel = rememberProgress ? PlayerPrefs.GetInt("plop.debug.level", 0) : 0;
@@ -120,7 +138,6 @@ namespace Plop.Presentation
             _debugPreview = debugLevel > 0 || !string.IsNullOrEmpty(debugMoves);
 #endif
             _progress = new LevelProgress(_levels, SavesProgress ? levelPackResource : null);
-            _audio.Initialize(SavesProgress);
             _index = _progress.ResumeIndex();
             if (rememberProgress)
             {
@@ -135,6 +152,13 @@ namespace Plop.Presentation
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (debugLevel > 0) _index = Mathf.Clamp(debugLevel - 1, 0, _levels.Count - 1);
 #endif
+            if (SavesProgress)
+            {
+                _haptics.Enabled = PlayerPrefs.GetInt(HapticsKey, 0) == 1;
+                ApplyReducedMotion(PlayerPrefs.GetInt(ReducedMotionKey, 0) == 1);
+            }
+            _hud.SetComfortOptions(HapticsEnabled, ReducedMotionEnabled);
+            _audio.Initialize(SavesProgress, _worlds.ForLevelIndex(_index)?.Ambience ?? WorldAmbience.CozyNest);
             LoadCurrent();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (!string.IsNullOrEmpty(debugMoves)) StartCoroutine(PlayDebugMoves(debugMoves));
@@ -206,10 +230,44 @@ namespace Plop.Presentation
             MarkActive();
         }
 
+        public void SetHaptics(bool value)
+        {
+            if (_haptics.Enabled == value) return;
+            _haptics.Enabled = value;
+            _hud.SetComfortOptions(HapticsEnabled, ReducedMotionEnabled);
+            SaveComfortOption(HapticsKey, value);
+            MarkActive();
+        }
+
+        public void SetReducedMotion(bool value)
+        {
+            if (_reducedMotion == value) return;
+            ApplyReducedMotion(value);
+            _hud.SetComfortOptions(HapticsEnabled, ReducedMotionEnabled);
+            SaveComfortOption(ReducedMotionKey, value);
+            MarkActive();
+        }
+
+        private void ApplyReducedMotion(bool value)
+        {
+            _reducedMotion = value;
+            _board.SetReducedMotion(value);
+            _backdrop.SetReducedMotion(value);
+        }
+
+        private void SaveComfortOption(string key, bool value)
+        {
+            if (!SavesProgress) return;
+            PlayerPrefs.SetInt(key, value ? 1 : 0);
+            PlayerPrefs.Save();
+        }
+
         /// <summary>Replaces the level list (used by tests and tools) and loads the first level.</summary>
         public void UseLevels(List<LevelDefinition> levels, int startIndex = 0)
         {
             _levels = levels == null ? new List<LevelDefinition>() : new List<LevelDefinition>(levels);
+            _worlds = WorldCatalog.Empty;
+            _newlyUnlockedWorld = null;
             CancelDeadlockCheck();
             _hud.CloseDeadlock();
             _progress = new LevelProgress(_levels);
@@ -225,6 +283,7 @@ namespace Plop.Presentation
             if (result.Status == MoveStatus.Ignored) return;
             _board.Play(result.Events);
             _audio.PlayMove(result.Events);
+            _haptics.PlayMove(result.Events);
             if (result.Changed && !result.CompletedLevel) CheckCurrentDeadlock();
         }
 
@@ -263,7 +322,11 @@ namespace Plop.Presentation
         {
             if (_levels.Count == 0 || _hud.BlocksGameplayInput) return;
             InvalidateHint();
-            _hud.ShowLevels(_levels, IsLevelUnlocked, IsLevelCompleted, _index);
+            if (_worlds.Worlds.Count > 0 && _world != null)
+                _hud.ShowWorlds(_worlds.Worlds, _levels, IsLevelUnlocked, IsLevelCompleted, _index,
+                    resumeIndex: CampaignResumeIndex);
+            else
+                _hud.ShowLevels(_levels, IsLevelUnlocked, IsLevelCompleted, _index);
         }
 
         private void ShowSettings()
@@ -271,6 +334,7 @@ namespace Plop.Presentation
             if (_hud.BlocksGameplayInput) return;
             InvalidateHint();
             _hud.SetVolumes(_audio.MusicVolume, _audio.SoundVolume);
+            _hud.SetComfortOptions(HapticsEnabled, ReducedMotionEnabled);
             _hud.ShowSettings();
         }
 
@@ -279,6 +343,7 @@ namespace Plop.Presentation
             _hud.CloseSettings();
             _hud.CloseLevelPicker();
             _hud.CloseDeadlock();
+            _hud.CancelWorldAnnouncement();
         }
 
         private bool CanCheckDeadlock => isActiveAndEnabled && !_applicationPaused &&
@@ -490,8 +555,52 @@ namespace Plop.Presentation
         private void LoadCurrent()
         {
             MarkActive();
+            _hud.CancelWorldAnnouncement();
+            var previousWorld = _world;
+            SetWorld(_worlds.ForLevelIndex(_index));
             _engine.LoadLevel(_levels[_index]);
+            if (previousWorld != null && previousWorld != _world && _world != null)
+                _backdrop.PlayReveal();
+            if (_world != null && _world == _newlyUnlockedWorld)
+            {
+                _newlyUnlockedWorld = null;
+                _audio.PlayWorldEntrance();
+            }
             PlopLog.Info("Loaded " + _levels[_index].Id);
+        }
+
+        private void SetWorld(WorldTheme world)
+        {
+            if (_world == world) return;
+            _world = world;
+            _hud.SetCurrentWorld(world);
+            _audio.SetWorldAmbience(world?.Ambience ?? WorldAmbience.CozyNest);
+            if (world == null)
+            {
+                _board.SetPalette(Color.white, Color.white, Color.white);
+                return;
+            }
+
+            Color key = Color.Lerp(Color.white, world.KeyLight, world.LightStrength * 0.18f);
+            _board.SetPalette(world.TrayTint * key, world.TileTint * key, world.PebbleTint);
+        }
+
+        private void CompleteCurrentLevel(int moveCount)
+        {
+            int nextIndex = _index + 1;
+            bool nextWasUnlocked = IsLevelUnlocked(nextIndex);
+            _progress.Complete(_index, SavesProgress);
+            bool nextUnlocked = IsLevelUnlocked(nextIndex);
+            _hud.SetCompleted(true, nextUnlocked);
+
+            var nextWorld = _worlds.ForLevelIndex(nextIndex);
+            if (!nextWasUnlocked && nextUnlocked && nextWorld != null && nextWorld != _world)
+            {
+                _newlyUnlockedWorld = nextWorld;
+                _hud.ShowWorldUnlocked(nextWorld.DisplayName, nextWorld.Preview);
+                PlopLog.Info("World unlocked " + nextWorld.Id);
+            }
+            PlopLog.Info("Completed " + _engine.Level.Id + " in " + moveCount);
         }
 
         private void OnEngineEvent(GameEvent e)
@@ -514,7 +623,8 @@ namespace Plop.Presentation
                     CancelDeadlockCheck();
                     _hud.CloseDeadlock();
                     InvalidateHint();
-                    _board.Sync(_engine.CurrentState);
+                    _hud.CancelWorldAnnouncement();
+                    _board.Sync(_engine.CurrentState, easeRestore: e.Type == GameEventType.MoveUndone);
                     _hud.SetMoves(_engine.MoveCount);
                     _hud.SetCanUndo(_engine.CanUndo);
                     _hud.SetCompleted(false, false);
@@ -528,9 +638,7 @@ namespace Plop.Presentation
                     _hud.SetCanUndo(true);
                     break;
                 case GameEventType.LevelCompleted:
-                    _progress.Complete(_index, SavesProgress);
-                    _hud.SetCompleted(true, IsLevelUnlocked(_index + 1));
-                    PlopLog.Info("Completed " + _engine.Level.Id + " in " + e.MoveCount);
+                    CompleteCurrentLevel(e.MoveCount);
                     break;
             }
         }
@@ -544,9 +652,10 @@ namespace Plop.Presentation
             _hud.SetBoardLayout(layout);
             _camera.orthographic = true;
             _camera.clearFlags = CameraClearFlags.SolidColor;
-            _camera.backgroundColor = PlopPalette.PlayBackground;
+            _camera.backgroundColor = _world?.BackgroundColor ?? PlopPalette.PlayBackground;
             _camera.orthographicSize = layout.OrthographicSize;
             _camera.transform.position = new Vector3(layout.CameraPosition.x, layout.CameraPosition.y, -10f);
+            _backdrop.Show(_world, _camera, layout);
             return layout.PixelsPerUnit;
         }
 

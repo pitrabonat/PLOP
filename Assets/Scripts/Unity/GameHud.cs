@@ -10,30 +10,34 @@ using UnityEngine.UI;
 namespace Plop.Presentation
 {
     /// <summary>Rounded, safe-area HUD for gameplay, hints and choosing unlocked levels.</summary>
-    public sealed class GameHud : MonoBehaviour
+    public sealed partial class GameHud : MonoBehaviour
     {
         public event Action UndoClicked, RestartClicked, NextClicked, HintClicked, LevelsClicked;
         public event Action SettingsClicked, SettingsClosed, ButtonActivated;
         public event Action<PlopGameController.FrameRateMode> FrameRateChanged;
         public event Action<float> MusicChanged, SoundChanged;
+        public event Action<bool> HapticsChanged, ReducedMotionChanged;
         public event Action<int> LevelChosen;
         public event Action ModalInteracted;
         public event Action LayoutChanged;
 
         private const int PageSize = 10;
+        private readonly List<RectTransform> _modalSafeAreas = new List<RectTransform>();
+        private readonly List<PressScale> _pressFeedback = new List<PressScale>();
         private readonly Button[] _levelButtons = new Button[PageSize];
         private readonly Text[] _levelLabels = new Text[PageSize];
         private readonly RectTransform[] _levelSlots = new RectTransform[PageSize];
 
         private Text _title, _moves, _instruction, _hintStatus, _completionActionLabel, _pageLabel;
         private Text _deadlockTitle, _deadlockDescription;
+        private Text _gameName, _worldName, _pickerTitle, _pickerExitLabel, _hapticsLabel, _motionLabel;
         private Text _musicPercent, _soundPercent;
         private Slider _music, _sound;
-        private Image _completionActionIcon, _deadlockMascot;
+        private Image _completionActionIcon, _deadlockMascot, _levelBadgeBody, _moveBadgeBody;
         private Button _undo, _hint, _previousPage, _nextPage;
         private Button _deadlockUndo, _deadlockRestart;
-        private Button _rate30, _rate60;
-        private RectTransform _safe, _header, _status, _footer, _dock, _completion;
+        private Button _rate30, _rate60, _hapticsButton, _motionButton;
+        private RectTransform _canvasRoot, _safe, _header, _status, _footer, _dock, _completion;
         private RectTransform _levelBadge, _moveBadge;
         private RectTransform _levelPicker, _settings, _deadlock;
         private RectTransform _pickerPanel, _settingsPanel, _deadlockPanel;
@@ -42,16 +46,18 @@ namespace Plop.Presentation
         private Coroutine _cardAnim;
         private Font _font, _displayFont;
         private static readonly Vector2 PickerSize = new Vector2(880, 980);
-        private static readonly Vector2 SettingsSize = new Vector2(840, 652);
+        private static readonly Vector2 SettingsSize = new Vector2(840, 868);
         private static readonly Vector2 DeadlockSize = new Vector2(742, 660);
         private static readonly Vector2 DeadlockTextOnlySize = new Vector2(742, 524);
         private IReadOnlyList<LevelDefinition> _pickerLevels;
         private Func<int, bool> _isUnlocked, _isCompleted;
-        private int _page, _currentIndex;
+        private int _page, _currentIndex, _pickerStart, _pickerEnd;
+        private bool _canReturnToWorlds, _haptics, _reducedMotion;
         private bool _completed, _canAdvance, _hasBoardLayout;
         private BoardLayout.Result _boardLayout;
 
-        public bool IsChoosingLevel => _levelPicker != null && _levelPicker.gameObject.activeSelf;
+        public bool IsChoosingLevel => (_levelPicker != null && _levelPicker.gameObject.activeSelf) ||
+            (_worldPicker != null && _worldPicker.gameObject.activeSelf);
         public bool IsSettingsOpen => _settings != null && _settings.gameObject.activeSelf;
         public bool IsDeadlockOpen => _deadlock != null && _deadlock.gameObject.activeSelf;
         public bool BlocksGameplayInput => IsChoosingLevel || IsSettingsOpen || IsDeadlockOpen;
@@ -64,6 +70,7 @@ namespace Plop.Presentation
 
             var canvasGo = new GameObject("HUD Canvas", typeof(RectTransform));
             canvasGo.transform.SetParent(transform, false);
+            _canvasRoot = (RectTransform)canvasGo.transform;
             var canvas = canvasGo.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.pixelPerfect = false;
@@ -88,9 +95,12 @@ namespace Plop.Presentation
             var headerButtonSize = new Vector2(124, HudTheme.HeaderButtonHeight);
             MakeButton(_header, "Levels", new Vector2(-378, 0), headerButtonSize, PlopPalette.ButtonFill,
                 () => LevelsClicked?.Invoke(), icon: HudIcons.Kind.Levels, touchHeight: HudTheme.PlayTouchHeight, iconOnly: true);
-            var name = MakeText(_header, "Game name", 84, FontStyle.Bold, HudTheme.Ink, center,
-                Vector2.zero, new Vector2(438, 128));
-            name.text = "PLOP!";
+            _gameName = MakeText(_header, "Game name", 84, FontStyle.Bold, HudTheme.Ink, center,
+                Vector2.zero, new Vector2(438, 112));
+            _gameName.text = "PLOP!";
+            _worldName = MakeText(_header, "Current world", 26, FontStyle.Bold, HudTheme.SecondaryText, center,
+                new Vector2(0, -44), new Vector2(436, 38));
+            _worldName.gameObject.SetActive(false);
             MakeButton(_header, "Settings", new Vector2(378, 0), headerButtonSize, PlopPalette.ButtonFill,
                 () => SettingsClicked?.Invoke(), icon: HudIcons.Kind.Settings, touchHeight: HudTheme.PlayTouchHeight, iconOnly: true);
 
@@ -98,10 +108,11 @@ namespace Plop.Presentation
             _status.anchorMin = _status.anchorMax = center;
             _status.sizeDelta = new Vector2(HudTheme.StatusWidth, 120);
             _levelBadge = MakeBadge(_status, "Level badge", new Vector2(466, 103), PlopPalette.ButtonFill);
+            _levelBadgeBody = _levelBadge.Find("Body").GetComponent<Image>();
             _title = MakeText(_levelBadge, "Title", HudTheme.Display, FontStyle.Bold, HudTheme.Ink, center,
                 Vector2.zero, new Vector2(440, 108));
-            _title.verticalOverflow = VerticalWrapMode.Overflow;
             _moveBadge = MakeBadge(_status, "Move badge", new Vector2(300, 74), HudTheme.MoveSurface);
+            _moveBadgeBody = _moveBadge.Find("Body").GetComponent<Image>();
             AddGlyph(_moveBadge, HudIcons.Kind.Moves, new Vector2(-100, 0), 47f, HudTheme.ActionInk);
             _moves = MakeText(_moveBadge, "Moves", 37, FontStyle.Bold, HudTheme.Ink, center,
                 new Vector2(20, 0), new Vector2(235, 62));
@@ -128,9 +139,11 @@ namespace Plop.Presentation
             _hintStatus.verticalOverflow = VerticalWrapMode.Overflow;
 
             BuildCompletion();
+            BuildWorldPicker();
             BuildLevelPicker();
             BuildSettings();
             BuildDeadlock();
+            BuildWorldAnnouncement();
             FitResponsiveElements();
             PositionPlayControls();
         }
@@ -179,6 +192,17 @@ namespace Plop.Presentation
             PositionPlayControls();
         }
 
+        public void SetCurrentWorld(WorldTheme world)
+        {
+            bool visible = world != null;
+            _worldName.gameObject.SetActive(visible);
+            _worldName.text = visible ? world.DisplayName : "";
+            _gameName.rectTransform.anchoredPosition = new Vector2(0, visible ? 12f : 0f);
+            var accent = visible ? world.AccentColor : PlopPalette.ButtonFill;
+            _levelBadgeBody.color = Color.Lerp(PlopPalette.ButtonFill, accent, 0.18f);
+            _moveBadgeBody.color = visible ? Color.Lerp(HudTheme.MoveSurface, accent, 0.27f) : HudTheme.MoveSurface;
+        }
+
         public void SetMoves(int moves) => _moves.text = moves == 1 ? "1 move" : moves + " moves";
         public void SetCanUndo(bool canUndo) => _undo.interactable = canUndo;
         public void SetFrameRate(PlopGameController.FrameRateMode mode)
@@ -193,6 +217,31 @@ namespace Plop.Presentation
             _sound.SetValueWithoutNotify(sound);
             _musicPercent.text = Percent(music);
             _soundPercent.text = Percent(sound);
+        }
+
+        public void SetComfortOptions(bool haptics, bool reducedMotion)
+        {
+            _haptics = haptics;
+            bool motionChanged = _reducedMotion != reducedMotion;
+            _reducedMotion = reducedMotion;
+            PaintComfortSwitch(_hapticsButton, _hapticsLabel, haptics);
+            PaintComfortSwitch(_motionButton, _motionLabel, reducedMotion);
+            if (!motionChanged) return;
+
+            foreach (var feedback in _pressFeedback)
+                feedback.enabled = !reducedMotion;
+            if (!reducedMotion || _cardAnim == null) return;
+
+            StopCoroutine(_cardAnim);
+            _cardAnim = null;
+            _completion.localScale = Vector3.one;
+            _cardGroup.alpha = 1f;
+        }
+
+        private static void PaintComfortSwitch(Button button, Text label, bool on)
+        {
+            button.image.color = on ? HudTheme.CompletionSurface : PlopPalette.Milk;
+            label.text = on ? "On" : "Off";
         }
 
         public void ShowSettings() => SetModal(_settings, true);
@@ -251,7 +300,9 @@ namespace Plop.Presentation
             }
             _footer.gameObject.SetActive(!completed);
             _completion.gameObject.SetActive(completed);
-            if (completed) _cardAnim = StartCoroutine(PopIn(_completion, _cardGroup));
+            _completion.localScale = Vector3.one;
+            _cardGroup.alpha = 1f;
+            if (completed && !_reducedMotion) _cardAnim = StartCoroutine(PopIn(_completion, _cardGroup));
         }
 
         private void BuildCompletion()
@@ -265,7 +316,6 @@ namespace Plop.Presentation
             AddCardBackground(_completion, HudTheme.CompletionSurface);
             var message = MakeText(_completion, "Completion message", HudTheme.Heading, FontStyle.Bold, HudTheme.Ink,
                 Vector2.one * 0.5f, new Vector2(0, 48), new Vector2(590, 86));
-            message.verticalOverflow = VerticalWrapMode.Overflow;
             message.text = "Sweet Dreams!";
             MakeButton(_completion, "Replay", new Vector2(-161, -43), new Vector2(252, 76), PlopPalette.ButtonFill,
                 () => RestartClicked?.Invoke(), icon: HudIcons.Kind.Restart, fontSize: HudTheme.Control, touchHeight: 114f);
@@ -322,19 +372,50 @@ namespace Plop.Presentation
         public void ShowLevels(IReadOnlyList<LevelDefinition> levels, Func<int, bool> isUnlocked,
             Func<int, bool> isCompleted, int currentIndex)
         {
+            if (levels == null || levels.Count == 0) return;
+            BindPicker(levels, isUnlocked, isCompleted, currentIndex);
+            OpenLevelRange(0, levels.Count, "Choose a level", false);
+        }
+
+        private void BindPicker(IReadOnlyList<LevelDefinition> levels, Func<int, bool> isUnlocked,
+            Func<int, bool> isCompleted, int currentIndex)
+        {
             _pickerLevels = levels;
             _isUnlocked = isUnlocked;
             _isCompleted = isCompleted;
-            _currentIndex = currentIndex;
-            _page = currentIndex / PageSize;
+            _currentIndex = Mathf.Clamp(currentIndex, 0, levels.Count - 1);
+        }
+
+        private void OpenLevelRange(int first, int endExclusive, string title, bool canReturnToWorlds)
+        {
+            _pickerStart = first;
+            _pickerEnd = endExclusive;
+            _canReturnToWorlds = canReturnToWorlds;
+            _pickerTitle.text = title;
+            _pickerExitLabel.text = canReturnToWorlds ? "Worlds" : "Close";
+            _page = _currentIndex >= first && _currentIndex < endExclusive ? (_currentIndex - first) / PageSize : 0;
             RenderLevelPage();
+            _worldPicker.gameObject.SetActive(false);
             SetModal(_levelPicker, true);
         }
 
         public void CloseLevelPicker()
         {
             if (!IsChoosingLevel) return;
-            SetModal(_levelPicker, false);
+            _levelPicker.gameObject.SetActive(false);
+            SetModal(_worldPicker, false);
+        }
+
+        private void ExitLevelRange()
+        {
+            if (!_canReturnToWorlds)
+            {
+                CloseLevelPicker();
+                return;
+            }
+
+            _levelPicker.gameObject.SetActive(false);
+            SetModal(_worldPicker, true);
         }
 
         private void BuildLevelPicker()
@@ -342,10 +423,12 @@ namespace Plop.Presentation
             _levelPicker = BuildModal("Level picker", PickerSize, out _pickerPanel);
             var panel = _pickerPanel;
 
-            MakeText(panel, "Picker title", HudTheme.Heading, FontStyle.Bold, HudTheme.Ink, new Vector2(0.40f, 1f),
-                new Vector2(0, -74), new Vector2(460, 80)).text = "Choose a level";
-            MakeButton(panel, "Close", new Vector2(0, -74), new Vector2(173, HudTheme.ModalButtonHeight), PlopPalette.Milk,
-                CloseLevelPicker, new Vector2(0.85f, 1f), fontSize: HudTheme.Control);
+            _pickerTitle = MakeText(panel, "Picker title", HudTheme.Heading, FontStyle.Bold, HudTheme.Ink,
+                new Vector2(0.37f, 1f), new Vector2(0, -74), new Vector2(520, 80));
+            _pickerTitle.alignment = TextAnchor.MiddleLeft;
+            var close = MakeButton(panel, "Close", new Vector2(0, -74), new Vector2(173, HudTheme.ModalButtonHeight),
+                PlopPalette.Milk, ExitLevelRange, new Vector2(0.85f, 1f), fontSize: HudTheme.Control);
+            _pickerExitLabel = close.GetComponentInChildren<Text>();
 
             for (int slot = 0; slot < PageSize; slot++)
             {
@@ -354,30 +437,39 @@ namespace Plop.Presentation
                 float y = -204 - slot / 2 * 138;
                 _levelSlots[slot] = NewRect("Level slot " + slot, panel);
                 _levelButtons[slot] = MakeButton(_levelSlots[slot], "Level", new Vector2(0, y), new Vector2(340, 102),
-                    PlopPalette.Milk, () => LevelChosen?.Invoke(_page * PageSize + offset), new Vector2(x, 1f), fontSize: HudTheme.Control);
+                    PlopPalette.Milk, () => ChooseLevel(offset), new Vector2(x, 1f), fontSize: HudTheme.Control);
                 _levelLabels[slot] = _levelButtons[slot].GetComponentInChildren<Text>();
             }
 
-            _previousPage = MakeButton(panel, "Back", new Vector2(0, 79), new Vector2(170, 80), PlopPalette.Milk,
-                () => ChangeLevelPage(-1), new Vector2(0.20f, 0));
-            _nextPage = MakeButton(panel, "More", new Vector2(0, 79), new Vector2(170, 80), PlopPalette.Milk,
-                () => ChangeLevelPage(1), new Vector2(0.80f, 0));
-            _pageLabel = MakeText(panel, "Level range", 32, FontStyle.Normal, PlopPalette.MutedText,
-                new Vector2(0.5f, 0), new Vector2(0, 79), new Vector2(350, 65));
+            _previousPage = MakeButton(panel, "Previous", new Vector2(0, 79), new Vector2(180, 80), PlopPalette.Milk,
+                () => ChangeLevelPage(-1), new Vector2(0.20f, 0), fontSize: HudTheme.Control);
+            _nextPage = MakeButton(panel, "More", new Vector2(0, 79), new Vector2(180, 80), PlopPalette.Milk,
+                () => ChangeLevelPage(1), new Vector2(0.80f, 0), fontSize: HudTheme.Control);
+            _pageLabel = MakeText(panel, "Level range", 32, FontStyle.Normal, HudTheme.SecondaryText,
+                new Vector2(0.5f, 0), new Vector2(0, 79), new Vector2(340, 65));
             _levelPicker.gameObject.SetActive(false);
+        }
+
+        private void ChooseLevel(int offset)
+        {
+            int index = _pickerStart + _page * PageSize + offset;
+            if (_levelPicker.gameObject.activeSelf && index < _pickerEnd && _isUnlocked(index))
+                LevelChosen?.Invoke(index);
         }
 
         private void ChangeLevelPage(int offset)
         {
-            _page += offset;
+            int next = _page + offset;
+            if (next < 0 || _pickerStart + next * PageSize >= _pickerEnd) return;
+            _page = next;
             RenderLevelPage();
             ModalInteracted?.Invoke();
         }
 
         private void RenderLevelPage()
         {
-            int start = _page * PageSize;
-            int end = Mathf.Min(start + PageSize, _pickerLevels.Count);
+            int start = _pickerStart + _page * PageSize;
+            int end = Mathf.Min(start + PageSize, _pickerEnd);
             for (int slot = 0; slot < PageSize; slot++)
             {
                 int index = start + slot;
@@ -393,8 +485,8 @@ namespace Plop.Presentation
                 button.image.color = index == _currentIndex ? PlopPalette.Berry : done ? PlopPalette.Mint : PlopPalette.Milk;
             }
             _previousPage.interactable = _page > 0;
-            _nextPage.interactable = end < _pickerLevels.Count;
-            _pageLabel.text = (start + 1) + "–" + end + " of " + _pickerLevels.Count;
+            _nextPage.interactable = end < _pickerEnd;
+            _pageLabel.text = "Levels " + (start + 1) + "–" + end;
         }
 
         private void BuildSettings()
@@ -428,7 +520,35 @@ namespace Plop.Presentation
                 () => FrameRateChanged?.Invoke(PlopGameController.FrameRateMode.Fps30), center);
             _rate60 = MakeButton(panel, "60 FPS", new Vector2(171, -546), new Vector2(308, 94), PlopPalette.Milk,
                 () => FrameRateChanged?.Invoke(PlopGameController.FrameRateMode.Fps60), center);
+            _hapticsButton = MakeComfortSwitch(panel, "Haptics", -675, () =>
+            {
+                SetComfortOptions(!_haptics, _reducedMotion);
+                HapticsChanged?.Invoke(_haptics);
+            }, out _hapticsLabel);
+            _motionButton = MakeComfortSwitch(panel, "Reduced motion", -786, () =>
+            {
+                SetComfortOptions(_haptics, !_reducedMotion);
+                ReducedMotionChanged?.Invoke(_reducedMotion);
+            }, out _motionLabel);
+            SetComfortOptions(false, false);
             _settings.gameObject.SetActive(false);
+        }
+
+        private Button MakeComfortSwitch(RectTransform panel, string label, float y, Action onClick, out Text value)
+        {
+            var top = new Vector2(0.5f, 1f);
+            var button = MakeButton(panel, label, new Vector2(0, y), new Vector2(648, 90), PlopPalette.Milk, onClick,
+                top, touchHeight: 102f, iconOnly: true);
+            var center = Vector2.one * 0.5f;
+            var title = MakeText(button.transform, label + " label", HudTheme.Control, FontStyle.Bold, HudTheme.Ink,
+                center, new Vector2(-101, 0), new Vector2(376, 64));
+            title.alignment = TextAnchor.MiddleLeft;
+            title.text = label;
+            var state = MakeBadge((RectTransform)button.transform, "Switch state", new Vector2(112, 60), PlopPalette.ButtonFill);
+            state.anchoredPosition = new Vector2(237, 0);
+            value = MakeText(state, "Value", HudTheme.Caption, FontStyle.Bold, HudTheme.Ink, center,
+                Vector2.zero, new Vector2(110, 52));
+            return button;
         }
 
         private Slider MakeVolume(Transform panel, string label, float y, out Text percent, Action<float> changed)
@@ -480,10 +600,14 @@ namespace Plop.Presentation
 
         private RectTransform BuildModal(string name, Vector2 size, out RectTransform panel)
         {
-            var container = NewRect(name, _safe);
+            var container = NewRect(name, _canvasRoot);
             var blocker = container.gameObject.AddComponent<Image>();
             blocker.color = HudTheme.Ink.WithAlpha(0.18f);
-            panel = NewRect(name + " card", container);
+            var safeContent = NewRect("Safe content", container);
+            safeContent.anchorMin = _safe.anchorMin;
+            safeContent.anchorMax = _safe.anchorMax;
+            _modalSafeAreas.Add(safeContent);
+            panel = NewRect(name + " card", safeContent);
             panel.anchorMin = panel.anchorMax = new Vector2(0.5f, 0.5f);
             panel.sizeDelta = size;
             AddShadow(panel, UiSprites.CardShadow, HudTheme.ShadowOffset, HudTheme.CardShadow);
@@ -502,9 +626,11 @@ namespace Plop.Presentation
         private void FitResponsiveElements()
         {
             if (_deadlockPanel == null) return;
+            FitModal(_worldPanel, WorldPickerSize);
             FitModal(_pickerPanel, PickerSize);
             FitModal(_settingsPanel, SettingsSize);
             FitModal(_deadlockPanel, _deadlockPanel.sizeDelta);
+            if (_worldAnnouncement != null) FitModal(_worldAnnouncement, WorldAnnouncementSize);
             FitPlayRows();
         }
 
@@ -590,6 +716,11 @@ namespace Plop.Presentation
             _safe.anchorMin = min;
             _safe.anchorMax = max;
             _safe.offsetMin = _safe.offsetMax = Vector2.zero;
+            foreach (var safeContent in _modalSafeAreas)
+            {
+                safeContent.anchorMin = min;
+                safeContent.anchorMax = max;
+            }
         }
 
         private static IEnumerator PopIn(RectTransform rt, CanvasGroup group)
@@ -646,6 +777,7 @@ namespace Plop.Presentation
             t.color = color;
             t.raycastTarget = false;
             t.horizontalOverflow = HorizontalWrapMode.Overflow;
+            t.verticalOverflow = VerticalWrapMode.Overflow;
             return t;
         }
 
@@ -705,7 +837,9 @@ namespace Plop.Presentation
                 ButtonActivated?.Invoke();
                 onClick();
             });
-            rt.gameObject.AddComponent<PressScale>();
+            var feedback = rt.gameObject.AddComponent<PressScale>();
+            feedback.enabled = !_reducedMotion;
+            _pressFeedback.Add(feedback);
 
             if (icon.HasValue)
             {

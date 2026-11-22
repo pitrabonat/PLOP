@@ -20,5 +20,7 @@ namespace Plop.Presentation
 
         public void OnPointerUp(PointerEventData eventData) => transform.localScale = Vector3.one;
         public void OnPointerExit(PointerEventData eventData) => transform.localScale = Vector3.one;
+
+        private void OnDisable() => transform.localScale = Vector3.one;
     }
 }

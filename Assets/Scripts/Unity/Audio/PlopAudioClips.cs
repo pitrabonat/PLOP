@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Plop.Presentation
 {
-    internal enum PlopCue { Button, Move, Bump, Settle, Complete, Count }
+    internal enum PlopCue { Button, Move, Bump, Settle, Complete, WorldEntrance, Count }
 
     /// <summary>Original bells and damped tones rendered to small mono clips when first needed.</summary>
     internal static class PlopAudioClips
@@ -20,11 +20,37 @@ namespace Plop.Presentation
                 case PlopCue.Bump: return Chirp("Pebble knock", 0.108, 245, 118, 0.025, 0.32, 2.85);
                 case PlopCue.Settle: return Settlement();
                 case PlopCue.Complete: return Completion();
+                case PlopCue.WorldEntrance: return WorldEntrance();
                 default: throw new ArgumentOutOfRangeException(nameof(cue));
             }
         }
 
-        public static AudioClip CreateMusic()
+        public static AudioClip CreateMusic(WorldAmbience ambience)
+        {
+            switch (ambience)
+            {
+                case WorldAmbience.DewdropGarden:
+                    return WorldLoop("Dewdrop Garden", 1.75, 0.025, 0.016,
+                        new[] { 55, 57, 52, 55, 57, 50, 52, 55 },
+                        new[] { 79, 74, 76, 81, 76, 74, 71, 79 });
+                case WorldAmbience.RainyWindow:
+                    return WorldLoop("Rainy Window", 2.4, 0.004, 0.036,
+                        new[] { 48, 53, 45, 50, 46, 48 },
+                        new[] { 67, 69, 64, 72, 65, 67 });
+                case WorldAmbience.TwilightAttic:
+                    return WorldLoop("Twilight Attic", 2.15, 0.007, 0.008,
+                        new[] { 43, 48, 50, 45, 41, 43 },
+                        new[] { 62, 64, 67, 64, 60, 62 });
+                case WorldAmbience.MoonlitClouds:
+                    return WorldLoop("Moonlit Clouds", 2.5, 0.012, 0.011,
+                        new[] { 45, 48, 53, 52, 50, 45 },
+                        new[] { 81, 84, 79, 76, 77, 81 });
+                default:
+                    return CozyLoop();
+            }
+        }
+
+        private static AudioClip CozyLoop()
         {
             const double bar = 2.0;
             var roots = new[] { 48, 45, 50, 43, 48, 41, 45, 43 };
@@ -42,7 +68,46 @@ namespace Plop.Presentation
                 Bell(pcm, start + 1.21, 0.69, answers[i], 0.10, 0.040);
             }
 
-            return Clip("Quiet toy room", pcm);
+            return Clip("Cozy Nest", pcm);
+        }
+
+        private static AudioClip WorldLoop(string name, double bar, double noiseResponse,
+            double noiseGain, int[] roots, int[] melody)
+        {
+            var pcm = Samples(bar * roots.Length);
+            AddAir(pcm, noiseResponse, noiseGain);
+            for (int i = 0; i < roots.Length; i++)
+            {
+                double start = i * bar;
+                Bell(pcm, start + 0.07, bar * 0.92, roots[i], 0.27, 0.09);
+                Bell(pcm, start + 0.32, bar * 0.57, melody[i], 0.14, 0.048);
+                Bell(pcm, start + bar * 0.58, bar * 0.40, melody[i] - 5, 0.12, 0.029);
+            }
+            return Clip(name, pcm);
+        }
+
+        private static void AddAir(float[] pcm, double response, double gain)
+        {
+            // Deterministic filtered air, tapered at both ends of the loop.
+            uint noise = 0x8AE7BA31u;
+            double filtered = 0;
+            const int edge = SampleRate / 6;
+            for (int i = 0; i < pcm.Length; i++)
+            {
+                noise = unchecked(1664525u * noise + 1013904223u);
+                double white = ((noise >> 16) / 32767.5) - 1.0;
+                filtered += response * (white - filtered);
+                double fade = Math.Min(1.0, Math.Min(i, pcm.Length - i - 1) / (double)edge);
+                pcm[i] = (float)(filtered * gain * fade);
+            }
+        }
+
+        private static AudioClip WorldEntrance()
+        {
+            var pcm = Samples(0.55);
+            Bell(pcm, 0.00, 0.34, 67, 0.045, 0.18);
+            Bell(pcm, 0.12, 0.40, 74, 0.060, 0.16);
+            return Clip("World entrance", pcm);
         }
 
         private static AudioClip Settlement()

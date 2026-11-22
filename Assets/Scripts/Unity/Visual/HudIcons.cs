@@ -5,10 +5,10 @@ namespace Plop.Presentation
     /// <summary>Small round-ended control glyphs in a single baked alpha sheet.</summary>
     internal static class HudIcons
     {
-        internal enum Kind { Levels, Settings, Undo, Restart, Hint, Next, Moves }
+        internal enum Kind { Levels, Settings, Undo, Restart, Hint, Next, Moves, Lock }
 
         private const int Size = 64;
-        private const int IconCount = 7;
+        private const int IconCount = 8;
         private static Sprite[] _sprites;
 
         internal static Sprite Get(Kind kind)
@@ -70,6 +70,10 @@ namespace Plop.Presentation
                     return Min4(bulb, Stroke(p, 28, 15, 36, 15),
                         Stroke(p, 28, 21, 36, 21), Min3(Stroke(p, 32, 51, 32, 56),
                             Stroke(p, 14, 43, 9, 46), Stroke(p, 50, 43, 55, 46)));
+                case Kind.Lock:
+                    float shackle = Mathf.Max(Arc(p, 32f, 32f, 10f, 0f, Mathf.PI), p.y - 47f);
+                    float body = Sdf.RoundBox(p.x, p.y, 32f, 26f, 14f, 11f, 4f);
+                    return Mathf.Max(Mathf.Min(shackle, body), -Sdf.Circle(p.x, p.y, 32f, 25f, 2.8f));
                 case Kind.Moves:
                     return Mathf.Min(Footprint(p - new Vector2(22, 24), -0.23f),
                         Footprint(p - new Vector2(42, 39), 0.29f));

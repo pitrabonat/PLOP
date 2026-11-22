@@ -27,6 +27,9 @@ namespace Plop.Presentation
         public static readonly Color TrayRim = Hex(0xF5D5BF);
         public static readonly Color ContactShadow = Hex(0x996B64);
         public static readonly Color FaceInk = Hex(0x533143);
+        internal static readonly Color GelBounce = Hex(0xFDF0D9);
+        internal static readonly Color SealCream = Hex(0xFFF1DF);
+        internal static readonly Color SealInk = Hex(0x664359);
         public static readonly Color Tile = Hex(0xFFF0E3);
         public static readonly Color TileShade = Hex(0xF2D9C5);
         public static readonly Color PebbleTop = Hex(0xC8B6C2);      // soft lilac-grey toy block

@@ -54,6 +54,43 @@ namespace Plop.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator EveryWorldUsesASeparateLoopAndMutedSwitchesDeferCreation()
+        {
+            var root = new GameObject("World ambience test");
+            try
+            {
+                if (Object.FindAnyObjectByType<AudioListener>() == null) root.AddComponent<AudioListener>();
+                var audio = root.AddComponent<PlopAudio>();
+                audio.Initialize(loadPreferences: false);
+                var music = Array.Find(root.GetComponents<AudioSource>(), source => source.loop);
+                var names = new System.Collections.Generic.HashSet<string>();
+                Assert.IsTrue(names.Add(music.clip.name));
+                foreach (WorldAmbience world in Enum.GetValues(typeof(WorldAmbience)))
+                {
+                    if (world == WorldAmbience.CozyNest) continue;
+                    audio.SetMusicVolume(0f);
+                    audio.SetWorldAmbience(world);
+                    Assert.IsNull(music.clip);
+                    audio.SetMusicVolume(0.17f);
+                    Assert.AreEqual(world, audio.CurrentAmbience);
+                    Assert.AreEqual(1, music.clip.channels);
+                    Assert.IsTrue(names.Add(music.clip.name));
+                    var reused = music.clip;
+                    audio.SetWorldAmbience(world);
+                    Assert.AreSame(reused, music.clip);
+                }
+                Assert.AreEqual(5, names.Count);
+                Assert.That(audio.SoundVolume, Is.EqualTo(0.65f).Within(0.001f));
+            }
+            finally
+            {
+                Object.Destroy(root);
+            }
+
+            yield return null;
+        }
+
+        [UnityTest]
         public IEnumerator MusicAndSoundPreferencesRoundTripSeparately()
         {
             const string musicKey = "plop.musicVolume";

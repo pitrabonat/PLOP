@@ -59,6 +59,7 @@ namespace Plop.Presentation
 
         public static string NestKey(int colorId) => "nest" + colorId;
         public static string PlopKey(int colorId) => "plop" + colorId;
+        public static string NestSealKey(int colorId) => "nestSeal" + colorId;
 
         // ============================================================================================
 
@@ -86,6 +87,7 @@ namespace Plop.Presentation
             {
                 AddNest(specs, c);
                 AddPlop(specs, c);
+                AddNestSeal(specs, c);
             }
             AddWorriedPlop(specs);
 
@@ -111,22 +113,31 @@ namespace Plop.Presentation
             }
         }
 
-        /// <summary>Simple shelf packer with 2 px padding. Returns the power-of-two atlas height.</summary>
+        /// <summary>Packs sprites into the first shelf with room and leaves two pixels between shapes.</summary>
         private static int Pack(List<Spec> specs, int width)
         {
             var order = new List<Spec>(specs);
             order.Sort((a, b) => b.H.CompareTo(a.H));
-            int x = 1, y = 1, shelf = 0;
-            foreach (var s in order)
+            var shelves = new List<(int NextX, int Y)>();
+            int nextY = 1;
+            foreach (var spec in order)
             {
-                if (x + s.W + 1 > width) { x = 1; y += shelf + 2; shelf = 0; }
-                s.Slot = new RectInt(x, y, s.W, s.H);
-                x += s.W + 2;
-                shelf = Mathf.Max(shelf, s.H);
+                // The descending height order means all existing shelves are tall enough.
+                int slot = 0;
+                while (slot < shelves.Count && shelves[slot].NextX + spec.W + 1 > width) slot++;
+                if (slot == shelves.Count)
+                {
+                    shelves.Add((1, nextY));
+                    nextY += spec.H + 2;
+                }
+                var shelf = shelves[slot];
+                spec.Slot = new RectInt(shelf.NextX, shelf.Y, spec.W, spec.H);
+                shelves[slot] = (shelf.NextX + spec.W + 2, shelf.Y);
             }
-            int needed = y + shelf + 1, h = 64;
-            while (h < needed) h *= 2;
-            return h;
+
+            int height = 64;
+            while (height < nextY - 1) height *= 2;
+            return height;
         }
 
         private static void Rasterize(Spec spec, Color32[] atlas, int width)
@@ -168,7 +179,7 @@ namespace Plop.Presentation
         private static Color PaintTile(float x, float y, float pixel)
         {
             float half = TileSize * 0.5f;
-            Color warmBase = Color.Lerp(PlopPalette.TileShade, PlopPalette.ContactShadow, 0.42f);
+            Color warmBase = Color.Lerp(PlopPalette.TileShade, PlopPalette.ContactShadow, 0.36f);
             float contact = Sdf.RoundBox(x, y, 0.014f, -0.021f, half - 0.016f, half - 0.016f, TileRadius);
             var c = Sdf.Over(warmBase.WithAlpha(0f), PlopPalette.ContactShadow, 0.29f * Sdf.Soft(contact, 0.027f));
 
@@ -186,7 +197,7 @@ namespace Plop.Presentation
             var ivory = Color.Lerp(PlopPalette.TileShade, PlopPalette.Tile, 0.63f + 0.29f * diffuse);
             float edgeLight = RoundedEdgeLight(x, y - faceY, half - 0.008f, faceHalfHeight, TileRadius);
             var edge = Color.Lerp(Color.Lerp(warmBase, ivory, 0.48f), PlopPalette.Highlight, 0.13f + 0.84f * edgeLight);
-            var glazed = Color.Lerp(edge, ivory, Smooth(-face / 0.054f));
+            var glazed = Color.Lerp(edge, ivory, Smooth(-face / 0.061f));
             return Sdf.Over(c, glazed, faceAlpha);
         }
 
@@ -271,9 +282,9 @@ namespace Plop.Presentation
         {
             specs.Add(Make("plopShadow", -0.46f, -0.165f, 0.92f, 0.33f, (x, y, px) =>
             {
-                float ambient = ContactFalloff(x - 0.031f, y + 0.025f, 0.408f, 0.123f);
-                float contact = ContactFalloff(x - 0.012f, y - 0.001f, 0.278f, 0.063f);
-                float alpha = 0.27f * ambient + 0.13f * contact;
+                float ambient = ContactFalloff(x - 0.035f, y + 0.023f, 0.414f, 0.119f);
+                float contact = ContactFalloff(x - 0.018f, y - 0.010f, 0.293f, 0.046f);
+                float alpha = 0.25f * ambient + 0.21f * contact;
                 return PlopPalette.ContactShadow.WithAlpha(alpha);
             }));
 
@@ -367,56 +378,128 @@ namespace Plop.Presentation
             return Sdf.RoundBox(x, y, 0f, 0f, NestSize * 0.5f - pinchX, NestSize * 0.46f - pinchY, NestRadius);
         }
 
+        // Matching seals stay visible on a pillow's corner when another Plop crosses it.
+        // The same shape is pressed into the lower body sprite, leaving the face unobstructed.
+        private void AddNestSeal(List<Spec> specs, int colorId)
+        {
+            var low = Color.Lerp(PlopPalette.ContactShadow, PlopPalette.TileShade, 0.42f);
+            specs.Add(Make(NestSealKey(colorId), -0.145f, -0.145f, 0.29f, 0.29f, (x, y, px) =>
+            {
+                float edge = Sdf.Circle(x, y, 0f, 0f, 0.112f);
+                float shade = Sdf.Soft(Sdf.Circle(x, y, 0.007f, -0.012f, 0.112f), 0.023f);
+                var c = low.WithAlpha(0.53f * shade);
+                var rim = Color.Lerp(PlopPalette.TileShade, PlopPalette.Highlight,
+                    Smooth(0.58f + y * 5.2f - x * 2.8f));
+                var ceramic = Color.Lerp(rim, PlopPalette.SealCream, Smooth(-edge / 0.025f));
+                ceramic = Color.Lerp(ceramic, PlopPalette.SealInk, SealInkCoverage(colorId, x, y, 0.075f, px));
+                return Sdf.Over(c, ceramic, Sdf.Coverage(edge, px));
+            }, maxDensity: 128));
+        }
+
+        private static float SealInkCoverage(int colorId, float x, float y, float scale, float pixel)
+            => Sdf.Coverage(MatchMarkDistance(colorId, x / scale, y / scale) * scale, pixel);
+
+        /// <summary>Normalized outlines for the six color-independent match marks.</summary>
+        internal static float MatchMarkDistance(int colorId, float x, float y)
+        {
+            float ax = Mathf.Abs(x);
+            float ay = Mathf.Abs(y);
+            switch (colorId)
+            {
+                case 0: // heart
+                    return Sdf.SmoothMin(Sdf.Circle(ax, y, 0.30f, 0.22f, 0.40f),
+                        TaperedTip(ax, -y, -0.31f, 0.79f, 0.69f), 0.08f);
+                case 1: // drop
+                    return Sdf.SmoothMin(Sdf.Circle(x, y, 0f, -0.23f, 0.56f),
+                        TaperedTip(ax, y, -0.24f, 0.85f, 0.51f), 0.10f);
+                case 2: // four-point sparkle
+                    return Mathf.Sqrt(ax) + Mathf.Sqrt(ay) - 0.94f;
+                case 3: // leaf
+                    float u = x * 0.77f - y * 0.64f;
+                    float v = y * 0.77f + x * 0.64f;
+                    return Mathf.Max(Sdf.Circle(u, v, -0.46f, 0f, 0.90f),
+                                     Sdf.Circle(u, v, 0.46f, 0f, 0.90f));
+                case 4: // diamond
+                    return (ax + ay * 0.91f - 0.79f) * 0.71f;
+                default: // four-petal flower
+                    return Sdf.SmoothMin(Sdf.Circle(ax, ay, 0.275f, 0.275f, 0.33f),
+                        Sdf.Circle(x, y, 0f, 0f, 0.39f), 0.09f);
+            }
+        }
+
+        private static float TaperedTip(float x, float y, float bottom, float tip, float halfWidth)
+            => Mathf.Max(bottom - y, x - halfWidth * (tip - y) / (tip - bottom));
+
         private sealed class JellyMaterial
         {
-            private readonly Color _body;
-            private readonly Color _lit;
-            private readonly Color _rim;
-            private readonly Color _bounce;
+            private readonly int _colorId;
+            private readonly Color _body, _lit, _core, _scatter, _floor;
+            private readonly float _lean, _crown;
 
             public JellyMaterial(int colorId)
             {
+                _colorId = colorId;
                 _body = PlopPalette.PlopBody(colorId);
-                _lit = Color.Lerp(_body, PlopPalette.Highlight, 0.40f);
-                _rim = Color.Lerp(_body, PlopPalette.Ink, 0.32f);
-                _bounce = Color.Lerp(_body, PlopPalette.TrayRim, 0.40f);
+                _lit = Color.Lerp(_body, PlopPalette.Highlight, 0.34f);
+                _core = Color.Lerp(_body, PlopPalette.FaceInk, 0.25f);
+                _scatter = Color.Lerp(_body, PlopPalette.GelBounce, 0.51f);
+                _floor = Color.Lerp(_body, PlopPalette.GelBounce, 0.67f);
+                _lean = (colorId % 3 - 1) * 0.051f;
+                _crown = 1f + (colorId / 3 * 2 - 1) * 0.018f;
             }
 
             public Color Paint(float x, float y, float pixel)
             {
-                float d = BodyDistance(x, y);
+                float d = BodyDistance(x + _lean * Mathf.Max(0f, y - 0.16f), y * _crown);
                 float inside = Sdf.Coverage(d, pixel);
                 if (inside <= 0f) return _body.WithAlpha(0f);
 
-                // A lightly bulged normal field gives the dome a curved diffuse falloff.
-                float nx = (x + 0.016f) / 0.410f;
-                float ny = (y - 0.340f) / 0.408f;
+                // Thin gel carries the light across its rim while the thicker center holds its tint.
+                float nx = (x + 0.018f) / 0.408f;
+                float ny = (y - 0.346f) / 0.399f;
                 float nz = Mathf.Sqrt(Mathf.Max(0f, 1f - nx * nx - ny * ny));
-                float diffuse = Smooth(0.23f - 0.38f * nx + 0.46f * ny + 0.62f * nz);
-                var shell = Color.Lerp(Color.Lerp(_body, _rim, 0.64f), _lit, diffuse * 0.76f);
-                float reflectedFloor = Sdf.Ellipse(x, y, 0.059f, 0.072f, 0.284f, 0.039f);
-                shell = Color.Lerp(shell, _bounce, 0.73f * Sdf.Soft(reflectedFloor, 0.075f));
+                float diffuse = Smooth(0.22f - 0.36f * nx + 0.45f * ny + 0.58f * nz);
+                float thickness = Smooth(-d / 0.195f);
+                var gel = Color.Lerp(_scatter, _body, thickness);
+                float lowBody = Smooth((0.41f - y + 0.21f * x) / 0.38f);
+                gel = Color.Lerp(gel, _core, 0.72f * lowBody * thickness);
+                gel = Color.Lerp(gel, _lit, 0.61f * diffuse);
 
-                // The compressed floor-facing edge carries color; the high rim is backlit through the jelly.
-                float edgeLight = Smooth(0.10f + 1.1f * y - 0.64f * x);
-                var edge = Color.Lerp(_rim, _lit, edgeLight);
-                shell = Color.Lerp(edge, shell, Smooth(-d / 0.064f));
-                // Light transmitted through the gel catches the rounded foot and opposite rim.
-                float lowRim = (1f - Smooth((y - 0.068f) / 0.27f)) * Smooth(-d / 0.014f) * (1f - Smooth(-d / 0.091f));
-                shell = Color.Lerp(shell, _bounce, lowRim * 0.61f);
+                float softRim = (1f - Smooth(-d / 0.079f)) * Smooth(-d / 0.013f);
+                float side = Smooth(0.66f + 0.58f * y - 0.45f * x);
+                gel = Color.Lerp(gel, _scatter, softRim * side * 0.60f);
+                float bounced = Sdf.Soft(Sdf.Ellipse(x, y, 0.013f, 0.059f, 0.277f, 0.025f), 0.051f);
+                gel = Color.Lerp(gel, _floor, 0.83f * bounced);
+                // Two dim fillets ground the scalloped edge without a hard white perimeter.
+                if (y < 0.18f)
+                {
+                    float footX = Mathf.Abs(x) - 0.253f;
+                    float fillet = Sdf.Ellipse(footX, y, 0f, 0.088f, 0.101f, 0.019f);
+                    gel = Color.Lerp(gel, _floor, 0.68f * Sdf.Soft(fillet, 0.029f));
+                }
 
-                float glintX = x + 0.203f;
-                float glintY = y - 0.562f;
-                float along = glintX * 0.80f + glintY * 0.60f;
-                float across = glintY * 0.80f - glintX * 0.60f;
-                float softbox = Sdf.Ellipse(along, across, 0f, 0f, 0.138f, 0.071f);
-                shell = Color.Lerp(shell, PlopPalette.Highlight, 0.44f * Sdf.Soft(softbox, 0.064f));
-                float glaze = Sdf.Ellipse(along, across, 0f, 0f, 0.084f, 0.033f);
-                shell = Color.Lerp(shell, PlopPalette.Highlight, 0.92f * Sdf.Soft(glaze, 0.018f));
-                float pin = Sdf.Ellipse(x + (y - 0.633f) * 0.32f, y, 0.118f, 0.643f, 0.042f, 0.013f);
-                shell = Color.Lerp(shell, PlopPalette.Highlight, 0.59f * Sdf.Soft(pin, 0.019f));
+                float specX = x + 0.199f;
+                float specY = y - 0.569f;
+                float along = specX * 0.80f + specY * 0.60f;
+                float across = specY * 0.80f - specX * 0.60f;
+                float softbox = Sdf.Ellipse(along, across, 0f, 0f, 0.130f, 0.075f);
+                gel = Color.Lerp(gel, _scatter, 0.52f * Sdf.Soft(softbox, 0.084f));
+                float sheen = Sdf.Ellipse(along, across, 0f, 0f, 0.084f, 0.039f);
+                gel = Color.Lerp(gel, PlopPalette.Highlight, 0.77f * Sdf.Soft(sheen, 0.026f));
+                float secondary = Sdf.Ellipse(x + (y - 0.630f) * 0.27f, y, 0.093f, 0.630f, 0.047f, 0.014f);
+                gel = Color.Lerp(gel, PlopPalette.Highlight, 0.40f * Sdf.Soft(secondary, 0.025f));
 
-                return shell.WithAlpha(inside * Mathf.Lerp(0.98f, 0.94f, Smooth(-d / 0.16f)));
+                float stampX = x - 0.202f;
+                float stampY = y - 0.170f;
+                if (Mathf.Abs(stampX) < 0.11f && Mathf.Abs(stampY) < 0.11f)
+                {
+                    float stamp = Sdf.Circle(stampX, stampY, 0f, 0f, 0.090f);
+                    gel = Color.Lerp(gel, PlopPalette.SealCream, 0.56f * Sdf.Coverage(stamp, pixel));
+                    gel = Color.Lerp(gel, PlopPalette.SealInk,
+                        0.94f * SealInkCoverage(_colorId, stampX, stampY, 0.067f, pixel));
+                }
+
+                return gel.WithAlpha(inside * Mathf.Lerp(0.89f, 0.99f, thickness));
             }
         }
 

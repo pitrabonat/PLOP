@@ -73,6 +73,14 @@ namespace Plop.Presentation
             return Math.Max(0, fallback);
         }
 
+        // Keep the campaign frontier available even when the resume record points to an older replay.
+        public int FrontierIndex()
+        {
+            for (int i = _levels.Count - 1; i >= 0; i--)
+                if (IsUnlocked(i)) return i;
+            return 0;
+        }
+
         public void Visit(int index, bool persist)
         {
             _resumeId = _levels[index].Id;

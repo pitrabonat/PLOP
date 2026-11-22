@@ -18,29 +18,32 @@ namespace Plop.Presentation
         private const float BumpImpactTime = 0.42f;
         private const float BodyScale = 0.98f;
         private const float GroundY = -0.345f;
+        internal const float RestoreDuration = 0.12f;
+        private const float LandingSqueeze = 0.095f;
 
         public readonly Transform Root;
         private readonly Transform _pose, _body, _eyeL, _eyeR, _cheekL, _cheekR, _mouth, _shadow;
         private readonly SpriteRenderer _bodyR, _eyeLR, _eyeRR, _cheekLR, _cheekRR, _mouthR, _shadowR;
         private readonly Sprite _eyeOpen, _eyeClosed, _mouthAwake, _mouthSleep, _mouthBump;
 
-        private Vector3 _from, _to;
+        private Vector3 _from, _to, _restoreOffset;
         private Vector2 _moveDir, _bumpDir, _landDir, _look;
         private float _moveT0 = -1f, _bumpT0 = -1f, _landT0 = -1f, _sleepT0 = -1f, _hopT0 = -1f, _blinkT0 = -1f;
-        private float _nextBlink, _lookUntil;
+        private float _nextBlink, _lookUntil, _restoreT0 = -1f;
         private readonly float _phase;
-        private bool _asleep, _sleepPending, _sleepPoseFrozen;
+        private bool _asleep, _sleepPending, _sleepPoseFrozen, _reducedMotion;
         private uint _rng;
 
         internal bool IsSliding => _moveT0 >= 0f;
         public bool IsMoving => IsSliding || _bumpT0 >= 0f;
-        public bool IsBusy(float now) => IsMoving || _landT0 >= 0f || _hopT0 >= 0f || _sleepPending ||
+        public bool IsBusy(float now) => IsMoving || _landT0 >= 0f || _hopT0 >= 0f || _sleepPending || _restoreT0 >= 0f ||
                                          (_sleepT0 >= 0f && now - _sleepT0 < SleepDuration);
         public Vector3 Target => _to;
         public bool SleepJustStarted { get; private set; }
 
-        public PlopView(Transform parent, ShapeAtlas atlas, int colorId, int seed)
+        public PlopView(Transform parent, ShapeAtlas atlas, int colorId, int seed, bool reducedMotion = false)
         {
+            _reducedMotion = reducedMotion;
             Root = new GameObject("Plop").transform;
             Root.SetParent(parent, false);
             _pose = new GameObject("Pose").transform;
@@ -97,16 +100,57 @@ namespace Plop.Presentation
         public void Snap(Vector3 position, bool asleep)
         {
             _from = _to = position;
-            _moveT0 = _bumpT0 = _landT0 = _hopT0 = _sleepT0 = _blinkT0 = -1f;
+            _moveT0 = _bumpT0 = _landT0 = _hopT0 = _sleepT0 = _blinkT0 = _restoreT0 = -1f;
             _sleepPending = _sleepPoseFrozen = false;
             _asleep = asleep;
             _look = Vector2.zero;
+            SleepJustStarted = false;
             _nextBlink = Time.unscaledTime + 1f + Rand() * 3f;
-            Tick(Time.unscaledTime);
+            if (_reducedMotion) ApplyStillPose();
+            else Tick(Time.unscaledTime);
+        }
+
+        /// <summary>The view root restores immediately. A small Undo offset decays on its child pose.</summary>
+        public void Restore(Vector3 position, bool asleep, bool ease)
+        {
+            Vector3 delta = Root.localPosition + _pose.localPosition - position;
+            Snap(position, asleep);
+            if (!ease || _reducedMotion || delta.sqrMagnitude < 0.0025f || delta.sqrMagnitude > 1.21f)
+                return;
+            _restoreOffset = delta;
+            _restoreT0 = Time.unscaledTime;
+            _pose.localPosition = delta;
+            _sleepPoseFrozen = false;
+        }
+
+        public void SetReducedMotion(bool reduced)
+        {
+            if (_reducedMotion == reduced) return;
+            _reducedMotion = reduced;
+            Snap(_to, _asleep || _sleepPending);
+        }
+
+        private void ApplyStillPose()
+        {
+            Root.localPosition = _to;
+            _pose.localPosition = Vector3.zero;
+            _body.localPosition = new Vector3(0f, _asleep ? GroundY - 0.012f : GroundY, 0f);
+            _body.localRotation = Quaternion.identity;
+            _body.localScale = _asleep
+                ? new Vector3(1.049f * BodyScale, 0.83f * BodyScale, 1f)
+                : new Vector3(BodyScale, BodyScale, 1f);
+            float shadowWidth = _asleep ? 1.049f : 1f;
+            _shadow.localScale = new Vector3(shadowWidth, shadowWidth, 1f);
+            ApplyFace(Vector2.zero, 1f, _asleep ? 1f : 0f, 0f);
         }
 
         public void StartMove(Vector3 to, Vector2 dir, float now)
         {
+            if (_reducedMotion)
+            {
+                Snap(to, false);
+                return;
+            }
             _from = Root.localPosition;
             _to = to;
             _moveDir = dir;
@@ -118,7 +162,7 @@ namespace Plop.Presentation
 
         public void StartBump(Vector2 dir, float now)
         {
-            if (_asleep || _sleepPending) return;
+            if (_reducedMotion || _asleep || _sleepPending) return;
             _bumpDir = dir;
             _bumpT0 = now;
             _look = dir * 0.033f;
@@ -127,13 +171,18 @@ namespace Plop.Presentation
 
         public void QueueSleep(float now)
         {
+            if (_reducedMotion)
+            {
+                Snap(_to, true);
+                return;
+            }
             _sleepPending = true;
             if (!IsSliding) _sleepT0 = now;
         }
 
         public void StartHop(float startTime)
         {
-            if (_hopT0 >= 0f) return;
+            if (_reducedMotion || _hopT0 >= 0f) return;
             _hopT0 = startTime;
             _sleepPoseFrozen = false;
         }
@@ -141,7 +190,7 @@ namespace Plop.Presentation
         public void Tick(float now)
         {
             SleepJustStarted = false;
-            if (_sleepPoseFrozen) return;
+            if (_reducedMotion || _sleepPoseFrozen) return;
 
             // The root follows the board's supplied endpoints. Every other offset stays on a child.
             Vector3 position = _to;
@@ -168,16 +217,17 @@ namespace Plop.Presentation
             }
 
             float recoil = BumpAmount(now);
-            _pose.localPosition = (Vector3)(_bumpDir * (0.083f * recoil));
+            _pose.localPosition = RestoreOffset(now) + (Vector3)(_bumpDir * (0.083f * recoil));
 
             float asleep = !_asleep ? 0f : _sleepT0 < 0f ? 1f : Smooth((now - _sleepT0) / SleepDuration);
             float awake = 1f - asleep;
-            float breath = Mathf.Sin(now * (2f * Mathf.PI / 2.9f) + _phase);
-            float breathScale = 0.028f * breath * awake;
+            float idle = IsMoving || _restoreT0 >= 0f ? awake * 0.24f : awake;
+            float breath = Mathf.Sin(now * (2f * Mathf.PI / 3.4f) + _phase);
+            float breathScale = 0.023f * breath * idle;
             float sx = 1f - breathScale * 0.65f + 0.049f * asleep;
             float sy = 1f + breathScale - 0.17f * asleep;
             float lift = -0.012f * asleep;
-            float tilt = 0.98f * Mathf.Sin(now * 1.79f + _phase) * awake;
+            float tilt = 0.85f * Mathf.Sin(now * 1.64f + _phase) * idle;
 
             if (IsSliding)
             {
@@ -190,9 +240,11 @@ namespace Plop.Presentation
                 {
                     float travel = Mathf.Clamp01((moveTime - AnticipationDuration) / (MoveDuration - AnticipationDuration));
                     float stretch = Mathf.Sin(Mathf.PI * travel);
-                    along = 1f - 0.15f * Mathf.Max(0f, 1f - travel * 6f) + 0.20f * stretch;
-                    tilt -= 5f * _moveDir.x * stretch;
-                    lift += 0.028f * stretch;
+                    float release = 1f - Smooth(travel / 0.31f);
+                    float landing = Smooth((travel - 0.71f) / 0.29f);
+                    along = 1f - 0.15f * release + 0.20f * stretch - LandingSqueeze * landing;
+                    tilt -= 4.2f * _moveDir.x * stretch;
+                    lift += 0.029f * stretch;
                 }
                 ApplyAxis(_moveDir, along, ref sx, ref sy);
             }
@@ -203,7 +255,7 @@ namespace Plop.Presentation
                 else
                 {
                     float envelope = (1f - u) * (1f - u);
-                    float along = 1f - 0.12f * Mathf.Cos(3f * Mathf.PI * u) * envelope;
+                    float along = 1f - LandingSqueeze * Mathf.Cos(2.7f * Mathf.PI * u) * envelope;
                     ApplyAxis(_landDir, along, ref sx, ref sy);
                 }
             }
@@ -226,7 +278,17 @@ namespace Plop.Presentation
             if (!_asleep && recoil > 0f) eyeOpen *= 1f - 0.72f * Smooth(recoil);
             Vector2 look = Vector2.Lerp(_look, Vector2.zero, Smooth((now - _lookUntil) / 0.29f)) * (1f - asleep);
             ApplyFace(look, eyeOpen, asleep, recoil);
-            _sleepPoseFrozen = _asleep && asleep >= 1f && _hopT0 < 0f && _landT0 < 0f && !IsMoving;
+            _sleepPoseFrozen = _asleep && asleep >= 1f && _hopT0 < 0f && _landT0 < 0f &&
+                               _restoreT0 < 0f && !IsMoving;
+        }
+
+        private Vector3 RestoreOffset(float now)
+        {
+            if (_restoreT0 < 0f) return Vector3.zero;
+            float progress = (now - _restoreT0) / RestoreDuration;
+            if (progress < 1f) return _restoreOffset * (1f - Smooth(progress));
+            _restoreT0 = -1f;
+            return Vector3.zero;
         }
 
         private float Blink(float now)
@@ -271,14 +333,15 @@ namespace Plop.Presentation
 
         private void ApplyFace(Vector2 look, float eyeOpen, float asleep, float recoil)
         {
-            bool closed = _asleep && asleep >= 0.38f;
+            bool sleepingFace = _asleep && asleep >= 0.38f;
+            bool closed = sleepingFace || (!_asleep && eyeOpen < 0.17f && recoil < 0.3f);
             Sprite eyeSprite = closed ? _eyeClosed : _eyeOpen;
             if (_eyeLR.sprite != eyeSprite)
             {
                 _eyeLR.sprite = eyeSprite;
                 _eyeRR.sprite = eyeSprite;
             }
-            Sprite mouthSprite = closed ? _mouthSleep : recoil > 0.58f ? _mouthBump : _mouthAwake;
+            Sprite mouthSprite = sleepingFace ? _mouthSleep : recoil > 0.58f ? _mouthBump : _mouthAwake;
             if (_mouthR.sprite != mouthSprite) _mouthR.sprite = mouthSprite;
 
             float faceOffset = -0.022f * asleep;
@@ -308,8 +371,9 @@ namespace Plop.Presentation
 
         private static float Travel(float t)
         {
-            float settling = 1f - (1f - t) * (1f - t);
-            return Mathf.Lerp(Smooth(t), settling, 0.45f);
+            // A gently front-loaded curve with zero velocity at both endpoints.
+            float remaining = 1f - t;
+            return Smooth(t) + 2.15f * t * t * remaining * remaining;
         }
         private static float Smooth(float t) { t = Mathf.Clamp01(t); return t * t * (3f - 2f * t); }
     }

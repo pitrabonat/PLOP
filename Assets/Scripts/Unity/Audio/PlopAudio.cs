@@ -19,11 +19,13 @@ namespace Plop.Presentation
 
         public float MusicVolume { get; private set; } = DefaultMusic;
         public float SoundVolume { get; private set; } = DefaultSound;
+        public WorldAmbience CurrentAmbience { get; private set; } = WorldAmbience.CozyNest;
 
-        public void Initialize(bool loadPreferences)
+        public void Initialize(bool loadPreferences, WorldAmbience ambience = WorldAmbience.CozyNest)
         {
             if (_initialized) return;
             _storesPreferences = loadPreferences;
+            CurrentAmbience = ambience;
             if (loadPreferences)
             {
                 MusicVolume = VolumeOrDefault(PlayerPrefs.GetFloat(MusicKey, DefaultMusic), DefaultMusic);
@@ -34,6 +36,23 @@ namespace Plop.Presentation
             _effects.volume = SoundVolume;
             _music = CreateSource(loop: true, priority: 180);
             _initialized = true;
+            ApplyMusic();
+        }
+
+        public void SetWorldAmbience(WorldAmbience ambience)
+        {
+            if (CurrentAmbience == ambience) return;
+            CurrentAmbience = ambience;
+            if (_music != null)
+            {
+                _music.Stop();
+                _music.clip = null;
+            }
+            if (_musicClip != null)
+            {
+                Destroy(_musicClip);
+                _musicClip = null;
+            }
             ApplyMusic();
         }
 
@@ -66,7 +85,8 @@ namespace Plop.Presentation
             _preferencesChanged = false;
         }
 
-        public void PlayButton() => Play(PlopCue.Button, 0.68f, 0.055);
+        public void PlayButton() => Play(PlopCue.Button, 0.63f, 0.055);
+        public void PlayWorldEntrance() => Play(PlopCue.WorldEntrance, 0.60f, 0.30);
 
         public void PlayMove(GameEvent[] events)
         {
@@ -128,7 +148,7 @@ namespace Plop.Presentation
 
             if (_musicClip == null)
             {
-                _musicClip = PlopAudioClips.CreateMusic();
+                _musicClip = PlopAudioClips.CreateMusic(CurrentAmbience);
                 _music.clip = _musicClip;
             }
             if (!_music.isPlaying) _music.Play();
