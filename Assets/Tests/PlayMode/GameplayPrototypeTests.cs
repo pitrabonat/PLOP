@@ -127,6 +127,18 @@ namespace Plop.Tests.PlayMode
             Assert.IsNull(controller.PendingMove);
             Assert.AreEqual(0, controller.Engine.MoveCount);
             AssertViewsMatchState(controller);
+
+            controller.RequestMove(Direction.Right);
+            controller.RequestMove(Direction.Right);
+            Assert.NotNull(controller.PendingMove);
+            controller.enabled = false;
+            controller.RequestMove(Direction.Right);
+            controller.Move(Direction.Right);
+            Assert.IsNull(controller.PendingMove);
+            Assert.AreEqual(1, controller.Engine.MoveCount);
+            controller.enabled = true;
+            yield return WaitForAnimation(controller);
+            AssertViewsMatchState(controller);
         }
 
         [UnityTest]

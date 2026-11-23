@@ -628,6 +628,7 @@ namespace Plop.Presentation
 
             _muteButton = MakeComfortSwitch(panel, "Master mute", -470, () =>
             {
+                ModalInteracted?.Invoke();
                 SetMasterMuted(!_masterMuted);
                 MasterMuteChanged?.Invoke(_masterMuted);
             }, out _muteLabel);

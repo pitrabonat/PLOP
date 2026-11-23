@@ -91,7 +91,7 @@ namespace Plop.Presentation
             = SearchForDeadlockAsync;
         internal Direction? PendingMove => _pendingMove;
         private bool SavesProgress => rememberProgress && !_debugPreview;
-        private bool GameplayBlocked => _suspended || _hud.BlocksGameplayInput;
+        private bool GameplayBlocked => !isActiveAndEnabled || _suspended || _hud.BlocksGameplayInput;
 
         public bool IsLevelUnlocked(int index) => _progress?.IsUnlocked(index) == true;
         public bool IsLevelCompleted(int index) => _progress?.IsCompleted(index) == true;
@@ -377,7 +377,7 @@ namespace Plop.Presentation
 
         public bool TrySelectLevel(int index)
         {
-            if (_suspended || _hud.IsSettingsOpen || _hud.IsDeadlockOpen || !IsLevelUnlocked(index)) return false;
+            if (!isActiveAndEnabled || _suspended || _hud.IsSettingsOpen || _hud.IsDeadlockOpen || !IsLevelUnlocked(index)) return false;
             ClearPendingInput();
             _hud.CloseLevelPicker();
             if (index == _index && !_engine.IsCompleted) return true;
