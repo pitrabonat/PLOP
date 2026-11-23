@@ -54,6 +54,98 @@ detect rule regressions; the code was restored afterwards.
 | Deadlock proofs | `DeadlockCatalogTests` covers exact solvable and proven-deadlocked states, incomplete graphs, unknown states, geometry changes and corrupt data |
 | Recovery UI | `DeadlockRecoveryTests` checks production Level 8’s movable trap, Undo, Restart, dismissal, a bounded search, completion priority, superseded swipes and a pending result during level changes |
 
+## Phase 7 baseline and regression coverage
+
+The Phase 6 checkpoint passed 98 .NET, 98 Unity EditMode and 51
+Unity PlayMode tests on the mounted checkout. An offline API 37
+Android emulator reproduced rejected 48 px swipes and accepted
+near-diagonal 180×175 px swipes at 1080×1920. A 610 px swipe
+registered once. Swiping from Hint left the board alone. Cold launch,
+Home and return, and screen off and wake preserved the original
+Level 3 save and settings.
+
+The Phase 7 candidate passed 98 .NET, 98 EditMode and 66 PlayMode
+tests. Added or expanded coverage includes real Input System events,
+the single pending command, rapid restoration, recoil, pause,
+persistent audio controls, crossfade and absolute cue priority.
+The tests also cover verified directional hints, reduced motion,
+unchanged-board deadlock deduplication and world progression.
+
+Strict production verification passed all 100 levels. Their serialized
+data, original solutions, Core transitions and deadlock table match
+`checkpoint/pre-phase7`. The [campaign playtest checklist](PHASE7_CAMPAIGN_PLAYTEST.md)
+records potential difficulty outliers and a plan for blind playtesting.
+
+At 720×1280, Unity ProfilerRecorder reported 87 board-and-backdrop
+draw calls, 87 batches and 86 active sprites on Level 100 in both
+the Phase 6 baseline and Phase 7 Editor PlayMode. It measures the
+board scene before HUD drawing. Awake Plops skip redundant stationary
+face and root transforms. That is a reduction in setter calls from
+code-path inspection. Frame and time counters need a device sample.
+
+On the Phase 6 APK, SurfaceFlinger sampled 18 swipes per mode on
+Level 2 at 1080×1920 with the stale Editor suspended and 10 logical
+host cores. The host's one-minute load was 17.23–19.16.
+
+| Selected cap | Present intervals | Median | 90th percentile | PSS |
+|---|---:|---:|---:|---:|
+| 60 FPS | 86 | 45 ms | 66 ms | 266,490 KiB |
+| 30 FPS | 89 | 46 ms | 70 ms | 266,827 KiB |
+
+### Signed Android build
+
+The 45,478,501-byte ARM64 development APK is at
+`/Volumes/PLOP_DEV/Builds/Android/Phase7/PLOP-phase7-dev.apk`.
+The Android SDK aligned and repacked the Gradle archive. All entries
+retained their sizes and checksums. The APK passed v2 signature and
+16 KB ZIP alignment checks. The signing certificate matches Phase 6.
+SHA-256 is
+`3c6f6addaa7181c4761e2016261c4383182090aac6f639c37fd26548defebc5d`.
+
+### Offline Android player
+
+On the Android API 37 emulator, installing Phase 7 over the signed Phase
+6 build preserved the earned Level 3 save byte for byte. Both completed
+IDs, all three unlocked IDs and the resume ID matched. The offline
+player launched into Level 3 on the same install.
+
+At 1080×1920 and 420 dpi, a 24 px drag produced zero moves and a 48 px
+drag produced exactly one. Undo restored zero. A near-diagonal
+180×175 px drag produced zero moves. This is touch-injection validation
+through Android and Unity. Physical touch behavior still requires a
+phone.
+
+A 610 px swipe advanced exactly once, and starting a drag over Hint
+left the move count alone. The verified hint indicated Up at zero moves
+and two back-to-back Up swipes completed Level 2 in two moves. At
+720×1280 and 320 dpi, a 35 px swipe registered once. The largest checked
+board was Level 100 at 1440×3200.
+
+Level 8 reached its exact proof after Up and Left. Keep playing
+preserved the two-move state and a blocked swipe triggered no duplicate.
+Undo restored one move and Restart restored zero. With a labeled
+Level 41 fixture, the World picker ignored a locked World, replayed
+Level 21 and resumed Level 41 with its completed and unlocked IDs.
+
+Home and return, and screen off and wake, returned to the same
+foreground Android process with byte-identical Level 3 preferences.
+Touching the frame setting persisted both 30 and 60. Music gain
+0.2910 and effects gain 0.8142 survived turning on master mute, a cold
+restart and unmute. The tested mute states were 0, 1, 1 and 0.
+
+### Audio assets
+
+The five original 12-second mono ambience WAVs regenerate byte for byte
+with `Tools/AudioArt/render_ambience.py`. PCM loop RMS ranges from −37
+to −35 dBFS, and the largest measured cyclic sample or slope difference
+is −90.3 dBFS. The assets and the ten synthesized event cues have zero
+clipped source samples. Unity PlayMode verified playback state, crossfade
+gain, focus changes and persistence. Speaker mix and haptic feel on
+physical phones remain pending.
+
+Raw Phase 7 test and platform logs are in
+`/Volumes/PLOP_DEV/Builds/Logs/phase7/`.
+
 ## Phase 6 campaign and presentation
 
 Strict production verification passed for all 100 original levels.

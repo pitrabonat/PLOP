@@ -14,9 +14,11 @@ Resources pack and renders engine events. Content-derived IDs identify puzzles
 across renames or reordering. Local saves track completed IDs, unlocked IDs and a
 resume ID. An explicit hint request sends a snapshot to a bounded worker, then
 the controller displays the first direction of the verified route if that state
-is still current. The board and audio receive the same swipe events. The HUD
-uses shared shape and size tokens, and settings persist sound and music
-volumes independently. Portrait layout fits the full tray to safe-area
+is still current. The board and audio receive the same swipe events. A touch or mouse
+release must produce a dominant direction. The presentation can hold
+one direction until slide travel completes. Recovery, navigation and
+suspension clear that direction. The HUD uses shared shape and size
+tokens. Master mute preserves the separate sound and ambience gains. Portrait layout fits the full tray to safe-area
 content bounds, and the rendering atlas bakes the tray, tiles, pillows
 and translucent-looking toys under a consistent upper-left light.
 
@@ -34,8 +36,11 @@ WorldBackdrop covers the camera using one opaque image and reuses the
 gameplay camera. Board palette tints reuse its existing atlas. The
 controller derives chapter access and progress from LevelProgress,
 reveals a newly unlocked chapter once, and retains per-level replay.
-Reduced motion changes presentation only. Haptic cues use Android View
-feedback or UIKit on supported physical devices.
+Reduced motion changes presentation only and bypasses the travel
+wait. Short audio cues share three voices, and two bed sources
+crossfade authored world loops. App focus and suspension govern
+playback. Opt-in haptics use Android View feedback or UIKit on
+supported physical devices.
 
 For assembly dependencies, data flow and performance details, see the
 [technical architecture](Documentation/ARCHITECTURE.md). See

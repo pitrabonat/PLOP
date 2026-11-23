@@ -103,3 +103,31 @@ See [PROJECT_STATE.md](PROJECT_STATE.md) for verification and remaining device Q
   Checked locked-card behavior, replay and Resume in the World picker.
   Archived the live Android captures and Level 8 gameplay recording
   with the [Phase 6 previews](Documentation/Previews/Phase6/README.md).
+
+## 2026-11-23/24 · Phase 7 game feel and mobile polish
+
+- Verified the existing APK and all 100 levels before changing the
+  game. Tagged `checkpoint/pre-phase7` and branched from `bd57c25`.
+- Reproduced two gesture issues on the emulator and corrected the
+  threshold and diagonal acceptance. Added one pending direction,
+  interruption guards, separate collision reactions and stable
+  visual retargeting.
+- Added ten original tactile cues, five authored mono ambience loops
+  and persistent master mute. The audio pool caps simultaneous one-shots
+  at three and pauses when the app loses focus or suspends.
+- Added a verified directional hint and recovery deduplication.
+  Kept the five chapter ranges, gameplay and level JSON at the checkpoint.
+- Strict catalog replay passed. .NET and Unity EditMode passed 98 tests
+  each. Unity PlayMode passed 66. Level 100 had 87 board and backdrop
+  draw calls in the Editor sample.
+- Corrected idle rendering on the master mute tap and blocked input to
+  disabled controllers. The full PlayMode suite passed again. Built and
+  compacted the signed Android player while verifying every ZIP entry.
+- Cold-launched the signed Android upgrade offline with the earned
+  Level 3 progress. Repeated the input probes in the mobile player.
+  The 48 px horizontal gesture moved once and the near-diagonal
+  gesture left the move counter at zero.
+- Verified recovery dismissal, both restore actions, compact portrait
+  swipes, and campaign replay and Resume in the Android player.
+  Level 3 survived backgrounding and screen wake. Master mute and
+  unequal gains survived a cold launch.

@@ -4,10 +4,10 @@ A cozy mobile puzzle game for **Android** and **iOS**, built with **Unity 6.3 LT
 
 Repository: https://github.com/pitrabonat/PLOP
 
-> Phase 6 gives PLOP! five playable Worlds, matching shape marks, quieter gel
-> shading, world ambience and reduced-motion controls.
+> Phase 7 refines swipe recognition and jelly motion across five Worlds.
+> It adds original tactile audio, master mute and clearer hints.
 >
-> [Phase 6 gameplay previews](Documentation/Previews/Phase6/README.md) · [Project state](PROJECT_STATE.md) ·
+> [Phase 7 gameplay previews](Documentation/Previews/Phase7/README.md) · [Project state](PROJECT_STATE.md) ·
 > [Architecture](ARCHITECTURE.md) · [Rules](Documentation/GAME_RULES.md) ·
 > [Testing](Documentation/TESTING.md) · [Development log](DEVELOPMENT_LOG.md)
 
@@ -19,18 +19,18 @@ Game tab, then drag across the board or use the arrow keys or WASD. **Z**
 or **Backspace** undoes, **R** restarts, **H** requests a hint, and **N** or
 **Enter** advances after completion. Open **Levels** to choose a World or
 return to the campaign frontier with Resume. Use **Settings** to change
-ambience, effects, haptics, reduced motion or frame rate. If a move leaves the
+ambience, effects, master mute, haptics, reduced motion or frame rate. If a move leaves the
 board without a route to completion, the recovery card offers Undo Move,
 Restart Level, or Keep playing.
 
 ## Install the Android development APK
 
-The Phase 6 development APK location is
-`/Volumes/PLOP_DEV/Builds/Android/Phase6/PLOP-phase6-dev.apk`.
+The Phase 7 development APK location is
+`/Volumes/PLOP_DEV/Builds/Android/Phase7/PLOP-phase7-dev.apk`.
 With an ADB-authorized Android phone connected through USB, run:
 
 ```bash
-adb install -r /Volumes/PLOP_DEV/Builds/Android/Phase6/PLOP-phase6-dev.apk
+adb install -r /Volumes/PLOP_DEV/Builds/Android/Phase7/PLOP-phase7-dev.apk
 ```
 
 Then tap **PLOP!** on the phone. On this Mac, ADB is at

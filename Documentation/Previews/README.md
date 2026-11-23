@@ -2,6 +2,7 @@
 
 These images were captured from the running Unity player.
 
+- [Phase 7 gameplay, settings and input](Phase7/README.md)
 - [Phase 6 themed Worlds, gameplay and recovery](Phase6/README.md)
 - [Phase 5 portrait visuals and recovery](Phase5/README.md)
 
