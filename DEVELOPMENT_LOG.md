@@ -131,3 +131,12 @@ See [PROJECT_STATE.md](PROJECT_STATE.md) for verification and remaining device Q
   swipes, and campaign replay and Resume in the Android player.
   Level 3 survived backgrounding and screen wake. Master mute and
   unequal gains survived a cold launch.
+- Xcode 26.3 built the ARM64 iOS Simulator player with the UIKit
+  bridge. Verified four portrait captures on iPhone 15 Pro Max,
+  including the large Moonlit Clouds board and the full recovery scrim.
+- Archived the Android Level 8 gameplay and Level 20–21 transition
+  recordings and the local diagnostics capture with the
+  [Phase 7 previews](Documentation/Previews/Phase7/README.md).
+- Recorded Android present intervals during and after the iOS build.
+  The emulator fell short of sustained 60 FPS. Host conditions,
+  distribution and PSS samples are recorded in the testing notes.

@@ -21,13 +21,26 @@ running player from a local development fixture.
 | [Dewdrop Garden level picker](level-picker.png) | 1080×1920 |
 | [Compact Level 2](compact-720x1280.png) | 720×1280 |
 | [Large Level 100](large-1440x3200.png) | 1440×3200 |
+| [Development diagnostics on Level 2](diagnostics.png) | 1080×1920 |
 
 The Android captures show live gameplay in an API 37 emulator. Local
 development fixtures selected the levels used for these captures.
 
 The [Level 8 gameplay clip](gameplay.mp4) shows a blocked swipe,
 movement, sleep and the completion screen after four successful moves.
-Android screen recording captured video at 720×1280 for about 15 seconds.
+The [World transition clip](world-transition.mp4) shows four moves to
+complete Cozy Nest Level 20 and Next Level opening Dewdrop Garden.
+Both Android recordings are silent and run about 15 seconds at 720×1280.
+
+## iPhone 15 Pro Max simulator
+
+Xcode's ARM64 iOS development player ran on iOS 26.3. These 1290×2796
+captures show the portrait safe area and full recovery scrim.
+
+- [Moonlit Clouds · Level 100](ios-moonlit.png)
+- [Cozy Nest · Level 8 initial](ios-cozy-nest.png)
+- [Level 8 recovery after Up and Left](ios-deadlock.png)
+- [Rainy Window · Level 44](ios-rainy-window.png)
 
 The approved portrait reference gives the tray a deeper rolled edge and
 the jelly stronger, more volumetric highlights. The live art keeps the

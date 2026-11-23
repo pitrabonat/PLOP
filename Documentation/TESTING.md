@@ -132,6 +132,49 @@ foreground Android process with byte-identical Level 3 preferences.
 Touching the frame setting persisted both 30 and 60. Music gain
 0.2910 and effects gain 0.8142 survived turning on master mute, a cold
 restart and unmute. The tested mute states were 0, 1, 1 and 0.
+Returning from Android Settings preserved the running process and
+save. An offline Level 3 solve followed by Next Level and an
+immediate force-stop cold-resumed Level 4 with three completed
+and four unlocked IDs.
+
+### Phase 7 Android frame pacing
+
+SurfaceFlinger measured Level 2 at 1080×1920 and 420 dpi with
+diagnostics disabled. Each cap used a fresh fixture and 18 left swipes
+of 265 px over 165 ms, continuing at the edge after the initial moves.
+Xcode was building and the iOS simulator had yet to boot. The host
+had 10 logical cores, 5.14–7.47 one-minute load, and QEMU sampled
+282.8–418.8% CPU.
+
+| Selected cap | Present intervals | Median | 90th percentile | PSS |
+|---|---:|---:|---:|---:|
+| 60 FPS | 79 | 48 ms | 78 ms | 264,254 KiB |
+| 30 FPS | 88 | 54 ms | 94 ms | 263,609 KiB |
+
+The follow-up used the same gestures after Xcode exited and the iOS
+simulator shut down. Host CPU was 68.15% idle before the guest woke.
+During sampling, one-minute load was 15.97–18.02 and QEMU used
+324–666% CPU. Two existing Unity Package Manager processes were active.
+
+| Selected cap | Present intervals | Median | 90th percentile | PSS |
+|---|---:|---:|---:|---:|
+| 60 FPS | 87 | 42 ms | 58 ms | 263,607 KiB |
+| 30 FPS | 87 | 38 ms | 70 ms | 264,086 KiB |
+
+These describe the emulator under each recorded host condition. The
+runs fell short of sustained 60 FPS. The Phase 6 baseline was collected
+under a different load. Physical GPU frame time, pacing, device power
+and thermals remain unmeasured.
+
+### Development diagnostics
+
+A separate Level 2 Android sample with the diagnostics HUD active
+during Xcode compilation showed loop p50 33.3 ms and p90 63.1 ms.
+At capture time the HUD reported 58.4 ms main thread, 1,574 B GC
+allocation for the sampled frame, 13 draw calls and 77.7 MiB of
+Unity allocated memory. The render-thread counter was unavailable.
+Unity game-loop intervals and allocated memory differ from Android
+presentation time and process PSS.
 
 ### Audio assets
 
@@ -142,6 +185,18 @@ is −90.3 dBFS. The assets and the ten synthesized event cues have zero
 clipped source samples. Unity PlayMode verified playback state, crossfade
 gain, focus changes and persistence. Speaker mix and haptic feel on
 physical phones remain pending.
+
+### iOS simulator
+
+Unity exported the ARM64 simulator project to
+`/Volumes/PLOP_DEV/Builds/iOS/Phase7/PLOP-Xcode-Sim`. Xcode 26.3 built
+it with simulator signing disabled and compiled the UIKit haptic
+bridge. The iOS 26.3 iPhone 15 Pro Max simulator displayed Levels 100,
+44 and 8 at 1290×2796. Portrait controls and the recovery actions
+stayed inside the safe area. Scrim sampling from Level 8 found a
+5.4–5.9 percentage point dimming on all four screen edges. The
+simulator preference fixture was restored after verification.
+Physical iPhone installation and tactile response remain pending.
 
 Raw Phase 7 test and platform logs are in
 `/Volumes/PLOP_DEV/Builds/Logs/phase7/`.

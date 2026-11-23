@@ -33,9 +33,14 @@ The project is on `feature/game-feel-polish`, based on `bd57c25`
   The offline in-place upgrade kept the Phase 6 save and comfort
   preferences. The Android emulator accepted the tested 48 px drag
   and rejected the near-diagonal gesture.
+- Unity exported the ARM64 iOS Simulator project and Xcode 26.3
+  built it. The 1290×2796 iPhone 15 Pro Max simulator rendered the
+  large Level 100 board and Level 8 recovery inside its safe area.
 - The [campaign playtest checklist](Documentation/PHASE7_CAMPAIGN_PLAYTEST.md)
   prioritizes Level 8's first trap, the climbs into 51 and 76, and the
   peak and finale at 99 and 100.
+- [Phase 7 previews](Documentation/Previews/Phase7/README.md) archive
+  gameplay in all five Worlds, the two videos and iOS safe-area checks.
 - [Testing notes](Documentation/TESTING.md) record the Phase 7 baseline,
   runtime regression checks and mobile performance measurements.
 
