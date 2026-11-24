@@ -17,6 +17,12 @@ describes the system boundaries and [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md) rec
   mapping in `Resources/Worlds` and derive unlocks from saved level IDs.
   Keep non-color matching cues readable and honor reduced motion.
   Use PLOP → Play Game to preview the production gameplay scene in the Editor.
+- Keep puzzle quality measurable: new or rebuilt levels must pass `PuzzleInsight`
+  floors (see `CampaignQualityTests`), store a verified `optimalMoves`, and append
+  replaced IDs to `PLOP_Pack_001_SlotHistory.json`. Never reset saves silently.
+  Dream Dust grants are one-time keys; keep rewards small and cosmetic, with no ads or shop.
+- Keep Meta (records, wallet, daily rules) engine-free behind `IKeyValueStore`/`IClock`.
+  The game opens on `MainMenu`; PlayMode tests that load the shipped pack press PLAY first.
 - Keep the one-command gesture buffer in presentation. Clear it on recovery,
   modal entry, navigation and suspension. Honor reduced motion when dispatching
   queued input. Keep the optional profiler readout in development builds.

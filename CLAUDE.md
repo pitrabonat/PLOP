@@ -12,9 +12,9 @@ Shared guidance for Claude Code, Codex, and other contributors. Start with
 - **Targets:** Android (IL2CPP, ARM64, min API 26, target = highest installed) and iOS (min iOS 15.0)
 - **Orientation:** Portrait only
 - **Repository:** https://github.com/pitrabonat/PLOP (remote `origin`, branch `main`; public)
-- **Status:** Phase 7 game feel, audio, accessibility, and mobile verification. See PROJECT_STATE.md for verification.
+- **Status:** Phase 8 gameplay depth, puzzle rebalancing, main menu and meta progression. See PROJECT_STATE.md for verification.
 - **Visual style:** "Soft Toy Minimalism" — see `Documentation/VISUAL_STYLE.md` (palette, corner radii, animation).
-- **Docs:** `Documentation/` — ARCHITECTURE, GAME_RULES, SOLVER, LEVEL_GENERATION, LEVEL_FORMAT, VISUAL_STYLE, TESTING, DEVELOPMENT_LOG.
+- **Docs:** `Documentation/` — ARCHITECTURE, GAME_RULES, SOLVER, LEVEL_GENERATION, PUZZLE_QUALITY, LEVEL_FORMAT, VISUAL_STYLE, TESTING, DEVELOPMENT_LOG.
 
 ## Storage layout (important)
 The SanDisk drive is **exFAT**, which is unsuitable for Unity (no symlinks/permissions, 128 KB clusters).
@@ -46,8 +46,10 @@ Assets/
   Scripts/
     Core/            PLOP.Core        — pure C# rules/state/engine/validation/JSON (NO UnityEngine)
     Solver/          PLOP.Solver      — BFS solver + state-space analyzer (NO UnityEngine)
-    LevelGeneration/ PLOP.Generation  — PRNG, generator, verifier, duplicates, difficulty (NO UnityEngine)
-    Unity/           PLOP.Unity       — board, HUD, input, world presentation, audio, PlopGameController
+    LevelGeneration/ PLOP.Generation  — PRNG, generator, verifier, duplicates, difficulty, PuzzleInsight,
+                                        QualitySearch, CampaignPlan, CampaignInsights (NO UnityEngine)
+    Meta/            PLOP.Meta        — Dream Dust wallet, level records/Perfect, Daily Gift/Puzzle rules (NO UnityEngine)
+    Unity/           PLOP.Unity       — board, HUD, MainMenu, input, world presentation, audio, PlopGameController
       Worlds/        WorldCatalog, WorldTheme, WorldBackdrop
   Art/Resources/Worlds/                cosmetic chapter ScriptableObjects
   Art/Resources/WorldBackdrops/        authored portrait environments
@@ -60,6 +62,8 @@ Assets/
   Tests/PlayMode/    PLOP.Tests.PlayMode — Unity integration tests
   Levels/Resources/Levels/PLOP_Pack_001.json  — shipped level pack (100 verified levels)
   Levels/Resources/Levels/PLOP_Deadlocks_001.bytes — generated exact deadlock data
+  Levels/Resources/Levels/PLOP_Daily_001.json — 60-puzzle offline Daily Puzzle pool
+  Levels/Resources/Levels/PLOP_Pack_001_SlotHistory.json — old→new level IDs per slot for save migration
   Art/ Audio/ Animations/ Materials/ Prefabs/ Settings/
 DotNet/              Plop.Lib (netstandard2.1 build of Core/Solver/Generation), Plop.Tests, Plop.Bench
 Documentation/       design & technical docs, benchmarks and running-game previews
@@ -80,6 +84,11 @@ Documentation/       design & technical docs, benchmarks and running-game previe
 - Any change that can alter generated output bumps `GeneratorInfo.Version`; solver output → `SolverInfo.Version`;
   JSON breaking change → `LevelSerializer.SchemaVersion`.
 - Levels that cannot be verified within budget are rejected — never assumed solvable.
+- `optimalMoves` in the pack is the BFS shortest solution and is the Perfect target. Perfect = engine history
+  length (Undo removes moves) equals it with no hint used this visit. Dream Dust is granted once per key
+  (`complete:ID`, `perfect:ID`, `gift:date`, `daily:date`, `dailyPerfect:date`); never pay a reward twice.
+- Never silently reset saves. When a campaign slot gets a new level ID, append the old ID to
+  `PLOP_Pack_001_SlotHistory.json` (`--production` does this) so `LevelProgress` migrates progress.
 
 ## Handoff and Git
 
@@ -143,18 +152,25 @@ export NUGET_PACKAGES=/Volumes/PLOP_DEV/Cache/NuGet          # keep NuGet cache 
 dotnet test DotNet/Plop.Tests/Plop.Tests.csproj                # fast engine-free tests
 dotnet run -c Release --project DotNet/Plop.Bench -- --production \
   --pack Assets/Levels/Resources/Levels/PLOP_Pack_001.json \
-  --report Documentation/benchmarks/generation_benchmark_v2.md
+  --report Documentation/benchmarks/generation_benchmark_v3.md   # quality search, ~80 s on 10 threads
+dotnet run -c Release --project DotNet/Plop.Bench -- --audit Assets/Levels/Resources/Levels/PLOP_Pack_001.json report.md label
+dotnet run -c Release --project DotNet/Plop.Bench -- --insights Assets/Levels/Resources/Levels/PLOP_Pack_001.json out.tsv
 dotnet run -c Release --project DotNet/Plop.Bench -- --verify-production Assets/Levels/Resources/Levels/PLOP_Pack_001.json
 dotnet run -c Release --project DotNet/Plop.Bench -- --deadlocks \
   Assets/Levels/Resources/Levels/PLOP_Pack_001.json \
-  Assets/Levels/Resources/Levels/PLOP_Deadlocks_001.bytes 100000
+  Assets/Levels/Resources/Levels/PLOP_Deadlocks_001.bytes 600000   # 600k covers all 100 Phase 8 levels
 dotnet run -c Release --project DotNet/Plop.Bench -- --perf Assets/Levels/Resources/Levels/PLOP_Pack_001.json
 UNITY=/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/Unity.app/Contents/MacOS/Unity
 "$UNITY" -batchmode -nographics -projectPath "$PWD" -runTests -testPlatform EditMode -testResults /Volumes/PLOP_DEV/Builds/Logs/editmode.xml
 "$UNITY" -batchmode -projectPath "$PWD" -runTests -testPlatform PlayMode -testResults /Volumes/PLOP_DEV/Builds/Logs/playmode.xml
 "$UNITY" -batchmode -quit -projectPath "$PWD" -executeMethod Plop.EditorTools.PlopSceneSetup.CreateGameplayScene
 ```
-Level Lab: Unity menu **PLOP → Level Lab** (edit, generate, solve, replay, metrics, import/export, batch generation, filters and manual catalog ordering).
+Level Lab: Unity menu **PLOP → Level Lab** (edit, generate, solve, replay, metrics, import/export, batch generation, filters and manual catalog ordering;
+player-model insight panel, campaign overview with Plop/size/trivial filters and most-similar comparison).
+
+Screenshot hooks (development builds only, never saved progress): integer pref `plop.debug.level` (1-based)
+and string pref `plop.debug.moves` (e.g. `DLDRU`) skip the main menu. On the Android emulator the debuggable
+build's prefs can be edited with `run-as` — run `python3 Tools/Android/debugprefs.py <level|0> [moves]` (force-stops the app; 0 clears).
 
 ## Build instructions
 GUI: Unity menu **PLOP → Build → Android APK (Development)** / **iOS Xcode Project (Device)** / **iOS Xcode Project (Simulator)**.

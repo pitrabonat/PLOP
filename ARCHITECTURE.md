@@ -4,9 +4,10 @@
 |---|---|
 | Core | Immutable board geometry, mutable session state, shared transitions, Undo and Restart, validation and JSON |
 | Solver | Shortest paths from arbitrary state, exhaustive graph analysis through Core, and versioned exact deadlock proof data |
-| Generation | Offline seeded candidates, puzzle quality metrics, duplicate checks and the ordered production catalog |
-| Level Lab | Editor tools for authoring, inspecting, replaying, filtering, ordering and verifying level packs |
-| Unity | Gameplay scene, portrait board, themed worlds, campaign navigation, audio and haptics, hints, recovery and progression |
+| Generation | Offline seeded candidates, player-model puzzle insight, quality search, campaign plan, duplicate checks and the ordered production catalog and daily pool |
+| Meta | Perfect Moves records, Dream Dust wallet with one-time grants, Daily Gift and Daily Puzzle rules (engine-free) |
+| Level Lab | Editor tools for authoring, inspecting, replaying, filtering, ordering and verifying level packs, plus the player-model campaign overview |
+| Unity | Main menu, gameplay scene, portrait board, themed worlds, campaign navigation, audio and haptics, hints, recovery and progression |
 | Tests | Shared engine-free NUnit tests and Unity PlayMode integration |
 
 The authority for every swipe is `MoveRules.Apply`. Runtime loads the ordered
@@ -41,6 +42,13 @@ wait. Short audio cues share three voices, and two bed sources
 crossfade authored world loops. App focus and suspension govern
 playback. Opt-in haptics use Android View feedback or UIKit on
 supported physical devices.
+
+Phase 8 adds a quality layer and meta progression. `PuzzleInsight` replays each board with a greedy player and an
+exact random-swipe model to measure traps, counter-intuitive steps and wasted space; `QualitySearch` hill-climbs
+boards toward a `CampaignPlan` slot target. Every level stores its verified `optimalMoves`, the Perfect target.
+The game opens on the main menu; Dream Dust is paid once per grant key for completions, Perfects, the Daily Gift
+and the Daily Puzzle. A slot-history file maps rebuilt level IDs so saves migrate instead of resetting. See
+[Puzzle quality](Documentation/PUZZLE_QUALITY.md).
 
 For assembly dependencies, data flow and performance details, see the
 [technical architecture](Documentation/ARCHITECTURE.md). See

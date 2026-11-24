@@ -11,7 +11,27 @@ The same NUnit test files run in two environments:
 (`Unity` = `/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/Unity.app/Contents/MacOS/Unity`; close the Editor first.)
 Tests use only NUnit features available in Unity's NUnit 3.5 fork.
 
-## Latest results (2026-11-22, executed)
+## Phase 8 results (2026-11-25, executed)
+
+| Run | Total | Passed | Failed | Skipped |
+|---|---|---|---|---|
+| dotnet test (net10.0) | 121 | 121 | 0 | 0 |
+| Unity 6000.3.29f1 EditMode | 121 | 121 | 0 | 0 |
+| Unity 6000.3.29f1 PlayMode | 74 | 74 | 0 | 0 |
+
+Phase 8 coverage:
+
+| Requirement | Tests |
+|---|---|
+| Perfect = optimal, hint disqualifies, best result only improves and persists, below-optimum rejected, Undo cannot exploit the counter | `MetaProgressionTests.Perfect_*`, `BestResult_*`, `MovesBelowOptimum_*`, `UndoCannotExploitTheCounter` |
+| Dream Dust once per key, survives relaunch, corrupt saves kept aside, cosmetics data model | `Wallet_*`, `LevelRewards_*`, `CorruptSaves_*`, `Cosmetics_*` |
+| Daily Gift per local calendar day, no streak penalty, clock rollback; Daily schedule determinism and coverage; daily rewards once per date | `DailyGift_*`, `DailySchedule_*`, `DailyPuzzle_*` |
+| Every shipped `optimalMoves` = BFS optimum, kept at runtime; quality floor (26+ not greedy-solvable, ≥ 70 trap levels, 51+ counter-intuitive); tutorial IDs stable and slot history complete; daily pool verified and unique; QualitySearch determinism; PuzzleInsight separates trivial from demanding | `CampaignQualityTests.*` |
+| Level Lab analysis: trivial flags, first-swipe alternatives, settlement order, symmetry-aware similarity, overview table | `CampaignInsightsTests.*` |
+| Menu blocks swipes and PLAY resumes the frontier; Perfect badge and Dust once; slow solve then improve; hinted solve not Perfect; Daily Puzzle once per day and returns to menu; Daily Gift once per local day; save migration of rebuilt slots; small boards use most of the width | `Phase8ProgressionTests.*` (PlayMode) |
+| Existing flows behind the title menu (shipped pack opens on the menu; tests press PLAY) | `DeadlockRecoveryTests`, `WorldCampaignTests` |
+
+## Phase 7 results (2026-11-22, executed)
 
 | Run | Total | Passed | Failed | Skipped |
 |---|---|---|---|---|

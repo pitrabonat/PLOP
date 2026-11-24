@@ -7,10 +7,11 @@
 | `PLOP.Core` | `Assets/Scripts/Core` | — | **No** (`noEngineReferences`) | yes |
 | `PLOP.Solver` | `Assets/Scripts/Solver` | Core | **No** | yes (hints and deadlock proofs) |
 | `PLOP.Generation` | `Assets/Scripts/LevelGeneration` | Core, Solver | **No** | compiled in, never called at runtime |
-| `PLOP.Unity` | `Assets/Scripts/Unity` | Core, Solver, Input System, uGUI | yes | yes |
+| `PLOP.Meta` | `Assets/Scripts/Meta` | Core | **No** | yes (Dream Dust, records, daily rules) |
+| `PLOP.Unity` | `Assets/Scripts/Unity` | Core, Solver, Meta, Input System, uGUI | yes | yes |
 | `PLOP.LevelLab` | `Assets/Scripts/LevelLab/Editor` | Core, Solver, Generation | yes (Editor) | **no** (Editor platform only) |
-| `PLOP.Tests` | `Assets/Tests/EditMode` | Core, Solver, Generation, NUnit | Editor | no |
-| `PLOP.Tests.PlayMode` | `Assets/Tests/PlayMode` | Core, Solver, Unity, NUnit | yes | no (test assembly) |
+| `PLOP.Tests` | `Assets/Tests/EditMode` | Core, Solver, Generation, Meta, NUnit | Editor | no |
+| `PLOP.Tests.PlayMode` | `Assets/Tests/PlayMode` | Core, Solver, Meta, Unity, NUnit | yes | no (test assembly) |
 | Assembly-CSharp-Editor | `Assets/Scripts/Editor` | auto-references | Editor | no |
 
 Namespaces: `Plop.Core`, `Plop.Solver`, `Plop.Generation`, `Plop.Presentation` (assembly `PLOP.Unity`;
@@ -47,7 +48,22 @@ named to avoid shadowing the global `Unity.*` namespaces), `Plop.LevelLab`, `Plo
 ## Generation (`Plop.Generation`) — see LEVEL_GENERATION.md
 
 `SplitMix64`, `LevelGenerator`, `LevelVerifier`, `LevelCanonicalizer` + `DuplicateRegistry`,
-`DifficultyEstimator`, `BatchGenerator`, `GeneratorProfiles`.
+`DifficultyEstimator`, `BatchGenerator`, `GeneratorProfiles`; Phase 8: `PuzzleInsight`, `QualitySearch`, `CampaignPlan`,
+`ProductionCatalog` (campaign + daily pool), `CampaignInsights` (Level Lab overview). See PUZZLE_QUALITY.md.
+
+## Meta progression (`Plop.Meta`)
+
+Engine-free rules behind an `IKeyValueStore` (PlayerPrefs at runtime via `PlayerPrefsStore`, `MemoryStore` in tests
+and debug previews) and an `IClock` (local calendar time; tests inject `FixedClock`).
+
+- `LevelRecords`: best moves, Perfect flag and completions per level ID. Rejects a result below the verified optimum.
+- `DreamDustWallet`: balance plus a set of one-time grant keys; `TryUnlock` spends on `CosmeticCatalog` items (data only).
+- `CompletionRewards.ForLevel/ForDaily`, `DailyGift`, `DailySchedule` (deterministic local-date → pool index).
+
+`PlopGameController` owns the wallet and records. It opens the game on `MainMenu` (own canvas, sorting order 50):
+PLAY resumes `CampaignResumeIndex`, Daily Puzzle loads `PLOP_Daily_001` for the local date without touching campaign
+progress, and Home returns to the menu (restoring the campaign board after a daily). A hint request marks the visit
+as assisted, so it cannot be Perfect. Slot-history migration in `LevelProgress` runs before the resume index is read.
 
 ## Presentation (`Plop.Presentation`, assembly `PLOP.Unity`)
 

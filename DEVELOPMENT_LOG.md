@@ -140,3 +140,38 @@ See [PROJECT_STATE.md](PROJECT_STATE.md) for verification and remaining device Q
 - Recorded Android present intervals during and after the iOS build.
   The emulator fell short of sustained 60 FPS. Host conditions,
   distribution and PSS samples are recorded in the testing notes.
+
+## 2026-11-24/25 · Phase 8 gameplay depth, rebalancing and main menu
+
+- Resumed after Codex on `feature/puzzle-depth`. Read the handoff files and kept
+  all Phase 7 work. Audited the shipped campaign with two player models:
+  - A greedy player solved 72/100 levels.
+  - 88 levels had no trap.
+  - The rules were capable; the selection was not
+    ([audit](Documentation/benchmarks/campaign_audit_phase7.md)).
+- Added `PuzzleInsight`, `QualitySearch` and `CampaignPlan`. Rebuilt levels
+  11–100 and a 60-puzzle daily pool through a parallel search, with a
+  sequential re-check that must be identical.
+  - A breather slot must score below the level before it. This fixed one
+    inverted wave that the shipped-pack test caught.
+  - The deadlock sidecar needed 600k states to cover every new board.
+- Added `optimalMoves`, a strict-verifier check, and `PLOP.Meta`:
+  - records and Perfect;
+  - a Dream Dust wallet with one-time grants;
+  - Daily Gift and Daily Schedule;
+  - a cosmetics data model.
+  - Slot-history migration keeps old saves.
+- Added the main menu, the Home button, the compact moves/Perfect HUD, the
+  completion result line, Perfect badges in the level list, the date subtitle
+  for the Daily Puzzle, and wider small boards.
+- PlayMode found that the menu counted as "open" during its fade-out, which
+  blocked the first swipes. Fixed it so the menu counts as open only while it
+  accepts input. Legacy tests now press PLAY first.
+- Level Lab gained the insight panel and the campaign overview (filters,
+  comparison, TSV export). Bench gained `--insights`.
+- Verified: .NET 121, EditMode 121, PlayMode 74. Built the ARM64 dev APK and
+  exercised it on the Android emulator. No phone was connected.
+  - The menu, gift, daily puzzle, level list and completion card were captured
+    in [Phase 8 previews](Documentation/Previews/Phase8/README.md).
+  - Keyboard input that was already present on the emulator completed
+    Levels 1–4. That progress was kept.
