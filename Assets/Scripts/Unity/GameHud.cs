@@ -224,6 +224,15 @@ namespace Plop.Presentation
             _moveBadgeBody.color = visible ? Color.Lerp(HudTheme.MoveSurface, accent, 0.27f) : HudTheme.MoveSurface;
         }
 
+        /// <summary>Replaces the line under the title (World name, or the date for a Daily Puzzle) when it is shown.</summary>
+        public void SetSubtitle(string text)
+        {
+            if (_worldName.gameObject.activeSelf && !string.IsNullOrEmpty(text)) _worldName.text = text;
+        }
+
+        /// <summary>Lets the level list mark levels finished in the verified minimum number of moves.</summary>
+        public Func<int, bool> PerfectLookup { get; set; }
+
         public void SetMoves(int moves)
             => _moves.text = _optimalMoves > 0 ? moves + " / " + _optimalMoves : moves == 1 ? "1 move" : moves + " moves";
 
@@ -638,8 +647,10 @@ namespace Plop.Presentation
                 bool unlocked = _isUnlocked(index);
                 bool done = _isCompleted(index);
                 button.interactable = unlocked;
-                _levelLabels[slot].text = "Level " + (index + 1) + (done ? " · Done" : unlocked ? "" : " · Locked");
-                button.image.color = index == _currentIndex ? PlopPalette.Berry : done ? PlopPalette.Mint : PlopPalette.Milk;
+                bool perfect = done && PerfectLookup != null && PerfectLookup(index);
+                _levelLabels[slot].text = "Level " + (index + 1) + (perfect ? " · Perfect" : done ? " · Done" : unlocked ? "" : " · Locked");
+                button.image.color = index == _currentIndex ? PlopPalette.Berry
+                    : perfect ? Color.Lerp(PlopPalette.Mint, PlopPalette.Honey, 0.55f) : done ? PlopPalette.Mint : PlopPalette.Milk;
             }
             _previousPage.interactable = _page > 0;
             _nextPage.interactable = end < _pickerEnd;

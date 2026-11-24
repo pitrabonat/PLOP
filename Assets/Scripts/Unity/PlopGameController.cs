@@ -154,6 +154,7 @@ namespace Plop.Presentation
             _hud.LevelChosen += index => TrySelectLevel(index);
             _hud.ModalInteracted += MarkActive;
             _hud.SetFrameRate(targetFrameRate);
+            _hud.PerfectLookup = i => _records != null && i >= 0 && i < _levels.Count && _records.IsPerfect(_levels[i].Id);
             _hud.LayoutChanged += Relayout;
             _hud.HomeClicked += ShowMenu;
             _hud.SettingsClosed += OnSettingsClosed;
@@ -743,6 +744,9 @@ namespace Plop.Presentation
                     _assisted = false;
                     _hud.SetPerfectTarget(_engine.Level.OptimalMoves, _records.IsPerfect(_engine.Level.Id));
                     _hud.SetLevel(_engine.Level.Name, _engine.Level.Instruction);
+                    _hud.SetSubtitle(_playingDaily
+                        ? _dailyDate.ToString("MMMM d", System.Globalization.CultureInfo.InvariantCulture)
+                        : _world?.DisplayName);
                     _hud.SetMoves(0);
                     _hud.SetCanUndo(false);
                     _hud.SetCompleted(false, false);
