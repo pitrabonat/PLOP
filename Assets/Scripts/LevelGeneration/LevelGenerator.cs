@@ -9,7 +9,7 @@ namespace Plop.Generation
     public static class GeneratorInfo
     {
         /// <summary>Bump whenever the same seed + settings could produce a different level.</summary>
-        public const int Version = 2;
+        public const int Version = 3;
     }
 
     public sealed class GeneratorSettings

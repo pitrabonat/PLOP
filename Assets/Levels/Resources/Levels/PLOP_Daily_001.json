@@ -1,0 +1,5792 @@
+{
+  "schemaVersion": 1,
+  "packId": "PLOP_Daily_001",
+  "levels": [
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-2E49CB82C856",
+      "name": "Daily 1",
+      "optimalMoves": 9,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [3, 0],
+        [2, 1],
+        [0, 2],
+        [4, 2],
+        [0, 3],
+        [0, 4],
+        [2, 4],
+        [3, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xAC6976C6A8604DE3",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DLUURRDRD",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 32.46,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3,
+            "challenge": 32.46,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0042,
+            "deadEndSettlements": 2,
+            "deadEndStates": 1,
+            "decisionPoints": 9,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 17,
+            "patternCount": 6,
+            "plops": 2,
+            "randomSolveProbability": 0.0053,
+            "reachableStates": 237,
+            "repetitionRatio": 0.25,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 9,
+            "solutionTurns": 6,
+            "strategicBlocks": 4,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.412,
+            "wallDetour": 6,
+            "wallInteractionMoves": 3,
+            "walls": 8
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-22DDE1C052F5",
+      "name": "Daily 2",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [4, 1],
+        [3, 3],
+        [0, 4],
+        [1, 4],
+        [2, 4],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xB21B179EEEDBB5EF",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "RDDLLLLRURRDD",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 40.16,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.462,
+            "challenge": 40.16,
+            "coordinationMoves": 8,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.017,
+            "deadEndSettlements": 46,
+            "deadEndStates": 26,
+            "decisionPoints": 13,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 30,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0031,
+            "reachableStates": 1526,
+            "repetitionRatio": 0.5,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "solutionLength": 13,
+            "solutionTurns": 6,
+            "strategicBlocks": 8,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.375,
+            "wallDetour": 2,
+            "wallInteractionMoves": 6,
+            "walls": 6
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-7334E3C6AD22",
+      "name": "Daily 3",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [2, 0],
+        [4, 1],
+        [0, 2],
+        [1, 2],
+        [4, 2],
+        [1, 3],
+        [3, 4],
+        [0, 5],
+        [3, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [1, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [1, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x2226F89B003E4662",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LUUURDDDLLDLD",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 39.37,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.308,
+            "challenge": 39.37,
+            "coordinationMoves": 9,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0435,
+            "deadEndSettlements": 283,
+            "deadEndStates": 172,
+            "decisionPoints": 13,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 28,
+            "patternCount": 5,
+            "plops": 3,
+            "randomSolveProbability": 0.0022,
+            "reachableStates": 3957,
+            "repetitionRatio": 0.417,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 8,
+            "sleeperBlocks": 0,
+            "solutionLength": 13,
+            "solutionTurns": 7,
+            "strategicBlocks": 9,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.2,
+            "wallDetour": 2,
+            "wallInteractionMoves": 6,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-43D19E132347",
+      "name": "Daily 4",
+      "optimalMoves": 12,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [3, 0],
+        [4, 0],
+        [0, 1],
+        [0, 2],
+        [2, 2],
+        [0, 3],
+        [5, 3],
+        [1, 4],
+        [5, 4],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 5]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [5, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x5D0CDCE1F0947A17",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "ULRDDRDDDRRD",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 37.51,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.333,
+            "challenge": 37.51,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0466,
+            "deadEndSettlements": 668,
+            "deadEndStates": 515,
+            "decisionPoints": 12,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 5,
+            "forcedSteps": 6,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 21,
+            "patternCount": 5,
+            "plops": 3,
+            "randomSolveProbability": 0.0043,
+            "reachableStates": 11049,
+            "repetitionRatio": 0.364,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 25,
+            "sleeperBlocks": 2,
+            "solutionLength": 12,
+            "solutionTurns": 7,
+            "strategicBlocks": 6,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.32,
+            "wallDetour": 0,
+            "wallInteractionMoves": 2,
+            "walls": 11
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-B73E1379B332",
+      "name": "Daily 5",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 1],
+        [2, 1],
+        [0, 2],
+        [2, 2],
+        [4, 2],
+        [2, 3],
+        [3, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x55A5029720C16331",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LDDRDDRDRRUUL",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 35.35,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 2.769,
+            "challenge": 35.35,
+            "coordinationMoves": 7,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0639,
+            "deadEndSettlements": 23,
+            "deadEndStates": 17,
+            "decisionPoints": 11,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 21,
+            "patternCount": 6,
+            "plops": 2,
+            "randomSolveProbability": 0.0025,
+            "reachableStates": 266,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "solutionLength": 13,
+            "solutionTurns": 8,
+            "strategicBlocks": 7,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.278,
+            "wallDetour": 8,
+            "wallInteractionMoves": 5,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-B8E2E20F130C",
+      "name": "Daily 6",
+      "optimalMoves": 11,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [4, 0],
+        [0, 1],
+        [2, 1],
+        [2, 2],
+        [3, 4],
+        [4, 4],
+        [0, 5],
+        [1, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [0, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xC3EDCD7C8CD19680",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LUULUURRULL",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 35.47,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.273,
+            "challenge": 35.47,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0554,
+            "deadEndSettlements": 210,
+            "deadEndStates": 308,
+            "decisionPoints": 11,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 11,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 24,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0011,
+            "reachableStates": 5561,
+            "repetitionRatio": 0.4,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 11,
+            "solutionTurns": 6,
+            "strategicBlocks": 5,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.429,
+            "wallDetour": 2,
+            "wallInteractionMoves": 5,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-62297A67A80E",
+      "name": "Daily 7",
+      "optimalMoves": 8,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [3, 0],
+        [4, 0],
+        [4, 1],
+        [2, 2],
+        [3, 2],
+        [4, 2],
+        [3, 3],
+        [4, 3],
+        [0, 4],
+        [2, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [1, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x9AC11046B2BBD24C",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "UUUUDLDR",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 31.25,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.625,
+            "challenge": 31.25,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0169,
+            "deadEndSettlements": 171,
+            "deadEndStates": 64,
+            "decisionPoints": 8,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 8,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 20,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0128,
+            "reachableStates": 3794,
+            "repetitionRatio": 0.429,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 8,
+            "solutionTurns": 4,
+            "strategicBlocks": 5,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.421,
+            "wallDetour": 0,
+            "wallInteractionMoves": 2,
+            "walls": 11
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-42385871BDCE",
+      "name": "Daily 8",
+      "optimalMoves": 12,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [5, 0],
+        [4, 1],
+        [0, 2],
+        [1, 2],
+        [0, 3],
+        [2, 3],
+        [4, 3],
+        [2, 5],
+        [3, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [1, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x41B18A735DA79E61",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "RRDLUUULURUR",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 38.97,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.583,
+            "challenge": 38.97,
+            "coordinationMoves": 10,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.046,
+            "deadEndSettlements": 725,
+            "deadEndStates": 405,
+            "decisionPoints": 12,
+            "earlySettleTraps": 3,
+            "firstSettlementChoices": 5,
+            "forcedSteps": 11,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 27,
+            "patternCount": 5,
+            "plops": 3,
+            "randomSolveProbability": 0.0025,
+            "reachableStates": 8807,
+            "repetitionRatio": 0.273,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "solutionLength": 12,
+            "solutionTurns": 8,
+            "strategicBlocks": 10,
+            "temptingTraps": 0,
+            "trapMoves": 3,
+            "unusedSpaceRatio": 0.481,
+            "wallDetour": 0,
+            "wallInteractionMoves": 8,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-DBF2889D78B9",
+      "name": "Daily 9",
+      "optimalMoves": 10,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [1, 0],
+        [4, 0],
+        [1, 1],
+        [1, 3],
+        [2, 3],
+        [3, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xAC1E894EF4255E8D",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "UULLDDDLUR",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 31.86,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.2,
+            "challenge": 31.86,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.1308,
+            "deadEndSettlements": 14,
+            "deadEndStates": 14,
+            "decisionPoints": 9,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 7,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 18,
+            "patternCount": 7,
+            "plops": 2,
+            "randomSolveProbability": 0.0173,
+            "reachableStates": 107,
+            "repetitionRatio": 0.444,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 6,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 5,
+            "strategicBlocks": 6,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.421,
+            "wallDetour": 2,
+            "wallInteractionMoves": 3,
+            "walls": 6
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-DEDFC6EAB5D4",
+      "name": "Daily 10",
+      "optimalMoves": 10,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 1],
+        [4, 1],
+        [4, 2],
+        [2, 3],
+        [4, 3],
+        [1, 4],
+        [2, 4],
+        [2, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 1]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xF85712DBC6D21371",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DURDDRDRDR",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 41.38,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.9,
+            "challenge": 41.38,
+            "coordinationMoves": 7,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0901,
+            "deadEndSettlements": 206,
+            "deadEndStates": 223,
+            "decisionPoints": 10,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 6,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 26,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0019,
+            "reachableStates": 2476,
+            "repetitionRatio": 0.111,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 8,
+            "strategicBlocks": 7,
+            "temptingTraps": 2,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.5,
+            "wallDetour": 2,
+            "wallInteractionMoves": 7,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-1F22F0F3CE51",
+      "name": "Daily 11",
+      "optimalMoves": 10,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [3, 0],
+        [1, 1],
+        [2, 1],
+        [2, 2],
+        [2, 3],
+        [3, 3],
+        [0, 5],
+        [3, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x0C2B3BB80944737D",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DLDURRUUUR",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 39.21,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.6,
+            "challenge": 39.21,
+            "coordinationMoves": 7,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0946,
+            "deadEndSettlements": 220,
+            "deadEndStates": 354,
+            "decisionPoints": 10,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 8,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 22,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0084,
+            "reachableStates": 3744,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 1,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 8,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 6,
+            "strategicBlocks": 7,
+            "temptingTraps": 2,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.381,
+            "wallDetour": 0,
+            "wallInteractionMoves": 6,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-56DE5621493F",
+      "name": "Daily 12",
+      "optimalMoves": 10,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [2, 1],
+        [3, 2],
+        [5, 2],
+        [1, 4],
+        [2, 4],
+        [3, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [5, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [3, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [0, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x9B73D68DF1FC7699",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DLDDDULLUU",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 33.76,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.2,
+            "challenge": 33.76,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0497,
+            "deadEndSettlements": 695,
+            "deadEndStates": 626,
+            "decisionPoints": 8,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 8,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 19,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0078,
+            "reachableStates": 12594,
+            "repetitionRatio": 0.444,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 4,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 5,
+            "strategicBlocks": 4,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.414,
+            "wallDetour": 2,
+            "wallInteractionMoves": 3,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-FE6652C778DB",
+      "name": "Daily 13",
+      "optimalMoves": 11,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [0, 1],
+        [1, 1],
+        [1, 3],
+        [2, 3],
+        [3, 3],
+        [0, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xD677983F8EA6DC55",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "UULLDRRRUUL",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 40.81,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3,
+            "challenge": 40.81,
+            "coordinationMoves": 2,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0681,
+            "deadEndSettlements": 10,
+            "deadEndStates": 13,
+            "decisionPoints": 9,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 19,
+            "patternCount": 7,
+            "plops": 2,
+            "randomSolveProbability": 0.003,
+            "reachableStates": 191,
+            "repetitionRatio": 0.5,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 3,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "solutionLength": 11,
+            "solutionTurns": 5,
+            "strategicBlocks": 2,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.333,
+            "wallDetour": 2,
+            "wallInteractionMoves": 1,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-F6909DE8A89E",
+      "name": "Daily 14",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [2, 0],
+        [0, 2],
+        [2, 2],
+        [1, 4],
+        [0, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 1]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x1A99BE3756AD8D97",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "UULLDLDRDDRDR",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 38.87,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.692,
+            "challenge": 38.87,
+            "coordinationMoves": 10,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0057,
+            "deadEndSettlements": 91,
+            "deadEndStates": 43,
+            "decisionPoints": 11,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 7,
+            "forcedSteps": 7,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 25,
+            "patternCount": 5,
+            "plops": 3,
+            "randomSolveProbability": 0.0039,
+            "reachableStates": 7573,
+            "repetitionRatio": 0.25,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 68,
+            "sleeperBlocks": 0,
+            "solutionLength": 13,
+            "solutionTurns": 9,
+            "strategicBlocks": 10,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.217,
+            "wallDetour": 0,
+            "wallInteractionMoves": 10,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-7E2F846E03A8",
+      "name": "Daily 15",
+      "optimalMoves": 10,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [2, 1],
+        [0, 2],
+        [1, 2],
+        [2, 3],
+        [4, 3],
+        [0, 5],
+        [2, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x4A11D136016CAC7D",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LUUDRURDDD",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 36.31,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.4,
+            "challenge": 36.31,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.093,
+            "deadEndSettlements": 119,
+            "deadEndStates": 160,
+            "decisionPoints": 10,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 23,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0063,
+            "reachableStates": 1720,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 6,
+            "strategicBlocks": 5,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.455,
+            "wallDetour": 2,
+            "wallInteractionMoves": 5,
+            "walls": 8
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-DBEAF278C192",
+      "name": "Daily 16",
+      "optimalMoves": 10,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [1, 1],
+        [3, 1],
+        [3, 2],
+        [4, 2],
+        [0, 4],
+        [1, 4],
+        [3, 4],
+        [4, 4],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [5, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x7868253A19093728",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LLUUURURRU",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 39.8,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.7,
+            "challenge": 39.8,
+            "coordinationMoves": 8,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0444,
+            "deadEndSettlements": 800,
+            "deadEndStates": 577,
+            "decisionPoints": 10,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 8,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 23,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0016,
+            "reachableStates": 12981,
+            "repetitionRatio": 0.444,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 5,
+            "strategicBlocks": 8,
+            "temptingTraps": 0,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.308,
+            "wallDetour": 0,
+            "wallInteractionMoves": 5,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-DF8EF1A50D80",
+      "name": "Daily 17",
+      "optimalMoves": 10,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [2, 0],
+        [4, 0],
+        [2, 1],
+        [3, 2],
+        [0, 4],
+        [3, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x79437F43E689467F",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "RUULLDRRLL",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 33.27,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.3,
+            "challenge": 33.27,
+            "coordinationMoves": 3,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0314,
+            "deadEndSettlements": 7,
+            "deadEndStates": 6,
+            "decisionPoints": 10,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 21,
+            "patternCount": 6,
+            "plops": 2,
+            "randomSolveProbability": 0.0035,
+            "reachableStates": 191,
+            "repetitionRatio": 0.444,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 5,
+            "strategicBlocks": 3,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.368,
+            "wallDetour": 4,
+            "wallInteractionMoves": 3,
+            "walls": 6
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-D0E187ECE841",
+      "name": "Daily 18",
+      "optimalMoves": 11,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [1, 1],
+        [3, 1],
+        [4, 1],
+        [0, 3],
+        [3, 3],
+        [2, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [1, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x26FB3FD2F02E0E3C",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "UURULUDRURU",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 42.72,
+          "category": "Expert",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.364,
+            "challenge": 42.72,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.258,
+            "deadEndSettlements": 575,
+            "deadEndStates": 337,
+            "decisionPoints": 11,
+            "earlySettleTraps": 3,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 22,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.003,
+            "reachableStates": 1306,
+            "repetitionRatio": 0.1,
+            "requiredSettlementPairs": 1,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "solutionLength": 11,
+            "solutionTurns": 9,
+            "strategicBlocks": 5,
+            "temptingTraps": 1,
+            "trapMoves": 3,
+            "unusedSpaceRatio": 0.391,
+            "wallDetour": 0,
+            "wallInteractionMoves": 3,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-2D4417B14DBD",
+      "name": "Daily 19",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 1],
+        [4, 1],
+        [1, 2],
+        [2, 3],
+        [4, 3],
+        [0, 4],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [1, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xBEFDE6E4043B0CB5",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "URUURDDDDDLUL",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 38.88,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.077,
+            "challenge": 38.88,
+            "coordinationMoves": 9,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0848,
+            "deadEndSettlements": 322,
+            "deadEndStates": 342,
+            "decisionPoints": 12,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 5,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 25,
+            "patternCount": 5,
+            "plops": 3,
+            "randomSolveProbability": 0.0007,
+            "reachableStates": 4031,
+            "repetitionRatio": 0.417,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "solutionLength": 13,
+            "solutionTurns": 7,
+            "strategicBlocks": 9,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.435,
+            "wallDetour": 4,
+            "wallInteractionMoves": 8,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-F876F775BFEA",
+      "name": "Daily 20",
+      "optimalMoves": 11,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [5, 0],
+        [2, 1],
+        [5, 1],
+        [3, 2],
+        [0, 3],
+        [4, 3],
+        [1, 5],
+        [2, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [5, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xDA9653F9421F4D04",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LDLLDDDLRRR",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 34.36,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.455,
+            "challenge": 34.36,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0014,
+            "deadEndSettlements": 52,
+            "deadEndStates": 19,
+            "decisionPoints": 11,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 6,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 24,
+            "patternCount": 5,
+            "plops": 3,
+            "randomSolveProbability": 0.0022,
+            "reachableStates": 13901,
+            "repetitionRatio": 0.5,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 4,
+            "sleeperBlocks": 0,
+            "solutionLength": 11,
+            "solutionTurns": 5,
+            "strategicBlocks": 6,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.429,
+            "wallDetour": 4,
+            "wallInteractionMoves": 4,
+            "walls": 8
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-4E86EDBE931C",
+      "name": "Daily 21",
+      "optimalMoves": 8,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [4, 0],
+        [0, 1],
+        [1, 2],
+        [3, 2],
+        [4, 2],
+        [1, 4],
+        [3, 4],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x8A4EA9607D1905A4",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "ULRUULLD",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 29.74,
+          "category": "Normal",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.5,
+            "challenge": 29.74,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0637,
+            "deadEndSettlements": 12,
+            "deadEndStates": 13,
+            "decisionPoints": 8,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 6,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 17,
+            "patternCount": 6,
+            "plops": 2,
+            "randomSolveProbability": 0.0191,
+            "reachableStates": 204,
+            "repetitionRatio": 0.286,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 5,
+            "sleeperBlocks": 0,
+            "solutionLength": 8,
+            "solutionTurns": 5,
+            "strategicBlocks": 4,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.471,
+            "wallDetour": 4,
+            "wallInteractionMoves": 4,
+            "walls": 8
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-A894DBFDF20F",
+      "name": "Daily 22",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [4, 0],
+        [0, 1],
+        [4, 1],
+        [0, 2],
+        [1, 2],
+        [2, 4],
+        [1, 5],
+        [2, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [3, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xF374352603F18470",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DDRRURULULDDL",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 43.34,
+          "category": "Expert",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.615,
+            "challenge": 43.34,
+            "coordinationMoves": 8,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.1097,
+            "deadEndSettlements": 300,
+            "deadEndStates": 268,
+            "decisionPoints": 12,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 32,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0038,
+            "reachableStates": 2442,
+            "repetitionRatio": 0.25,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 5,
+            "sleeperBlocks": 0,
+            "solutionLength": 13,
+            "solutionTurns": 9,
+            "strategicBlocks": 8,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.238,
+            "wallDetour": 0,
+            "wallInteractionMoves": 5,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-13DFF58C77DE",
+      "name": "Daily 23",
+      "optimalMoves": 8,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [3, 0],
+        [4, 0],
+        [0, 1],
+        [2, 1],
+        [3, 2],
+        [3, 4],
+        [0, 5],
+        [1, 5],
+        [3, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [1, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x2A4324466C334ED9",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "URDDLLUL",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 40.39,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.25,
+            "challenge": 40.39,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.093,
+            "deadEndSettlements": 659,
+            "deadEndStates": 266,
+            "decisionPoints": 8,
+            "earlySettleTraps": 4,
+            "firstSettlementChoices": 6,
+            "forcedSteps": 7,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 12,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0037,
+            "reachableStates": 2859,
+            "repetitionRatio": 0.286,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 2,
+            "solutionLength": 8,
+            "solutionTurns": 5,
+            "strategicBlocks": 5,
+            "temptingTraps": 1,
+            "trapMoves": 5,
+            "unusedSpaceRatio": 0.35,
+            "wallDetour": 2,
+            "wallInteractionMoves": 2,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-A397CC623155",
+      "name": "Daily 24",
+      "optimalMoves": 13,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [3, 0],
+        [4, 1],
+        [0, 2],
+        [1, 2],
+        [3, 2],
+        [0, 3],
+        [4, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 5]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [1, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [5, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xFFDAB86B38339A02",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "RUUURRRDLDLDD",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 40.03,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.154,
+            "challenge": 40.03,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0983,
+            "deadEndSettlements": 507,
+            "deadEndStates": 733,
+            "decisionPoints": 13,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 5,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 24,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0006,
+            "reachableStates": 7460,
+            "repetitionRatio": 0.417,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 5,
+            "sleeperBlocks": 0,
+            "solutionLength": 13,
+            "solutionTurns": 7,
+            "strategicBlocks": 4,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.483,
+            "wallDetour": 2,
+            "wallInteractionMoves": 0,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-75EDA3EE9609",
+      "name": "Daily 25",
+      "optimalMoves": 9,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [2, 0],
+        [3, 0],
+        [4, 0],
+        [4, 1],
+        [2, 2],
+        [3, 2],
+        [0, 4],
+        [2, 4],
+        [3, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xC755A66998168E7F",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DDRRDDLUU",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 40.23,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.556,
+            "challenge": 40.23,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 5,
+            "deadEndRatio": 0.0455,
+            "deadEndSettlements": 11,
+            "deadEndStates": 6,
+            "decisionPoints": 9,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 22,
+            "patternCount": 7,
+            "plops": 2,
+            "randomSolveProbability": 0.0114,
+            "reachableStates": 132,
+            "repetitionRatio": 0.5,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 9,
+            "solutionTurns": 4,
+            "strategicBlocks": 4,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.375,
+            "wallDetour": 0,
+            "wallInteractionMoves": 4,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-2C8399B7A996",
+      "name": "Daily 26",
+      "optimalMoves": 11,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [4, 0],
+        [1, 1],
+        [2, 1],
+        [1, 2],
+        [2, 2],
+        [1, 3],
+        [3, 4],
+        [4, 4],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [1, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x67C63208A6DCE6C5",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "UURRDLDLRDR",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 33.09,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 2.909,
+            "challenge": 33.09,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0037,
+            "deadEndSettlements": 61,
+            "deadEndStates": 20,
+            "decisionPoints": 10,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 7,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 18,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0105,
+            "reachableStates": 5460,
+            "repetitionRatio": 0.2,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 6,
+            "sleeperBlocks": 0,
+            "solutionLength": 11,
+            "solutionTurns": 8,
+            "strategicBlocks": 6,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.35,
+            "wallDetour": 4,
+            "wallInteractionMoves": 5,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-0383A72511E8",
+      "name": "Daily 27",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [3, 1],
+        [0, 2],
+        [2, 2],
+        [0, 3],
+        [2, 3],
+        [3, 3],
+        [2, 4],
+        [1, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xB090A97791315200",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LURRDDDDLDLRU",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 37.75,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.385,
+            "challenge": 37.75,
+            "coordinationMoves": 12,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.1202,
+            "deadEndSettlements": 266,
+            "deadEndStates": 363,
+            "decisionPoints": 12,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 27,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0042,
+            "reachableStates": 3019,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 7,
+            "sleeperBlocks": 1,
+            "solutionLength": 13,
+            "solutionTurns": 8,
+            "strategicBlocks": 12,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.455,
+            "wallDetour": 4,
+            "wallInteractionMoves": 9,
+            "walls": 8
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-D93C914EBBD9",
+      "name": "Daily 28",
+      "optimalMoves": 11,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 1],
+        [1, 1],
+        [2, 1],
+        [4, 1],
+        [1, 2],
+        [4, 2],
+        [3, 3],
+        [3, 4],
+        [3, 5],
+        [4, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [5, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x8C328A56D94A51E7",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DDLLURRRDLL",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 36.39,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3,
+            "challenge": 36.39,
+            "coordinationMoves": 8,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.123,
+            "deadEndSettlements": 140,
+            "deadEndStates": 310,
+            "decisionPoints": 11,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 11,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 21,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0021,
+            "reachableStates": 2521,
+            "repetitionRatio": 0.5,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 11,
+            "solutionTurns": 5,
+            "strategicBlocks": 8,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.44,
+            "wallDetour": 2,
+            "wallInteractionMoves": 6,
+            "walls": 11
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-19414BB17E13",
+      "name": "Daily 29",
+      "optimalMoves": 8,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [2, 0],
+        [3, 0],
+        [0, 1],
+        [0, 2],
+        [2, 3],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xB15C160219258077",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DLLDDRDR",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 35.87,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.375,
+            "challenge": 35.87,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0649,
+            "deadEndSettlements": 23,
+            "deadEndStates": 15,
+            "decisionPoints": 8,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 6,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 16,
+            "patternCount": 7,
+            "plops": 2,
+            "randomSolveProbability": 0.0079,
+            "reachableStates": 231,
+            "repetitionRatio": 0.286,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "solutionLength": 8,
+            "solutionTurns": 5,
+            "strategicBlocks": 4,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.412,
+            "wallDetour": 0,
+            "wallInteractionMoves": 4,
+            "walls": 8
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-AA45FE879FD3",
+      "name": "Daily 30",
+      "optimalMoves": 10,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [3, 0],
+        [4, 0],
+        [3, 1],
+        [2, 2],
+        [0, 4],
+        [2, 4],
+        [0, 5],
+        [1, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xC7FE13D8E693F0D2",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "ULLRURRDRD",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 34.24,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.1,
+            "challenge": 34.24,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0821,
+            "deadEndSettlements": 225,
+            "deadEndStates": 260,
+            "decisionPoints": 10,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 5,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 18,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0123,
+            "reachableStates": 3166,
+            "repetitionRatio": 0.222,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 7,
+            "strategicBlocks": 5,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.381,
+            "wallDetour": 4,
+            "wallInteractionMoves": 3,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-50DD629E04F4",
+      "name": "Daily 31",
+      "optimalMoves": 8,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [3, 0],
+        [4, 0],
+        [1, 2],
+        [4, 2],
+        [2, 3],
+        [1, 4],
+        [2, 5],
+        [3, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [3, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xE1AA2910A9CC35F8",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LDDRDLDL",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 35.01,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3,
+            "challenge": 35.01,
+            "coordinationMoves": 3,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.1114,
+            "deadEndSettlements": 465,
+            "deadEndStates": 314,
+            "decisionPoints": 8,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 8,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 14,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0093,
+            "reachableStates": 2819,
+            "repetitionRatio": 0.143,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 8,
+            "solutionTurns": 6,
+            "strategicBlocks": 3,
+            "temptingTraps": 1,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.5,
+            "wallDetour": 0,
+            "wallInteractionMoves": 3,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-C9B77071E00A",
+      "name": "Daily 32",
+      "optimalMoves": 11,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [4, 0],
+        [0, 2],
+        [3, 3],
+        [0, 4],
+        [1, 4],
+        [4, 4],
+        [5, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x475D91EA48467576",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LULURURRRUR",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 42.03,
+          "category": "Expert",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.545,
+            "challenge": 42.03,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0449,
+            "deadEndSettlements": 864,
+            "deadEndStates": 565,
+            "decisionPoints": 11,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 7,
+            "forcedSteps": 7,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 22,
+            "patternCount": 5,
+            "plops": 3,
+            "randomSolveProbability": 0.0019,
+            "reachableStates": 12577,
+            "repetitionRatio": 0.2,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 16,
+            "sleeperBlocks": 0,
+            "solutionLength": 11,
+            "solutionTurns": 8,
+            "strategicBlocks": 6,
+            "temptingTraps": 2,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.483,
+            "wallDetour": 2,
+            "wallInteractionMoves": 4,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-72F981269899",
+      "name": "Daily 33",
+      "optimalMoves": 9,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [2, 0],
+        [2, 1],
+        [0, 2],
+        [3, 2],
+        [1, 4],
+        [2, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xE0DB8278718DC5EE",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "ULDLDLDRR",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 31.4,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.111,
+            "challenge": 31.4,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0926,
+            "deadEndSettlements": 16,
+            "deadEndStates": 10,
+            "decisionPoints": 9,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 7,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 16,
+            "patternCount": 6,
+            "plops": 2,
+            "randomSolveProbability": 0.0189,
+            "reachableStates": 108,
+            "repetitionRatio": 0.125,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "solutionLength": 9,
+            "solutionTurns": 7,
+            "strategicBlocks": 6,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.471,
+            "wallDetour": 0,
+            "wallInteractionMoves": 3,
+            "walls": 8
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-8D15D410D4BE",
+      "name": "Daily 34",
+      "optimalMoves": 10,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [4, 0],
+        [0, 1],
+        [0, 2],
+        [1, 2],
+        [0, 4],
+        [0, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x8AF2CA99B85813EB",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DDRURRDLRD",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 37.24,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.6,
+            "challenge": 37.24,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0631,
+            "deadEndSettlements": 646,
+            "deadEndStates": 417,
+            "decisionPoints": 10,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 5,
+            "forcedSteps": 8,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 22,
+            "patternCount": 5,
+            "plops": 3,
+            "randomSolveProbability": 0.0076,
+            "reachableStates": 6604,
+            "repetitionRatio": 0.222,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 15,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 7,
+            "strategicBlocks": 5,
+            "temptingTraps": 0,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.391,
+            "wallDetour": 2,
+            "wallInteractionMoves": 0,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-6E038E50F806",
+      "name": "Daily 35",
+      "optimalMoves": 11,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [3, 0],
+        [4, 0],
+        [3, 2],
+        [1, 3],
+        [4, 3],
+        [0, 4],
+        [3, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xC27B5196911400FF",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LDRRUURRLLU",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 36.64,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.455,
+            "challenge": 36.64,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0281,
+            "deadEndSettlements": 235,
+            "deadEndStates": 138,
+            "decisionPoints": 11,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 11,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 26,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.002,
+            "reachableStates": 4918,
+            "repetitionRatio": 0.4,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 11,
+            "solutionTurns": 6,
+            "strategicBlocks": 6,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.333,
+            "wallDetour": 0,
+            "wallInteractionMoves": 5,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-3F9D155FA120",
+      "name": "Daily 36",
+      "optimalMoves": 10,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [3, 0],
+        [4, 0],
+        [0, 2],
+        [1, 2],
+        [4, 2],
+        [5, 2],
+        [1, 3],
+        [0, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [1, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [5, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xE99E45BE6E0A47E8",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DDULRDRRRD",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 39.1,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.6,
+            "challenge": 39.1,
+            "coordinationMoves": 3,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0124,
+            "deadEndSettlements": 243,
+            "deadEndStates": 143,
+            "decisionPoints": 10,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 24,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0018,
+            "reachableStates": 11524,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 6,
+            "strategicBlocks": 3,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.481,
+            "wallDetour": 0,
+            "wallInteractionMoves": 2,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-D3639FBEF394",
+      "name": "Daily 37",
+      "optimalMoves": 9,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [3, 0],
+        [3, 1],
+        [3, 2],
+        [1, 3],
+        [2, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xEBD7114BED23FDEB",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "UDDRRURUR",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 37.7,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.111,
+            "challenge": 37.7,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0558,
+            "deadEndSettlements": 9,
+            "deadEndStates": 11,
+            "decisionPoints": 9,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 17,
+            "patternCount": 7,
+            "plops": 2,
+            "randomSolveProbability": 0.0083,
+            "reachableStates": 197,
+            "repetitionRatio": 0.25,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 9,
+            "solutionTurns": 6,
+            "strategicBlocks": 4,
+            "temptingTraps": 2,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.5,
+            "wallDetour": 2,
+            "wallInteractionMoves": 4,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-FC1DA068F58A",
+      "name": "Daily 38",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [2, 0],
+        [0, 1],
+        [4, 1],
+        [3, 2],
+        [4, 2],
+        [0, 3],
+        [3, 3],
+        [0, 4],
+        [1, 4],
+        [0, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [1, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x5E8424069CE83FBD",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LUDLDRDLUDRRD",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 35.34,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.308,
+            "challenge": 35.34,
+            "coordinationMoves": 11,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0446,
+            "deadEndSettlements": 341,
+            "deadEndStates": 186,
+            "decisionPoints": 9,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 6,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 25,
+            "patternCount": 5,
+            "plops": 3,
+            "randomSolveProbability": 0.0089,
+            "reachableStates": 4170,
+            "repetitionRatio": 0.083,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 23,
+            "sleeperBlocks": 3,
+            "solutionLength": 13,
+            "solutionTurns": 11,
+            "strategicBlocks": 11,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.316,
+            "wallDetour": 0,
+            "wallInteractionMoves": 6,
+            "walls": 11
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-D13FE5B345C6",
+      "name": "Daily 39",
+      "optimalMoves": 7,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [4, 0],
+        [0, 2],
+        [4, 2],
+        [0, 3],
+        [4, 3],
+        [0, 4],
+        [4, 4],
+        [0, 5],
+        [1, 5],
+        [2, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 1]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x1F4F9D1D4FEEC08B",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "RRRDLDL",
+        "solutionLength": 7,
+        "difficulty": {
+          "score": 29.52,
+          "category": "Normal",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.857,
+            "challenge": 29.52,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0259,
+            "deadEndSettlements": 177,
+            "deadEndStates": 96,
+            "decisionPoints": 7,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 5,
+            "forcedSteps": 6,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 18,
+            "patternCount": 5,
+            "plops": 3,
+            "randomSolveProbability": 0.0104,
+            "reachableStates": 3707,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "solutionLength": 7,
+            "solutionTurns": 4,
+            "strategicBlocks": 5,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.368,
+            "wallDetour": 0,
+            "wallInteractionMoves": 3,
+            "walls": 11
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-E08294E5CDD3",
+      "name": "Daily 40",
+      "optimalMoves": 12,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [1, 1],
+        [2, 1],
+        [3, 1],
+        [5, 1],
+        [1, 2],
+        [0, 3],
+        [5, 3],
+        [1, 5],
+        [2, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [5, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [3, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x93F2F66B3C2672C5",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LUUUURDDRDLU",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 40.56,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.583,
+            "challenge": 40.56,
+            "coordinationMoves": 8,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.091,
+            "deadEndSettlements": 609,
+            "deadEndStates": 481,
+            "decisionPoints": 10,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 28,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0007,
+            "reachableStates": 5284,
+            "repetitionRatio": 0.364,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "solutionLength": 12,
+            "solutionTurns": 7,
+            "strategicBlocks": 8,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.462,
+            "wallDetour": 0,
+            "wallInteractionMoves": 7,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-41F4A13569BD",
+      "name": "Daily 41",
+      "optimalMoves": 12,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [2, 1],
+        [4, 1],
+        [3, 2],
+        [0, 3],
+        [1, 3],
+        [3, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x2279392303F2F5E1",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "RRRLDDLDDRRU",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 40.97,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 2.75,
+            "challenge": 40.97,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0278,
+            "deadEndSettlements": 3,
+            "deadEndStates": 2,
+            "decisionPoints": 12,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 19,
+            "patternCount": 7,
+            "plops": 2,
+            "randomSolveProbability": 0.0056,
+            "reachableStates": 72,
+            "repetitionRatio": 0.455,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 12,
+            "solutionTurns": 6,
+            "strategicBlocks": 4,
+            "temptingTraps": 1,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.278,
+            "wallDetour": 4,
+            "wallInteractionMoves": 2,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-5AA023433937",
+      "name": "Daily 42",
+      "optimalMoves": 12,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [2, 0],
+        [2, 1],
+        [1, 3],
+        [2, 3],
+        [1, 4],
+        [3, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x7D8B67A624688C7C",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DDLUULDLLULU",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 42.55,
+          "category": "Expert",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.25,
+            "challenge": 42.55,
+            "coordinationMoves": 11,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0136,
+            "deadEndSettlements": 190,
+            "deadEndStates": 120,
+            "decisionPoints": 12,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 26,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0013,
+            "reachableStates": 8793,
+            "repetitionRatio": 0.273,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 12,
+            "solutionTurns": 8,
+            "strategicBlocks": 11,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.348,
+            "wallDetour": 0,
+            "wallInteractionMoves": 8,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-579B75F214EB",
+      "name": "Daily 43",
+      "optimalMoves": 12,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [0, 1],
+        [1, 1],
+        [4, 1],
+        [3, 2],
+        [4, 2],
+        [4, 3],
+        [1, 4],
+        [2, 4],
+        [0, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 5]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 1]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xC5C25426F45CD372",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DRRDLDLDDRDR",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 35.69,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.333,
+            "challenge": 35.69,
+            "coordinationMoves": 7,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0882,
+            "deadEndSettlements": 210,
+            "deadEndStates": 264,
+            "decisionPoints": 11,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 11,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 26,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0028,
+            "reachableStates": 2993,
+            "repetitionRatio": 0.182,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "solutionLength": 12,
+            "solutionTurns": 9,
+            "strategicBlocks": 7,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.316,
+            "wallDetour": 4,
+            "wallInteractionMoves": 5,
+            "walls": 11
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-F207D496DF9D",
+      "name": "Daily 44",
+      "optimalMoves": 11,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [2, 0],
+        [2, 1],
+        [4, 2],
+        [2, 3],
+        [1, 4],
+        [0, 5],
+        [3, 5],
+        [4, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xC2F4D61528CAFB70",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "URRRULLDDLU",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 39.28,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.636,
+            "challenge": 39.28,
+            "coordinationMoves": 7,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0531,
+            "deadEndSettlements": 470,
+            "deadEndStates": 391,
+            "decisionPoints": 11,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 7,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 27,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0008,
+            "reachableStates": 7366,
+            "repetitionRatio": 0.4,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "solutionLength": 11,
+            "solutionTurns": 6,
+            "strategicBlocks": 7,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.462,
+            "wallDetour": 2,
+            "wallInteractionMoves": 4,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-48947C0E90A0",
+      "name": "Daily 45",
+      "optimalMoves": 9,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [1, 0],
+        [2, 1],
+        [2, 2],
+        [4, 2],
+        [0, 3],
+        [4, 3],
+        [2, 4],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x626144A7DF76465C",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LURURDRUL",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 36.04,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.111,
+            "challenge": 36.04,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0602,
+            "deadEndSettlements": 8,
+            "deadEndStates": 8,
+            "decisionPoints": 7,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 8,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 16,
+            "patternCount": 7,
+            "plops": 2,
+            "randomSolveProbability": 0.0166,
+            "reachableStates": 133,
+            "repetitionRatio": 0,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 0,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "solutionLength": 9,
+            "solutionTurns": 8,
+            "strategicBlocks": 6,
+            "temptingTraps": 2,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.471,
+            "wallDetour": 0,
+            "wallInteractionMoves": 5,
+            "walls": 8
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-B6B02D672D6F",
+      "name": "Daily 46",
+      "optimalMoves": 10,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [2, 1],
+        [0, 2],
+        [2, 2],
+        [4, 3],
+        [0, 4],
+        [1, 4],
+        [4, 4],
+        [0, 5],
+        [1, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [3, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xBEEF168BD0A78278",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "UURRDDLDLD",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 42.6,
+          "category": "Expert",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.8,
+            "challenge": 42.6,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0803,
+            "deadEndSettlements": 332,
+            "deadEndStates": 219,
+            "decisionPoints": 10,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 5,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 26,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0008,
+            "reachableStates": 2728,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 6,
+            "strategicBlocks": 6,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.263,
+            "wallDetour": 6,
+            "wallInteractionMoves": 4,
+            "walls": 11
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-FC71FF9B71FD",
+      "name": "Daily 47",
+      "optimalMoves": 10,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [2, 0],
+        [1, 2],
+        [0, 3],
+        [3, 3],
+        [2, 4],
+        [4, 4],
+        [0, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [1, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x32C394EAC0684E03",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DDRDDLUULU",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 35.34,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.2,
+            "challenge": 35.34,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.3022,
+            "deadEndSettlements": 11,
+            "deadEndStates": 68,
+            "decisionPoints": 10,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 1,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 20,
+            "patternCount": 5,
+            "plops": 3,
+            "randomSolveProbability": 0.0047,
+            "reachableStates": 225,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 2,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 6,
+            "strategicBlocks": 6,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.381,
+            "wallDetour": 2,
+            "wallInteractionMoves": 4,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-8A42D1242472",
+      "name": "Daily 48",
+      "optimalMoves": 12,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [1, 1],
+        [3, 1],
+        [0, 3],
+        [3, 3],
+        [0, 4],
+        [2, 4],
+        [2, 5],
+        [4, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [5, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [5, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xF99643B83862F029",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DDLUURDUULLU",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 38.56,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.167,
+            "challenge": 38.56,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0004,
+            "deadEndSettlements": 18,
+            "deadEndStates": 5,
+            "decisionPoints": 11,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 5,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 23,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.001,
+            "reachableStates": 12232,
+            "repetitionRatio": 0.364,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 1,
+            "solutionLength": 12,
+            "solutionTurns": 7,
+            "strategicBlocks": 5,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.5,
+            "wallDetour": 0,
+            "wallInteractionMoves": 2,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-C8B6DC7778B7",
+      "name": "Daily 49",
+      "optimalMoves": 7,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [0, 1],
+        [0, 2],
+        [2, 2],
+        [3, 2],
+        [4, 3],
+        [0, 4],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xA10156F978E0B200",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "ULDRRRU",
+        "solutionLength": 7,
+        "difficulty": {
+          "score": 39.25,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 2.857,
+            "challenge": 39.25,
+            "coordinationMoves": 2,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0773,
+            "deadEndSettlements": 17,
+            "deadEndStates": 14,
+            "decisionPoints": 7,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 7,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 11,
+            "patternCount": 7,
+            "plops": 2,
+            "randomSolveProbability": 0.0059,
+            "reachableStates": 181,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 7,
+            "solutionTurns": 4,
+            "strategicBlocks": 2,
+            "temptingTraps": 2,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.5,
+            "wallDetour": 0,
+            "wallInteractionMoves": 1,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-AE25CFF3F4BE",
+      "name": "Daily 50",
+      "optimalMoves": 10,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [3, 0],
+        [4, 0],
+        [1, 1],
+        [3, 2],
+        [4, 2],
+        [0, 4],
+        [0, 5],
+        [2, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x823A625DCC824FD2",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LDDRDRDDRD",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 37.15,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.8,
+            "challenge": 37.15,
+            "coordinationMoves": 8,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0746,
+            "deadEndSettlements": 217,
+            "deadEndStates": 306,
+            "decisionPoints": 10,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 27,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0006,
+            "reachableStates": 4100,
+            "repetitionRatio": 0.222,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 7,
+            "strategicBlocks": 8,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.5,
+            "wallDetour": 0,
+            "wallInteractionMoves": 8,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-6A28FE2B05B8",
+      "name": "Daily 51",
+      "optimalMoves": 10,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [0, 1],
+        [2, 1],
+        [3, 1],
+        [0, 3],
+        [1, 4],
+        [3, 4],
+        [3, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [1, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x6628488A57201649",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DLRUULULUR",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 42.66,
+          "category": "Expert",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.5,
+            "challenge": 42.66,
+            "coordinationMoves": 7,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.1314,
+            "deadEndSettlements": 749,
+            "deadEndStates": 474,
+            "decisionPoints": 9,
+            "earlySettleTraps": 6,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 18,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.002,
+            "reachableStates": 3606,
+            "repetitionRatio": 0.111,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 8,
+            "strategicBlocks": 7,
+            "temptingTraps": 1,
+            "trapMoves": 6,
+            "unusedSpaceRatio": 0.381,
+            "wallDetour": 2,
+            "wallInteractionMoves": 6,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-9EF71786E64A",
+      "name": "Daily 52",
+      "optimalMoves": 11,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [2, 0],
+        [5, 0],
+        [3, 4],
+        [0, 5],
+        [2, 5],
+        [3, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 3]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x6D222A4ED7A35923",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "UDLLRRRRUUL",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 35.45,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.818,
+            "challenge": 35.45,
+            "coordinationMoves": 2,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0529,
+            "deadEndSettlements": 489,
+            "deadEndStates": 526,
+            "decisionPoints": 10,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 7,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 25,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0051,
+            "reachableStates": 9935,
+            "repetitionRatio": 0.5,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 35,
+            "sleeperBlocks": 0,
+            "solutionLength": 11,
+            "solutionTurns": 5,
+            "strategicBlocks": 2,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.429,
+            "wallDetour": 2,
+            "wallInteractionMoves": 1,
+            "walls": 8
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-F1945953B706",
+      "name": "Daily 53",
+      "optimalMoves": 7,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [0, 1],
+        [0, 2],
+        [1, 2],
+        [4, 2],
+        [0, 3],
+        [4, 3],
+        [3, 4],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xF2F017C0C73671A8",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "RULRUUL",
+        "solutionLength": 7,
+        "difficulty": {
+          "score": 41.83,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.143,
+            "challenge": 41.83,
+            "coordinationMoves": 2,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0769,
+            "deadEndSettlements": 14,
+            "deadEndStates": 11,
+            "decisionPoints": 6,
+            "earlySettleTraps": 3,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 7,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 12,
+            "patternCount": 7,
+            "plops": 2,
+            "randomSolveProbability": 0.0075,
+            "reachableStates": 143,
+            "repetitionRatio": 0.167,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 7,
+            "solutionTurns": 5,
+            "strategicBlocks": 2,
+            "temptingTraps": 3,
+            "trapMoves": 3,
+            "unusedSpaceRatio": 0.438,
+            "wallDetour": 2,
+            "wallInteractionMoves": 2,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-03886F6662D2",
+      "name": "Daily 54",
+      "optimalMoves": 12,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [3, 0],
+        [4, 0],
+        [2, 1],
+        [3, 1],
+        [4, 1],
+        [0, 2],
+        [4, 2],
+        [3, 3],
+        [1, 4],
+        [2, 5],
+        [3, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 5]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [1, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xB2DD8F6C177C56E2",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DULLDDLDRRUU",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 41.05,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.333,
+            "challenge": 41.05,
+            "coordinationMoves": 8,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0867,
+            "deadEndSettlements": 275,
+            "deadEndStates": 228,
+            "decisionPoints": 10,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 11,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 25,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0076,
+            "reachableStates": 2631,
+            "repetitionRatio": 0.364,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "solutionLength": 12,
+            "solutionTurns": 7,
+            "strategicBlocks": 8,
+            "temptingTraps": 1,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.263,
+            "wallDetour": 6,
+            "wallInteractionMoves": 6,
+            "walls": 11
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-F91877E40EA2",
+      "name": "Daily 55",
+      "optimalMoves": 9,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [2, 2],
+        [4, 2],
+        [0, 3],
+        [4, 3],
+        [3, 4],
+        [4, 4],
+        [0, 5],
+        [1, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [0, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xBB998E8CF7C9DF7E",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DDRUULLLU",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 37.88,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.333,
+            "challenge": 37.88,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 4,
+            "deadEndRatio": 0.0152,
+            "deadEndSettlements": 153,
+            "deadEndStates": 79,
+            "decisionPoints": 9,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 5,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 20,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0112,
+            "reachableStates": 5189,
+            "repetitionRatio": 0.5,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 9,
+            "solutionTurns": 4,
+            "strategicBlocks": 5,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.5,
+            "wallDetour": 0,
+            "wallInteractionMoves": 3,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-C8C393650F58",
+      "name": "Daily 56",
+      "optimalMoves": 10,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [5, 0],
+        [4, 1],
+        [0, 3],
+        [2, 3],
+        [4, 3],
+        [1, 4],
+        [2, 4],
+        [4, 4],
+        [5, 4],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 3]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [0, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x396E4E8833FFEB18",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "UURRULLLDL",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 40.3,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.7,
+            "challenge": 40.3,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0441,
+            "deadEndSettlements": 427,
+            "deadEndStates": 515,
+            "decisionPoints": 10,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 5,
+            "forcedSteps": 8,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 24,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0029,
+            "reachableStates": 11671,
+            "repetitionRatio": 0.444,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 5,
+            "strategicBlocks": 4,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.423,
+            "wallDetour": 2,
+            "wallInteractionMoves": 4,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-8C244EA41C5A",
+      "name": "Daily 57",
+      "optimalMoves": 11,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [2, 0],
+        [4, 0],
+        [2, 2],
+        [3, 2],
+        [2, 3],
+        [0, 4],
+        [1, 4],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x088B58CF66546579",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "RDRDDLLLURL",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 34.46,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3,
+            "challenge": 34.46,
+            "coordinationMoves": 7,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0303,
+            "deadEndSettlements": 3,
+            "deadEndStates": 5,
+            "decisionPoints": 11,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 20,
+            "patternCount": 6,
+            "plops": 2,
+            "randomSolveProbability": 0.0052,
+            "reachableStates": 165,
+            "repetitionRatio": 0.3,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "solutionLength": 11,
+            "solutionTurns": 7,
+            "strategicBlocks": 7,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.353,
+            "wallDetour": 4,
+            "wallInteractionMoves": 6,
+            "walls": 8
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-FA8B687B7DF0",
+      "name": "Daily 58",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 1],
+        [3, 1],
+        [4, 2],
+        [0, 3],
+        [1, 3],
+        [3, 3],
+        [4, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x1707751C0D7B6305",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DLLRUUULUURRD",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 41.18,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.462,
+            "challenge": 41.18,
+            "coordinationMoves": 9,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0348,
+            "deadEndSettlements": 184,
+            "deadEndStates": 170,
+            "decisionPoints": 12,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 11,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 29,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0008,
+            "reachableStates": 4882,
+            "repetitionRatio": 0.417,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 4,
+            "sleeperBlocks": 0,
+            "solutionLength": 13,
+            "solutionTurns": 7,
+            "strategicBlocks": 9,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.318,
+            "wallDetour": 4,
+            "wallInteractionMoves": 8,
+            "walls": 8
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-5855CEA5BA0E",
+      "name": "Daily 59",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [4, 0],
+        [0, 3],
+        [3, 4],
+        [4, 4],
+        [1, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 3]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x3FFF8D43BFAE4A4C",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LLDRDDDDUUULU",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 43.37,
+          "category": "Expert",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.692,
+            "challenge": 43.37,
+            "coordinationMoves": 7,
+            "counterIntuitiveSteps": 4,
+            "deadEndRatio": 0.0172,
+            "deadEndSettlements": 252,
+            "deadEndStates": 134,
+            "decisionPoints": 12,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 6,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 33,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0023,
+            "reachableStates": 7792,
+            "repetitionRatio": 0.5,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 8,
+            "sleeperBlocks": 0,
+            "solutionLength": 13,
+            "solutionTurns": 6,
+            "strategicBlocks": 7,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.24,
+            "wallDetour": 0,
+            "wallInteractionMoves": 1,
+            "walls": 5
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-26F2B82542F6",
+      "name": "Daily 60",
+      "optimalMoves": 13,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [4, 0],
+        [0, 1],
+        [0, 2],
+        [1, 2],
+        [5, 2],
+        [1, 3],
+        [5, 3],
+        [2, 4],
+        [3, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [3, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xE3C6D3D6C74F1415",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "ULRDDRRUUULUU",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 43.06,
+          "category": "Expert",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.615,
+            "challenge": 43.06,
+            "coordinationMoves": 9,
+            "counterIntuitiveSteps": 4,
+            "deadEndRatio": 0.0872,
+            "deadEndSettlements": 568,
+            "deadEndStates": 436,
+            "decisionPoints": 13,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 7,
+            "forcedSteps": 11,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 31,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.001,
+            "reachableStates": 5001,
+            "repetitionRatio": 0.417,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "solutionLength": 13,
+            "solutionTurns": 7,
+            "strategicBlocks": 9,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.423,
+            "wallDetour": 0,
+            "wallInteractionMoves": 9,
+            "walls": 10
+          }
+        }
+      }
+    }
+  ]
+}

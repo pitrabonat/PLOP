@@ -44,6 +44,8 @@ namespace Plop.Core
         public string Id { get; }
         public string Name { get; }
         public string Instruction { get; }
+        /// <summary>Verified shortest solution length (the Perfect target), or 0 when unknown. Runtime data.</summary>
+        public int OptimalMoves { get; }
         public int Width { get; }
         public int Height { get; }
         public int CellCount => Width * Height;
@@ -63,12 +65,13 @@ namespace Plop.Core
 
         public LevelDefinition(string id, string name, int width, int height,
             IEnumerable<GridPosition> walls, IEnumerable<PlopDefinition> plops, IEnumerable<NestDefinition> nests,
-            LevelMetadata metadata = null, string instruction = null)
+            LevelMetadata metadata = null, string instruction = null, int optimalMoves = 0)
         {
             if (width <= 0 || height <= 0) throw new ArgumentException("Width and height must be positive.");
             Id = id ?? string.Empty;
             Name = name ?? string.Empty;
             Instruction = string.IsNullOrWhiteSpace(instruction) ? null : instruction.Trim();
+            OptimalMoves = Math.Max(0, optimalMoves);
             Width = width;
             Height = height;
             Metadata = metadata;
@@ -113,7 +116,15 @@ namespace Plop.Core
 
         /// <summary>Returns a copy of this level with different metadata (geometry is shared semantics, not reference).</summary>
         public LevelDefinition WithMetadata(LevelMetadata metadata, string id = null, string name = null)
-            => new LevelDefinition(id ?? Id, name ?? Name, Width, Height, _wallList, _plops, _nests, metadata, Instruction);
+            => new LevelDefinition(id ?? Id, name ?? Name, Width, Height, _wallList, _plops, _nests, metadata, Instruction, OptimalMoves);
+
+        /// <summary>Copy with a different tutorial line (null removes it).</summary>
+        public LevelDefinition WithInstruction(string instruction)
+            => new LevelDefinition(Id, Name, Width, Height, _wallList, _plops, _nests, Metadata, instruction, OptimalMoves);
+
+        /// <summary>Copy with the verified optimal move count (Perfect target).</summary>
+        public LevelDefinition WithOptimalMoves(int optimalMoves)
+            => new LevelDefinition(Id, Name, Width, Height, _wallList, _plops, _nests, Metadata, Instruction, optimalMoves);
 
         /// <summary>Creates the initial mutable state for this level.</summary>
         public GameState CreateInitialState()

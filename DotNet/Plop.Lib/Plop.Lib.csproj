@@ -10,5 +10,6 @@
     <Compile Include="../../Assets/Scripts/Core/**/*.cs" />
     <Compile Include="../../Assets/Scripts/Solver/**/*.cs" />
     <Compile Include="../../Assets/Scripts/LevelGeneration/**/*.cs" />
+    <Compile Include="../../Assets/Scripts/Meta/**/*.cs" />
   </ItemGroup>
 </Project>

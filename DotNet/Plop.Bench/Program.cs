@@ -38,6 +38,8 @@ namespace Plop.Bench
                     case "--report": report = args[++i]; break;
                     case "--explore": explore = int.Parse(args[++i]); break;
                     case "--perf": return Perf(args[++i]);
+                    case "--search-probe": return SearchProbe.Run(i + 1 < args.Length ? int.Parse(args[i + 1]) : 2);
+                    case "--audit": return CampaignAudit.Run(args[i + 1], i + 2 < args.Length ? args[i + 2] : null, i + 3 < args.Length ? args[i + 3] : null);
                     case "--production": production = true; break;
                     case "--deadlocks": return BuildDeadlocks(args.Skip(i + 1).ToArray());
                     case "--verify-production":
@@ -48,7 +50,7 @@ namespace Plop.Bench
                     default: Console.Error.WriteLine("Unknown argument " + args[i]); return 2;
                 }
             }
-            if (production) return GenerateProduction(seed, pack, report);
+            if (production) return ProductionBuild.Run(seed, pack, report);
             return explore > 0 ? Explore(explore, seed) : Benchmark(count, seed, pack, report);
         }
 

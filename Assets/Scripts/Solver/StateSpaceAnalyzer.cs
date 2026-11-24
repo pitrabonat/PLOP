@@ -39,6 +39,9 @@ namespace Plop.Solver
         /// <summary>Every completing path has a swipe that blocks one awake Plop while another moves.</summary>
         public bool RequiresCoordination;
 
+        /// <summary>The explored graph; only kept when requested (<see cref="StateSpaceAnalyzer.AnalyzeWithGraph"/>).</summary>
+        public StateGraph Graph;
+
         public bool Solvable => Complete && StartDistance >= 0;
         public double DeadEndRatio => ReachableStates == 0 ? 0 : (double)DeadEndStates / ReachableStates;
     }
@@ -56,6 +59,20 @@ namespace Plop.Solver
         public double AverageBranching;
     }
 
+    /// <summary>
+    /// Complete reachable state graph of a level: canonical keys, four successor slots per state
+    /// (target index or -1 for a no-op, in U, D, L, R order) and exact distance to completion
+    /// (-1 = proven dead end). State 0 is the start. Offline analysis only.
+    /// </summary>
+    public sealed class StateGraph
+    {
+        public ulong[] Keys;
+        public int[] Edges;
+        public int[] Distance;
+        public int Count => Keys.Length;
+        public int Next(int state, int direction) => Edges[state * 4 + direction];
+    }
+
     public static class StateSpaceAnalyzer
     {
         private const int SolutionCountCap = 1_000_000;
@@ -63,8 +80,13 @@ namespace Plop.Solver
         public static StateSpaceAnalysis Analyze(LevelDefinition level, int maxStates = 2_000_000)
             => Analyze(level, maxStates, null);
 
+        /// <summary>Same as <see cref="Analyze(LevelDefinition,int)"/> but also returns the explored graph.</summary>
+        public static StateSpaceAnalysis AnalyzeWithGraph(LevelDefinition level, int maxStates = 2_000_000)
+            => Analyze(level, maxStates, null, keepGraph: true);
+
         // Invoked only after the entire reachable graph has been explored.
-        internal static StateSpaceAnalysis Analyze(LevelDefinition level, int maxStates, Action<ulong, bool> classify)
+        internal static StateSpaceAnalysis Analyze(LevelDefinition level, int maxStates, Action<ulong, bool> classify,
+            bool keepGraph = false)
         {
             var sw = Stopwatch.StartNew();
             var a = new StateSpaceAnalysis();
@@ -191,6 +213,7 @@ namespace Plop.Solver
                 classify?.Invoke(keys[i], canFinish);
             }
             a.StartDistance = dist[0];
+            if (keepGraph) a.Graph = new StateGraph { Keys = keys.ToArray(), Edges = edges.ToArray(), Distance = dist };
 
             if (dist[0] >= 0)
             {

@@ -5,6 +5,7 @@
         "PLOP.Core",
         "PLOP.Solver",
         "PLOP.Generation",
+        "PLOP.Meta",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

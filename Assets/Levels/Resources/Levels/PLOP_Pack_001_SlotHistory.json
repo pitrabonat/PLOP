@@ -1,0 +1,687 @@
+{
+  "schemaVersion": 1,
+  "packId": "PLOP_Pack_001",
+  "note": "Slot i (0-based) lists level IDs that occupied it in earlier campaign versions. Used only to migrate saves.",
+  "slots": [
+    {
+      "slot": 0,
+      "id": "PLOP-A77A222A745E",
+      "previousIds": []
+    },
+    {
+      "slot": 1,
+      "id": "PLOP-FCB267CE6856",
+      "previousIds": []
+    },
+    {
+      "slot": 2,
+      "id": "PLOP-18792159677A",
+      "previousIds": []
+    },
+    {
+      "slot": 3,
+      "id": "PLOP-ED487A3689A9",
+      "previousIds": []
+    },
+    {
+      "slot": 4,
+      "id": "PLOP-CC559DBE0F62",
+      "previousIds": []
+    },
+    {
+      "slot": 5,
+      "id": "PLOP-922A31B6088A",
+      "previousIds": []
+    },
+    {
+      "slot": 6,
+      "id": "PLOP-7713C5833A0F",
+      "previousIds": []
+    },
+    {
+      "slot": 7,
+      "id": "PLOP-EBC5AB002FB6",
+      "previousIds": []
+    },
+    {
+      "slot": 8,
+      "id": "PLOP-E69CBCF69883",
+      "previousIds": []
+    },
+    {
+      "slot": 9,
+      "id": "PLOP-D9E43076CA50",
+      "previousIds": []
+    },
+    {
+      "slot": 10,
+      "id": "PLOP-37CCC14B3EE4",
+      "previousIds": [
+        "PLOP-3EEE151A9A5C"
+      ]
+    },
+    {
+      "slot": 11,
+      "id": "PLOP-D50BF49DCBE4",
+      "previousIds": [
+        "PLOP-D70B6517A7B0"
+      ]
+    },
+    {
+      "slot": 12,
+      "id": "PLOP-577CA5F1D47C",
+      "previousIds": [
+        "PLOP-16FBF82D3225"
+      ]
+    },
+    {
+      "slot": 13,
+      "id": "PLOP-D43737ED2FB2",
+      "previousIds": [
+        "PLOP-F0A8F945DA56"
+      ]
+    },
+    {
+      "slot": 14,
+      "id": "PLOP-DF17DD03CF7B",
+      "previousIds": [
+        "PLOP-6B15B005781D"
+      ]
+    },
+    {
+      "slot": 15,
+      "id": "PLOP-9DDC1EFA7DBE",
+      "previousIds": [
+        "PLOP-7F01496949ED"
+      ]
+    },
+    {
+      "slot": 16,
+      "id": "PLOP-784175D2C821",
+      "previousIds": [
+        "PLOP-BA8AFDDC3808"
+      ]
+    },
+    {
+      "slot": 17,
+      "id": "PLOP-08C274A8D31A",
+      "previousIds": [
+        "PLOP-E94E38C32EDE"
+      ]
+    },
+    {
+      "slot": 18,
+      "id": "PLOP-1E451EF80E22",
+      "previousIds": [
+        "PLOP-915B97B7E04B"
+      ]
+    },
+    {
+      "slot": 19,
+      "id": "PLOP-89CD2F6460FE",
+      "previousIds": [
+        "PLOP-DCC40013DB74"
+      ]
+    },
+    {
+      "slot": 20,
+      "id": "PLOP-3B6F8F4F0030",
+      "previousIds": [
+        "PLOP-C65D31460166"
+      ]
+    },
+    {
+      "slot": 21,
+      "id": "PLOP-0E37F5D9984B",
+      "previousIds": [
+        "PLOP-0156437E22AE"
+      ]
+    },
+    {
+      "slot": 22,
+      "id": "PLOP-3434C576096E",
+      "previousIds": [
+        "PLOP-2D377B6583E4"
+      ]
+    },
+    {
+      "slot": 23,
+      "id": "PLOP-41242BFDA501",
+      "previousIds": [
+        "PLOP-23FC5AF98C12"
+      ]
+    },
+    {
+      "slot": 24,
+      "id": "PLOP-123B8170E36E",
+      "previousIds": [
+        "PLOP-78BA6FB3A56B"
+      ]
+    },
+    {
+      "slot": 25,
+      "id": "PLOP-796313811DA0",
+      "previousIds": [
+        "PLOP-1BF34FDBE0BD"
+      ]
+    },
+    {
+      "slot": 26,
+      "id": "PLOP-9A61517DF1D8",
+      "previousIds": [
+        "PLOP-71E2E0B7CD82"
+      ]
+    },
+    {
+      "slot": 27,
+      "id": "PLOP-06FA3178B758",
+      "previousIds": [
+        "PLOP-A071B97862ED"
+      ]
+    },
+    {
+      "slot": 28,
+      "id": "PLOP-99E37CD4619A",
+      "previousIds": [
+        "PLOP-EC83016A1CCB"
+      ]
+    },
+    {
+      "slot": 29,
+      "id": "PLOP-028B2E5B603B",
+      "previousIds": [
+        "PLOP-859A86AF9458"
+      ]
+    },
+    {
+      "slot": 30,
+      "id": "PLOP-647C80A8683A",
+      "previousIds": [
+        "PLOP-A97726D2A6A8"
+      ]
+    },
+    {
+      "slot": 31,
+      "id": "PLOP-F840115534A1",
+      "previousIds": [
+        "PLOP-DBFEA23A9797"
+      ]
+    },
+    {
+      "slot": 32,
+      "id": "PLOP-E347FC585C3B",
+      "previousIds": [
+        "PLOP-BE3AE614D247"
+      ]
+    },
+    {
+      "slot": 33,
+      "id": "PLOP-2E2664DB9581",
+      "previousIds": [
+        "PLOP-269A5D7C771E"
+      ]
+    },
+    {
+      "slot": 34,
+      "id": "PLOP-8A0E2222A7BF",
+      "previousIds": [
+        "PLOP-E1689E68B921"
+      ]
+    },
+    {
+      "slot": 35,
+      "id": "PLOP-64D786F63260",
+      "previousIds": [
+        "PLOP-941A1749C7FE"
+      ]
+    },
+    {
+      "slot": 36,
+      "id": "PLOP-736168F83DEB",
+      "previousIds": [
+        "PLOP-B68DEFDCE068"
+      ]
+    },
+    {
+      "slot": 37,
+      "id": "PLOP-F0E40FDCC2AD",
+      "previousIds": [
+        "PLOP-7203E7479AD8"
+      ]
+    },
+    {
+      "slot": 38,
+      "id": "PLOP-8D92C598CA83",
+      "previousIds": [
+        "PLOP-8E7E25B02205"
+      ]
+    },
+    {
+      "slot": 39,
+      "id": "PLOP-B7CAD97CCD8D",
+      "previousIds": [
+        "PLOP-3E7A7327DCEF"
+      ]
+    },
+    {
+      "slot": 40,
+      "id": "PLOP-57BA207976D1",
+      "previousIds": [
+        "PLOP-52FE4571A376"
+      ]
+    },
+    {
+      "slot": 41,
+      "id": "PLOP-403781C5EADE",
+      "previousIds": [
+        "PLOP-0D19F47372FF"
+      ]
+    },
+    {
+      "slot": 42,
+      "id": "PLOP-A001565C8CFB",
+      "previousIds": [
+        "PLOP-D26CB6F2C908"
+      ]
+    },
+    {
+      "slot": 43,
+      "id": "PLOP-B5148B2914E7",
+      "previousIds": [
+        "PLOP-BA122DF9208D"
+      ]
+    },
+    {
+      "slot": 44,
+      "id": "PLOP-C448C560496F",
+      "previousIds": [
+        "PLOP-05CDD4C8609F"
+      ]
+    },
+    {
+      "slot": 45,
+      "id": "PLOP-9A327389741B",
+      "previousIds": [
+        "PLOP-29E4D354B9E2"
+      ]
+    },
+    {
+      "slot": 46,
+      "id": "PLOP-DD98EEE4D4C0",
+      "previousIds": [
+        "PLOP-114A9741C345"
+      ]
+    },
+    {
+      "slot": 47,
+      "id": "PLOP-36A8AB6994B0",
+      "previousIds": [
+        "PLOP-AA27816F9885"
+      ]
+    },
+    {
+      "slot": 48,
+      "id": "PLOP-F1627C1458C1",
+      "previousIds": [
+        "PLOP-FB6771B819F3"
+      ]
+    },
+    {
+      "slot": 49,
+      "id": "PLOP-106B54473880",
+      "previousIds": [
+        "PLOP-19ED5D235CC1"
+      ]
+    },
+    {
+      "slot": 50,
+      "id": "PLOP-A3D8FCD6AB2A",
+      "previousIds": [
+        "PLOP-B6BEF9775FCE"
+      ]
+    },
+    {
+      "slot": 51,
+      "id": "PLOP-7AEC84DCDD47",
+      "previousIds": [
+        "PLOP-43862EBB9182"
+      ]
+    },
+    {
+      "slot": 52,
+      "id": "PLOP-799D03037C9D",
+      "previousIds": [
+        "PLOP-37DD4B5B3342"
+      ]
+    },
+    {
+      "slot": 53,
+      "id": "PLOP-9908AD3CA279",
+      "previousIds": [
+        "PLOP-25235C4FA654"
+      ]
+    },
+    {
+      "slot": 54,
+      "id": "PLOP-C706C418C987",
+      "previousIds": [
+        "PLOP-0F24CE04D160"
+      ]
+    },
+    {
+      "slot": 55,
+      "id": "PLOP-636C3D983904",
+      "previousIds": [
+        "PLOP-09844D2DB843"
+      ]
+    },
+    {
+      "slot": 56,
+      "id": "PLOP-0B03FB0ACADD",
+      "previousIds": [
+        "PLOP-87C90AC3E4BE"
+      ]
+    },
+    {
+      "slot": 57,
+      "id": "PLOP-59786B9BCDE2",
+      "previousIds": [
+        "PLOP-1790B9775D87"
+      ]
+    },
+    {
+      "slot": 58,
+      "id": "PLOP-FD5D7D0AA102",
+      "previousIds": [
+        "PLOP-20AB22FB6D1B"
+      ]
+    },
+    {
+      "slot": 59,
+      "id": "PLOP-74BAE024A8E7",
+      "previousIds": [
+        "PLOP-FD91AEE433BC"
+      ]
+    },
+    {
+      "slot": 60,
+      "id": "PLOP-39211B42CCCD",
+      "previousIds": [
+        "PLOP-2D110276DCFD"
+      ]
+    },
+    {
+      "slot": 61,
+      "id": "PLOP-14B04C0F1558",
+      "previousIds": [
+        "PLOP-BDCF83BB19EE"
+      ]
+    },
+    {
+      "slot": 62,
+      "id": "PLOP-EBACDA820215",
+      "previousIds": [
+        "PLOP-3D25653C627B"
+      ]
+    },
+    {
+      "slot": 63,
+      "id": "PLOP-8D91428CF2F2",
+      "previousIds": [
+        "PLOP-0FE7AD301711"
+      ]
+    },
+    {
+      "slot": 64,
+      "id": "PLOP-7FFE8C644CFC",
+      "previousIds": [
+        "PLOP-71C3EFAA8178"
+      ]
+    },
+    {
+      "slot": 65,
+      "id": "PLOP-E2DB81948141",
+      "previousIds": [
+        "PLOP-876F49F808F4"
+      ]
+    },
+    {
+      "slot": 66,
+      "id": "PLOP-D61476034657",
+      "previousIds": [
+        "PLOP-F74142D2B045"
+      ]
+    },
+    {
+      "slot": 67,
+      "id": "PLOP-308BBD2F1742",
+      "previousIds": [
+        "PLOP-17DB671733CF"
+      ]
+    },
+    {
+      "slot": 68,
+      "id": "PLOP-1F2AAE8A7E0B",
+      "previousIds": [
+        "PLOP-75751BB6AE78"
+      ]
+    },
+    {
+      "slot": 69,
+      "id": "PLOP-7DCF59B0A145",
+      "previousIds": [
+        "PLOP-A58A42255AC4"
+      ]
+    },
+    {
+      "slot": 70,
+      "id": "PLOP-859139868C76",
+      "previousIds": [
+        "PLOP-9D3C3258F321"
+      ]
+    },
+    {
+      "slot": 71,
+      "id": "PLOP-ADE26D623DCB",
+      "previousIds": [
+        "PLOP-FE419C3F00B3"
+      ]
+    },
+    {
+      "slot": 72,
+      "id": "PLOP-0B07DFCFED5E",
+      "previousIds": [
+        "PLOP-6D379AB23A3A"
+      ]
+    },
+    {
+      "slot": 73,
+      "id": "PLOP-EEF65982F1E4",
+      "previousIds": [
+        "PLOP-F3A5ED9F8C5D"
+      ]
+    },
+    {
+      "slot": 74,
+      "id": "PLOP-B0528A1A82C5",
+      "previousIds": [
+        "PLOP-B757F663EA8F"
+      ]
+    },
+    {
+      "slot": 75,
+      "id": "PLOP-3CDB5A20ADA0",
+      "previousIds": [
+        "PLOP-69A046D2429C"
+      ]
+    },
+    {
+      "slot": 76,
+      "id": "PLOP-BF13C4799C9E",
+      "previousIds": [
+        "PLOP-5209102C80D2"
+      ]
+    },
+    {
+      "slot": 77,
+      "id": "PLOP-D661174B9390",
+      "previousIds": [
+        "PLOP-0FFB86CB7B2F"
+      ]
+    },
+    {
+      "slot": 78,
+      "id": "PLOP-25FA335A9BA4",
+      "previousIds": [
+        "PLOP-0C3F1016A08B"
+      ]
+    },
+    {
+      "slot": 79,
+      "id": "PLOP-ACE58831DBC1",
+      "previousIds": [
+        "PLOP-4074AF4E84D1"
+      ]
+    },
+    {
+      "slot": 80,
+      "id": "PLOP-0D716335410B",
+      "previousIds": [
+        "PLOP-2ED7CE467136"
+      ]
+    },
+    {
+      "slot": 81,
+      "id": "PLOP-129CF95F9E5C",
+      "previousIds": [
+        "PLOP-2B9B692C30BF"
+      ]
+    },
+    {
+      "slot": 82,
+      "id": "PLOP-CA41E53C4B5C",
+      "previousIds": [
+        "PLOP-AEAA0F873ABB"
+      ]
+    },
+    {
+      "slot": 83,
+      "id": "PLOP-81CF8EC92059",
+      "previousIds": [
+        "PLOP-746BCB719816"
+      ]
+    },
+    {
+      "slot": 84,
+      "id": "PLOP-41450CC822E2",
+      "previousIds": [
+        "PLOP-FE8A2D623E2D"
+      ]
+    },
+    {
+      "slot": 85,
+      "id": "PLOP-50E7451D7893",
+      "previousIds": [
+        "PLOP-008351D0B69C"
+      ]
+    },
+    {
+      "slot": 86,
+      "id": "PLOP-76C205508FB4",
+      "previousIds": [
+        "PLOP-50314F2446B5"
+      ]
+    },
+    {
+      "slot": 87,
+      "id": "PLOP-A3317365F903",
+      "previousIds": [
+        "PLOP-BACD65B648FE"
+      ]
+    },
+    {
+      "slot": 88,
+      "id": "PLOP-44486975CA0D",
+      "previousIds": [
+        "PLOP-2045E581B337"
+      ]
+    },
+    {
+      "slot": 89,
+      "id": "PLOP-E768034576F0",
+      "previousIds": [
+        "PLOP-28DEEEA82C84"
+      ]
+    },
+    {
+      "slot": 90,
+      "id": "PLOP-F14EF42AB121",
+      "previousIds": [
+        "PLOP-08311BF3B0B3"
+      ]
+    },
+    {
+      "slot": 91,
+      "id": "PLOP-FC85ECB60B3B",
+      "previousIds": [
+        "PLOP-DD6980F23E61"
+      ]
+    },
+    {
+      "slot": 92,
+      "id": "PLOP-B4B64342D8B6",
+      "previousIds": [
+        "PLOP-E508A8FFF211"
+      ]
+    },
+    {
+      "slot": 93,
+      "id": "PLOP-AAFFA6673F20",
+      "previousIds": [
+        "PLOP-F110DF862D6C"
+      ]
+    },
+    {
+      "slot": 94,
+      "id": "PLOP-612C9C3EDA56",
+      "previousIds": [
+        "PLOP-37DB690D6423"
+      ]
+    },
+    {
+      "slot": 95,
+      "id": "PLOP-5A884DAEA0FE",
+      "previousIds": [
+        "PLOP-A13C310214F2"
+      ]
+    },
+    {
+      "slot": 96,
+      "id": "PLOP-125F181CC476",
+      "previousIds": [
+        "PLOP-D586202A40AF"
+      ]
+    },
+    {
+      "slot": 97,
+      "id": "PLOP-17F8E4F3BF00",
+      "previousIds": [
+        "PLOP-FD1AC5854190"
+      ]
+    },
+    {
+      "slot": 98,
+      "id": "PLOP-FE7FEFDCD094",
+      "previousIds": [
+        "PLOP-2FCD4848CDAC"
+      ]
+    },
+    {
+      "slot": 99,
+      "id": "PLOP-0DF6B4936F67",
+      "previousIds": [
+        "PLOP-172651D23E6C"
+      ]
+    }
+  ]
+}

@@ -75,7 +75,7 @@ namespace Plop.Generation
             var nests = new List<NestDefinition>();
             foreach (var n in level.Nests) nests.Add(new NestDefinition(n.Color, Transform(t, n.Position, level.Width, level.Height, out nw, out nh)));
             Transform(t, new GridPosition(0, 0), level.Width, level.Height, out nw, out nh);
-            return new LevelDefinition(level.Id, level.Name, nw, nh, walls, plops, nests, level.Metadata, level.Instruction);
+            return new LevelDefinition(level.Id, level.Name, nw, nh, walls, plops, nests, level.Metadata, level.Instruction, level.OptimalMoves);
         }
 
         internal static string Build(LevelDefinition level, int t)

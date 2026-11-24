@@ -75,6 +75,8 @@ namespace Plop.Generation
 
                 var single = Verify(level, maxStates);
                 foreach (var error in single.Errors) report.Errors.Add(prefix + error);
+                if (production && single.Analysis != null && single.Analysis.Solvable && level.OptimalMoves != single.Analysis.StartDistance)
+                    report.Errors.Add(prefix + "optimalMoves " + level.OptimalMoves + " differs from the verified shortest solution " + single.Analysis.StartDistance + ".");
                 var warningTarget = production ? report.Errors : report.Warnings;
                 foreach (var warning in single.Warnings) warningTarget.Add(prefix + warning);
                 if (production && single.IsValid && single.Warnings.Count == 0 && !VerifyHistory(level))

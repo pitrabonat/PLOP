@@ -57,6 +57,7 @@ namespace Plop.Core
             w.Key("id").Value(level.Id);
             w.Key("name").Value(level.Name);
             if (level.Instruction != null) w.Key("instruction").Value(level.Instruction);
+            if (level.OptimalMoves > 0) w.Key("optimalMoves").Value(level.OptimalMoves);
             w.Key("width").Value(level.Width);
             w.Key("height").Value(level.Height);
 
@@ -152,7 +153,9 @@ namespace Plop.Core
             if (includeDevData && o.TryGetValue("dev", out object devObj) && devObj != null)
                 meta = ReadMeta(MiniJson.AsObject(devObj, "dev"));
 
-            return new LevelDefinition(id, name, width, height, walls, plops, nests, meta, MiniJson.GetString(o, "instruction", false));
+            int optimal = MiniJson.GetInt(o, "optimalMoves", 0);
+            if (optimal < 0) throw new FormatException("optimalMoves must be positive.");
+            return new LevelDefinition(id, name, width, height, walls, plops, nests, meta, MiniJson.GetString(o, "instruction", false), optimal);
         }
 
         private static LevelMetadata ReadMeta(Dictionary<string, object> d)
