@@ -40,6 +40,7 @@ namespace Plop.Bench
                     case "--perf": return Perf(args[++i]);
                     case "--search-probe": return SearchProbe.Run(i + 1 < args.Length ? int.Parse(args[i + 1]) : 2);
                     case "--audit": return CampaignAudit.Run(args[i + 1], i + 2 < args.Length ? args[i + 2] : null, i + 3 < args.Length ? args[i + 3] : null);
+                    case "--insights": return Insights(args[i + 1], i + 2 < args.Length ? args[i + 2] : null);
                     case "--production": production = true; break;
                     case "--deadlocks": return BuildDeadlocks(args.Skip(i + 1).ToArray());
                     case "--verify-production":
@@ -299,5 +300,17 @@ namespace Plop.Bench
                 if (LevelSerializer.ToJson(r1.Levels[i]) != LevelSerializer.ToJson(r2.Levels[i])) return false;
             return true;
         }
-    }
+    
+        /// <summary>Writes the Level Lab campaign overview (TSV) for a pack: --insights pack.json [out.tsv].</summary>
+        private static int Insights(string packPath, string output)
+        {
+            var levels = Plop.Core.LevelSerializer.PackFromJson(System.IO.File.ReadAllText(packPath));
+            var rows = Plop.Generation.CampaignInsights.AnalyzeAll(levels);
+            string table = Plop.Generation.CampaignInsights.ToTable(rows);
+            if (output != null) System.IO.File.WriteAllText(output, table); else System.Console.Write(table);
+            int trivial = rows.Count(r => r.IsTrivial);
+            System.Console.Error.WriteLine(rows.Count + " levels analysed, " + trivial + " flagged trivial.");
+            return 0;
+        }
+}
 }

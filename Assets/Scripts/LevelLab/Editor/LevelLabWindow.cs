@@ -55,6 +55,15 @@ namespace Plop.LevelLab
         private DifficultyInfo _difficulty;
         private int _replayStep;
         private GameEngine _replay;
+        private LevelInsightRow _insight;
+
+        // ---- campaign overview ----
+        private List<LevelInsightRow> _overview;
+        private Vector2 _overviewScroll;
+        private int _overviewPlops;      // 0 = any, else plop count
+        private string _overviewSize = "Any size";
+        private bool _overviewTrivialOnly;
+        private int _compareIndex = -1;
 
         // ---- pack ----
         private string _packPath = DefaultPackPath;
@@ -86,6 +95,7 @@ namespace Plop.LevelLab
             DrawReplayControls();
             DrawMetrics();
             DrawPackSection();
+            DrawOverviewSection();
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.HelpBox(_status, _statusType);
@@ -151,6 +161,7 @@ namespace Plop.LevelLab
             _replay = null;
             _replayStep = 0;
             _metadata = null;
+            _insight = null;
         }
 
         private LevelDefinition BuildLevel()
@@ -409,7 +420,8 @@ namespace Plop.LevelLab
             _metadata = _metadata ?? new LevelMetadata();
             _metadata.SolverVersion = SolverInfo.Version;
             _metadata.Solution = DirectionUtil.ToMoveString(a.Solution);
-            _metadata.Difficulty = _difficulty;
+ _metadata.Difficulty = _difficulty;
+            _insight = CampaignInsights.Analyze(level);
             SetStatus("Analyzed: " + _difficulty.Category + " (score " + _difficulty.Score + "), " + a.ReachableStates + " states.");
         }
 
@@ -468,6 +480,139 @@ namespace Plop.LevelLab
                 EditorGUILayout.LabelField("Reachable states", _analysis.ReachableStates.ToString());
                 EditorGUILayout.LabelField("Dead-end states", _analysis.DeadEndStates.ToString());
             }
+            DrawInsight(_insight);
+        }
+
+        private static readonly string[] DirectionNames = { "Up", "Right", "Down", "Left" };
+
+        private void DrawInsight(LevelInsightRow row)
+        {
+            if (row == null || !row.Analysed) return;
+            var i = row.Insight;
+            EditorGUILayout.Space(4);
+            EditorGUILayout.LabelField("Player-model insight", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Challenge", i.Challenge.ToString("0.0") + "  (" + row.Category + ")");
+            EditorGUILayout.LabelField("Shortest solution", i.Optimal + " moves · " + i.ShortestSolutionCount + " optimal route(s)");
+            if (_solution != null) EditorGUILayout.SelectableLabel(DirectionUtil.ToMoveString(_solution), EditorStyles.textField, GUILayout.Height(18));
+            var firsts = new System.Text.StringBuilder();
+            for (int d = 0; d < 4; d++)
+            {
+                int n = row.FirstMoveLengths[d];
+                if (firsts.Length > 0) firsts.Append("   ");
+                firsts.Append(DirectionNames[d]).Append(": ").Append(n == -1 ? "—" : n == -2 ? "dead end" : n.ToString());
+            }
+            EditorGUILayout.LabelField("First swipe → total", firsts.ToString());
+            EditorGUILayout.LabelField("Greedy player", i.GreedySolves ? "finishes in " + i.GreedyLength : "fails");
+            EditorGUILayout.LabelField("Random swipes finish", (i.RandomSolveProbability * 100).ToString("0.00") + "%");
+            EditorGUILayout.LabelField("Decision points", i.DecisionPoints + "   traps: " + i.TemptingTraps + " tempting, " + i.EarlySettleTraps + " early-settle");
+            EditorGUILayout.LabelField("Counter-intuitive steps", i.CounterIntuitiveSteps + "   retreats: " + i.RetreatSteps);
+            EditorGUILayout.LabelField("Dead ends", row.DeadEndStates + " of " + row.ReachableStates + " states (" + (row.DeadEndRatio * 100).ToString("0") + "%)");
+            EditorGUILayout.LabelField("Settlement order", (row.SettlementSequence.Length > 0 ? row.SettlementSequence : "—") + (i.SettlementOrderMatters ? "   (order matters)" : ""));
+            EditorGUILayout.LabelField("Blocks used", i.SleeperBlocks + " sleeper, " + i.WallBlocks + " wall");
+            EditorGUILayout.LabelField("Repetition / unused floor", (i.RepetitionRatio * 100).ToString("0") + "% / " + (i.UnusedSpaceRatio * 100).ToString("0") + "%");
+            EditorGUILayout.LabelField("Patterns", i.Patterns.Replace(" ", "") == "" ? "—" : i.Patterns.Replace(" ", ""));
+            if (row.IsTrivial) EditorGUILayout.HelpBox("Trivial: " + string.Join(", ", row.TrivialFlags), MessageType.Warning);
+        }
+
+        // ================= campaign overview =================
+
+        private void DrawOverviewSection()
+        {
+            EditorGUILayout.Space(8);
+            EditorGUILayout.LabelField("Campaign overview", EditorStyles.boldLabel);
+            EditorGUILayout.BeginHorizontal();
+            using (new EditorGUI.DisabledScope(_pack.Count == 0))
+                if (GUILayout.Button("Analyze pack (" + _pack.Count + ")")) BuildOverview();
+            using (new EditorGUI.DisabledScope(_overview == null))
+            {
+                if (GUILayout.Button("Copy table")) EditorGUIUtility.systemCopyBuffer = CampaignInsights.ToTable(_overview);
+                if (GUILayout.Button("Clear")) { _overview = null; _compareIndex = -1; }
+            }
+            EditorGUILayout.EndHorizontal();
+            if (_overview == null) { EditorGUILayout.LabelField("Load a pack, then Analyze to compare every level.", EditorStyles.miniLabel); return; }
+
+            var sizes = new List<string> { "Any size" };
+            foreach (var r in _overview) { string k = r.Level.Width + "x" + r.Level.Height; if (!sizes.Contains(k)) sizes.Add(k); }
+            EditorGUILayout.BeginHorizontal();
+            _overviewPlops = EditorGUILayout.Popup(_overviewPlops, new[] { "Any Plops", "1 Plop", "2 Plops", "3 Plops", "4 Plops" }, GUILayout.Width(100));
+            int sizeIndex = Mathf.Max(0, sizes.IndexOf(_overviewSize));
+            _overviewSize = sizes[EditorGUILayout.Popup(sizeIndex, sizes.ToArray(), GUILayout.Width(90))];
+            _overviewTrivialOnly = GUILayout.Toggle(_overviewTrivialOnly, "Trivial only", GUILayout.Width(90));
+            EditorGUILayout.EndHorizontal();
+
+            int analysed = 0, trivial = 0, greedy = 0; double total = 0;
+            foreach (var r in _overview)
+            {
+                if (!r.Analysed) continue;
+                analysed++; total += r.Insight.Challenge;
+                if (r.IsTrivial) trivial++;
+                if (r.Insight.GreedySolves) greedy++;
+            }
+            EditorGUILayout.LabelField(analysed + " analysed · avg challenge " + (analysed > 0 ? (total / analysed).ToString("0.0") : "-") +
+                                       " · " + greedy + " greedy-solvable · " + trivial + " flagged trivial", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField("  #  size  P  opt  chal  cat       greedy  trap  ctr  dec  dead%  settle            similar", EditorStyles.miniBoldLabel);
+            _overviewScroll = EditorGUILayout.BeginScrollView(_overviewScroll, GUILayout.Height(220));
+            foreach (var r in _overview)
+            {
+                if (_overviewPlops > 0 && r.Level.Plops.Count != _overviewPlops) continue;
+                if (_overviewSize != "Any size" && r.Level.Width + "x" + r.Level.Height != _overviewSize) continue;
+                if (_overviewTrivialOnly && !r.IsTrivial) continue;
+                string line;
+                if (!r.Analysed) line = (r.Index + 1).ToString().PadLeft(3) + "  " + r.Problem;
+                else
+                {
+                    var i = r.Insight;
+                    line = (r.Index + 1).ToString().PadLeft(3) + "  " + (r.Level.Width + "x" + r.Level.Height).PadRight(4) + "  " + r.Level.Plops.Count +
+                           "  " + i.Optimal.ToString().PadLeft(3) + "  " + i.Challenge.ToString("0").PadLeft(4) + "  " + r.Category.PadRight(8) +
+                           "  " + (i.GreedySolves ? "yes" : "no ").PadRight(6) + "  " + (i.TemptingTraps + i.EarlySettleTraps).ToString().PadLeft(4) +
+                           "  " + i.CounterIntuitiveSteps.ToString().PadLeft(3) + "  " + i.DecisionPoints.ToString().PadLeft(3) +
+                           "  " + (r.DeadEndRatio * 100).ToString("0").PadLeft(5) + "  " + r.SettlementSequence.PadRight(16) +
+                           "  " + (r.MostSimilarIndex >= 0 ? "#" + (r.MostSimilarIndex + 1) + " " + (r.MostSimilarScore * 100).ToString("0") + "%" : "-") +
+                           (r.IsTrivial ? "  ⚠ " + string.Join(", ", r.TrivialFlags) : "");
+                }
+                var style = r.IsTrivial ? _warnRow ?? (_warnRow = new GUIStyle(EditorStyles.miniButton) { alignment = TextAnchor.MiddleLeft, normal = { textColor = new Color(0.85f, 0.45f, 0.1f) } })
+                                        : _plainRow ?? (_plainRow = new GUIStyle(EditorStyles.miniButton) { alignment = TextAnchor.MiddleLeft });
+                if (GUILayout.Button(new GUIContent(line, r.Level.Id), style))
+                {
+                    _packSelection = r.Index;
+                    LoadIntoEditor(r.Level);
+                    _insight = r;
+                    _compareIndex = r.MostSimilarIndex;
+                }
+            }
+            EditorGUILayout.EndScrollView();
+            DrawComparison();
+        }
+
+        private GUIStyle _warnRow, _plainRow, _monoBox;
+
+        private void DrawComparison()
+        {
+            if (_overview == null || _packSelection < 0 || _packSelection >= _overview.Count || _compareIndex < 0 || _compareIndex >= _overview.Count) return;
+            var a = _overview[_packSelection];
+            var b = _overview[_compareIndex];
+            EditorGUILayout.LabelField("Compare #" + (a.Index + 1) + " with its most similar level #" + (b.Index + 1) +
+                                       " (" + (CampaignInsights.Similarity(a.Level, b.Level) * 100).ToString("0") + "% layout match)", EditorStyles.boldLabel);
+            _monoBox = _monoBox ?? new GUIStyle(EditorStyles.helpBox) { font = Font.CreateDynamicFontFromOSFont("Menlo", 12), fontSize = 12 };
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField(LevelText.Render(a.Level) + "\n\n" + Summary(a), _monoBox, GUILayout.MinHeight(120));
+            EditorGUILayout.LabelField(LevelText.Render(b.Level) + "\n\n" + Summary(b), _monoBox, GUILayout.MinHeight(120));
+            EditorGUILayout.EndHorizontal();
+            if (GUILayout.Button("Open #" + (b.Index + 1) + " in the editor")) { _packSelection = b.Index; LoadIntoEditor(b.Level); _insight = b; _compareIndex = a.Index; }
+        }
+
+        private static string Summary(LevelInsightRow r) => !r.Analysed ? r.Problem
+            : r.Insight.Optimal + " moves · challenge " + r.Insight.Challenge.ToString("0") + " · " + r.Category + "\nsettle " + r.SettlementSequence;
+
+        private void BuildOverview()
+        {
+            try
+            {
+                _overview = CampaignInsights.AnalyzeAll(_pack, progress: i =>
+                    EditorUtility.DisplayProgressBar("PLOP Level Lab", "Analysing level " + (i + 1) + " of " + _pack.Count + "…", (float)i / _pack.Count));
+                SetStatus("Analysed " + _overview.Count + " levels. Click a row to open it; Copy table exports TSV.");
+            }
+            finally { EditorUtility.ClearProgressBar(); }
         }
 
         // ================= import / export / pack =================
