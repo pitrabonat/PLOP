@@ -5,10 +5,10 @@ namespace Plop.Presentation
     /// <summary>Small round-ended control glyphs in a single baked alpha sheet.</summary>
     internal static class HudIcons
     {
-        internal enum Kind { Levels, Settings, Undo, Restart, Hint, Next, Moves, Lock, Check }
+        internal enum Kind { Levels, Settings, Undo, Restart, Hint, Next, Moves, Lock, Check, Home, Star, Gift, Calendar, Play }
 
         private const int Size = 64;
-        private const int IconCount = 9;
+        private const int IconCount = 14;
         private static Sprite[] _sprites;
 
         internal static Sprite Get(Kind kind)
@@ -76,12 +76,68 @@ namespace Plop.Presentation
                     return Mathf.Max(Mathf.Min(shackle, body), -Sdf.Circle(p.x, p.y, 32f, 25f, 2.8f));
                 case Kind.Check:
                     return Mathf.Min(Stroke(p, 17f, 31f, 27f, 21f), Stroke(p, 27f, 21f, 48f, 43f));
+                case Kind.Home:
+                {
+                    float roof = Mathf.Min(Stroke(p, 13f, 33f, 32f, 50f), Stroke(p, 32f, 50f, 51f, 33f));
+                    float house = Sdf.RoundBox(p.x, p.y, 32f, 23f, 13f, 12f, 3.5f);
+                    float door = Sdf.RoundBox(p.x, p.y, 32f, 16f, 4.2f, 7f, 2.5f);
+                    return Mathf.Min(roof, Mathf.Max(house, -door));
+                }
+                case Kind.Star:
+                    return Star5(p - new Vector2(32f, 30f), 24f, 0.5f) - 2.2f;
+                case Kind.Gift:
+                {
+                    float box = Sdf.RoundBox(p.x, p.y, 32f, 24f, 16f, 12f, 3.5f);
+                    float lid = Sdf.RoundBox(p.x, p.y, 32f, 39f, 19f, 4.5f, 2.5f);
+                    float slit = Sdf.RoundBox(p.x, p.y, 32f, 30f, 1.8f, 24f, 0f);
+                    float bow = Mathf.Min(Mathf.Abs(Sdf.Circle(p.x, p.y, 26f, 48f, 5f)) - 2.4f,
+                        Mathf.Abs(Sdf.Circle(p.x, p.y, 38f, 48f, 5f)) - 2.4f);
+                    return Mathf.Min(Mathf.Max(Mathf.Min(box, lid), -slit), bow);
+                }
+                case Kind.Calendar:
+                {
+                    float outer = Sdf.RoundBox(p.x, p.y, 32f, 28f, 19f, 17f, 5f);
+                    float inner = Sdf.RoundBox(p.x, p.y, 32f, 25f, 14f, 10f, 2.5f);
+                    float frame = Mathf.Max(outer, -inner);
+                    float rings = Mathf.Min(Stroke(p, 24f, 44f, 24f, 50f), Stroke(p, 40f, 44f, 40f, 50f));
+                    return Mathf.Min(Mathf.Min(frame, rings), Sdf.Circle(p.x, p.y, 38f, 22f, 4f));
+                }
+                case Kind.Play:
+                {
+                    // Rounded triangle pointing right.
+                    float e1 = Edge(p, new Vector2(22f, 14f), new Vector2(22f, 50f));
+                    float e2 = Edge(p, new Vector2(22f, 50f), new Vector2(50f, 32f));
+                    float e3 = Edge(p, new Vector2(50f, 32f), new Vector2(22f, 14f));
+                    return Mathf.Max(Mathf.Max(e1, e2), e3) - 3f;
+                }
                 case Kind.Moves:
                     return Mathf.Min(Footprint(p - new Vector2(22, 24), -0.23f),
                         Footprint(p - new Vector2(42, 39), 0.29f));
                 default:
                     return Min3(Stroke(p, 17, 32, 47, 32), Stroke(p, 47, 32, 35, 44), Stroke(p, 47, 32, 35, 20));
             }
+        }
+
+        /// <summary>Signed distance to edge a→b of a clockwise polygon: negative on the inner (right-hand) side.</summary>
+        private static float Edge(Vector2 p, Vector2 a, Vector2 b)
+        {
+            var d = (b - a).normalized;
+            return (p.y - a.y) * d.x - (p.x - a.x) * d.y;
+        }
+
+        /// <summary>Five-point star distance (Inigo Quilez), radius r, inner ratio rf.</summary>
+        private static float Star5(Vector2 p, float r, float rf)
+        {
+            var k1 = new Vector2(0.809016994f, -0.587785252f);
+            var k2 = new Vector2(-k1.x, k1.y);
+            p.x = Mathf.Abs(p.x);
+            p -= 2f * Mathf.Max(Vector2.Dot(k1, p), 0f) * k1;
+            p -= 2f * Mathf.Max(Vector2.Dot(k2, p), 0f) * k2;
+            p.x = Mathf.Abs(p.x);
+            p.y -= r;
+            var ba = rf * new Vector2(-k1.y, k1.x) - new Vector2(0f, 1f);
+            float h = Mathf.Clamp(Vector2.Dot(p, ba) / Vector2.Dot(ba, ba), 0f, r);
+            return (p - ba * h).magnitude * Mathf.Sign(p.y * ba.x - p.x * ba.y);
         }
 
         private static float Min3(float a, float b, float c) => Mathf.Min(Mathf.Min(a, b), c);

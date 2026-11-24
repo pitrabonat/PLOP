@@ -7,7 +7,7 @@ namespace Plop.Presentation
     {
         internal static readonly Vector2 Resolution = new Vector2(1080, 1920);
         internal const float CanvasMatch = 0.5f;
-        internal const float HeaderReserve = 414f;
+        internal const float HeaderReserve = 300f;   // Phase 8: title moved into the header, level badge removed
         internal const float FooterReserve = 256f;
         internal const float ModalMargin = 30f;
         internal const float PillRadius = 58f;

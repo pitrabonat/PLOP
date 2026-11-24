@@ -12,6 +12,7 @@ namespace Plop.Presentation
     public static class LevelLibrary
     {
         public const string DefaultPack = "Levels/PLOP_Pack_001";
+        public const string DailyPack = "Levels/PLOP_Daily_001";
 
         public static DeadlockCatalog LoadDeadlocks()
         {

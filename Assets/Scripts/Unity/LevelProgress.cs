@@ -11,6 +11,21 @@ namespace Plop.Presentation
         private const string SavePrefix = "plop.progress.v1.";
         private const string LegacyIndexKey = "plop.levelIndex";
         private const string LegacyOrderResource = "Levels/PLOP_Pack_001_LegacyOrder";
+        private const string SlotHistoryResource = "Levels/PLOP_Pack_001_SlotHistory";
+
+        [Serializable]
+        private sealed class SlotHistory
+        {
+            public SlotEntry[] slots;
+        }
+
+        [Serializable]
+        private sealed class SlotEntry
+        {
+            public int slot;
+            public string id;
+            public string[] previousIds;
+        }
 
         [Serializable]
         private sealed class ProgressData
@@ -47,9 +62,11 @@ namespace Plop.Presentation
                 _resumeId = data.resumeId;
                 if (data.completedIds != null) _completed.UnionWith(data.completedIds);
                 if (data.unlockedIds != null) _unlocked.UnionWith(data.unlockedIds);
+                bool migrated = packResource == LevelLibrary.DefaultPack && MigrateRebuiltSlots();
                 _unlocked.UnionWith(_completed);
                 for (int i = 0; i < levels.Count - 1; i++)
                     if (IsCompleted(i)) _unlocked.Add(levels[i + 1].Id);
+                if (migrated) Save();
             }
             else if (packResource == LevelLibrary.DefaultPack && PlayerPrefs.HasKey(LegacyIndexKey))
             {
@@ -101,6 +118,68 @@ namespace Plop.Presentation
         }
 
         private bool InRange(int index) => index >= 0 && index < _levels.Count;
+
+        /// <summary>
+        /// Campaign rebuilds (Phase 8) replace boards in some slots. Saved IDs that no longer exist are mapped to
+        /// the level now occupying the same slot, so completions, unlocks and the resume point carry over.
+        /// Original IDs stay in the save (nothing is deleted). Returns true when anything was migrated.
+        /// </summary>
+        private bool MigrateRebuiltSlots()
+        {
+            var current = new Dictionary<string, int>(StringComparer.Ordinal);
+            for (int i = 0; i < _levels.Count; i++) current[_levels[i].Id] = i;
+            bool unknown = (_resumeId != null && !current.ContainsKey(_resumeId));
+            foreach (var id in _completed) unknown |= !current.ContainsKey(id);
+            foreach (var id in _unlocked) unknown |= !current.ContainsKey(id);
+            if (!unknown) return false;
+
+            var resource = Resources.Load<TextAsset>(SlotHistoryResource);
+            if (resource == null) return false;
+            var history = ReadJson<SlotHistory>(resource.text);
+            Resources.UnloadAsset(resource);
+            return Migrate(history, current);
+        }
+
+        /// <summary>Applies a slot history (exposed for tests via <see cref="MigrateForTests"/>).</summary>
+        private bool Migrate(SlotHistory history, Dictionary<string, int> current)
+        {
+            if (history?.slots == null) return false;
+            var oldToSlot = new Dictionary<string, int>(StringComparer.Ordinal);
+            foreach (var entry in history.slots)
+            {
+                if (entry?.previousIds == null || entry.slot < 0 || entry.slot >= _levels.Count) continue;
+                foreach (var old in entry.previousIds) if (!string.IsNullOrEmpty(old)) oldToSlot[old] = entry.slot;
+            }
+            bool changed = false;
+            foreach (var id in new List<string>(_completed))
+                if (!current.ContainsKey(id) && oldToSlot.TryGetValue(id, out int slot)) changed |= _completed.Add(_levels[slot].Id);
+            foreach (var id in new List<string>(_unlocked))
+                if (!current.ContainsKey(id) && oldToSlot.TryGetValue(id, out int slot)) changed |= _unlocked.Add(_levels[slot].Id);
+            if (_resumeId != null && !current.ContainsKey(_resumeId) && oldToSlot.TryGetValue(_resumeId, out int resumeSlot))
+            {
+                _resumeId = _levels[resumeSlot].Id;
+                changed = true;
+            }
+            if (changed) Debug.Log("[PLOP] Migrated saved progress to the rebuilt campaign (slot history).");
+            return changed;
+        }
+
+        /// <summary>Test hook: applies a JSON slot history to an in-memory progress object.</summary>
+        internal bool MigrateForTests(string slotHistoryJson, IEnumerable<string> completed, IEnumerable<string> unlocked, string resumeId)
+        {
+            _completed.UnionWith(completed);
+            _unlocked.UnionWith(unlocked);
+            _resumeId = resumeId;
+            var current = new Dictionary<string, int>(StringComparer.Ordinal);
+            for (int i = 0; i < _levels.Count; i++) current[_levels[i].Id] = i;
+            bool changed = Migrate(ReadJson<SlotHistory>(slotHistoryJson), current);
+            _unlocked.UnionWith(_completed);
+            for (int i = 0; i < _levels.Count - 1; i++)
+                if (IsCompleted(i)) _unlocked.Add(_levels[i + 1].Id);
+            return changed;
+        }
+
+        internal string ResumeId => _resumeId;
 
         private void MigrateLegacyIndex()
         {

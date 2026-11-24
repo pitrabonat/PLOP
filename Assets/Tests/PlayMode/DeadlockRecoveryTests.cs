@@ -41,6 +41,7 @@ namespace Plop.Tests.PlayMode
         {
             var controller = CreateController();
             yield return null;
+            controller.StartCampaign(); // dismiss the main menu with PLAY
             int fallbackCalls = 0;
             controller.DeadlockFallback = (level, state, token) =>
             {
@@ -91,6 +92,7 @@ namespace Plop.Tests.PlayMode
         {
             var controller = CreateController();
             yield return null;
+            controller.StartCampaign(); // dismiss the main menu with PLAY
             for (int i = 0; i < 7; i++)
             {
                 foreach (var direction in BfsSolver.Solve(controller.Engine.Level).Moves) controller.Move(direction);

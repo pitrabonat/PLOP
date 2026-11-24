@@ -245,7 +245,7 @@ namespace Plop.Tests.PlayMode
             var small = BoardLayout.Compute(1080, 1920, new Rect(0, 0, 1080, 1920), 4, 4);
             var large = BoardLayout.Compute(1080, 1920, new Rect(0, 0, 1080, 1920), 7, 7);
             Assert.Greater(small.PixelsPerUnit, large.PixelsPerUnit);
-            Assert.LessOrEqual(small.BoardRectPixels.width, 1080 * 0.88f, "4x4 should not fill edge to edge");
+            Assert.LessOrEqual(small.BoardRectPixels.width, 1080 * 0.95f, "4x4 keeps a slim side margin");
         }
     }
 }

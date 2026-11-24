@@ -4,6 +4,7 @@
     "references": [
         "PLOP.Core",
         "PLOP.Solver",
+        "PLOP.Meta",
         "PLOP.Unity",
         "Unity.InputSystem",
         "UnityEngine.UI",

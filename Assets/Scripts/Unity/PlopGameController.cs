@@ -1,3 +1,4 @@
+using Plop.Meta;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -62,6 +63,15 @@ namespace Plop.Presentation
         private bool _suspended;
         private bool _recheckDeadlockOnResume;
         private Direction? _pendingMove;
+        // ---- Phase 8: menu, Perfect Moves, Dream Dust, daily features ----
+        private MainMenu _menu;
+        private DreamDustWallet _wallet;
+        private LevelRecords _records;
+        private List<LevelDefinition> _dailyPool = new List<LevelDefinition>();
+        private bool _playingDaily;
+        private DateTime _dailyDate;
+        private bool _assisted;            // a hint was shown during this level visit (no Perfect)
+        private bool _settingsFromMenu;
         private BoardView _board;
         private SwipeInput _input;
         private GameHud _hud;
@@ -91,7 +101,15 @@ namespace Plop.Presentation
             = SearchForDeadlockAsync;
         internal Direction? PendingMove => _pendingMove;
         private bool SavesProgress => rememberProgress && !_debugPreview;
-        private bool GameplayBlocked => !isActiveAndEnabled || _suspended || _hud.BlocksGameplayInput;
+        private bool GameplayBlocked => !isActiveAndEnabled || _suspended || _hud.BlocksGameplayInput || (_menu != null && _menu.IsOpen);
+
+        /// <summary>Local calendar source for the daily features (tests inject a fixed clock).</summary>
+        internal IClock Clock { get; set; } = new SystemClock();
+        public DreamDustWallet Wallet => _wallet;
+        public LevelRecords Records => _records;
+        public MainMenu Menu => _menu;
+        public bool PlayingDaily => _playingDaily;
+        public bool HintUsedThisVisit => _assisted;
 
         public bool IsLevelUnlocked(int index) => _progress?.IsUnlocked(index) == true;
         public bool IsLevelCompleted(int index) => _progress?.IsCompleted(index) == true;
@@ -106,6 +124,8 @@ namespace Plop.Presentation
             _input = gameObject.AddComponent<SwipeInput>();
             _audio = gameObject.AddComponent<PlopAudio>();
             _hud = gameObject.AddComponent<GameHud>();
+            _menu = gameObject.AddComponent<MainMenu>();
+            InitMeta(persist: false); // tests and tools get an isolated in-memory wallet
 
             _engine.EventRaised += OnEngineEvent;
             _input.DirectionRequested += RequestMove;
@@ -135,6 +155,20 @@ namespace Plop.Presentation
             _hud.ModalInteracted += MarkActive;
             _hud.SetFrameRate(targetFrameRate);
             _hud.LayoutChanged += Relayout;
+            _hud.HomeClicked += ShowMenu;
+            _hud.SettingsClosed += OnSettingsClosed;
+            _menu.PlayClicked += StartCampaign;
+            _menu.DailyGiftClicked += () => ClaimDailyGift();
+            _menu.DailyPuzzleClicked += () => StartDaily();
+            _menu.LevelsClicked += OpenLevelsFromMenu;
+            _menu.SettingsClicked += OpenSettingsFromMenu;
+        }
+
+        private void InitMeta(bool persist)
+        {
+            IKeyValueStore store = persist ? new PlayerPrefsStore() : (IKeyValueStore)new MemoryStore();
+            _wallet = new DreamDustWallet(store);
+            _records = new LevelRecords(store);
         }
 
         private void Start()
@@ -154,6 +188,8 @@ namespace Plop.Presentation
             _debugPreview = debugLevel > 0 || !string.IsNullOrEmpty(debugMoves);
 #endif
             _progress = new LevelProgress(_levels, SavesProgress ? levelPackResource : null);
+            InitMeta(SavesProgress);
+            if (levelPackResource == LevelLibrary.DefaultPack) _dailyPool = LevelLibrary.Load(LevelLibrary.DailyPack);
             _index = _progress.ResumeIndex();
             if (rememberProgress)
             {
@@ -176,6 +212,7 @@ namespace Plop.Presentation
             _hud.SetComfortOptions(HapticsEnabled, ReducedMotionEnabled);
             _audio.Initialize(SavesProgress, _worlds.ForLevelIndex(_index)?.Ambience ?? WorldAmbience.CozyNest);
             LoadCurrent();
+            if (!_debugPreview) ShowMenu(); // the game opens on the main menu
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (PlayerPrefs.GetInt(PlopDiagnostics.Preference, 0) == 1) ToggleDiagnostics();
             if (!string.IsNullOrEmpty(debugMoves)) StartCoroutine(PlayDebugMoves(debugMoves));
@@ -298,6 +335,7 @@ namespace Plop.Presentation
 
         private void ApplyReducedMotion(bool value)
         {
+            if (_menu != null) _menu.ReducedMotion = value;
             _reducedMotion = value;
             _board.SetReducedMotion(value);
             _backdrop.SetReducedMotion(value);
@@ -372,6 +410,7 @@ namespace Plop.Presentation
         public void NextLevel()
         {
             if (GameplayBlocked || !_engine.IsCompleted) return;
+            if (_playingDaily) { ShowMenu(); return; }
             TrySelectLevel(_index + 1);
         }
 
@@ -380,7 +419,9 @@ namespace Plop.Presentation
             if (!isActiveAndEnabled || _suspended || _hud.IsSettingsOpen || _hud.IsDeadlockOpen || !IsLevelUnlocked(index)) return false;
             ClearPendingInput();
             _hud.CloseLevelPicker();
-            if (index == _index && !_engine.IsCompleted) return true;
+            _menu?.Hide(instant: true); // choosing a level always lands on the board
+            if (index == _index && !_engine.IsCompleted && !_playingDaily) return true;
+            _playingDaily = false;
             _index = index;
             _progress.Visit(index, SavesProgress);
             LoadCurrent();
@@ -577,6 +618,7 @@ namespace Plop.Presentation
                 if (result.Status == SolverStatus.Solved && result.Moves.Length > 0)
                 {
                     Direction direction = result.Moves[0];
+                    _assisted = true; // a revealed route means this visit can no longer earn Perfect
                     ShowHint("Try swiping " + direction.ToString().ToLowerInvariant() + ".", direction: direction);
                     return direction;
                 }
@@ -659,11 +701,22 @@ namespace Plop.Presentation
 
         private void CompleteCurrentLevel(int moveCount)
         {
+            var level = _engine.Level;
+            if (_playingDaily)
+            {
+                var daily = SafeReward(() => CompletionRewards.ForDaily(_wallet, _records, level.Id, _dailyDate, moveCount, level.OptimalMoves, _assisted));
+                _hud.SetCompleted(true, true);
+                _hud.SetCompletionResult(moveCount, level.OptimalMoves, daily.Attempt.Perfect, daily.DustEarned, returnsToMenu: true);
+                PlopLog.Info("Daily puzzle " + level.Id + " completed in " + moveCount);
+                return;
+            }
             int nextIndex = _index + 1;
             bool nextWasUnlocked = IsLevelUnlocked(nextIndex);
             _progress.Complete(_index, SavesProgress);
             bool nextUnlocked = IsLevelUnlocked(nextIndex);
             _hud.SetCompleted(true, nextUnlocked);
+            var reward = SafeReward(() => CompletionRewards.ForLevel(_wallet, _records, level.Id, moveCount, level.OptimalMoves, _assisted));
+            _hud.SetCompletionResult(moveCount, level.OptimalMoves, reward.Attempt.Perfect, reward.DustEarned, returnsToMenu: false);
 
             var nextWorld = _worlds.ForLevelIndex(nextIndex);
             if (!nextWasUnlocked && nextUnlocked && nextWorld != null && nextWorld != _world)
@@ -687,6 +740,8 @@ namespace Plop.Presentation
                     _deadlockTable = _deadlockCatalog?.ForLevel(_engine.Level);
                     _board.Build(_engine.Level, _engine.CurrentState, ShapeAtlas.ForDensity(FitCamera()));
                     InvalidateHint();
+                    _assisted = false;
+                    _hud.SetPerfectTarget(_engine.Level.OptimalMoves, _records.IsPerfect(_engine.Level.Id));
                     _hud.SetLevel(_engine.Level.Name, _engine.Level.Instruction);
                     _hud.SetMoves(0);
                     _hud.SetCanUndo(false);
@@ -724,6 +779,108 @@ namespace Plop.Presentation
                     CompleteCurrentLevel(e.MoveCount);
                     break;
             }
+        }
+
+        private static CompletionReward SafeReward(Func<CompletionReward> award)
+        {
+            try { return award(); }
+            catch (InvalidOperationException exception)
+            {
+                // A move count below the verified optimum means corrupted data; never pay or record it.
+                Debug.LogWarning("[PLOP] Result not recorded: " + exception.Message);
+                return default;
+            }
+        }
+
+        // ------------------------------------------------------------------ main menu & daily features
+
+        public void ShowMenu()
+        {
+            if (_menu == null) return;
+            ClearPendingInput();
+            InvalidateHint();
+            CancelDeadlockCheck();
+            _hud.CloseDeadlock();
+            _hud.CloseLevelPicker();
+            if (_playingDaily)
+            {
+                _playingDaily = false;
+                if (_levels.Count > 0) LoadCurrent();
+            }
+            RefreshMenu();
+            _menu.Show();
+        }
+
+        private void RefreshMenu()
+        {
+            var now = Clock.LocalNow;
+            _menu.Refresh(_wallet.Balance, CampaignResumeIndex + 1, DailyGift.IsAvailable(_wallet, now),
+                _wallet.HasGrant(RewardRules.DailyKey(now)), _wallet.HasGrant(RewardRules.DailyPerfectKey(now)));
+        }
+
+        /// <summary>PLAY: resume the furthest unlocked campaign level (Level 1 without progress).</summary>
+        public void StartCampaign()
+        {
+            if (_levels.Count == 0) return;
+            _menu.Hide();
+            _playingDaily = false;
+            int frontier = CampaignResumeIndex;
+            if (frontier != _index || _engine.IsCompleted || !_engine.HasLevel || _engine.Level != _levels[_index])
+            {
+                _index = frontier;
+                _progress.Visit(frontier, SavesProgress);
+                LoadCurrent();
+            }
+            MarkActive();
+        }
+
+        /// <summary>Starts today's prevalidated daily puzzle (offline, deterministic by local date).</summary>
+        public bool StartDaily()
+        {
+            if (_dailyPool.Count == 0) { _menu.ShowToast("Daily puzzle unavailable"); return false; }
+            var now = Clock.LocalNow;
+            _dailyDate = now.Date;
+            var puzzle = _dailyPool[DailySchedule.PoolIndex(now, _dailyPool.Count)];
+            _menu.Hide();
+            ClearPendingInput();
+            InvalidateHint();
+            _playingDaily = true;
+            _engine.LoadLevel(puzzle.WithMetadata(null, name: "Daily Puzzle"));
+            MarkActive();
+            return true;
+        }
+
+        /// <summary>Supplies a daily pool directly (tests, tools).</summary>
+        public void UseDailyPool(List<LevelDefinition> pool) => _dailyPool = pool ?? new List<LevelDefinition>();
+
+        public int ClaimDailyGift()
+        {
+            int amount = DailyGift.Claim(_wallet, Clock.LocalNow);
+            _menu.ShowToast(amount > 0 ? "+" + amount + " Dream Dust" : "Next gift tomorrow");
+            if (amount > 0) _audio.PlayButton();
+            RefreshMenu();
+            return amount;
+        }
+
+        private void OpenLevelsFromMenu()
+        {
+            _menu.Hide(instant: true);
+            ShowLevelPicker();
+        }
+
+        private void OpenSettingsFromMenu()
+        {
+            _menu.Hide(instant: true);
+            _settingsFromMenu = true;
+            ShowSettings();
+        }
+
+        private void OnSettingsClosed()
+        {
+            if (!_settingsFromMenu) return;
+            _settingsFromMenu = false;
+            RefreshMenu();
+            _menu.Show();
         }
 
         /// <summary>Fits the camera to the board inside the safe area (see BoardLayout). Returns pixels per cell.</summary>

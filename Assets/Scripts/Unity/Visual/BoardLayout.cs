@@ -13,7 +13,7 @@ namespace Plop.Presentation
         public static readonly Vector2 ReferenceResolution = HudTheme.Resolution;
         public const float HeaderHeight = HudTheme.HeaderReserve;     // reference units below the safe-area top
         public const float FooterHeight = HudTheme.FooterReserve;     // reference units above the safe-area bottom
-        public const float SideMarginFraction = 0.0625f; // each side of the usable safe width
+        public const float SideMarginFraction = 0.035f;  // each side of the usable safe width (Phase 8: larger boards)
         public const float PanelPadding = 0.30f;    // world units of container around the grid
 
         public struct Result

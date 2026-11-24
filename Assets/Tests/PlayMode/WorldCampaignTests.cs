@@ -23,6 +23,8 @@ namespace Plop.Tests.PlayMode
                 var controller = root.AddComponent<PlopGameController>();
                 controller.RememberProgress = false;
                 yield return null;
+                Assert.IsTrue(controller.Menu.IsOpen, "the shipped game opens on the main menu");
+                controller.StartCampaign(); // PLAY
 
                 var catalog = WorldCatalog.Load();
                 var audio = root.GetComponent<PlopAudio>();

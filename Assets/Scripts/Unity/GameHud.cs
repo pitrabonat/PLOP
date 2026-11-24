@@ -20,6 +20,8 @@ namespace Plop.Presentation
         public event Action<int> LevelChosen;
         public event Action ModalInteracted;
         public event Action LayoutChanged;
+        /// <summary>Header Home button: return to the main menu.</summary>
+        public event Action HomeClicked;
 
         private const int PageSize = 10;
         private readonly List<RectTransform> _modalSafeAreas = new List<RectTransform>();
@@ -31,7 +33,10 @@ namespace Plop.Presentation
         private Text _title, _moves, _instruction, _hintStatus, _completionActionLabel, _pageLabel;
         private Text _deadlockTitle, _deadlockDescription;
         private Text _gameName, _worldName, _pickerTitle, _pickerExitLabel, _hapticsLabel, _motionLabel;
-        private Text _musicPercent, _soundPercent, _muteLabel, _undoLabel;
+        private Text _musicPercent, _soundPercent, _muteLabel, _undoLabel, _completionMessage, _completionResult;
+        private Image _perfectStar, _completionDustIcon;
+        private int _optimalMoves;
+        private bool _levelPerfected;
         private Slider _music, _sound;
         private Image _completionActionIcon, _deadlockMascot, _levelBadgeBody, _moveBadgeBody;
         private Image _undoIcon, _rate30Check, _rate60Check;
@@ -98,11 +103,15 @@ namespace Plop.Presentation
             _header.anchoredPosition = new Vector2(0, -80);
             _header.sizeDelta = new Vector2(HudTheme.HeaderWidth, HudTheme.HeaderButtonHeight);
             var headerButtonSize = new Vector2(124, HudTheme.HeaderButtonHeight);
-            MakeButton(_header, "Levels", new Vector2(-378, 0), headerButtonSize, PlopPalette.ButtonFill,
-                () => LevelsClicked?.Invoke(), icon: HudIcons.Kind.Levels, touchHeight: HudTheme.PlayTouchHeight, iconOnly: true);
+            MakeButton(_header, "Home", new Vector2(-378, 0), headerButtonSize, PlopPalette.ButtonFill,
+                () => HomeClicked?.Invoke(), icon: HudIcons.Kind.Home, touchHeight: HudTheme.PlayTouchHeight, iconOnly: true);
+            // Phase 8: the gameplay header shows the level, not the game title (the main menu carries the logo).
             _gameName = MakeText(_header, "Game name", 84, FontStyle.Bold, HudTheme.Ink, center,
                 Vector2.zero, new Vector2(438, 112));
             _gameName.text = "PLOP!";
+            _gameName.gameObject.SetActive(false);
+            _title = MakeText(_header, "Title", HudTheme.Display - 10, FontStyle.Bold, HudTheme.Ink, center,
+                Vector2.zero, new Vector2(440, 100));
             _worldName = MakeText(_header, "Current world", 26, FontStyle.Bold, HudTheme.SecondaryText, center,
                 new Vector2(0, -44), new Vector2(436, 38));
             _worldName.gameObject.SetActive(false);
@@ -114,13 +123,15 @@ namespace Plop.Presentation
             _status.sizeDelta = new Vector2(HudTheme.StatusWidth, 120);
             _levelBadge = MakeBadge(_status, "Level badge", new Vector2(466, 103), PlopPalette.ButtonFill);
             _levelBadgeBody = _levelBadge.Find("Body").GetComponent<Image>();
-            _title = MakeText(_levelBadge, "Title", HudTheme.Display, FontStyle.Bold, HudTheme.Ink, center,
-                Vector2.zero, new Vector2(440, 108));
-            _moveBadge = MakeBadge(_status, "Move badge", new Vector2(300, 74), HudTheme.MoveSurface);
+            _levelBadge.gameObject.SetActive(false);
+            _moveBadge = MakeBadge(_status, "Move badge", new Vector2(320, 74), HudTheme.MoveSurface);
             _moveBadgeBody = _moveBadge.Find("Body").GetComponent<Image>();
             AddGlyph(_moveBadge, HudIcons.Kind.Moves, new Vector2(-100, 0), 47f, HudTheme.ActionInk);
             _moves = MakeText(_moveBadge, "Moves", 37, FontStyle.Bold, HudTheme.Ink, center,
-                new Vector2(20, 0), new Vector2(235, 62));
+                new Vector2(0, 0), new Vector2(190, 62));
+            // Perfect target star: honey once this level has been solved in the optimal number of moves.
+            _perfectStar = AddGlyph(_moveBadge, HudIcons.Kind.Star, new Vector2(112, 1), 44f, HudTheme.DisabledText);
+            _perfectStar.name = "Perfect star";
             _instruction = MakeText(_status, "Instruction", HudTheme.Caption, FontStyle.Normal, HudTheme.SecondaryText,
                 center, new Vector2(0, 30), new Vector2(HudTheme.StatusWidth, 70));
             _instruction.horizontalOverflow = HorizontalWrapMode.Wrap;
@@ -171,7 +182,7 @@ namespace Plop.Presentation
             const float edgeGap = 10f;
             bool showInstruction = _instruction.gameObject.activeSelf && _instruction.text.Length > 0;
             float moveY = showInstruction ? 104f : 49f;
-            float levelY = moveY + 98f;
+            float levelY = moveY - 18f;   // the level name now lives in the header
             _moveBadge.anchoredPosition = new Vector2(0, moveY);
             _levelBadge.anchoredPosition = new Vector2(0, levelY);
             if (!_hasBoardLayout) return;
@@ -207,13 +218,40 @@ namespace Plop.Presentation
             bool visible = world != null;
             _worldName.gameObject.SetActive(visible);
             _worldName.text = visible ? world.DisplayName : "";
-            _gameName.rectTransform.anchoredPosition = new Vector2(0, visible ? 12f : 0f);
+            _title.rectTransform.anchoredPosition = new Vector2(0, visible ? 14f : 0f);
             var accent = visible ? world.AccentColor : PlopPalette.ButtonFill;
             _levelBadgeBody.color = Color.Lerp(PlopPalette.ButtonFill, accent, 0.18f);
             _moveBadgeBody.color = visible ? Color.Lerp(HudTheme.MoveSurface, accent, 0.27f) : HudTheme.MoveSurface;
         }
 
-        public void SetMoves(int moves) => _moves.text = moves == 1 ? "1 move" : moves + " moves";
+        public void SetMoves(int moves)
+            => _moves.text = _optimalMoves > 0 ? moves + " / " + _optimalMoves : moves == 1 ? "1 move" : moves + " moves";
+
+        /// <summary>Perfect target for the current level (0 hides it) and whether it was already achieved.</summary>
+        public void SetPerfectTarget(int optimalMoves, bool alreadyPerfect)
+        {
+            _optimalMoves = optimalMoves;
+            _levelPerfected = alreadyPerfect;
+            _perfectStar.gameObject.SetActive(optimalMoves > 0);
+            _perfectStar.color = alreadyPerfect ? PlopPalette.Honey : HudTheme.DisabledText;
+        }
+
+        /// <summary>Result line on the completion card: moves, Perfect, Dream Dust earned (once).</summary>
+        public void SetCompletionResult(int moves, int optimalMoves, bool perfect, int dustEarned, bool returnsToMenu)
+        {
+            _completionMessage.text = perfect ? "Perfect!" : "Sweet Dreams!";
+            string result = moves == 1 ? "1 move" : moves + " moves";
+            if (optimalMoves > 0 && !perfect) result += "  ·  Perfect: " + optimalMoves;
+            if (dustEarned > 0) result += "  ·  +" + dustEarned;
+            _completionResult.text = result;
+            _completionDustIcon.gameObject.SetActive(dustEarned > 0);
+            if (perfect) { _levelPerfected = true; _perfectStar.color = PlopPalette.Honey; }
+            if (returnsToMenu)
+            {
+                _completionActionLabel.text = "Menu";
+                _completionActionIcon.sprite = HudIcons.Get(HudIcons.Kind.Home);
+            }
+        }
         public void SetCanUndo(bool canUndo)
         {
             _undo.interactable = canUndo;
@@ -405,6 +443,7 @@ namespace Plop.Presentation
             }
             _completionActionLabel.text = canAdvance ? "Next Level" : "Levels";
             _completionActionIcon.sprite = HudIcons.Get(canAdvance ? HudIcons.Kind.Next : HudIcons.Kind.Levels);
+            if (!completed) { _completionResult.text = ""; _completionDustIcon.gameObject.SetActive(false); }
 
             if (_cardAnim != null)
             {
@@ -422,17 +461,22 @@ namespace Plop.Presentation
         {
             _completion = NewRect("Completion card", _dock);
             _completion.anchorMin = _completion.anchorMax = Vector2.one * 0.5f;
-            _completion.sizeDelta = new Vector2(HudTheme.DeckWidth, 206);
+            _completion.sizeDelta = new Vector2(HudTheme.DeckWidth, 250);
             _completion.anchoredPosition = new Vector2(0, 12);
             _cardGroup = _completion.gameObject.AddComponent<CanvasGroup>();
             AddShadow(_completion, UiSprites.CardShadow, HudTheme.ShadowOffset, HudTheme.CardShadow);
             AddCardBackground(_completion, HudTheme.CompletionSurface);
-            var message = MakeText(_completion, "Completion message", HudTheme.Heading, FontStyle.Bold, HudTheme.Ink,
-                Vector2.one * 0.5f, new Vector2(0, 48), new Vector2(590, 86));
-            message.text = "Sweet Dreams!";
-            MakeButton(_completion, "Replay", new Vector2(-161, -43), new Vector2(252, 76), PlopPalette.ButtonFill,
+            _completionMessage = MakeText(_completion, "Completion message", HudTheme.Heading, FontStyle.Bold, HudTheme.Ink,
+                Vector2.one * 0.5f, new Vector2(0, 74), new Vector2(590, 76));
+            _completionMessage.text = "Sweet Dreams!";
+            _completionResult = MakeText(_completion, "Completion result", HudTheme.Caption, FontStyle.Bold, HudTheme.SecondaryText,
+                Vector2.one * 0.5f, new Vector2(16, 24), new Vector2(600, 48));
+            _completionDustIcon = AddGlyph(_completion, HudIcons.Kind.Star, new Vector2(-290, 24), 34f, PlopPalette.Honey);
+            _completionDustIcon.name = "Dream Dust";
+            _completionDustIcon.gameObject.SetActive(false);
+            MakeButton(_completion, "Replay", new Vector2(-161, -58), new Vector2(252, 76), PlopPalette.ButtonFill,
                 () => RestartClicked?.Invoke(), icon: HudIcons.Kind.Restart, fontSize: HudTheme.Control, touchHeight: 114f);
-            var advance = MakeButton(_completion, "Next Level", new Vector2(130, -43), new Vector2(297, 76),
+            var advance = MakeButton(_completion, "Next Level", new Vector2(130, -58), new Vector2(297, 76),
                 Color.Lerp(PlopPalette.ButtonFill, PlopPalette.Mint, 0.62f),
                 () =>
                 {

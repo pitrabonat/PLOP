@@ -14,7 +14,7 @@ namespace Plop.Tests.PlayMode
         {
             var safe = new Rect(0, bottom, w, h - bottom - top);
             var small = BoardLayout.Compute(w, h, safe, 4, 4);
-            Assert.That(small.BoardRectPixels.width / safe.width, Is.InRange(0.80f, 0.88f));
+            Assert.That(small.BoardRectPixels.width / safe.width, Is.InRange(0.90f, 0.95f)); // Phase 8: small boards use most of the width
             AssertFits(small, 4, 4);
 
             var taller = BoardLayout.Compute(w, h, safe, 5, 9);
