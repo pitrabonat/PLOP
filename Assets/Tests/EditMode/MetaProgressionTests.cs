@@ -159,19 +159,5 @@ namespace Plop.Tests
             Assert.AreEqual("{ not json", store.GetString(DreamDustWallet.StoreKey + ".corrupt", null));
             Assert.AreEqual("[1,2", store.GetString(LevelRecords.StoreKey + ".corrupt", null));
         }
-
-        [Test]
-        public void Cosmetics_DataModel_SpendsOnlyWhenAffordable()
-        {
-            var wallet = new DreamDustWallet(new MemoryStore());
-            var item = CosmeticCatalog.Find("face.sleepy-smile");
-            Assert.IsNotNull(item);
-            Assert.IsFalse(wallet.TryUnlock(item));
-            wallet.Grant("test", item.Cost);
-            Assert.IsTrue(wallet.TryUnlock(item));
-            Assert.IsTrue(wallet.Owns(item.Id));
-            Assert.AreEqual(0, wallet.Balance);
-            Assert.IsFalse(wallet.TryUnlock(item), "cannot buy twice");
-        }
     }
 }

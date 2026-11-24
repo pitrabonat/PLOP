@@ -84,36 +84,4 @@ namespace Plop.Meta
 
         private static int Gcd(int a, int b) { while (b != 0) { int t = a % b; a = b; b = t; } return a; }
     }
-
-    public enum CosmeticCategory { PlopColor, Expression, NestStyle, BoardTheme, Accessory }
-
-    public sealed class CosmeticItem
-    {
-        public readonly string Id;
-        public readonly CosmeticCategory Category;
-        public readonly int Cost;
-        public readonly string Name;
-        public CosmeticItem(string id, CosmeticCategory category, int cost, string name) { Id = id; Category = category; Cost = cost; Name = name; }
-    }
-
-    /// <summary>Data model for future Dream Dust cosmetics. No shop, no artwork yet.</summary>
-    public static class CosmeticCatalog
-    {
-        public static readonly IReadOnlyList<CosmeticItem> Items = new[]
-        {
-            new CosmeticItem("color.sunset", CosmeticCategory.PlopColor, 120, "Sunset jelly"),
-            new CosmeticItem("color.seafoam", CosmeticCategory.PlopColor, 120, "Seafoam jelly"),
-            new CosmeticItem("face.sleepy-smile", CosmeticCategory.Expression, 80, "Sleepy smile"),
-            new CosmeticItem("face.starry-eyes", CosmeticCategory.Expression, 150, "Starry eyes"),
-            new CosmeticItem("nest.cloud", CosmeticCategory.NestStyle, 200, "Cloud pillow"),
-            new CosmeticItem("board.linen", CosmeticCategory.BoardTheme, 250, "Linen tray"),
-            new CosmeticItem("hat.nightcap", CosmeticCategory.Accessory, 300, "Tiny nightcap"),
-        };
-
-        public static CosmeticItem Find(string id)
-        {
-            foreach (var item in Items) if (item.Id == id) return item;
-            return null;
-        }
-    }
 }

@@ -1,0 +1,385 @@
+{
+  "schemaVersion": 1,
+  "catalogId": "PLOP_Cosmetics_001",
+  "contentVersion": 1,
+  "note": "Visual-only cosmetics. IDs are save keys: never rename or reuse one. Remove an item by deleting it; saves fall back to the default.",
+  "defaults": {
+    "BodyStyle": "body.classic",
+    "BodyFinish": "finish.classic",
+    "Palette": "palette.classic",
+    "Face": "face.classic",
+    "Accessory": "accessory.none",
+    "Nest": "nest.classic",
+    "Effect": "effect.none"
+  },
+  "items": [
+    {
+      "id": "body.classic",
+      "category": "BodyStyle",
+      "name": "Classic",
+      "asset": "style:classic",
+      "preview": "auto",
+      "unlock": "Free",
+      "since": 1
+    },
+    {
+      "id": "body.bouncy",
+      "category": "BodyStyle",
+      "name": "Bouncy",
+      "asset": "style:bouncy",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 60,
+      "since": 1
+    },
+    {
+      "id": "body.snoozy",
+      "category": "BodyStyle",
+      "name": "Snoozy",
+      "asset": "style:snoozy",
+      "preview": "auto",
+      "unlock": "Milestone",
+      "cost": 120,
+      "milestone": "LevelsCompleted",
+      "count": 20,
+      "since": 1
+    },
+    {
+      "id": "finish.classic",
+      "category": "BodyFinish",
+      "name": "Classic Jelly",
+      "asset": "finish:classic",
+      "preview": "auto",
+      "unlock": "Free",
+      "since": 1
+    },
+    {
+      "id": "finish.frosted",
+      "category": "BodyFinish",
+      "name": "Frosted Jelly",
+      "asset": "finish:frosted",
+      "preview": "auto",
+      "unlock": "Free",
+      "since": 1
+    },
+    {
+      "id": "finish.milky",
+      "category": "BodyFinish",
+      "name": "Milky Jelly",
+      "asset": "finish:milky",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 40,
+      "since": 1
+    },
+    {
+      "id": "finish.dewdrop",
+      "category": "BodyFinish",
+      "name": "Dewdrop Jelly",
+      "asset": "finish:dewdrop",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 120,
+      "since": 1
+    },
+    {
+      "id": "finish.velvet",
+      "category": "BodyFinish",
+      "name": "Velvet Jelly",
+      "asset": "finish:velvet",
+      "preview": "auto",
+      "unlock": "Milestone",
+      "cost": 100,
+      "milestone": "WorldsCompleted",
+      "count": 1,
+      "since": 1
+    },
+    {
+      "id": "finish.pearl",
+      "category": "BodyFinish",
+      "name": "Pearl Jelly",
+      "asset": "finish:pearl",
+      "preview": "auto",
+      "unlock": "Milestone",
+      "cost": 150,
+      "milestone": "PerfectLevels",
+      "count": 10,
+      "since": 1
+    },
+    {
+      "id": "palette.classic",
+      "category": "Palette",
+      "name": "Toy Box",
+      "asset": "palette:classic",
+      "preview": "auto",
+      "unlock": "Free",
+      "since": 1
+    },
+    {
+      "id": "palette.pastel",
+      "category": "Palette",
+      "name": "Pastel",
+      "asset": "palette:pastel",
+      "preview": "auto",
+      "unlock": "Free",
+      "since": 1
+    },
+    {
+      "id": "palette.sorbet",
+      "category": "Palette",
+      "name": "Sorbet",
+      "asset": "palette:sorbet",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 80,
+      "since": 1
+    },
+    {
+      "id": "face.classic",
+      "category": "Face",
+      "name": "Sweet",
+      "asset": "face:classic",
+      "preview": "auto",
+      "unlock": "Free",
+      "since": 1
+    },
+    {
+      "id": "face.button",
+      "category": "Face",
+      "name": "Button",
+      "asset": "face:button",
+      "preview": "auto",
+      "unlock": "Free",
+      "since": 1
+    },
+    {
+      "id": "face.sleepy",
+      "category": "Face",
+      "name": "Dozy",
+      "asset": "face:sleepy",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 50,
+      "since": 1
+    },
+    {
+      "id": "face.blush",
+      "category": "Face",
+      "name": "Blush",
+      "asset": "face:blush",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 70,
+      "since": 1
+    },
+    {
+      "id": "face.starry",
+      "category": "Face",
+      "name": "Starry",
+      "asset": "face:starry",
+      "preview": "auto",
+      "unlock": "Milestone",
+      "cost": 180,
+      "milestone": "PerfectLevels",
+      "count": 25,
+      "since": 1
+    },
+    {
+      "id": "accessory.none",
+      "category": "Accessory",
+      "name": "None",
+      "asset": "accessory:none",
+      "preview": "auto",
+      "unlock": "Free",
+      "since": 1
+    },
+    {
+      "id": "accessory.bow",
+      "category": "Accessory",
+      "name": "Tiny Bow",
+      "asset": "accessory:bow",
+      "preview": "auto",
+      "unlock": "Free",
+      "since": 1
+    },
+    {
+      "id": "accessory.flower",
+      "category": "Accessory",
+      "name": "Little Flower",
+      "asset": "accessory:flower",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 40,
+      "since": 1
+    },
+    {
+      "id": "accessory.leaf",
+      "category": "Accessory",
+      "name": "Sprout Leaf",
+      "asset": "accessory:leaf",
+      "preview": "auto",
+      "unlock": "Milestone",
+      "cost": 50,
+      "milestone": "LevelsCompleted",
+      "count": 10,
+      "since": 1
+    },
+    {
+      "id": "accessory.ribbon",
+      "category": "Accessory",
+      "name": "Ribbon",
+      "asset": "accessory:ribbon",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 60,
+      "since": 1
+    },
+    {
+      "id": "accessory.star",
+      "category": "Accessory",
+      "name": "Little Star",
+      "asset": "accessory:star",
+      "preview": "auto",
+      "unlock": "Milestone",
+      "cost": 80,
+      "milestone": "DailyPuzzles",
+      "count": 3,
+      "since": 1
+    },
+    {
+      "id": "accessory.nightcap",
+      "category": "Accessory",
+      "name": "Nightcap",
+      "asset": "accessory:nightcap",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 90,
+      "since": 1
+    },
+    {
+      "id": "accessory.cloud",
+      "category": "Accessory",
+      "name": "Cloud Puff",
+      "asset": "accessory:cloud",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 110,
+      "since": 1
+    },
+    {
+      "id": "accessory.crown",
+      "category": "Accessory",
+      "name": "Tiny Crown",
+      "asset": "accessory:crown",
+      "preview": "auto",
+      "unlock": "Milestone",
+      "cost": 250,
+      "milestone": "WorldsCompleted",
+      "count": 3,
+      "since": 1
+    },
+    {
+      "id": "nest.classic",
+      "category": "Nest",
+      "name": "Moon Pillow",
+      "asset": "nest:classic",
+      "preview": "auto",
+      "unlock": "Free",
+      "since": 1
+    },
+    {
+      "id": "nest.cloud",
+      "category": "Nest",
+      "name": "Cloud Cushion",
+      "asset": "nest:cloud",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 70,
+      "since": 1
+    },
+    {
+      "id": "nest.marshmallow",
+      "category": "Nest",
+      "name": "Marshmallow",
+      "asset": "nest:marshmallow",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 100,
+      "since": 1
+    },
+    {
+      "id": "nest.flower",
+      "category": "Nest",
+      "name": "Soft Flower",
+      "asset": "nest:flower",
+      "preview": "auto",
+      "unlock": "Milestone",
+      "cost": 120,
+      "milestone": "LevelsCompleted",
+      "count": 40,
+      "since": 1
+    },
+    {
+      "id": "nest.moon",
+      "category": "Nest",
+      "name": "Crescent Bed",
+      "asset": "nest:moon",
+      "preview": "auto",
+      "unlock": "Milestone",
+      "cost": 160,
+      "milestone": "WorldsCompleted",
+      "count": 2,
+      "since": 1
+    },
+    {
+      "id": "effect.none",
+      "category": "Effect",
+      "name": "None",
+      "asset": "effect:none",
+      "preview": "auto",
+      "unlock": "Free",
+      "since": 1
+    },
+    {
+      "id": "effect.puff",
+      "category": "Effect",
+      "name": "Dust Puff",
+      "asset": "effect:puff",
+      "preview": "auto",
+      "unlock": "Free",
+      "since": 1
+    },
+    {
+      "id": "effect.sparkle",
+      "category": "Effect",
+      "name": "Sparkle",
+      "asset": "effect:sparkle",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 50,
+      "since": 1
+    },
+    {
+      "id": "effect.bubble",
+      "category": "Effect",
+      "name": "Bubbles",
+      "asset": "effect:bubble",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 60,
+      "since": 1
+    },
+    {
+      "id": "effect.stars",
+      "category": "Effect",
+      "name": "Star Trail",
+      "asset": "effect:stars",
+      "preview": "auto",
+      "unlock": "Milestone",
+      "cost": 90,
+      "milestone": "PerfectLevels",
+      "count": 5,
+      "since": 1
+    }
+  ]
+}
