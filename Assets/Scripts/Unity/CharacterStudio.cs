@@ -29,9 +29,9 @@ namespace Plop.Presentation
         private static readonly CosmeticCategory[] Tabs =
         {
             CosmeticCategory.BodyStyle, CosmeticCategory.Palette, CosmeticCategory.BodyFinish, CosmeticCategory.Face,
-            CosmeticCategory.Accessory, CosmeticCategory.Nest, CosmeticCategory.Effect
+            CosmeticCategory.Accessory, CosmeticCategory.Nest, CosmeticCategory.Effect, CosmeticCategory.Board
         };
-        private static readonly string[] TabNames = { "Body", "Colors", "Finish", "Face", "Accessories", "Nest", "Effects" };
+        private static readonly string[] TabNames = { "Body", "Colors", "Finish", "Face", "Accessories", "Nest", "Effects", "Board" };
         private static readonly Reaction[] TapCycle =
             { Reaction.Bounce, Reaction.Surprised, Reaction.Wobble, Reaction.HappyBlink, Reaction.Squash, Reaction.Sleepy };
 
@@ -514,6 +514,9 @@ namespace Plop.Presentation
                     if (CharacterArt.Nests.TryGetValue(asset, out var nest) && _thumbs.Has(ShapeAtlas.ThumbNestKey(nest)))
                         Place(area, _thumbs.Get(ShapeAtlas.ThumbNestKey(nest)), new Vector2(0f, 0f), 165f);
                     break;
+                case CosmeticCategory.Board:
+                    BoardThumb(area, CharacterArt.Boards.TryGetValue(asset, out var decor) ? decor : d.Board);
+                    break;
                 case CosmeticCategory.Effect:
                     if (CharacterArt.Effects.TryGetValue(asset, out var fx) && _thumbs.Has(ShapeAtlas.ThumbEffectKey(fx)))
                     {
@@ -551,6 +554,34 @@ namespace Plop.Presentation
                 Vector2 anchor = accessory.Anchor == AccessoryAnchor.Top ? style.TopAnchor : style.SideAnchor;
                 var img = Place(parent, _thumbs.Get(ShapeAtlas.ThumbAccessoryKey(accessory)), origin + anchor + accessory.Offset, scale);
                 img.rectTransform.localRotation = Quaternion.AngleAxis(accessory.Rotation, Vector3.forward);
+            }
+        }
+
+        /// <summary>A tiny 3×2 board in the decor's colours over a neutral World tray.</summary>
+        private static void BoardThumb(RectTransform parent, BoardDecor decor)
+        {
+            Color tray = BoardDecorTint.Blend(PlopPalette.Hex(0xE8DCCB), decor.Tray, decor.Amount);
+            Color tile = BoardDecorTint.Blend(PlopPalette.Hex(0xFBF6EE), decor.Tile, decor.Amount);
+            var panel = MenuKit.Rect("Board tray", parent);
+            panel.anchorMin = panel.anchorMax = new Vector2(0.5f, 0.5f);
+            panel.sizeDelta = new Vector2(176f, 124f);
+            var img = panel.gameObject.AddComponent<Image>();
+            img.sprite = UiSprites.Card;
+            img.type = Image.Type.Sliced;
+            img.color = tray;
+            img.raycastTarget = false;
+            for (int y = 0; y < 2; y++)
+            for (int x = 0; x < 3; x++)
+            {
+                var cell = MenuKit.Rect("Board tile", panel);
+                cell.anchorMin = cell.anchorMax = new Vector2(0.5f, 0.5f);
+                cell.sizeDelta = new Vector2(46f, 46f);
+                cell.anchoredPosition = new Vector2((x - 1) * 52f, (y - 0.5f) * 52f);
+                var ci = cell.gameObject.AddComponent<Image>();
+                ci.sprite = UiSprites.Card;
+                ci.type = Image.Type.Sliced;
+                ci.color = tile * ((x + y) % 2 == 0 ? 1f : 0.965f);
+                ci.raycastTarget = false;
             }
         }
 

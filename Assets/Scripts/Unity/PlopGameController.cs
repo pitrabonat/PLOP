@@ -260,8 +260,15 @@ namespace Plop.Presentation
         internal void ApplyLook()
         {
             var look = CharacterArt.Resolve(_cosmetics.Equipped, _catalog);
-            if (look.Key == _look.Key) return;
+            bool boardChanged = look.Board != _look.Board;
+            if (look.Key == _look.Key)
+            {
+                _look = look;
+                if (boardChanged) ApplyBoardColors();
+                return;
+            }
             _look = look;
+            ApplyBoardColors();
             if (_engine.HasLevel) _board.Build(_engine.Level, _engine.CurrentState, ShapeAtlas.ForDensity(FitCamera(), _look));
             _menu.SetLook(_look);
             ShapeAtlas.ReleaseUnused(_look);
@@ -811,14 +818,22 @@ namespace Plop.Presentation
             _world = world;
             _hud.SetCurrentWorld(world);
             _audio.SetWorldAmbience(world?.Ambience ?? WorldAmbience.CozyNest);
-            if (world == null)
+            ApplyBoardColors();
+        }
+
+        /// <summary>World surface colours, softly blended toward the equipped Board decoration.</summary>
+        private void ApplyBoardColors()
+        {
+            var decor = _look?.Board;
+            if (_world == null)
             {
-                _board.SetPalette(Color.white, Color.white, Color.white);
+                _board.SetPalette(BoardDecorTint.Blend(Color.white, decor?.Tray ?? Color.white, decor?.Amount ?? 0f),
+                    BoardDecorTint.Blend(Color.white, decor?.Tile ?? Color.white, decor?.Amount ?? 0f), Color.white);
                 return;
             }
-
-            Color key = Color.Lerp(Color.white, world.KeyLight, world.LightStrength * 0.18f);
-            _board.SetPalette(world.TrayTint * key, world.TileTint * key, world.PebbleTint);
+            Color key = Color.Lerp(Color.white, _world.KeyLight, _world.LightStrength * 0.18f);
+            _board.SetPalette(BoardDecorTint.Blend(_world.TrayTint * key, decor?.Tray ?? Color.white, decor?.Amount ?? 0f),
+                BoardDecorTint.Blend(_world.TileTint * key, decor?.Tile ?? Color.white, decor?.Amount ?? 0f), _world.PebbleTint);
         }
 
         private void CompleteCurrentLevel(int moveCount)

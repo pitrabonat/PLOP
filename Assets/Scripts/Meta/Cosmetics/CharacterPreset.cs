@@ -47,6 +47,7 @@ namespace Plop.Meta
                 case CosmeticCategory.Face: return "face";
                 case CosmeticCategory.Accessory: return "accessory";
                 case CosmeticCategory.Nest: return "nest";
+                case CosmeticCategory.Board: return "board";
                 default: return "effect";
             }
         }

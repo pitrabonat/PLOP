@@ -5,7 +5,8 @@ using Plop.Core.Json;
 namespace Plop.Meta
 {
     /// <summary>Cosmetic slots. Each slot changes appearance only; none touches puzzle logic.</summary>
-    public enum CosmeticCategory { BodyStyle, BodyFinish, Palette, Face, Accessory, Nest, Effect }
+    /// <summary>Append only: values are parsed by name, and <see cref="CharacterPreset.SlotKey"/> is the save key.</summary>
+    public enum CosmeticCategory { BodyStyle, BodyFinish, Palette, Face, Accessory, Nest, Effect, Board }
 
     public enum UnlockMethod { Free, Dust, Milestone }
 
@@ -84,6 +85,7 @@ namespace Plop.Meta
                 case CosmeticCategory.Face: return "face:";
                 case CosmeticCategory.Accessory: return "accessory:";
                 case CosmeticCategory.Nest: return "nest:";
+                case CosmeticCategory.Board: return "board:";
                 default: return "effect:";
             }
         }

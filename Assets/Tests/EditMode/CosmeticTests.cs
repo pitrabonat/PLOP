@@ -26,7 +26,7 @@ namespace Plop.Tests
 
         private const string Tiny = @"{""schemaVersion"":1,""contentVersion"":1,
           ""defaults"":{""BodyStyle"":""body.a"",""BodyFinish"":""finish.a"",""Palette"":""palette.a"",""Face"":""face.a"",
-                       ""Accessory"":""accessory.none"",""Nest"":""nest.a"",""Effect"":""effect.none""},
+                       ""Accessory"":""accessory.none"",""Nest"":""nest.a"",""Effect"":""effect.none"",""Board"":""board.a""},
           ""items"":[
             {""id"":""body.a"",""category"":""BodyStyle"",""name"":""A"",""asset"":""style:a"",""unlock"":""Free""},
             {""id"":""body.b"",""category"":""BodyStyle"",""name"":""B"",""asset"":""style:b"",""unlock"":""Dust"",""cost"":30},
@@ -39,7 +39,8 @@ namespace Plop.Tests
             {""id"":""accessory.leaf"",""category"":""Accessory"",""name"":""Leaf"",""asset"":""accessory:leaf"",""unlock"":""Milestone"",""milestone"":""LevelsCompleted"",""count"":5},
             {""id"":""nest.a"",""category"":""Nest"",""name"":""A"",""asset"":""nest:a"",""unlock"":""Free""},
             {""id"":""nest.b"",""category"":""Nest"",""name"":""B"",""asset"":""nest:b"",""unlock"":""Milestone"",""milestone"":""PerfectLevels"",""count"":2,""cost"":40},
-            {""id"":""effect.none"",""category"":""Effect"",""name"":""None"",""asset"":""effect:none"",""unlock"":""Free""}
+            {""id"":""effect.none"",""category"":""Effect"",""name"":""None"",""asset"":""effect:none"",""unlock"":""Free""},
+            {""id"":""board.a"",""category"":""Board"",""name"":""A"",""asset"":""board:a"",""unlock"":""Free""}
           ]}";
 
         private static (CosmeticCollection Collection, MemoryStore Store) Fresh(int dust, IKeyValueStore store = null)
@@ -289,6 +290,30 @@ namespace Plop.Tests
             Assert.IsTrue(c.Equip("body.b"));
             Assert.AreEqual("accessory.none", c.Equipped.Get(CosmeticCategory.Accessory), "cap only fits body.a");
             Assert.IsFalse(c.Equip("accessory.cap"), "incompatible with the equipped style");
+        }
+
+        [Test]
+        public void BoardSlot_SavesAndOldSavesFallBackToTheDefault()
+        {
+            var catalog = CosmeticCatalog.Parse(Tiny);
+            CollectionAssert.IsEmpty(catalog.Validate());
+            Assert.AreEqual("board", CharacterPreset.SlotKey(CosmeticCategory.Board));
+            Assert.AreEqual("board:", CosmeticCatalog.AssetPrefix(CosmeticCategory.Board));
+            var old = CharacterPreset.Read(new System.Collections.Generic.Dictionary<string, object> { ["body"] = "body.a" });
+            Assert.IsNull(old.Get(CosmeticCategory.Board), "a Phase 9 save has no board slot");
+            old.Sanitize(catalog, null);
+            Assert.AreEqual("board.a", old.Get(CosmeticCategory.Board));
+        }
+
+        [Test]
+        public void ShippedCatalog_SellsBoardDecorations()
+        {
+            var catalog = Shipped();
+            CollectionAssert.IsEmpty(catalog.Validate());
+            var boards = catalog.InCategory(CosmeticCategory.Board);
+            Assert.GreaterOrEqual(boards.Count, 5);
+            Assert.IsTrue(catalog.Default(CosmeticCategory.Board).IsFree);
+            Assert.IsTrue(boards.Exists(b => b.Unlock == UnlockMethod.Dust));
         }
     }
 }

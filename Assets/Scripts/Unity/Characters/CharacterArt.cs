@@ -135,6 +135,18 @@ namespace Plop.Presentation
     }
 
     /// <summary>
+    /// Board decoration (Phase 10 store): blends the World's tray and tile colours toward a soft theme.
+    /// Never changes geometry, tile art or mechanic cues, so every board stays readable in every World.
+    /// </summary>
+    public sealed class BoardDecor
+    {
+        public string Name;
+        public Color Tray = Color.white, Tile = Color.white;
+        /// <summary>0 keeps the World's own colours; capped at 0.6 so World identity always shows through.</summary>
+        public float Amount;
+    }
+
+    /// <summary>
     /// A resolved cosmetic look: one recipe per slot. Built from the equipped <see cref="CharacterPreset"/>;
     /// shared by gameplay, menu and Studio. <see cref="Key"/> identifies baked atlases.
     /// </summary>
@@ -147,14 +159,17 @@ namespace Plop.Presentation
         public AccessoryStyle Accessory;
         public NestStyle Nest;
         public MoveEffectStyle Effect;
+        /// <summary>Board decoration. Not part of <see cref="Key"/>: it tints, it never re-bakes an atlas.</summary>
+        public BoardDecor Board;
         public string Key;
 
         public static CharacterLook Default => CharacterArt.DefaultLook;
 
         public CharacterLook With(BodyStyle style = null, JellyFinish finish = null, CosmeticPalette palette = null,
-            FaceStyle face = null, AccessoryStyle accessory = null, NestStyle nest = null, MoveEffectStyle effect = null)
+            FaceStyle face = null, AccessoryStyle accessory = null, NestStyle nest = null, MoveEffectStyle effect = null,
+            BoardDecor board = null)
             => CharacterArt.Compose(style ?? Style, finish ?? Finish, palette ?? Palette, face ?? Face,
-                accessory ?? Accessory, nest ?? Nest, effect ?? Effect);
+                accessory ?? Accessory, nest ?? Nest, effect ?? Effect, board ?? Board);
     }
 
     /// <summary>
@@ -244,8 +259,18 @@ namespace Plop.Presentation
         public static CharacterLook DefaultLook => _default ?? (_default = Compose(Styles["classic"], Finishes["classic"],
             Palettes["classic"], Faces["classic"], Accessories["none"], Nests["classic"], Effects["none"]));
 
+        public static readonly Dictionary<string, BoardDecor> Boards = new Dictionary<string, BoardDecor>
+        {
+            ["classic"] = new BoardDecor { Name = "classic" },
+            ["honey"] = new BoardDecor { Name = "honey", Tray = PlopPalette.Hex(0xF3D7A6), Tile = PlopPalette.Hex(0xFFF1D6), Amount = 0.45f },
+            ["mint"] = new BoardDecor { Name = "mint", Tray = PlopPalette.Hex(0xBFE3D3), Tile = PlopPalette.Hex(0xEAF7F0), Amount = 0.45f },
+            ["lavender"] = new BoardDecor { Name = "lavender", Tray = PlopPalette.Hex(0xD3C8EE), Tile = PlopPalette.Hex(0xF1ECFB), Amount = 0.45f },
+            ["peach"] = new BoardDecor { Name = "peach", Tray = PlopPalette.Hex(0xF5C9B5), Tile = PlopPalette.Hex(0xFFEDE4), Amount = 0.45f },
+            ["starlight"] = new BoardDecor { Name = "starlight", Tray = PlopPalette.Hex(0xB9C6E6), Tile = PlopPalette.Hex(0xE6ECFA), Amount = 0.55f },
+        };
+
         public static CharacterLook Compose(BodyStyle style, JellyFinish finish, CosmeticPalette palette, FaceStyle face,
-            AccessoryStyle accessory, NestStyle nest, MoveEffectStyle effect)
+            AccessoryStyle accessory, NestStyle nest, MoveEffectStyle effect, BoardDecor board = null)
         {
             var key = new StringBuilder();
             key.Append(style.Name).Append('/').Append(finish.Name).Append('/').Append(palette.Name).Append('/')
@@ -253,7 +278,7 @@ namespace Plop.Presentation
             return new CharacterLook
             {
                 Style = style, Finish = finish, Palette = palette, Face = face, Accessory = accessory, Nest = nest,
-                Effect = effect, Key = key.ToString()
+                Effect = effect, Board = board ?? Boards["classic"], Key = key.ToString()
             };
         }
 
@@ -269,6 +294,7 @@ namespace Plop.Presentation
             if (asset.StartsWith("accessory:", StringComparison.Ordinal)) return Accessories.ContainsKey(name);
             if (asset.StartsWith("nest:", StringComparison.Ordinal)) return Nests.ContainsKey(name);
             if (asset.StartsWith("effect:", StringComparison.Ordinal)) return Effects.ContainsKey(name);
+            if (asset.StartsWith("board:", StringComparison.Ordinal)) return Boards.ContainsKey(name);
             return false;
         }
 
@@ -288,7 +314,8 @@ namespace Plop.Presentation
                 Lookup(Faces, Asset(CosmeticCategory.Face), d.Face),
                 Lookup(Accessories, Asset(CosmeticCategory.Accessory), d.Accessory),
                 Lookup(Nests, Asset(CosmeticCategory.Nest), d.Nest),
-                Lookup(Effects, Asset(CosmeticCategory.Effect), d.Effect));
+                Lookup(Effects, Asset(CosmeticCategory.Effect), d.Effect),
+                Lookup(Boards, Asset(CosmeticCategory.Board), d.Board));
         }
 
         /// <summary>Applies a single catalog item to a look (Studio preview of an unowned item).</summary>
@@ -304,6 +331,7 @@ namespace Plop.Presentation
                 case CosmeticCategory.Face: return look.With(face: Lookup(Faces, name, look.Face));
                 case CosmeticCategory.Accessory: return look.With(accessory: Lookup(Accessories, name, look.Accessory));
                 case CosmeticCategory.Nest: return look.With(nest: Lookup(Nests, name, look.Nest));
+                case CosmeticCategory.Board: return look.With(board: Lookup(Boards, name, look.Board));
                 default: return look.With(effect: Lookup(Effects, name, look.Effect));
             }
         }

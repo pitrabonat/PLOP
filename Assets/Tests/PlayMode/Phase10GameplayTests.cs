@@ -194,6 +194,29 @@ namespace Plop.Tests.PlayMode
             Assert.AreEqual(0, _controller.Wallet.Balance);
         }
 
+        [UnityTest]
+        public IEnumerator BoardDecor_IsBoughtAtomically_AndOnlyTintsTheTray()
+        {
+            Create(new List<LevelDefinition> { Level("decor", 1, "R~..r", ".....") });
+            yield return null;
+            var tray = _root.GetComponentsInChildren<SpriteRenderer>(true).Single(r => r.name == "BoardPanel");
+            Color before = tray.color;
+            var cosmetics = _controller.Cosmetics;
+            Assert.AreEqual(UnlockResult.InsufficientDust, cosmetics.TryUnlock("board.honey"));
+            Assert.IsFalse(cosmetics.IsOwned("board.honey"));
+            _controller.Wallet.Grant("test", 70);
+            Assert.AreEqual(UnlockResult.Unlocked, cosmetics.TryUnlock("board.honey"));
+            Assert.AreEqual(10, _controller.Wallet.Balance, "the price is taken exactly once");
+            Assert.AreEqual(UnlockResult.AlreadyOwned, cosmetics.TryUnlock("board.honey"));
+            Assert.IsTrue(cosmetics.Equip("board.honey"));
+            var state = _controller.Engine.CurrentState.Clone();
+            _controller.ApplyLook();
+            Assert.AreEqual("honey", _controller.Look.Board.Name);
+            Assert.AreNotEqual(before, tray.color, "the tray takes the decoration's tint");
+            Assert.AreEqual(state, _controller.Engine.CurrentState, "decoration never touches the puzzle");
+            Assert.IsNotNull(_root.GetComponentsInChildren<Transform>(true).FirstOrDefault(t => t.name.StartsWith("Frost")), "mechanic tiles keep their art");
+        }
+
         [Test]
         public void Migration_KeepsUnchangedPuzzlesAndAccess_ButNeverInventsCompletions()
         {

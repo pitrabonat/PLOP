@@ -119,6 +119,8 @@ namespace Plop.Presentation
                 case CosmeticCategory.Accessory:
                     if (!CharacterArt.Accessories.TryGetValue(name, out var a)) return "t.acc/" + name;
                     return a.Anchor == AccessoryAnchor.None ? null : ShapeAtlas.ThumbAccessoryKey(a);
+                case CosmeticCategory.Board:
+                    return null; // drawn from UI sprites tinted by the recipe; no atlas thumbnail
                 case CosmeticCategory.Nest:
                     return CharacterArt.Nests.TryGetValue(name, out var n) ? ShapeAtlas.ThumbNestKey(n) : "t.nest/" + name;
                 default:

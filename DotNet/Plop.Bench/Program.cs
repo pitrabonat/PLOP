@@ -47,7 +47,7 @@ namespace Plop.Bench
                     case "--deadlocks": return BuildDeadlocks(args.Skip(i + 1).ToArray());
                     case "--verify-production":
                         var levels = LevelSerializer.PackFromJson(File.ReadAllText(args[++i]));
-                        var verification = LevelVerifier.VerifyProductionPack(levels);
+                        var verification = LevelVerifier.VerifyProductionPack(levels, expectedCount: levels.Count == ExpandedCampaign.LevelCount ? ExpandedCampaign.LevelCount : ProductionCatalog.LevelCount);
                         Console.WriteLine(verification);
                         return verification.IsValid ? 0 : 1;
                     default: Console.Error.WriteLine("Unknown argument " + args[i]); return 2;

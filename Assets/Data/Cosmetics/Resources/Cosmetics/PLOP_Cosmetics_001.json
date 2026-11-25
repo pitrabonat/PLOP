@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "catalogId": "PLOP_Cosmetics_001",
-  "contentVersion": 1,
+  "contentVersion": 2,
   "note": "Visual-only cosmetics. IDs are save keys: never rename or reuse one. Remove an item by deleting it; saves fall back to the default.",
   "defaults": {
     "BodyStyle": "body.classic",
@@ -10,7 +10,8 @@
     "Face": "face.classic",
     "Accessory": "accessory.none",
     "Nest": "nest.classic",
-    "Effect": "effect.none"
+    "Effect": "effect.none",
+    "Board": "board.classic"
   },
   "items": [
     {
@@ -380,6 +381,67 @@
       "milestone": "PerfectLevels",
       "count": 5,
       "since": 1
+    },
+    {
+      "id": "board.classic",
+      "category": "Board",
+      "name": "World Colors",
+      "asset": "board:classic",
+      "preview": "auto",
+      "unlock": "Free",
+      "since": 2
+    },
+    {
+      "id": "board.honey",
+      "category": "Board",
+      "name": "Honey Tray",
+      "asset": "board:honey",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 60,
+      "since": 2
+    },
+    {
+      "id": "board.mint",
+      "category": "Board",
+      "name": "Mint Garden",
+      "asset": "board:mint",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 60,
+      "since": 2
+    },
+    {
+      "id": "board.peach",
+      "category": "Board",
+      "name": "Peach Quilt",
+      "asset": "board:peach",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 80,
+      "since": 2
+    },
+    {
+      "id": "board.lavender",
+      "category": "Board",
+      "name": "Lavender Dream",
+      "asset": "board:lavender",
+      "preview": "auto",
+      "unlock": "Dust",
+      "cost": 100,
+      "since": 2
+    },
+    {
+      "id": "board.starlight",
+      "category": "Board",
+      "name": "Starlight",
+      "asset": "board:starlight",
+      "preview": "auto",
+      "unlock": "Milestone",
+      "cost": 150,
+      "milestone": "WorldsCompleted",
+      "count": 4,
+      "since": 2
     }
   ]
 }
