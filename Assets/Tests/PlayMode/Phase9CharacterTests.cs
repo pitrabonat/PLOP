@@ -218,8 +218,10 @@ namespace Plop.Tests.PlayMode
             studio.PressAction();
             Assert.AreEqual(100, _controller.Wallet.Balance);
 
-            studio.Select("accessory.crown");
-            Assert.AreEqual(CharacterStudio.ActionKind.Milestone, studio.Action, "milestone item: Dust alternative 250 > balance, condition shown");
+            studio.Select("accessory.crown"); // milestone item with a 250 Dust alternative
+            Assert.AreEqual(CharacterStudio.ActionKind.NeedDust, studio.Action, "too expensive for now");
+            var status = GameObject.Find("Item Status").GetComponent<UnityEngine.UI.Text>().text;
+            StringAssert.Contains("Finish 3 Worlds or 250", status, "both unlock routes are shown");
 
             studio.Select("accessory.flower"); // 40 Dust
             Assert.AreEqual(CharacterStudio.ActionKind.Unlock, studio.Action);
@@ -384,10 +386,14 @@ namespace Plop.Tests.PlayMode
 
                 long probe = GC.GetAllocatedBytesForCurrentThread();
                 var sanity = new byte[4096];
-                if (GC.GetAllocatedBytesForCurrentThread() - probe < 4096) Assert.Ignore("Allocation counter unavailable on this runtime.");
+                bool exact = GC.GetAllocatedBytesForCurrentThread() - probe >= 4096;
                 GC.KeepAlive(sanity);
-
-                long before = GC.GetAllocatedBytesForCurrentThread();
+                // Unity's Mono may not expose the per-thread counter; fall back to managed heap growth
+                // (approximate: a collection during the loop could hide small allocations).
+                Func<long> measure = exact ? (Func<long>)GC.GetAllocatedBytesForCurrentThread
+                                           : UnityEngine.Profiling.Profiler.GetMonoUsedSizeLong;
+                GC.Collect();
+                long before = measure();
                 var clock = Stopwatch.StartNew();
                 const int frames = 1000;
                 for (int f = 0; f < frames; f++)
@@ -398,10 +404,11 @@ namespace Plop.Tests.PlayMode
                     foreach (var v in views) v.Tick(now);
                 }
                 clock.Stop();
-                long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+                long allocated = measure() - before;
                 double perTick = clock.Elapsed.TotalMilliseconds * 1000.0 / (frames * views.Length);
-                Debug.Log("[PLOP] PlopView.Tick: " + perTick.ToString("0.0") + " µs per Plop per frame (Editor), " + allocated + " bytes allocated over " + frames + " frames");
-                Assert.Less(allocated, 1024, "animation must not allocate per frame");
+                Debug.Log("[PLOP] PlopView.Tick: " + perTick.ToString("0.0") + " µs per Plop per frame (Editor), " + allocated +
+                          " bytes allocated over " + frames + " frames (" + (exact ? "exact counter" : "heap growth") + ")");
+                Assert.Less(allocated, exact ? 1024 : 16 * 1024, "animation must not allocate per frame");
                 Assert.Less(perTick, 100.0, "a Plop's frame update stays well under 0.1 ms in the Editor");
             }
             finally { Object.Destroy(scene); }

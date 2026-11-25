@@ -200,7 +200,7 @@ namespace Plop.Presentation
                     break;
             }
             _sleepPoseFrozen = false;
-            if (_reducedMotion) ApplyStillPose();
+            if (_reducedMotion) ApplyStillPose(now);
         }
 
         private void SetOverride(Expression e, float now, float seconds)
@@ -252,13 +252,15 @@ namespace Plop.Presentation
             Snap(_to, _asleep || _sleepPending);
         }
 
-        private void ApplyStillPose()
+        private void ApplyStillPose() => ApplyStillPose(Time.unscaledTime);
+
+        private void ApplyStillPose(float now)
         {
             var body = _asleep
                 ? new Vector4(1.049f * BodyScale, 0.83f * BodyScale, -0.012f, 0f)
                 : new Vector4(BodyScale, BodyScale, 0f, 0f);
             DisplayPose(_to, Vector3.zero, body);
-            ApplyFace(Vector2.zero, 1f, _asleep ? 1f : 0f, 0f, Time.unscaledTime);
+            ApplyFace(Vector2.zero, 1f, _asleep ? 1f : 0f, 0f, now);
         }
 
         public void StartMove(Vector3 to, Vector2 dir, float now)
@@ -322,12 +324,9 @@ namespace Plop.Presentation
             SleepJustStarted = false;
             if (_reducedMotion)
             {
-                // Still pose; only an expiring expression needs a redraw.
-                if (_overrideUntil >= 0f && !_overrideForever && now >= _overrideUntil)
-                {
-                    _overrideUntil = -1f;
-                    ApplyStillPose();
-                }
+                // Still pose; only a changed expression (started or expired) needs a redraw.
+                if (_overrideUntil >= 0f && !_overrideForever && now >= _overrideUntil) _overrideUntil = -1f;
+                if (ResolveExpression(_asleep ? 1f : 0f, 0f, now) != _displayedExpression) ApplyStillPose(now);
                 return;
             }
             if (_sleepPoseFrozen) return;
