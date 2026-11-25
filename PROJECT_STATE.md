@@ -1,10 +1,64 @@
 # PLOP! project state
 
-**Phase 9 · Character Studio, living jelly characters and cosmetic customization**
+**Phase 10 · Puzzle evolution: Frost, Lava, Breeze, Loops, a 160-level campaign over nine Worlds, Limited Moves and the Dream Dust economy**
 
-The project is on `feature/character-studio`. It branches from the verified Phase 8 work (`8ad9388`, tagged `checkpoint/pre-phase9`; Phase 8 is pushed as `feature/puzzle-depth`). Open the project in Unity `6000.3.29f1` with **PLOP → Play Game** or `Assets/Scenes/Gameplay.unity`. The game opens on the main menu. **The build target was last switched to iOS** (for the Simulator export); switch back to Android before Android work, or let the build script switch it.
+The project is on `feature/puzzle-evolution`, branched from the pushed Phase 9 work (`feature/character-studio`, tag `checkpoint/pre-phase9` marks Phase 8). Open the project in Unity `6000.3.29f1` with **PLOP → Play Game** or `Assets/Scenes/Gameplay.unity`. The game opens on the main menu. **The build target was last switched to iOS** (for the Simulator export); the Android build script switches back on its own.
 
-## Implemented in Phase 9
+## Implemented in Phase 10
+
+Rules: [Game rules — Phase 10 mechanics](Documentation/GAME_RULES.md#phase-10-mechanics). Content: [Level generation](Documentation/LEVEL_GENERATION.md) and the [per-level report](Documentation/benchmarks/campaign_phase10.md).
+
+- **Mechanics, all inside `MoveRules.Apply`:**
+
+  | Mechanic | Rule |
+  |---|---|
+  | Frost | A Plop that ends its step on Frost keeps sliding until a wall, the edge, another Plop or its matching Nest stops it |
+  | Lava | Entering Lava ends the attempt: "Oops! Too hot!" with Undo Move and Restart Level. No penalty, no auto-restart |
+  | Breeze fan | Pushes a Plop that ends on it `power` (1–3) cells in the fan's direction; redirects a slide; each fan acts once per Plop per swipe, so fans never chain-push forever |
+  | Loops | Paired portals: a Plop arriving on one end appears on the other, keeping its direction; an occupied exit cancels the teleport; one teleport per swipe |
+
+  Precedence is fixed (Lava → matching Nest → Loop → fan → Frost), one swipe is one move however long the chain, and a step budget throws instead of looping. `ForcedChainInspector` checks every reachable state of the shipped campaign: no loop risk.
+- **Limited Moves:** optional `moveLimit` per level. The HUD shows `moves / limit`, and "Out of moves!" offers Undo or Restart. Five challenges (levels 30, 60, 90, 120, 150) use optimal + 2 and are solver-verified.
+- **Campaign: 160 levels, nine Worlds** (`PLOP_Pack_002.json`, all verified, BFS `optimalMoves` stored):
+
+  | World | Levels | Mechanics | Avg challenge |
+  |---|---|---|---|
+  | Cozy Nest | 1–6 | basics (Phase 8 tutorials, same IDs) | 8.3 |
+  | Frosted Pond (new) | 7–20 | Frost | 24.9 |
+  | Breezy Meadow (new) | 21–34 | Breeze, Frost | 28.0 |
+  | Ember Hollow (new) | 35–48 | Lava, Frost, Breeze | 33.8 |
+  | Prism Observatory (new) | 49–63 | Loops, Lava | 34.9 |
+  | Dewdrop Garden | 64–85 | two-mechanic mixes + classic | 40.6 |
+  | Rainy Window | 86–108 | harder mixes | 47.5 |
+  | Twilight Attic | 109–133 | three mechanics, 6×7 | 53.7 |
+  | Moonlit Clouds | 134–160 | all four | 61.1 |
+
+  Each mechanic is introduced by a tiny authored board with one short line (levels 7, 21, 35, 49), then a twist, then generated levels. Every level in a mechanic World uses its mechanic on the optimal route; levels 64–160 are never solved by the greedy player. 13 Phase 8 pure-logic puzzles plus tutorials 1–5 keep their IDs. **160 quality levels were reached** (the scores are heuristics, not human playtests).
+- **Worlds:** four new World assets with generated portrait backdrops, cards and ambience beds; the five original World IDs are unchanged.
+- **Presentation:** mechanic tiles are baked into the board atlas with shape cues (faceted ice, scalloped Lava rim, fan housing with spinning blades, direction chevron and power pips, six Loop ring tints). Forced chains play as queued steps (slide, push, teleport, settle, burn) and hold the input gate; Reduced Motion lands them at once.
+- **Dream Dust economy** (`RewardRules`): completion 8, Perfect +4, Daily Gift 10, Daily Puzzle 12 (+6 Perfect), hint 15. Hints are free on levels 1–6 and mechanic intros. A paid hint is charged only after a verified route for the unchanged board, once per board state (`hint:<level>:<state>` spend key, atomic write); insufficient Dust, a failed search or a stale result charge nothing.
+- **Cosmetic store:** a Board category (content version 2): World Colors (free), Honey Tray, Mint Garden, Peach Quilt, Lavender Dream (60–100 Dust) and Starlight (4 Worlds finished, or 150 Dust). Board decorations only tint the tray and tiles. Purchases stay one atomic wallet write. No ads, no real-money purchases.
+- **Save migration:** the new pack imports Phase 8 progress once. Dust, records and cosmetics are untouched; completions are kept only for puzzles that still exist; access is kept as levels beaten + 1; the old save is never rewritten.
+- **Level Lab:** Frost/Lava/Fan/Loop tools (fan direction and power, Loop pair), move limit, mechanic quality search, effect-resolution debugger (per-swipe event chain in replay, plus "Try a swipe"), forced-chain and loop-risk inspector. Editor only.
+- **Mobile performance:** no solver or generation work in `Update`; forced movement is bounded by the step budget; mechanic art shares the existing atlas and material.
+
+## Verification (executed 2026-11-25)
+
+- **Tests:** .NET 179/179, Unity EditMode 179/179, Unity PlayMode 100/100 (one earlier full run had a 5 s timeout in `DeadlockRecoveryTests.ANewSwipeSupersedesTheOldAnalysis` while an APK build and the emulator loaded the Mac; it passed alone twice and in the final full run). `Bench --verify-production` passes on Pack 002 (160 levels).
+- **Android:** `/Volumes/PLOP_DEV/Builds/Android/Phase10/PLOP-phase10-dev.apk` (ARM64 development build, 64 MB) on the `Medium_Phone_API_37.0` emulator (1080×2400). No phone was connected. Exercised: every mechanic and the main combinations (levels 12, 24, 27, 30, 35, 39, 43, 52, 66, 157), the Lava card, the Limited Moves counter, a paid hint, World selection, the Studio Board tab with a locked preview, and the automatic migration of the emulator's Phase 9 save (25 Dust kept; 3 of 5 old completions still exist and were kept; PLAY resumes at Level 6). Screenshots: [Phase 10 previews](Documentation/Previews/Phase10/README.md).
+- **Found on the device, fixed and re-verified:** the first APK showed an empty board because `Gameplay.unity` still serialized the archived Pack 001 path (Editor tests supply their own levels, so they passed). The scene, a controller fallback and a regression test fix it. The paid hint now states the charge; Board thumbnails and the Studio preview were corrected.
+- **iOS:** Unity exported the ARM64 Simulator project (`/Volumes/PLOP_DEV/Builds/iOS/Phase10/PLOP-Xcode-Sim`) and Xcode 26.3 built it: **BUILD SUCCEEDED**. It ran on the iPhone 15 Pro Max simulator: the main menu (its older save migrated: 55 Dust, PLAY → Level 123), Level 157 with all four mechanics, and the Lava card on Level 35, all inside the Dynamic Island safe area ([iOS captures](Documentation/Previews/Phase10/ios/)). Taps were not driven on iOS (the simulator tap tool needs a system-wide `xcode-select`, which was not changed). The rendering path is unchanged: the same runtime atlas and default sprite material. No device build.
+
+## Not done / known limits
+
+- **Not verified on hardware:** no physical phone was connected; frame time for long forced chains on a phone is unmeasured.
+- **Difficulty** is the player-model score, not a human playtest. Levels 11, 16 and 25 are intentionally greedy-solvable breathers.
+- **Art** for the new Worlds and mechanics is procedural (SDF tiles, generated backdrops and ambience), not hand-illustrated.
+- **Board decorations** tint the tray and tiles only; they do not change board shapes or add patterns.
+
+## Phase 9 summary
+
+### Implemented in Phase 9
 
 Full design notes: [Characters and cosmetics](Documentation/CHARACTERS.md).
 
@@ -44,7 +98,7 @@ Full design notes: [Characters and cosmetics](Documentation/CHARACTERS.md).
   - the Studio grid cut off on 20:9 phones;
   - a side accessory hidden by the Nest's match symbol on a sleeping Plop. Side accessories moved to the upper left, and the validator now enforces it.
 
-## Verification (executed 2026-11-25)
+### Phase 9 verification (executed 2026-11-25)
 
 - **Tests:** .NET 134/134, Unity EditMode 134/134, Unity PlayMode 89/89, cosmetic validator 36 items / 0 problems.
 - **Measured in the Editor:**
@@ -68,7 +122,7 @@ Full design notes: [Characters and cosmetics](Documentation/CHARACTERS.md).
 - **Screenshots:** [Phase 9 previews](Documentation/Previews/Phase9/README.md).
 - **iOS:** Unity exported the ARM64 Simulator project, and Xcode 26.3 (`/Volumes/PLOP_DEV/Xcode`) built it: **BUILD SUCCEEDED**. It ran on the iPhone 15 Pro Max simulator: the main menu with live mascot rigs and the Studio entry inside the Dynamic Island safe area, and Level 90 gameplay with the new rig. The older save on that simulator migrated. The Studio was not tapped through on iOS: the simulator tap tool needs a system-wide `xcode-select` to the Xcode on the external volume, which this session did not change. The shader and texture path is unchanged: the same runtime `RGBA32` atlas and the default sprite material. No device build.
 
-## Not done / known limits
+### Phase 9 known limits
 
 - **Not verified:** a physical device, and 30/60 FPS frame time on hardware.
 - **Bakes:** the character bakes are main-thread C#. A look change rebakes the gameplay atlas once; opening the Studio costs one thumbnail bake.

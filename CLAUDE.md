@@ -12,7 +12,7 @@ Shared guidance for Claude Code, Codex, and other contributors. Start with
 - **Targets:** Android (IL2CPP, ARM64, min API 26, target = highest installed) and iOS (min iOS 15.0)
 - **Orientation:** Portrait only
 - **Repository:** https://github.com/pitrabonat/PLOP (remote `origin`, branch `main`; public)
-- **Status:** Phase 9 character system, cosmetics and Character Studio (on top of Phase 8 depth, menu and Dream Dust). See PROJECT_STATE.md.
+- **Status:** Phase 10 mechanics (Frost, Lava, Breeze, Loops), 160-level campaign over nine Worlds, Limited Moves, paid hints and Board decorations (on top of Phase 9 characters and Phase 8 depth). See PROJECT_STATE.md.
 - **Visual style:** "Soft Toy Minimalism" — see `Documentation/VISUAL_STYLE.md` (palette, corner radii, animation).
 - **Docs:** `Documentation/` — ARCHITECTURE, GAME_RULES, SOLVER, LEVEL_GENERATION, PUZZLE_QUALITY, CHARACTERS, LEVEL_FORMAT, VISUAL_STYLE, TESTING, DEVELOPMENT_LOG.
 
@@ -64,8 +64,9 @@ Assets/
     Gameplay/ UI/ SaveSystem/          reserved (empty)
   Tests/EditMode/    PLOP.Tests          — NUnit tests (also run by DotNet/Plop.Tests)
   Tests/PlayMode/    PLOP.Tests.PlayMode — Unity integration tests
-  Levels/Resources/Levels/PLOP_Pack_001.json  — shipped level pack (100 verified levels)
-  Levels/Resources/Levels/PLOP_Deadlocks_001.bytes — generated exact deadlock data
+  Levels/Resources/Levels/PLOP_Pack_002.json  — shipped level pack (160 verified levels, schema 1/2 levels)
+  Levels/Resources/Levels/PLOP_Deadlocks_002.bytes — generated exact deadlock data
+  Levels/Archive/PLOP_Pack_001.json (+ Deadlocks_001) — Phase 8 pack, read for migration and classic reuse
   Levels/Resources/Levels/PLOP_Daily_001.json — 60-puzzle offline Daily Puzzle pool
   Levels/Resources/Levels/PLOP_Pack_001_SlotHistory.json — old→new level IDs per slot for save migration
   Art/ Audio/ Animations/ Materials/ Prefabs/ Settings/
@@ -75,6 +76,8 @@ Documentation/       design & technical docs, benchmarks and running-game previe
 
 ## Architecture rules (do not break)
 - **One rules implementation:** `Plop.Core.MoveRules.Apply`. Engine, solver, generator and tools call it.
+  Phase 10 mechanics resolve in a fixed precedence (Lava → Nest → Loop → fan → Frost) under a step budget;
+  a failed (Lava) or out-of-moves attempt accepts no swipes until Undo or Restart.
 - Core/Solver/Generation must never reference UnityEngine (`noEngineReferences: true`), and must compile
   under C# 9 / netstandard2.1 (checked by `DotNet/Plop.Lib`).
 - Gameplay never touches visuals: presentation reacts to `GameEvent`s. Views never decide logical positions:
@@ -93,6 +96,10 @@ Documentation/       design & technical docs, benchmarks and running-game previe
   (`complete:ID`, `perfect:ID`, `gift:date`, `daily:date`, `dailyPerfect:date`); never pay a reward twice.
 - Never silently reset saves. When a campaign slot gets a new level ID, append the old ID to
   `PLOP_Pack_001_SlotHistory.json` (`--production` does this) so `LevelProgress` migrates progress.
+  Pack 002 imports Phase 8 progress once via `MigrateFromPreviousCampaign`: completions only for IDs
+  that still exist, access as levels beaten + 1. A changed puzzle never inherits a completion.
+- Economy (`RewardRules`): completion 8, Perfect +4, Gift 10, Daily 12 (+6), hint 15 (free on levels 1–6
+  and mechanic intros). Hint spends use `TrySpend` keys `hint:<level>:<state>`: one charge per board state.
 
 ## Handoff and Git
 
@@ -170,7 +177,12 @@ UNITY=/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/Unity.app/Contents/MacOS/Unity
 "$UNITY" -batchmode -quit -projectPath "$PWD" -executeMethod Plop.EditorTools.PlopSceneSetup.CreateGameplayScene
 ```
 Level Lab: Unity menu **PLOP → Level Lab** (edit, generate, solve, replay, metrics, import/export, batch generation, filters and manual catalog ordering;
-player-model insight panel, campaign overview with Plop/size/trivial filters and most-similar comparison).
+player-model insight panel, campaign overview with Plop/size/trivial filters and most-similar comparison;
+Phase 10: Frost/Lava/Fan/Loop tools, move limit, mechanic quality search, effect-resolution debugger, chain/loop-risk inspector).
+
+Phase 10 campaign: `cd DotNet && dotnet run -c Release --project Plop.Bench -- --expanded` rebuilds `PLOP_Pack_002.json`
+and `Documentation/benchmarks/campaign_phase10.md` (~90 s); then `--deadlocks ../Assets/Levels/Resources/Levels/PLOP_Pack_002.json
+../Assets/Levels/Resources/Levels/PLOP_Deadlocks_002.bytes 600000`. See Documentation/LEVEL_GENERATION.md.
 
 Characters: **PLOP → Characters → Animation Lab / Validate Cosmetics / Capture Reference Sheets** (see
 `Documentation/CHARACTERS.md`). Batch validator: `-executeMethod Plop.CharacterTools.CosmeticValidatorWindow.RunBatch`.

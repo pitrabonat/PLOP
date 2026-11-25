@@ -50,7 +50,8 @@ named to avoid shadowing the global `Unity.*` namespaces), `Plop.LevelLab`, `Plo
 
 `SplitMix64`, `LevelGenerator`, `LevelVerifier`, `LevelCanonicalizer` + `DuplicateRegistry`,
 `DifficultyEstimator`, `BatchGenerator`, `GeneratorProfiles`; Phase 8: `PuzzleInsight`, `QualitySearch`, `CampaignPlan`,
-`ProductionCatalog` (campaign + daily pool), `CampaignInsights` (Level Lab overview). See PUZZLE_QUALITY.md.
+`ProductionCatalog` (campaign + daily pool), `CampaignInsights` (Level Lab overview); Phase 10: `ExpandedCampaign`
+(160-level plan), mechanic-aware `QualitySearch` v2, `ForcedChainInspector`. See PUZZLE_QUALITY.md and LEVEL_GENERATION.md.
 
 ## Meta progression (`Plop.Meta`)
 
@@ -112,6 +113,42 @@ GameHud ──Undo/Restart/Next/Hint──▶      │                          
   requests one short native feedback cue per settlement or completion
   when the player has enabled it.
 
+## Phase 10: mechanics, failure, limits and the hint economy
+
+- **Tiles live in the immutable level.** `LevelDefinition.Tiles` (`MechanicTile`: Frost, Lava, Fan with
+  direction and power, Portal with pair) and `MoveLimit`; per-cell lookups (`TileAt`, `FanIndexAt`,
+  `PortalExitAt`) are precomputed. Tiles never move, so the state encoding and `StateCodec` are unchanged.
+- **One rules implementation, two phases.** `MoveRules.Apply` first runs the original one-cell, front-to-back
+  step (entering Lava fails at once), then resolves each moved Plop's forced chain in the same order with a
+  fixed precedence: Lava → matching Nest → Loop (once, only if the exit is free) → fan (each fan at most once
+  per Plop per command; a walking Plop is pushed `power` cells, a sliding Plop is redirected) → Frost (start
+  sliding). A budget of (fans + 3) × (W + H) + 8 steps throws `UnresolvedMovementException` instead of looping;
+  `ForcedChainInspector` proves the shipped campaign never reaches it.
+- **Failure is state.** `GameState.Failed/Failure/FailedPlop` take part in equality and cloning, so Undo and
+  Restart restore exactly. `StateCodec` encodes non-failed states only; the solver skips failed states and
+  `StateSpaceAnalyzer` routes every fatal move into one fail sink (`StateGraph.FailIndex`).
+- **Engine flags.** `GameEngine.IsFailed`, `IsOutOfMoves`, `MovesRemaining`, `CanPlay`; a command is ignored
+  while the attempt is failed or out of moves. Events: `PlopSlid`, `PlopPushed`, `PlopTeleported`,
+  `PlopBurned`, `LevelFailed`, `OutOfMoves`.
+- **Presentation.** `ShapeAtlas.Mechanics` bakes Frost, Lava, the fan base, separate blades, a direction chevron,
+  power pips and six Loop tints into the same board atlas (no new material). `BoardView` keeps a per-Plop
+  queue of forced steps (slide, push, teleport, settle, burn) so one swipe plays as a readable chain, and
+  `IsTraveling` holds the input gate until the queue drains. Reduced Motion lands the chain at once.
+- **Recovery.** After the board settles, the controller shows "Oops! Too hot!" (Lava) or "Out of moves!"
+  on the existing recovery card with Undo Move and Restart Level. There is no penalty and no auto-restart;
+  the card intercepts swipes. Deadlock checks skip failed and out-of-moves states.
+- **Dream Dust economy.** `RewardRules`: completion 8, Perfect +4, Daily Gift 10, Daily Puzzle 12 (+6 Perfect),
+  hint 15. Hints are free on the first six campaign levels and on every mechanic intro level (a level with a
+  tutorial line); everywhere else, including the Daily Puzzle, they cost 15. A paid hint is charged
+  only after the background solver returns a verified route for the unchanged board, through
+  `DreamDustWallet.TrySpend("hint:<level>:<stateKey>")` — one atomic write that records the key, so the same
+  board is never charged twice; a failed solve, stale result or insufficient Dust charges nothing.
+- **Board decorations.** The cosmetic catalog gained a `Board` category (content version 2). A `BoardDecor`
+  recipe blends the World's tray and tile tints toward a soft colour (capped at 60%), applied through the
+  existing `BoardView.SetPalette`; it never re-bakes the atlas or touches mechanic art.
+- **Save migration.** `LevelLibrary` loads `PLOP_Pack_002` and `PLOP_Deadlocks_002` (718,053 bytes for 160
+  levels). `LevelProgress.MigrateFromPreviousCampaign` imports Phase 8 progress once (see LEVEL_FORMAT.md).
+
 ## Performance design
 
 - The pack is precomputed. An explicit hint request schedules one cancelable
@@ -134,9 +171,10 @@ GameHud ──Undo/Restart/Next/Hint──▶      │                          
 
 ## Extension points
 
-- New tile mechanics (portals, ice, buttons): extend `LevelDefinition` (+ serializer schema v2) and
-  `MoveRules.Apply`; solver/generator/tests automatically use the new rules. If a mechanic adds mutable
-  state (e.g. toggled buttons), add it to `GameState` and `StateCodec` (and bump `SolverInfo.Version`).
+- New tile mechanics: add a `TileKind`, its precedence step in `MoveRules.ResolveForced`, serializer and
+  `LevelText` support, canonical-ID transform, atlas art and a `BoardView` step kind; solver, generator and
+  Level Lab then use it. A mechanic with mutable state (e.g. toggled buttons) must also extend `GameState`
+  and `StateCodec` and bump `SolverInfo.Version`. Keep forced movement bounded and run `ForcedChainInspector`.
 - Art/animation: replace sprites in `ShapeAtlas` or `PlopView` (e.g. with authored character art) without
   touching gameplay; events already carry everything needed.
 - Difficulty tuning: `DifficultyWeights` (weights + thresholds) — no code changes needed.

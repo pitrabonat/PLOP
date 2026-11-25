@@ -205,3 +205,36 @@ See [PROJECT_STATE.md](PROJECT_STATE.md) for verification and remaining device Q
 - Verified: .NET 134, EditMode 134, PlayMode 89, validator 0 problems.
   Android ARM64 development APK on the emulator. iOS Simulator build in
   PROJECT_STATE.md.
+
+## 2026-11-25 · Phase 10 puzzle evolution, mechanics, nine Worlds and the Dream Dust economy
+
+- Branched `feature/puzzle-evolution` from the pushed Phase 9 work. Commits: core mechanics
+  (`cdbf4c1`), campaign and World content (`0bcb01e`), Unity integration (`7a5a2ca`), Level Lab
+  (`187785b`), Board decorations (`6adb871`), then docs and previews.
+- Added Frost, Lava, Breeze fans and Loops inside `MoveRules.Apply`: the classic one-cell step, then
+  per-Plop forced chains with a fixed precedence and a step budget. Failure is part of `GameState`,
+  so Undo and Restart are exact. The solver skips failed states and the analyzer has one fail sink.
+- Schema 2 levels carry `tiles` and `moveLimit`; classic levels still write schema 1 and keep their IDs.
+- Extended `PuzzleInsight` and `QualitySearch` (v2) with mechanic use, hazard alternatives and
+  relevance penalties. `ExpandedCampaign` builds 160 verified levels over nine Worlds in ~90 s:
+  authored intros for each mechanic, generated slots, 13 reused Phase 8 puzzles and five Limited
+  Moves challenges. Levels 64–160 all defeat the greedy player.
+- Issues found while building the campaign: a single-Plop challenge target that could not be met
+  (capped), an unreachable breather target (ramp lowered), and `VerifyProductionPack(levels, 160)`
+  binding 160 to `maxStates` (now a named argument).
+- Four new Worlds (Frosted Pond, Breezy Meadow, Ember Hollow, Prism Observatory) with generated
+  backdrops, cards and ambience; the five original World IDs are kept. The first renders were too dark
+  (Ember) and too faint (Frosted) for the HUD and were re-rendered.
+- Game: mechanic art in the board atlas, queued forced-movement playback, "Oops! Too hot!" and "Out of
+  moves!" cards with Undo and Restart, Limited Moves counter, 15-Dust verified hints charged once per
+  board state, new reward values, Phase 8 save migration that never invents completions.
+- Level Lab: mechanic tools, move limit, mechanic quality search, effect-resolution debugger and a
+  forced-chain / loop-risk inspector. Character Studio: a Board tab with six board decorations.
+- Eight PlayMode tests still assumed the 100-level campaign and five Worlds; they now read the
+  campaign constants. The deadlock tests now find a shipped trap with the solver.
+- The emulator caught what tests missed: the first APK showed an empty board because the scene
+  still serialized the archived Pack 001 path. Fixed with the scene, a controller fallback and a
+  regression test. Screenshots also led to showing the hint charge and fixing Board thumbnails.
+- Verified: .NET 179, EditMode 179, PlayMode 100; strict production verification of Pack 002;
+  Android ARM64 development APK on the emulator, including the Phase 9 save migration; iOS Simulator
+  export built by Xcode 26.3 and run on the iPhone 15 Pro Max simulator.

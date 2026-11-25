@@ -18,9 +18,16 @@ describes the system boundaries and [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md) rec
   Keep non-color matching cues readable and honor reduced motion.
   Use PLOP → Play Game to preview the production gameplay scene in the Editor.
 - Keep puzzle quality measurable: new or rebuilt levels must pass `PuzzleInsight`
-  floors (see `CampaignQualityTests`), store a verified `optimalMoves`, and append
-  replaced IDs to `PLOP_Pack_001_SlotHistory.json`. Never reset saves silently.
-  Dream Dust grants are one-time keys; keep rewards small and cosmetic, with no ads or shop.
+  floors (see `CampaignQualityTests`, `Phase10CampaignTests`), store a verified `optimalMoves`,
+  and keep IDs of unchanged puzzles. The shipped campaign is `PLOP_Pack_002` (160 levels, built by
+  `Bench --expanded`); Phase 8's pack is archived and only read for save migration. Never reset saves
+  silently, and never mark a changed puzzle complete.
+- Mechanics (Frost, Lava, Breeze, Loops) live only in `MoveRules.Apply` with the documented precedence
+  (GAME_RULES.md). Forced movement must stay bounded: run Level Lab → Inspect chains or
+  `ForcedChainInspector` on new content. Lava failure and Limited Moves end the attempt without penalty;
+  Undo and Restart always recover.
+- Dream Dust grants and hint spends are one-time keys written atomically. A hint is charged only after a
+  verified route for the unchanged board. Keep rewards small and cosmetic: no ads, no real-money purchases.
 - Keep Meta (records, wallet, daily rules) engine-free behind `IKeyValueStore`/`IClock`.
   The game opens on `MainMenu`; PlayMode tests that load the shipped pack press PLAY first.
 - Keep cosmetics visual-only: a `CharacterLook` may change sprites, faces, accessories, Nest art and effects,

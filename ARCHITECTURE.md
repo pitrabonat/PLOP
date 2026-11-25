@@ -8,7 +8,7 @@
 | Meta | Perfect Moves records, Dream Dust wallet with one-time grants, Daily Gift and Daily Puzzle rules, cosmetic catalog, ownership and presets (engine-free) |
 | Characters | `CharacterArt` recipes, look-aware atlas painters, the shared `PlopView` rig (board and UI), move effects, Character Studio, content validator |
 | Character tools | Editor-only Animation Lab, cosmetic validator and reference-sheet capture |
-| Level Lab | Editor tools for authoring, inspecting, replaying, filtering, ordering and verifying level packs, plus the player-model campaign overview |
+| Level Lab | Editor tools for authoring (including mechanic tiles and move limits), inspecting, replaying with an effect-resolution debugger, loop-risk checks, filtering, ordering and verifying level packs, plus the player-model campaign overview |
 | Unity | Main menu, gameplay scene, portrait board, themed worlds, campaign navigation, audio and haptics, hints, recovery and progression |
 | Tests | Shared engine-free NUnit tests and Unity PlayMode integration |
 
@@ -57,6 +57,17 @@ selects body style, finish, palette, face, accessory, Nest style and move effect
 beside the board, so nothing adds materials or draw-call groups. `PlopView` follows board endpoints exactly
 and adds expressions, personality and reactions on child transforms only. Purchases spend Dust and record
 ownership in one wallet write. See [Characters and cosmetics](Documentation/CHARACTERS.md).
+
+Phase 10 adds four tile mechanics inside the same rules function. `MoveRules.Apply` takes the usual one-cell
+step, then resolves each Plop's forced chain in a fixed order (Lava, matching Nest, Loop, fan, Frost) under a
+step budget, so one swipe is one move however far the chain goes. Lava failure lives in `GameState`, so Undo
+and Restart recover exactly; the solver skips failed states and the analyzer routes fatal moves into one fail
+sink. `ExpandedCampaign` builds 160 verified levels over nine Worlds with mechanic-aware quality search, and
+Limited Moves challenges are solver-verified. Paid hints spend Dream Dust once per board state, only after a
+verified route. The board shows forced chains as queued steps and keeps the input gate closed until they
+finish. Level Lab places mechanics, sets move limits, debugs effect resolution and checks for loop risk.
+See [Game rules](Documentation/GAME_RULES.md#phase-10-mechanics) and the
+[technical architecture](Documentation/ARCHITECTURE.md#phase-10-mechanics-failure-limits-and-the-hint-economy).
 
 For assembly dependencies, data flow and performance details, see the
 [technical architecture](Documentation/ARCHITECTURE.md). See

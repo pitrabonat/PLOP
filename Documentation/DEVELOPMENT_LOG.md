@@ -72,3 +72,8 @@ Checkpoint: tag `checkpoint/pre-visual-foundation` (= `5148514`).
   (baked mask at full strength) → renderer alpha 0.15; re-shot.
 - Gameplay rules, solver, generator and level data unchanged (dotnet 84/84 still pass).
 - Android IL2CPP build after the visual changes: success (`PLOP-dev.apk`, 60 MB, 2026-11-21 00:18).
+
+## Later phases
+
+Phases 3–10 (including Phase 10 mechanics, the 160-level campaign and the Dream Dust economy) are logged in the
+root [DEVELOPMENT_LOG.md](../DEVELOPMENT_LOG.md).

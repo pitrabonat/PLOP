@@ -750,7 +750,7 @@ namespace Plop.Presentation
                             return null;
                         }
                         if (spend == DreamDustWallet.SpendResult.Charged)
-                            charged = "  −" + RewardRules.HintCost + " Dream Dust · " + _wallet.Balance + " left";
+                            charged = "\n−" + RewardRules.HintCost + " Dream Dust · " + _wallet.Balance + " left";
                     }
                     _assisted = true; // a revealed route means this visit can no longer earn Perfect
                     ShowHint("Try swiping " + direction.ToString().ToLowerInvariant() + "." + charged, direction: direction);

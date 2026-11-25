@@ -11,6 +11,39 @@ The same NUnit test files run in two environments:
 (`Unity` = `/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/Unity.app/Contents/MacOS/Unity`; close the Editor first.)
 Tests use only NUnit features available in Unity's NUnit 3.5 fork.
 
+## Phase 10 results (2026-11-25, executed)
+
+| Run | Total | Passed | Failed | Skipped |
+|---|---|---|---|---|
+| dotnet test (net10.0) | 179 | 179 | 0 | 0 |
+| Unity 6000.3.29f1 EditMode | 179 | 179 | 0 | 0 |
+| Unity 6000.3.29f1 PlayMode | 100 | 100 | 0 | 0 |
+| `Bench --verify-production` on `PLOP_Pack_002.json` | 160 levels | verified | | |
+
+Phase 10 coverage:
+
+| Requirement | Tests |
+|---|---|
+| Frost slides until a wall, the edge, a Plop or a matching Nest; one swipe = one move | `MechanicsTests.Frost_*`, `MoveLimit_ForcedMovementCostsNoExtraMoves` |
+| Lava fails the attempt (step, slide, push), the first hazard in order wins, Undo and Restart recover exactly | `Lava_*`, PlayMode `Lava_ShowsAFriendlyCard_AndUndoRecoversWithoutPenalty`, `Lava_RestartFromTheCard` |
+| Breeze pushes by power, stops before walls, redirects slides, facing fans terminate (no chain pushing) | `Breeze_*` |
+| Loops teleport to the pair keeping direction, an occupied exit cancels, one teleport per command | `Loop_*` |
+| Deterministic precedence and bounded resolution; random mechanic boards; loop-risk inspection of the shipped pack | `RandomMechanicBoards_AreDeterministic_Bounded_AndOverlapFree`, `ForcedChainInspectorTests.*` |
+| Solver avoids Lava and counts swipes; analyzer fail sink; codec stores live states only | `Solver_AvoidsLava_AndCountsSwipesNotCells`, `Analyzer_HasOneFailureSink_ThatIsNeverAState`, `StateCodec_StoresOnlyLiveStates` |
+| Validation, schema 2 round trip (classic levels stay schema 1), canonical IDs through symmetry | `Validator_RejectsBrokenMechanics`, `Serialization_RoundTripsTilesAndLimits_AndKeepsClassicSchema`, `CanonicalId_*` |
+| Quality metrics and the 160-level campaign: verified optimum, Worlds in order, early onboarding, every mechanic World uses its mechanic, levels 64+ not greedy-solvable, challenges = optimal + 2, deterministic slot search, Phase 8 IDs reused | `Insight_CountsMechanicSteps`, `Phase10CampaignTests.*` |
+| Limited Moves: counter, out-of-moves card, Undo restores a move | `MoveLimit_EndsTheAttempt_AndUndoRestoresTheCounter`, PlayMode `LimitedMoves_ShowsTheLimit_AndTheOutOfMovesCard` |
+| Paid hints: once per board state, never without Dust, survives relaunch, free on intros | `HintEconomyTests.*`, PlayMode `PaidHint_ChargesOncePerBoard_AndNeverWithoutDust`, `IntroHints_AreFree` |
+| Presentation: every mechanic drawn from the shared atlas with shape cues, forced chain plays to the logical cell and holds the input gate, Reduced Motion lands at once | `Board_DrawsEveryMechanic_WithShapeCues`, `ForcedChain_PlaysToTheLogicalCell_AndHoldsTheInputGate`, `ReducedMotion_LandsTheWholeChainAtOnce` |
+| Board decorations: catalog, old saves fall back, atomic purchase, tint only (puzzle untouched) | `CosmeticTests.BoardSlot_*`, `ShippedCatalog_SellsBoardDecorations`, PlayMode `BoardDecor_IsBoughtAtomically_AndOnlyTintsTheTray` |
+| Save migration keeps unchanged puzzles and access, never invents completions | PlayMode `Migration_KeepsUnchangedPuzzlesAndAccess_ButNeverInventsCompletions`, `SavedProgress_CarriesOver_ForUnchangedPuzzles` |
+| The shipped scene loads Pack 002 (found on the device build) | `GameplayScene_LoadsTheShippedPack` |
+| Updated for 160 levels / nine Worlds | `WorldAssetsTests`, `WorldCampaignTests`, `WorldHudTests`, `ProductionCatalogTests`, `DeadlockRecoveryTests` (finds a shipped trap with the solver) |
+
+Not covered automatically: phone frame time for long forced chains, and human difficulty of the new Worlds.
+`DeadlockRecoveryTests.ANewSwipeSupersedesTheOldAnalysis` waits 5 s of real time for a background search; it timed out once while
+an APK build and the emulator loaded the Mac, then passed in isolation (twice) and in the final full run.
+
 ## Phase 9 results (2026-11-25, executed)
 
 | Run | Total | Passed | Failed | Skipped |

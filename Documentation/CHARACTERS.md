@@ -68,6 +68,11 @@ One rig serves everywhere: SpriteRenderers on the board, UI Images in the main m
 | Accessory | None, Tiny Bow, Little Flower, Sprout Leaf, Ribbon, Little Star, Nightcap, Cloud Puff, Tiny Crown |
 | Nest | Moon Pillow (classic), Cloud Cushion, Marshmallow, Soft Flower, Crescent Bed |
 | Effect | None, Dust Puff, Sparkle, Bubbles, Star Trail (2–3 particles, 0.34–0.42 s, pooled) |
+| Board (Phase 10, content version 2) | World Colors (free default), Honey Tray, Mint Garden, Peach Quilt, Lavender Dream (60–100 Dust), Starlight (4 Worlds finished, or 150 Dust) |
+
+**Board decorations** are `BoardDecor` recipes: a tray and tile colour blended over the current World's own
+tints (at most 60%), applied with `BoardView.SetPalette`. They never re-bake the atlas and never alter
+mechanic tiles, Nest marks or the board geometry. The Studio has a Board tab with a small tray thumbnail.
 
 **Catalog.** The catalog is data: `Assets/Data/Cosmetics/Resources/Cosmetics/PLOP_Cosmetics_001.json`.
 
