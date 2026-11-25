@@ -278,6 +278,8 @@ namespace Plop.Presentation
         private void Start()
         {
             if (_progress != null) return; // catalog supplied by tests or tools
+            // A scene saved before Phase 10 still names the retired pack; it is archived outside Resources.
+            if (levelPackResource == LevelLibrary.PreviousPack) levelPackResource = LevelLibrary.DefaultPack;
             _levels = LevelLibrary.Load(levelPackResource);
             if (_levels.Count == 0) return;
             if (levelPackResource == LevelLibrary.DefaultPack)
@@ -737,6 +739,7 @@ namespace Plop.Presentation
                 {
                     Direction direction = result.Moves[0];
                     // Pay only for a verified hint for this exact, still-current board; re-showing it is free.
+                    string charged = "";
                     if (!HintIsFree)
                     {
                         string key = RewardRules.HintKey(level.Id, new StateCodec(level).Encode(state));
@@ -746,9 +749,11 @@ namespace Plop.Presentation
                             ShowHint("A hint costs " + RewardRules.HintCost + " Dream Dust. You have " + _wallet.Balance + ".");
                             return null;
                         }
+                        if (spend == DreamDustWallet.SpendResult.Charged)
+                            charged = "  −" + RewardRules.HintCost + " Dream Dust · " + _wallet.Balance + " left";
                     }
                     _assisted = true; // a revealed route means this visit can no longer earn Perfect
-                    ShowHint("Try swiping " + direction.ToString().ToLowerInvariant() + ".", direction: direction);
+                    ShowHint("Try swiping " + direction.ToString().ToLowerInvariant() + "." + charged, direction: direction);
                     return direction;
                 }
 

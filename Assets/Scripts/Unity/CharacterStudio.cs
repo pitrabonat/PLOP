@@ -51,7 +51,8 @@ namespace Plop.Presentation
         private CharacterLook _equippedLook, _previewLook;
         private PlopView _preview;
         private MoveEffects _previewEffects;
-        private Image _previewNest;
+        private Image _previewNest, _floor;
+        private Color _floorBase;
         private CosmeticCategory _category = CosmeticCategory.BodyStyle;
         private CosmeticItem _selected;
         private ActionKind _action;
@@ -97,7 +98,9 @@ namespace Plop.Presentation
                 Color.Lerp(PlopPalette.ButtonFill, PlopPalette.Lavender, 0.08f));
             var floor = MenuKit.Card(_room, "Floor", new Vector2(0.5f, 0.5f), new Vector2(0, -170), new Vector2(620, 120),
                 Color.Lerp(PlopPalette.TrayRim, PlopPalette.ButtonFill, 0.35f));
-            floor.GetComponent<Image>().raycastTarget = false;
+            _floor = floor.GetComponent<Image>();
+            _floor.raycastTarget = false;
+            _floorBase = _floor.color;
             _stage = MenuKit.Rect("Stage", _room);
             var tap = MenuKit.Rect("Preview tap area", _room);
             tap.gameObject.AddComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
@@ -399,6 +402,8 @@ namespace Plop.Presentation
         private void SetPreview(CharacterLook look)
         {
             bool sideBySide = _category == CosmeticCategory.Nest;
+            // Board decorations show on the preview floor (they tint, so no re-bake is needed).
+            if (_floor != null && look.Board != null) _floor.color = BoardDecorTint.Blend(_floorBase, look.Board.Tray, look.Board.Amount * 1.3f);
             if (_preview != null && _previewLook != null && _previewLook.Key == look.Key && (_previewNest != null) == sideBySide) return;
             _previewLook = look;
             ClearStage();
@@ -581,6 +586,7 @@ namespace Plop.Presentation
                 ci.sprite = UiSprites.Card;
                 ci.type = Image.Type.Sliced;
                 ci.color = tile * ((x + y) % 2 == 0 ? 1f : 0.965f);
+                ci.pixelsPerUnitMultiplier = 3.2f; // keep the soft-square tile shape at thumbnail size
                 ci.raycastTarget = false;
             }
         }

@@ -171,6 +171,7 @@ namespace Plop.Tests.PlayMode
             yield return new WaitUntil(() => first.IsCompleted);
             Assert.IsTrue(first.Result.HasValue);
             Assert.AreEqual(40 - RewardRules.HintCost, _controller.Wallet.Balance);
+            StringAssert.Contains("−" + RewardRules.HintCost + " Dream Dust", hud.HintText, "the charge is shown");
             var again = _controller.RequestHintAsync();
             yield return new WaitUntil(() => again.IsCompleted);
             Assert.AreEqual(40 - RewardRules.HintCost, _controller.Wallet.Balance, "the same board's hint is never charged twice");
@@ -215,6 +216,17 @@ namespace Plop.Tests.PlayMode
             Assert.AreNotEqual(before, tray.color, "the tray takes the decoration's tint");
             Assert.AreEqual(state, _controller.Engine.CurrentState, "decoration never touches the puzzle");
             Assert.IsNotNull(_root.GetComponentsInChildren<Transform>(true).FirstOrDefault(t => t.name.StartsWith("Frost")), "mechanic tiles keep their art");
+        }
+
+        [Test]
+        public void GameplayScene_LoadsTheShippedPack()
+        {
+            Assert.IsNotNull(Resources.Load<TextAsset>(LevelLibrary.DefaultPack), "the shipped pack is in Resources");
+            string scene = System.IO.File.ReadAllText(System.IO.Path.Combine(Application.dataPath, "Scenes", "Gameplay.unity"));
+            foreach (var line in scene.Split('\n'))
+                if (line.Contains("levelPackResource:"))
+                    StringAssert.EndsWith(LevelLibrary.DefaultPack, line.Trim(), "the device build must not load the archived pack");
+            StringAssert.Contains("levelPackResource:", scene);
         }
 
         [Test]

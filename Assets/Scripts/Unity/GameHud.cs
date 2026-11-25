@@ -256,6 +256,7 @@ namespace Plop.Presentation
             var label = _hint.transform.Find("Label")?.GetComponent<Text>() ?? _hint.GetComponentInChildren<Text>();
             if (label != null) label.text = cost > 0 ? "Hint " + cost : "Hint";
         }
+        public string HintText => _hintStatus.text;
         public string HintLabel => (_hint.transform.Find("Label")?.GetComponent<Text>() ?? _hint.GetComponentInChildren<Text>())?.text;
 
         /// <summary>Perfect target for the current level (0 hides it) and whether it was already achieved.</summary>
