@@ -135,6 +135,21 @@ namespace Plop.Meta
             return true;
         }
 
+        /// <summary>Card-sized condition: "20 levels", "10 Perfects", "1 World", "3 Dailies".</summary>
+        public static string ShortCondition(CosmeticItem item)
+        {
+            if (item.Unlock != UnlockMethod.Milestone) return "";
+            int n = item.MilestoneCount;
+            switch (item.Milestone)
+            {
+                case MilestoneKind.LevelsCompleted: return n + (n == 1 ? " level" : " levels");
+                case MilestoneKind.PerfectLevels: return n + (n == 1 ? " Perfect" : " Perfects");
+                case MilestoneKind.WorldsCompleted: return n + (n == 1 ? " World" : " Worlds");
+                case MilestoneKind.DailyPuzzles: return n + (n == 1 ? " Daily" : " Dailies");
+                default: return "";
+            }
+        }
+
         /// <summary>Short unlock condition for UI: "Complete 20 levels", "Earn 10 Perfects", …</summary>
         public static string ConditionText(CosmeticItem item)
         {

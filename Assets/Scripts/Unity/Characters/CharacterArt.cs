@@ -40,7 +40,8 @@ namespace Plop.Presentation
         public Vector2 BrowL => MapFromClassic(-0.140f, 0.488f);
         public Vector2 BrowR => MapFromClassic(0.124f, 0.484f);
         public Vector2 TopAnchor => new Vector2(DomeX + 0.02f, DomeY + DomeRy - 0.035f);
-        public Vector2 SideAnchor => MapFromClassic(0.215f, 0.585f);
+        /// <summary>Upper-left of the dome: the upper-right corner belongs to the Nest's match seal.</summary>
+        public Vector2 SideAnchor => MapFromClassic(-0.205f, 0.600f);
 
         /// <summary>Sprite bounds (x0, y0, width, height) in cell units, origin at the ground centre.</summary>
         public Rect Bounds
@@ -211,11 +212,11 @@ namespace Plop.Presentation
         public static readonly Dictionary<string, AccessoryStyle> Accessories = new Dictionary<string, AccessoryStyle>
         {
             ["none"] = new AccessoryStyle { Name = "none", Anchor = AccessoryAnchor.None },
-            ["bow"] = new AccessoryStyle { Name = "bow", Anchor = AccessoryAnchor.Side, Offset = new Vector2(0.005f, 0.010f), Rotation = -14f, Bounds = new Rect(-0.16f, -0.10f, 0.32f, 0.20f) },
-            ["flower"] = new AccessoryStyle { Name = "flower", Anchor = AccessoryAnchor.Side, Offset = new Vector2(0.006f, 0.016f), Rotation = 8f, Bounds = new Rect(-0.11f, -0.11f, 0.22f, 0.22f) },
+            ["bow"] = new AccessoryStyle { Name = "bow", Anchor = AccessoryAnchor.Side, Offset = new Vector2(-0.005f, 0.010f), Rotation = 14f, Bounds = new Rect(-0.16f, -0.10f, 0.32f, 0.20f) },
+            ["flower"] = new AccessoryStyle { Name = "flower", Anchor = AccessoryAnchor.Side, Offset = new Vector2(-0.006f, 0.016f), Rotation = -8f, Bounds = new Rect(-0.11f, -0.11f, 0.22f, 0.22f) },
             ["leaf"] = new AccessoryStyle { Name = "leaf", Anchor = AccessoryAnchor.Top, Offset = new Vector2(0.0f, -0.010f), Rotation = 0f, Bounds = new Rect(-0.12f, -0.02f, 0.24f, 0.22f) },
-            ["ribbon"] = new AccessoryStyle { Name = "ribbon", Anchor = AccessoryAnchor.Side, Offset = new Vector2(0.000f, 0.005f), Rotation = -22f, Bounds = new Rect(-0.16f, -0.20f, 0.32f, 0.30f) },
-            ["star"] = new AccessoryStyle { Name = "star", Anchor = AccessoryAnchor.Side, Offset = new Vector2(0.012f, 0.020f), Rotation = 12f, Bounds = new Rect(-0.10f, -0.10f, 0.20f, 0.20f) },
+            ["ribbon"] = new AccessoryStyle { Name = "ribbon", Anchor = AccessoryAnchor.Side, Offset = new Vector2(0.000f, 0.005f), Rotation = 22f, Bounds = new Rect(-0.16f, -0.20f, 0.32f, 0.30f) },
+            ["star"] = new AccessoryStyle { Name = "star", Anchor = AccessoryAnchor.Side, Offset = new Vector2(-0.012f, 0.020f), Rotation = -12f, Bounds = new Rect(-0.10f, -0.10f, 0.20f, 0.20f) },
             ["nightcap"] = new AccessoryStyle { Name = "nightcap", Anchor = AccessoryAnchor.Top, Offset = new Vector2(0.01f, -0.050f), Rotation = -6f, Bounds = new Rect(-0.22f, -0.03f, 0.46f, 0.30f) },
             ["cloud"] = new AccessoryStyle { Name = "cloud", Anchor = AccessoryAnchor.Top, Offset = new Vector2(0.0f, 0.030f), Rotation = 0f, Bounds = new Rect(-0.15f, -0.07f, 0.30f, 0.16f) },
             ["crown"] = new AccessoryStyle { Name = "crown", Anchor = AccessoryAnchor.Top, Offset = new Vector2(0.0f, -0.022f), Rotation = 4f, Bounds = new Rect(-0.12f, -0.03f, 0.24f, 0.18f) },

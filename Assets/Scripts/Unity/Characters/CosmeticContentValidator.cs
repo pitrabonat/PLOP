@@ -30,6 +30,8 @@ namespace Plop.Presentation
                 if (a.Bounds.width <= 0f || a.Bounds.height <= 0f) issues.Add("accessory:" + kv.Key + ": empty bounds.");
                 if (Mathf.Max(a.Bounds.width, a.Bounds.height) > 0.5f)
                     issues.Add("accessory:" + kv.Key + ": larger than half a cell; it would cover the face or grid.");
+                if (a.Anchor == AccessoryAnchor.Side && (CharacterArt.Styles["classic"].SideAnchor.x + a.Offset.x) > 0f)
+                    issues.Add("accessory:" + kv.Key + ": side accessories belong on the left; the upper right shows the Nest's match seal.");
                 foreach (var style in CharacterArt.Styles.Values)
                 {
                     Vector2 anchor = (a.Anchor == AccessoryAnchor.Top ? style.TopAnchor : style.SideAnchor) + a.Offset;

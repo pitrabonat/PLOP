@@ -9,6 +9,7 @@
 | `PLOP.Generation` | `Assets/Scripts/LevelGeneration` | Core, Solver | **No** | compiled in, never called at runtime |
 | `PLOP.Meta` | `Assets/Scripts/Meta` | Core | **No** | yes (Dream Dust, records, daily rules) |
 | `PLOP.Unity` | `Assets/Scripts/Unity` | Core, Solver, Meta, Input System, uGUI | yes | yes |
+| `PLOP.CharacterTools` | `Assets/Scripts/CharacterTools/Editor` | Core, Meta, Unity | yes (Editor) | **no** (Editor platform only) |
 | `PLOP.LevelLab` | `Assets/Scripts/LevelLab/Editor` | Core, Solver, Generation | yes (Editor) | **no** (Editor platform only) |
 | `PLOP.Tests` | `Assets/Tests/EditMode` | Core, Solver, Generation, Meta, NUnit | Editor | no |
 | `PLOP.Tests.PlayMode` | `Assets/Tests/PlayMode` | Core, Solver, Meta, Unity, NUnit | yes | no (test assembly) |

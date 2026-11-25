@@ -148,7 +148,7 @@ namespace Plop.Presentation
                 view.Root.localScale = new Vector3(MascotScale[i], MascotScale[i], 1f);
                 // The root is a cell centre; the jelly's ground sits 0.345 cells below it.
                 view.Snap(new Vector3(MascotGround[i].x, MascotGround[i].y + 0.345f * MascotScale[i], 0f), false);
-                if (i == 1) view.SetExpression(Expression.Sleepy); // the middle one dozes
+                if (i == 1) view.SetExpression(Expression.Sleeping); // the middle one dozes, eyes closed
                 _plops[i] = view;
             }
         }
@@ -202,7 +202,7 @@ namespace Plop.Presentation
                 var p = _plops[i];
                 if (p == null) continue;
                 p.Tick(now);
-                if (i == 1 && p.CurrentExpression == Expression.Neutral) p.SetExpression(Expression.Sleepy);
+                if (i == 1 && p.CurrentExpression == Expression.Neutral) p.SetExpression(Expression.Sleeping);
             }
         }
 

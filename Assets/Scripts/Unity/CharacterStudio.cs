@@ -20,10 +20,10 @@ namespace Plop.Presentation
 
         internal enum ActionKind { Equipped, Equip, Unlock, Confirm, NeedDust, Milestone }
 
-        private const float PreviewScale = 380f;
+        private const float PreviewScale = 430f;
         private const int PreviewDensity = 320;
         private const int ThumbDensity = 128;
-        private const float ThumbScale = 150f;
+        private const float ThumbScale = 140f;
         private const float ConfirmSeconds = 3f;
         private const float TapCooldown = 0.5f;
         private static readonly CosmeticCategory[] Tabs =
@@ -237,7 +237,8 @@ namespace Plop.Presentation
             ClearCards();
             var items = _collection.Catalog.InCategory(category);
             const int columns = 3;
-            float cardW = 300f, cardH = 290f, gap = 20f;
+            // Fits the narrowest supported canvas (20:9 phones give ~966 units of width).
+            float cardW = 270f, cardH = 270f, gap = 16f;
             for (int i = 0; i < items.Count; i++)
             {
                 var item = items[i];
@@ -249,9 +250,9 @@ namespace Plop.Presentation
                 button.onClick.AddListener(() => { ButtonPressed?.Invoke(); Select(item.Id); });
                 card.gameObject.AddComponent<PressScale>();
                 BuildThumb(card, item);
-                var name = _kit.Label(card, "Name", HudTheme.Caption - 2, FontStyle.Bold, HudTheme.Ink, new Vector2(0, -78), new Vector2(cardW - 20, 44));
+                var name = _kit.Label(card, "Name", HudTheme.Caption - 2, FontStyle.Bold, HudTheme.Ink, new Vector2(0, -70), new Vector2(cardW - 16, 44));
                 name.text = item.Name;
-                var price = _kit.Label(card, "Price", HudTheme.Caption - 6, FontStyle.Bold, HudTheme.SecondaryText, new Vector2(10, -116), new Vector2(cardW - 40, 36));
+                var price = _kit.Label(card, "Price", HudTheme.Caption - 6, FontStyle.Bold, HudTheme.SecondaryText, new Vector2(0, -106), new Vector2(cardW - 16, 36));
                 var badge = MenuKit.Glyph(card, HudIcons.Kind.Check, new Vector2(cardW * 0.5f - 38f, cardH * 0.5f - 38f), 46, HudTheme.Ink);
                 _cards.Add((item, card, fill, badge, price));
             }
@@ -316,7 +317,10 @@ namespace Plop.Presentation
                 case CosmeticState.Equipped: return "Equipped";
                 case CosmeticState.Owned: return item.IsFree ? "Free" : "Owned";
                 case CosmeticState.MilestoneOnly: return CosmeticCollection.ConditionText(item);
-                default: return item.Cost + " Dust";
+                default:
+                    return item.Unlock == UnlockMethod.Milestone
+                        ? CosmeticCollection.ShortCondition(item) + " or " + item.Cost
+                        : item.Cost + " Dust";
             }
         }
 
@@ -411,7 +415,7 @@ namespace Plop.Presentation
             }
 
             float scale = sideBySide ? PreviewScale * 0.78f : PreviewScale;
-            float groundY = -150f;
+            float groundY = -200f;
             float plopX = sideBySide ? -200f : 0f;
             if (sideBySide)
             {
@@ -481,8 +485,8 @@ namespace Plop.Presentation
         {
             var area = MenuKit.Rect("Thumb", card);
             area.anchorMin = area.anchorMax = new Vector2(0.5f, 0.5f);
-            area.sizeDelta = new Vector2(220, 170);
-            area.anchoredPosition = new Vector2(0, 38);
+            area.sizeDelta = new Vector2(210, 160);
+            area.anchoredPosition = new Vector2(0, 40);
             var d = CharacterLook.Default;
             string asset = CosmeticCatalog.AssetName(item.Asset);
             switch (item.Category)

@@ -280,7 +280,10 @@ namespace Plop.Presentation
             _debugPreview = debugLevel > 0 || !string.IsNullOrEmpty(debugMoves);
 #endif
             _progress = new LevelProgress(_levels, SavesProgress ? levelPackResource : null);
-            InitMeta(SavesProgress);
+            // Development previews show the player's real look and Dust but never write to the save.
+            if (SavesProgress) InitMeta(true);
+            else if (_debugPreview) InitMeta(new ReadOnlyStore(new PlayerPrefsStore()));
+            else InitMeta(false);
             if (levelPackResource == LevelLibrary.DefaultPack) _dailyPool = LevelLibrary.Load(LevelLibrary.DailyPack);
             _index = _progress.ResumeIndex();
             if (rememberProgress)

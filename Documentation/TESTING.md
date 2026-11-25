@@ -11,6 +11,30 @@ The same NUnit test files run in two environments:
 (`Unity` = `/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/Unity.app/Contents/MacOS/Unity`; close the Editor first.)
 Tests use only NUnit features available in Unity's NUnit 3.5 fork.
 
+## Phase 9 results (2026-11-25, executed)
+
+| Run | Total | Passed | Failed | Skipped |
+|---|---|---|---|---|
+| dotnet test (net10.0) | 134 | 134 | 0 | 0 |
+| Unity 6000.3.29f1 EditMode | 134 | 134 | 0 | 0 |
+| Unity 6000.3.29f1 PlayMode | 89 | 89 | 0 | 0 |
+| Cosmetic validator (batch) | 36 items | 0 problems | | |
+
+Phase 9 coverage:
+
+| Requirement | Tests |
+|---|---|
+| Catalog validation (duplicates, categories, prices, defaults, compatibility, unregistered assets and previews), stable shipped IDs | `CosmeticTests.ShippedCatalog_*`, `ShippedIds_AreStable`, `Validator_*` |
+| Preset serialization and relaunch, removed/unknown items fall back, corrupt appearance kept aside, Phase 8 save migration | `Preset_RoundTrips_*`, `RemovedOrUnknownCosmetics_*`, `CorruptAppearance_*`, `Phase8Save_*` |
+| Unlock eligibility, insufficient Dust, duplicate unlocks, failed saves roll back, torn writes recover from the backup, milestones grant once, equip rules | `Unlock_*`, `DuplicateUnlock_*`, `FailedSave_*`, `TornWrite_*`, `Milestones_*`, `Equip_*` |
+| Shipped content end to end (recipes, attachments, palettes, finishes, expressions, thumbnails) | `Phase9CharacterTests.ShippedCosmeticContent_HasNoProblems`, `EveryCatalogAsset_*` |
+| Cosmetics never change logic; logical colours preserved; Undo/Restart exact; sleeping face and wake on Undo; look survives restart; milestones from progress | `Cosmetics_NeverChangeLogic_*`, `UndoAndRestart_*`, `Sleeping_*`, `EquippedLook_SurvivesARestart`, `Milestones_*` |
+| Studio navigation, preview of locked items, two-tap unlock, equip, return to menu, look applied to board and menu, preview released | `Studio_*`, `StudioPreview_*` |
+| Reduced Motion, effect pool bounds and Battery Saver, interrupted animation, one texture/material, no per-frame allocation, faces attached to the body | `ReducedMotion_*`, `MoveEffects_*`, `InterruptedReactionAndMove_*`, `Board_RendersFromOneTexture_*`, `RigTick_*`, `StyleFaces_*` |
+
+The allocation test uses `GC.GetAllocatedBytesForCurrentThread` when the runtime supports it, otherwise managed
+heap growth (Unity's Mono in the Editor uses the fallback; measured 0 bytes over 1,000 frames).
+
 ## Phase 8 results (2026-11-25, executed)
 
 | Run | Total | Passed | Failed | Skipped |
