@@ -1,0 +1,20 @@
+{
+    "name": "PLOP.CharacterTools",
+    "rootNamespace": "Plop.CharacterTools",
+    "references": [
+        "PLOP.Core",
+        "PLOP.Meta",
+        "PLOP.Unity"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

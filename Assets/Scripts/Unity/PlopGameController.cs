@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("PLOP.Tests.PlayMode")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("PLOP.CharacterTools")]
 
 namespace Plop.Presentation
 {
@@ -181,8 +182,18 @@ namespace Plop.Presentation
         }
 
         private void InitMeta(bool persist)
+            => InitMeta(persist ? new PlayerPrefsStore() : (IKeyValueStore)new MemoryStore());
+
+        /// <summary>Test hook: points the meta systems at a given store (simulates relaunching over the same save).</summary>
+        internal void UseMetaStore(IKeyValueStore store)
         {
-            IKeyValueStore store = persist ? new PlayerPrefsStore() : (IKeyValueStore)new MemoryStore();
+            InitMeta(store);
+            UpdateCosmeticProgress();
+            if (_engine.HasLevel) _board.Build(_engine.Level, _engine.CurrentState, ShapeAtlas.ForDensity(FitCamera(), _look));
+        }
+
+        private void InitMeta(IKeyValueStore store)
+        {
             _wallet = new DreamDustWallet(store);
             _records = new LevelRecords(store);
             _catalog = CosmeticCatalogLoader.Load();

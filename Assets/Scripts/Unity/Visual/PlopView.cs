@@ -595,8 +595,8 @@ namespace Plop.Presentation
             float l = 0f, r = 0f;
             switch (pose)
             {
-                case BrowPose.Raised: l = 8f; r = -8f; break;
-                case BrowPose.Worried: l = -16f; r = 16f; break;
+                case BrowPose.Raised: l = -7f; r = 7f; break;     // arched: outer ends up
+                case BrowPose.Worried: l = 16f; r = -16f; break;  // inner ends up, never cross
                 case BrowPose.LeftUp: l = 12f; break;
                 case BrowPose.RightUp: r = -12f; break;
             }

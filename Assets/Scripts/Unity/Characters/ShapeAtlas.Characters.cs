@@ -170,12 +170,7 @@ namespace Plop.Presentation
             Painter open = OpenEye(face.Eye);
             specs.Add(Make(prefix + EyeKey(EyeShape.Open), -0.07f, -0.08f, 0.14f, 0.16f, open, 192));
             specs.Add(Make(prefix + EyeKey(EyeShape.Wide), -0.085f, -0.095f, 0.17f, 0.19f, (x, y, px) => open(x / 1.2f, y / 1.2f, px / 1.2f), 192));
-            specs.Add(Make(prefix + EyeKey(EyeShape.Half), -0.07f, -0.07f, 0.14f, 0.12f, (x, y, px) =>
-            {
-                float lid = Sdf.LowerArc(x, y, 0f, 0.226f, 0.22f, 0.23f, 0.0085f);
-                var c = y < 0.004f ? open(x, y + 0.006f, px) : ink.WithAlpha(0f);
-                return Sdf.Over(c, ink, Sdf.Coverage(lid, px));
-            }, 192));
+            specs.Add(Make(prefix + EyeKey(EyeShape.Half), -0.07f, -0.07f, 0.14f, 0.12f, (x, y, px) => DrowsyEye(open, x, y, px), 192));
             specs.Add(Make(prefix + EyeKey(EyeShape.Closed), -0.08f, -0.06f, 0.16f, 0.12f, (x, y, px) =>
                 Sdf.Over(ink.WithAlpha(0f), ink, Sdf.Coverage(Sdf.LowerArc(x, y, 0f, 0.021f, 0.048f, 1.03f, 0.0135f), px)), 192));
             specs.Add(Make(prefix + EyeKey(EyeShape.Happy), -0.08f, -0.06f, 0.16f, 0.12f, (x, y, px) =>
@@ -216,6 +211,18 @@ namespace Plop.Presentation
                 Sdf.Over(cheek.WithAlpha(0f), cheek, ca * Sdf.Soft(Sdf.Ellipse(x, y, 0f, 0f, 0.054f * cs, 0.028f * cs), 0.022f)), 128));
         }
 
+        /// <summary>Lower half of an open eye under a soft, gently convex lid (relaxed, never cross).</summary>
+        private static Color DrowsyEye(Painter open, float x, float y, float px)
+        {
+            var ink = PlopPalette.FaceInk;
+            float lidY = -0.074f + Mathf.Sqrt(Mathf.Max(0f, 0.0081f - x * x)); // circle r 0.09 centred below
+            var c = y < lidY - 0.003f ? open(x, y + 0.004f, px) : ink.WithAlpha(0f);
+            float lid = Mathf.Abs(x) > 0.047f
+                ? Sdf.Circle(Mathf.Abs(x), y, 0.047f, -0.074f + Mathf.Sqrt(0.0081f - 0.047f * 0.047f), 0.0068f)
+                : Mathf.Abs(y - lidY) - 0.0068f;
+            return Sdf.Over(c, ink.WithAlpha(0.9f), Sdf.Coverage(lid, px));
+        }
+
         private static Painter OpenEye(EyeKind kind)
         {
             Color ink = PlopPalette.FaceInk;
@@ -230,10 +237,13 @@ namespace Plop.Presentation
                 case EyeKind.Dozy:
                     return (x, y, px) =>
                     {
-                        float eye = Mathf.Max(Sdf.Ellipse(x, y, 0f, -0.008f, 0.042f, 0.048f), y - 0.016f);
-                        var c = Sdf.Over(ink.WithAlpha(0f), ink, Sdf.Coverage(eye, px));
-                        c = Sdf.Over(c, ink, Sdf.Coverage(Sdf.LowerArc(x, y, 0f, 0.232f, 0.22f, 0.24f, 0.0075f), px));
-                        return Sdf.Over(c, PlopPalette.Highlight, 0.95f * Sdf.Coverage(Sdf.Circle(x, y, -0.013f, -0.004f, 0.011f), px));
+                        // Heavy-lidded but content: a round eye whose top third rests under a soft lid.
+                        Painter round = (u, v, p) =>
+                        {
+                            var e = Sdf.Over(ink.WithAlpha(0f), ink, Sdf.Coverage(Sdf.Ellipse(u, v, 0f, -0.004f, 0.042f, 0.052f), p));
+                            return Sdf.Over(e, PlopPalette.Highlight, 0.95f * Sdf.Coverage(Sdf.Circle(u, v, -0.013f, -0.016f, 0.011f), p));
+                        };
+                        return DrowsyEye(round, x, y - 0.014f, px);
                     };
                 case EyeKind.Starry:
                     return (x, y, px) =>
@@ -284,7 +294,7 @@ namespace Plop.Presentation
         {
             float light = Smooth(0.5f + (y * 0.82f - x * 0.57f) * 6f * lightScale);
             var c = Color.Lerp(Color.Lerp(baseColor, PlopPalette.FaceInk, 0.16f), Color.Lerp(baseColor, PlopPalette.Highlight, 0.35f), light);
-            float rim = 1f - Smooth(-d / 0.016f);
+            float rim = 1f - Smooth(-d / 0.009f);
             return Color.Lerp(c, Color.Lerp(baseColor, PlopPalette.FaceInk, 0.22f), 0.35f * rim);
         }
 
@@ -303,8 +313,9 @@ namespace Plop.Presentation
             switch (name)
             {
                 case "bow":
-                    return (x, y, px) =>
+                    return (bx, by, bpx) =>
                     {
+                        float x = bx / 1.2f, y = by / 1.2f, px = bpx / 1.2f;
                         float ax = Mathf.Abs(x);
                         float lobe = Sdf.Ellipse((ax - 0.064f) * 0.95f + y * 0.30f, y - (ax - 0.064f) * 0.30f, 0f, 0.004f, 0.058f, 0.040f);
                         float tails = Mathf.Min(Segment(x, y, -0.004f, -0.004f, -0.034f, -0.062f), Segment(x, y, 0.004f, -0.004f, 0.030f, -0.060f)) - 0.013f;
@@ -348,17 +359,22 @@ namespace Plop.Presentation
                         return Sdf.Over(leafGreen.WithAlpha(0f), fill, Sdf.Coverage(shape, px));
                     };
                 case "ribbon":
-                    return (x, y, px) =>
+                    return (rx, ry, rpx) =>
                     {
+                        float x = rx / 1.3f, y = ry / 1.3f, px = rpx / 1.3f;
                         float loopL = Sdf.Ellipse(x + 0.040f, y - 0.030f, 0f, 0f, 0.044f, 0.030f);
                         float loopR = Sdf.Ellipse(x - 0.040f, y - 0.034f, 0f, 0f, 0.044f, 0.030f);
-                        float loops = Mathf.Max(Mathf.Min(loopL, loopR), -Mathf.Min(loopL + 0.016f, loopR + 0.016f));
-                        float tailL = Segment(x, y, -0.006f, 0.02f, -0.040f + 0.008f * Mathf.Sin(y * 60f), -0.12f) - 0.012f;
-                        float tailR = Segment(x, y, 0.006f, 0.02f, 0.044f + 0.008f * Mathf.Sin(y * 60f), -0.11f) - 0.012f;
-                        float knot = Sdf.Circle(x, y, 0f, 0.025f, 0.020f);
+                        float loops = Mathf.Min(loopL, loopR);
+                        float tailL = Segment(x, y, -0.006f, 0.02f, -0.042f + 0.008f * Mathf.Sin(y * 60f), -0.12f) - 0.017f;
+                        float tailR = Segment(x, y, 0.006f, 0.02f, 0.046f + 0.008f * Mathf.Sin(y * 60f), -0.11f) - 0.017f;
+                        float knot = Sdf.Circle(x, y, 0f, 0.028f, 0.022f);
                         float shape = Mathf.Min(Mathf.Min(loops, knot), Mathf.Min(tailL, tailR));
-                        var fill = Gloss(Shade(lilac, x, y, shape), x, y, -0.05f, 0.05f, 0.014f, 0.007f);
-                        return Sdf.Over(lilac.WithAlpha(0f), fill, Sdf.Coverage(shape, px));
+                        var fill = Shade(lilac, x, y, shape);
+                        float fold = Mathf.Min(Sdf.Ellipse(x + 0.030f, y - 0.030f, 0f, 0f, 0.016f, 0.010f), Sdf.Ellipse(x - 0.030f, y - 0.034f, 0f, 0f, 0.016f, 0.010f));
+                        fill = Color.Lerp(fill, Color.Lerp(lilac, PlopPalette.FaceInk, 0.3f), 0.45f * Sdf.Soft(fold, 0.01f));
+                        fill = Gloss(fill, x, y, -0.05f, 0.05f, 0.014f, 0.007f);
+                        var c = PlopPalette.ContactShadow.WithAlpha(0.18f * Sdf.Soft(shape + 0.004f, 0.02f));
+                        return Sdf.Over(c, fill, Sdf.Coverage(shape, px));
                     };
                 case "star":
                     return (x, y, px) =>
@@ -433,22 +449,13 @@ namespace Plop.Presentation
             return sdf(x * c + y * s, -x * s + y * c);
         }
 
-        /// <summary>Rounded five-point star (outer radius r, inner ratio k).</summary>
+        /// <summary>Soft five-point star (outer radius r, inner radius r·k), first point straight up.</summary>
         internal static float Star5(float x, float y, float r, float k)
         {
-            float a = Mathf.Atan2(x, y);
-            float sector = Mathf.PI * 2f / 5f;
-            float local = Mathf.Repeat(a + sector * 0.5f, sector) - sector * 0.5f;
-            float len = Mathf.Sqrt(x * x + y * y);
-            float px = Mathf.Abs(Mathf.Sin(local)) * len, py = Mathf.Cos(local) * len;
-            // Edge from the outer tip (0, r) to the inner corner at half a sector.
-            float ix = Mathf.Sin(sector * 0.5f) * r * k, iy = Mathf.Cos(sector * 0.5f) * r * k;
-            float ex = ix, ey = iy - r;
-            float h = Mathf.Clamp01((px * ex + (py - r) * ey) / (ex * ex + ey * ey));
-            float qx = px - ex * h, qy = py - r - ey * h;
-            float dist = Mathf.Sqrt(qx * qx + qy * qy);
-            float side = (py - r) * ex - px * ey;
-            return side > 0f ? -dist : dist;
+            float angle = Mathf.Atan2(x, y);
+            float tip = 0.5f + 0.5f * Mathf.Cos(5f * angle);   // 1 on a point, 0 between points
+            float radius = Mathf.Lerp(r * k, r, Mathf.Pow(tip, 1.7f));
+            return (Mathf.Sqrt(x * x + y * y) - radius) * 0.72f;
         }
 
         // ------------------------------------------------------------------ move effects
