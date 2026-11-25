@@ -17,7 +17,7 @@ namespace Plop.LevelLab
     /// </summary>
     public sealed class LevelLabWindow : EditorWindow
     {
-        private enum Tool { Wall, Floor, Plop, Nest, Erase }
+        private enum Tool { Wall, Floor, Plop, Nest, Erase, Frost, Lava, Fan, Loop }
 
         private const string DefaultPackPath = "Assets/Levels/Resources/Levels/PLOP_Pack_001.json";
         private static readonly Color[] PlopColors =
@@ -35,6 +35,15 @@ namespace Plop.LevelLab
         private readonly List<(PlopColor color, GridPosition pos)> _plops = new List<(PlopColor, GridPosition)>();
         private readonly List<(PlopColor color, GridPosition pos)> _nests = new List<(PlopColor, GridPosition)>();
         private LevelMetadata _metadata;
+        private readonly List<MechanicTile> _tiles = new List<MechanicTile>();
+        private int _moveLimit;
+        private Direction _fanDir = Direction.Up;
+        private int _fanPower = 2, _loopPair;
+        private readonly List<string> _chain = new List<string>();
+        private string _chainReport;
+        private bool _mechFrost = true, _mechLava, _mechBreeze, _mechLoops;
+        private int _mechPlops = 2;
+        private float _mechChallenge = 20f;
 
         // ---- UI state ----
         private Tool _tool = Tool.Wall;
@@ -119,9 +128,20 @@ namespace Plop.LevelLab
             if (w != _width || h != _height) Resize(w, h);
 
             EditorGUILayout.Space(4);
-            _tool = (Tool)GUILayout.Toolbar((int)_tool, new[] { "Wall", "Floor", "Plop", "Nest", "Erase" });
+            _moveLimit = Mathf.Max(0, EditorGUILayout.IntField(new GUIContent("Move limit", "Limited Moves challenge (0 = none)"), _moveLimit));
+            int basic = GUILayout.Toolbar((int)_tool <= (int)Tool.Erase ? (int)_tool : -1, new[] { "Wall", "Floor", "Plop", "Nest", "Erase" });
+            int mech = GUILayout.Toolbar((int)_tool > (int)Tool.Erase ? (int)_tool - (int)Tool.Frost : -1, new[] { "Frost", "Lava", "Fan", "Loop" });
+            if (basic >= 0 && basic != (int)_tool) _tool = (Tool)basic;
+            if (mech >= 0 && mech + (int)Tool.Frost != (int)_tool) _tool = (Tool)(mech + (int)Tool.Frost);
             if (_tool == Tool.Plop || _tool == Tool.Nest)
                 _color = (PlopColor)EditorGUILayout.EnumPopup("Color", _color);
+            if (_tool == Tool.Fan)
+            {
+                _fanDir = (Direction)EditorGUILayout.EnumPopup("Fan direction", _fanDir);
+                _fanPower = EditorGUILayout.IntSlider("Fan power", _fanPower, 1, MechanicTile.MaxFanPower);
+            }
+            if (_tool == Tool.Loop)
+                _loopPair = EditorGUILayout.IntSlider(new GUIContent("Loop pair", "Place exactly two ends with the same pair number"), _loopPair, 0, MechanicTile.MaxPortalPairs - 1);
             EditorGUILayout.LabelField("Click / drag on the board to paint. Plop & Nest place one per click.", EditorStyles.miniLabel);
 
             EditorGUILayout.BeginHorizontal();
@@ -144,11 +164,12 @@ namespace Plop.LevelLab
             _width = w;
             _height = h;
             _walls = newWalls;
-            if (clear) { _plops.Clear(); _nests.Clear(); }
+            if (clear) { _plops.Clear(); _nests.Clear(); _tiles.Clear(); }
             else
             {
                 _plops.RemoveAll(p => p.pos.X >= w || p.pos.Y >= h);
                 _nests.RemoveAll(p => p.pos.X >= w || p.pos.Y >= h);
+                _tiles.RemoveAll(t => t.Position.X >= w || t.Position.Y >= h);
             }
             InvalidateResults();
         }
@@ -162,6 +183,8 @@ namespace Plop.LevelLab
             _replayStep = 0;
             _metadata = null;
             _insight = null;
+            _chain.Clear();
+            _chainReport = null;
         }
 
         private LevelDefinition BuildLevel()
@@ -172,7 +195,8 @@ namespace Plop.LevelLab
             for (int i = 0; i < _plops.Count; i++) plops.Add(new PlopDefinition(i, _plops[i].color, _plops[i].pos));
             var nests = new List<NestDefinition>();
             foreach (var n in _nests) nests.Add(new NestDefinition(n.color, n.pos));
-            return new LevelDefinition(_levelId, _levelName, _width, _height, walls, plops, nests, _metadata, _levelInstruction);
+            return new LevelDefinition(_levelId, _levelName, _width, _height, walls, plops, nests, _metadata, _levelInstruction,
+                tiles: _tiles, moveLimit: _moveLimit);
         }
 
         private void LoadIntoEditor(LevelDefinition level)
@@ -188,6 +212,9 @@ namespace Plop.LevelLab
             foreach (var p in level.Plops) _plops.Add((p.Color, p.Start));
             _nests.Clear();
             foreach (var n in level.Nests) _nests.Add((n.Color, n.Position));
+            _tiles.Clear();
+            _tiles.AddRange(level.Tiles);
+            _moveLimit = level.MoveLimit;
             InvalidateResults();
             // The editor can reanalyze the draft without changing the catalog entry until it is replaced.
             var source = level.Metadata;
@@ -218,6 +245,23 @@ namespace Plop.LevelLab
             int cell = pos.Y * _width + pos.X;
             int plopIdx = _plops.FindIndex(p => p.pos == pos);
             int nestIdx = _nests.FindIndex(n => n.pos == pos);
+            int tileIdx = _tiles.FindIndex(t => t.Position == pos);
+            if (_tool >= Tool.Frost)
+            {
+                // Mechanic tiles need plain floor: no wall, Plop start or Nest underneath.
+                if (_walls[cell] || plopIdx >= 0 || nestIdx >= 0) { SetStatus("Mechanic tiles go on plain floor.", MessageType.Warning); return; }
+                if (tileIdx >= 0) _tiles.RemoveAt(tileIdx);
+                switch (_tool)
+                {
+                    case Tool.Frost: _tiles.Add(MechanicTile.Frost(pos.X, pos.Y)); break;
+                    case Tool.Lava: _tiles.Add(MechanicTile.Lava(pos.X, pos.Y)); break;
+                    case Tool.Fan: _tiles.Add(MechanicTile.Fan(pos.X, pos.Y, _fanDir, _fanPower)); break;
+                    case Tool.Loop: _tiles.Add(MechanicTile.Portal(pos.X, pos.Y, _loopPair)); break;
+                }
+                InvalidateResults();
+                return;
+            }
+            if (tileIdx >= 0 && _tool != Tool.Floor) _tiles.RemoveAt(tileIdx);
             switch (_tool)
             {
                 case Tool.Wall:
@@ -273,6 +317,8 @@ namespace Plop.LevelLab
                     bool wall = _walls[y * _width + x];
                     EditorGUI.DrawRect(r, wall ? new Color(0.35f, 0.35f, 0.38f) : new Color(0.86f, 0.84f, 0.80f));
 
+                    int tileIdx = _tiles.FindIndex(t => t.Position == pos);
+                    if (tileIdx >= 0) DrawTile(r, _tiles[tileIdx]);
                     int nestIdx = _nests.FindIndex(n => n.pos == pos);
                     if (nestIdx >= 0) DrawNest(r, PlopColors[(int)_nests[nestIdx].color]);
 
@@ -290,7 +336,7 @@ namespace Plop.LevelLab
             }
 
             var e = Event.current;
-            if (_replay == null && (e.type == EventType.MouseDown || (e.type == EventType.MouseDrag && (_tool == Tool.Wall || _tool == Tool.Floor || _tool == Tool.Erase)))
+            if (_replay == null && (e.type == EventType.MouseDown || (e.type == EventType.MouseDrag && (_tool == Tool.Wall || _tool == Tool.Floor || _tool == Tool.Erase || _tool == Tool.Frost || _tool == Tool.Lava)))
                 && e.button == 0 && area.Contains(e.mousePosition))
             {
                 int x = Mathf.FloorToInt((e.mousePosition.x - area.x) / cell);
@@ -302,6 +348,22 @@ namespace Plop.LevelLab
                     e.Use();
                     Repaint();
                 }
+            }
+        }
+
+        private static void DrawTile(Rect r, MechanicTile t)
+        {
+            var inner = new Rect(r.x + 2, r.y + 2, r.width - 4, r.height - 4);
+            switch (t.Kind)
+            {
+                case TileKind.Frost: EditorGUI.DrawRect(inner, new Color(0.72f, 0.86f, 0.95f)); GUI.Label(inner, "~", EditorStyles.centeredGreyMiniLabel); break;
+                case TileKind.Lava: EditorGUI.DrawRect(inner, new Color(0.95f, 0.55f, 0.30f)); GUI.Label(inner, "!", EditorStyles.centeredGreyMiniLabel); break;
+                case TileKind.Fan:
+                    EditorGUI.DrawRect(inner, new Color(0.62f, 0.84f, 0.78f));
+                    string arrow = t.Direction == Direction.Up ? "^" : t.Direction == Direction.Down ? "v" : t.Direction == Direction.Left ? "<" : ">";
+                    GUI.Label(inner, arrow + t.Power, EditorStyles.centeredGreyMiniLabel);
+                    break;
+                case TileKind.Portal: EditorGUI.DrawRect(inner, new Color(0.74f, 0.70f, 0.92f)); GUI.Label(inner, "O" + t.Pair, EditorStyles.centeredGreyMiniLabel); break;
             }
         }
 
@@ -345,6 +407,37 @@ namespace Plop.LevelLab
             if (GUILayout.Button("Generate")) GenerateOne(false);
             if (GUILayout.Button("Next seed + Generate")) GenerateOne(true);
             EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space(4);
+            EditorGUILayout.LabelField("Mechanic quality search (Phase 10)", EditorStyles.miniBoldLabel);
+            EditorGUILayout.BeginHorizontal();
+            _mechFrost = GUILayout.Toggle(_mechFrost, "Frost");
+            _mechLava = GUILayout.Toggle(_mechLava, "Lava");
+            _mechBreeze = GUILayout.Toggle(_mechBreeze, "Breeze");
+            _mechLoops = GUILayout.Toggle(_mechLoops, "Loops");
+            EditorGUILayout.EndHorizontal();
+            _mechPlops = EditorGUILayout.IntSlider("Plops", _mechPlops, 1, 3);
+            _mechChallenge = EditorGUILayout.Slider("Min challenge", _mechChallenge, 0f, 70f);
+            if (GUILayout.Button("Search mechanic level (uses Width/Height above)")) SearchMechanicLevel();
+        }
+
+        private void SearchMechanicLevel()
+        {
+            if (!TryParseSeed(out ulong seed)) { SetStatus("Invalid seed.", MessageType.Error); return; }
+            var set = (_mechFrost ? MechanicSet.Frost : 0) | (_mechLava ? MechanicSet.Lava : 0) |
+                      (_mechBreeze ? MechanicSet.Breeze : 0) | (_mechLoops ? MechanicSet.Loops : 0);
+            if (set == MechanicSet.None) { SetStatus("Pick at least one mechanic.", MessageType.Warning); return; }
+            var target = new QualityTarget
+            {
+                Width = _gen.Width, Height = _gen.Height, Plops = _mechPlops,
+                MinOptimal = 4, MaxOptimal = 16, MinChallenge = _mechChallenge,
+                Mechanics = set, RequiredUse = set, MinMechanicSteps = 1, Restarts = 8
+            };
+            var result = QualitySearch.Search(seed, target, RegistryFromPack());
+            if (!result.Success) { SetStatus("No level met the target (best penalty " + result.BestPenalty.ToString("0.##") + "). Try another seed.", MessageType.Warning); return; }
+            LoadIntoEditor(result.Level);
+            _analysis = result.Analysis;
+            SetStatus("Found " + result.Level.Id + ": challenge " + result.Insight.Challenge.ToString("0.0") + ", " + result.Insight.Optimal + " moves.");
         }
 
         private bool TryParseSeed(out ulong seed)
@@ -387,7 +480,9 @@ namespace Plop.LevelLab
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Solve")) Solve();
             if (GUILayout.Button("Analyze + Difficulty")) Analyze();
+            if (GUILayout.Button(new GUIContent("Inspect chains", "Longest forced chain and infinite-loop risk over every reachable state"))) InspectChains();
             EditorGUILayout.EndHorizontal();
+            if (_chainReport != null) EditorGUILayout.HelpBox(_chainReport, MessageType.None);
             if (_solution != null)
                 EditorGUILayout.SelectableLabel("Solution (" + _solution.Length + "): " + DirectionUtil.ToMoveString(_solution), GUILayout.Height(18));
         }
@@ -425,6 +520,30 @@ namespace Plop.LevelLab
             SetStatus("Analyzed: " + _difficulty.Category + " (score " + _difficulty.Score + "), " + a.ReachableStates + " states.");
         }
 
+        private void InspectChains()
+        {
+            try
+            {
+                var level = BuildLevel();
+                var r = ForcedChainInspector.Inspect(level);
+                _chainReport = "Forced chains: " + r.StatesExplored + " states, " + r.CommandsTried + " swipes" + (r.Complete ? "" : " (capped)") +
+                               "\nLongest chain: " + r.LongestChain + (r.LongestChain > 0 ? " (" + r.LongestChainDirection + " from\n" + r.LongestChainState + ")" : "") +
+                               "\nLava failures reachable: " + r.FailingCommands +
+                               "\nLoop risk: " + (r.LoopRisk ? r.UnresolvedCommands + " unresolved swipe(s), first " + r.FirstUnresolvedDirection + " from\n" + r.FirstUnresolvedState : "none");
+                SetStatus(r.LoopRisk ? "Forced movement does not resolve — fix before shipping." : "Forced movement resolves everywhere.", r.LoopRisk ? MessageType.Error : MessageType.Info);
+            }
+            catch (InvalidLevelException ex) { SetStatus(ex.Message, MessageType.Error); }
+        }
+
+        private void ReplayStep(Direction dir)
+        {
+            var result = _replay.TryMove(dir);
+            _chain.Clear();
+            _chain.Add("Swipe " + dir + " (move " + result.MoveCount + (_replay.Level.MoveLimit > 0 ? " / " + _replay.Level.MoveLimit : "") + ")");
+            _chain.AddRange(ForcedChainInspector.Describe(_replay.Level, result.Events ?? new GameEvent[0]));
+            if (result.Changed) _replayStep++;
+        }
+
         private void DrawReplayControls()
         {
             if (_solution == null) return;
@@ -436,16 +555,23 @@ namespace Plop.LevelLab
             else
             {
                 if (GUILayout.Button("|<")) { StartReplay(); }
-                if (GUILayout.Button("< Undo") && _replay.Undo()) _replayStep--;
-                if (GUILayout.Button("Step >") && _replayStep < _solution.Length)
-                {
-                    if (_replay.TryMove(_solution[_replayStep]).Changed) _replayStep++;
-                }
-                if (GUILayout.Button(">|")) { while (_replayStep < _solution.Length && _replay.TryMove(_solution[_replayStep]).Changed) _replayStep++; }
-                if (GUILayout.Button("Exit replay")) _replay = null;
+                if (GUILayout.Button("< Undo") && _replay.Undo()) { _replayStep--; _chain.Clear(); }
+                if (GUILayout.Button("Step >") && _replayStep < _solution.Length) ReplayStep(_solution[_replayStep]);
+                if (GUILayout.Button(">|")) { while (_replayStep < _solution.Length && !_replay.IsCompleted) { int before = _replayStep; ReplayStep(_solution[_replayStep]); if (before == _replayStep) break; } }
+                if (GUILayout.Button("Exit replay")) { _replay = null; _chain.Clear(); }
                 if (_replay != null && _replay.IsCompleted) GUILayout.Label("Completed ✓");
             }
             EditorGUILayout.EndHorizontal();
+            if (_replay != null)
+            {
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Label("Try a swipe:", GUILayout.Width(80));
+                foreach (Direction d in new[] { Direction.Up, Direction.Left, Direction.Down, Direction.Right })
+                    if (GUILayout.Button(d.ToString())) ReplayStep(d);
+                EditorGUILayout.EndHorizontal();
+                if (_chain.Count > 0)
+                    EditorGUILayout.HelpBox("Effect resolution:\n" + string.Join("\n", _chain), _replay.IsFailed ? MessageType.Warning : MessageType.None);
+            }
         }
 
         private void StartReplay()
@@ -456,6 +582,7 @@ namespace Plop.LevelLab
                 _replay = new GameEngine();
                 _replay.LoadLevel(level);
                 _replayStep = 0;
+                _chain.Clear();
                 if (!BfsSolver.VerifySolution(level, _solution))
                 {
                     _replay = null;
