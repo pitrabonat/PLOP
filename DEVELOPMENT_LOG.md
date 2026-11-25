@@ -175,3 +175,33 @@ See [PROJECT_STATE.md](PROJECT_STATE.md) for verification and remaining device Q
     in [Phase 8 previews](Documentation/Previews/Phase8/README.md).
   - Keyboard input that was already present on the emulator completed
     Levels 1–4. That progress was kept.
+
+## 2026-11-25 · Phase 9 character system, cosmetics and Character Studio
+
+- Verified that Phase 8 was complete and pushed. Tagged `checkpoint/pre-phase9`
+  and branched `feature/character-studio`.
+- Kept the existing SDF atlas and PlopView animation, and parameterized them
+  by a cosmetic `CharacterLook`. Gameplay identity stays separate: the
+  logical colour picks the body colour and match symbol, and the board
+  supplies every position.
+- Added the data-driven catalog, the collection, presets and atomic
+  purchases in `PLOP.Meta`. Covered failed saves, torn writes and Phase 8
+  migration with engine-free tests.
+- Built the Character Studio, Studio entry and live mascots on the main
+  menu, move effects, and the Editor Animation Lab, validator and capture
+  tool.
+- The rendered reference sheets showed problems that compiled code hid:
+  - faces sorted under bodies in the tool;
+  - Worried brows that read angry;
+  - a square Star;
+  - a thin Ribbon.
+- The Android emulator showed more:
+  - a Studio grid cut off on 20:9 screens;
+  - a bow hidden by the Nest's match symbol when its Plop slept. Side
+    accessories now sit on the upper left, and the validator enforces it.
+- Unity's test runs restarted adb mid-capture. One stray tap unlocked the
+  Dozy face on the emulator's test save, which also confirmed the
+  two-tap unlock end to end.
+- Verified: .NET 134, EditMode 134, PlayMode 89, validator 0 problems.
+  Android ARM64 development APK on the emulator. iOS Simulator build in
+  PROJECT_STATE.md.

@@ -5,7 +5,9 @@
 | Core | Immutable board geometry, mutable session state, shared transitions, Undo and Restart, validation and JSON |
 | Solver | Shortest paths from arbitrary state, exhaustive graph analysis through Core, and versioned exact deadlock proof data |
 | Generation | Offline seeded candidates, player-model puzzle insight, quality search, campaign plan, duplicate checks and the ordered production catalog and daily pool |
-| Meta | Perfect Moves records, Dream Dust wallet with one-time grants, Daily Gift and Daily Puzzle rules (engine-free) |
+| Meta | Perfect Moves records, Dream Dust wallet with one-time grants, Daily Gift and Daily Puzzle rules, cosmetic catalog, ownership and presets (engine-free) |
+| Characters | `CharacterArt` recipes, look-aware atlas painters, the shared `PlopView` rig (board and UI), move effects, Character Studio, content validator |
+| Character tools | Editor-only Animation Lab, cosmetic validator and reference-sheet capture |
 | Level Lab | Editor tools for authoring, inspecting, replaying, filtering, ordering and verifying level packs, plus the player-model campaign overview |
 | Unity | Main menu, gameplay scene, portrait board, themed worlds, campaign navigation, audio and haptics, hints, recovery and progression |
 | Tests | Shared engine-free NUnit tests and Unity PlayMode integration |
@@ -49,6 +51,12 @@ boards toward a `CampaignPlan` slot target. Every level stores its verified `opt
 The game opens on the main menu; Dream Dust is paid once per grant key for completions, Perfects, the Daily Gift
 and the Daily Puzzle. A slot-history file maps rebuilt level IDs so saves migrate instead of resetting. See
 [Puzzle quality](Documentation/PUZZLE_QUALITY.md).
+
+Phase 9 separates gameplay identity from appearance. A `CharacterLook` (resolved from the equipped preset)
+selects body style, finish, palette, face, accessory, Nest style and move effect. The atlas bakes that look
+beside the board, so nothing adds materials or draw-call groups. `PlopView` follows board endpoints exactly
+and adds expressions, personality and reactions on child transforms only. Purchases spend Dust and record
+ownership in one wallet write. See [Characters and cosmetics](Documentation/CHARACTERS.md).
 
 For assembly dependencies, data flow and performance details, see the
 [technical architecture](Documentation/ARCHITECTURE.md). See

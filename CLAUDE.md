@@ -12,9 +12,9 @@ Shared guidance for Claude Code, Codex, and other contributors. Start with
 - **Targets:** Android (IL2CPP, ARM64, min API 26, target = highest installed) and iOS (min iOS 15.0)
 - **Orientation:** Portrait only
 - **Repository:** https://github.com/pitrabonat/PLOP (remote `origin`, branch `main`; public)
-- **Status:** Phase 8 gameplay depth, puzzle rebalancing, main menu and meta progression. See PROJECT_STATE.md for verification.
+- **Status:** Phase 9 character system, cosmetics and Character Studio (on top of Phase 8 depth, menu and Dream Dust). See PROJECT_STATE.md.
 - **Visual style:** "Soft Toy Minimalism" — see `Documentation/VISUAL_STYLE.md` (palette, corner radii, animation).
-- **Docs:** `Documentation/` — ARCHITECTURE, GAME_RULES, SOLVER, LEVEL_GENERATION, PUZZLE_QUALITY, LEVEL_FORMAT, VISUAL_STYLE, TESTING, DEVELOPMENT_LOG.
+- **Docs:** `Documentation/` — ARCHITECTURE, GAME_RULES, SOLVER, LEVEL_GENERATION, PUZZLE_QUALITY, CHARACTERS, LEVEL_FORMAT, VISUAL_STYLE, TESTING, DEVELOPMENT_LOG.
 
 ## Storage layout (important)
 The SanDisk drive is **exFAT**, which is unsuitable for Unity (no symlinks/permissions, 128 KB clusters).
@@ -48,8 +48,12 @@ Assets/
     Solver/          PLOP.Solver      — BFS solver + state-space analyzer (NO UnityEngine)
     LevelGeneration/ PLOP.Generation  — PRNG, generator, verifier, duplicates, difficulty, PuzzleInsight,
                                         QualitySearch, CampaignPlan, CampaignInsights (NO UnityEngine)
-    Meta/            PLOP.Meta        — Dream Dust wallet, level records/Perfect, Daily Gift/Puzzle rules (NO UnityEngine)
-    Unity/           PLOP.Unity       — board, HUD, MainMenu, input, world presentation, audio, PlopGameController
+    Meta/            PLOP.Meta        — Dream Dust wallet, level records/Perfect, Daily Gift/Puzzle rules,
+                                        cosmetic catalog/collection/presets (NO UnityEngine)
+    Unity/           PLOP.Unity       — board, HUD, MainMenu, CharacterStudio, input, worlds, audio, PlopGameController
+      Characters/    CharacterArt recipes, ShapeAtlas character painters, PlopPart, MoveEffects, validator
+    CharacterTools/Editor/ PLOP.CharacterTools — Animation Lab, cosmetic validator, reference-sheet capture (Editor only)
+  Data/Cosmetics/Resources/Cosmetics/PLOP_Cosmetics_001.json — cosmetic catalog (IDs are save keys)
       Worlds/        WorldCatalog, WorldTheme, WorldBackdrop
   Art/Resources/Worlds/                cosmetic chapter ScriptableObjects
   Art/Resources/WorldBackdrops/        authored portrait environments
@@ -167,6 +171,9 @@ UNITY=/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/Unity.app/Contents/MacOS/Unity
 ```
 Level Lab: Unity menu **PLOP → Level Lab** (edit, generate, solve, replay, metrics, import/export, batch generation, filters and manual catalog ordering;
 player-model insight panel, campaign overview with Plop/size/trivial filters and most-similar comparison).
+
+Characters: **PLOP → Characters → Animation Lab / Validate Cosmetics / Capture Reference Sheets** (see
+`Documentation/CHARACTERS.md`). Batch validator: `-executeMethod Plop.CharacterTools.CosmeticValidatorWindow.RunBatch`.
 
 Screenshot hooks (development builds only, never saved progress): integer pref `plop.debug.level` (1-based)
 and string pref `plop.debug.moves` (e.g. `DLDRU`) skip the main menu. On the Android emulator the debuggable

@@ -23,6 +23,12 @@ describes the system boundaries and [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md) rec
   Dream Dust grants are one-time keys; keep rewards small and cosmetic, with no ads or shop.
 - Keep Meta (records, wallet, daily rules) engine-free behind `IKeyValueStore`/`IClock`.
   The game opens on `MainMenu`; PlayMode tests that load the shipped pack press PLAY first.
+- Keep cosmetics visual-only: a `CharacterLook` may change sprites, faces, accessories, Nest art and effects,
+  never board positions, rules, solver input or progress. Keep the colour-independent match mark on every
+  body and Nest. New cosmetics are a `CharacterArt` recipe plus a catalog entry (IDs are save keys; never
+  rename or reuse one); run PLOP → Characters → Validate Cosmetics. Unlocks go through
+  `CosmeticCollection` (one wallet write); never add a second currency, wallet or save manager.
+  See [Documentation/CHARACTERS.md](Documentation/CHARACTERS.md).
 - Keep the one-command gesture buffer in presentation. Clear it on recovery,
   modal entry, navigation and suspension. Honor reduced motion when dispatching
   queued input. Keep the optional profiler readout in development builds.
