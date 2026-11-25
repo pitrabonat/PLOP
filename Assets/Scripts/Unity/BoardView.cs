@@ -31,6 +31,30 @@ namespace Plop.Presentation
         private bool _reducedMotion, _batterySaver;
         private MoveEffects _effects;
 
+        // ---- Phase 10: forced-movement playback and tile feedback ----
+        private enum StepKind : byte { Slide, Push, Teleport, Settle, Burn }
+        private readonly struct Step
+        {
+            public readonly StepKind Kind;
+            public readonly GridPosition From, To;
+            public readonly Direction Direction;
+            public Step(StepKind kind, GridPosition from, GridPosition to, Direction direction) { Kind = kind; From = from; To = to; Direction = direction; }
+        }
+        private readonly List<Queue<Step>> _queues = new List<Queue<Step>>();
+        private readonly Dictionary<int, Transform> _fanBlades = new Dictionary<int, Transform>();
+        private readonly Dictionary<int, Transform> _portalRings = new Dictionary<int, Transform>();
+        private readonly Dictionary<Transform, float> _spinUntil = new Dictionary<Transform, float>();
+        private readonly List<Transform> _spinDone = new List<Transform>();
+        private const float SlideSecondsPerCell = 0.065f;
+        private const float PushSecondsPerCell = 0.085f;
+        public const float BurnRevealDelay = 0.18f;
+
+        /// <summary>True while any Plop still has forced-movement steps to show.</summary>
+        public bool HasQueuedSteps
+        {
+            get { foreach (var q in _queues) if (q.Count > 0) return true; return false; }
+        }
+
         /// <summary>True while any Plop is still travelling/bumping (logical positions not yet reached visually).</summary>
         public bool IsAnimating
         {
@@ -40,7 +64,11 @@ namespace Plop.Presentation
         /// <summary>True only while a Plop travels to its target cell, including anticipation.</summary>
         public bool IsTraveling
         {
-            get { foreach (var p in _plops) if (p.IsSliding) return true; return false; }
+            get
+            {
+                foreach (var p in _plops) if (p.IsSliding) return true;
+                return HasQueuedSteps;
+            }
         }
 
         /// <summary>True while any non-idle animation runs (landing wobble, sleep, hop, nest pulse).</summary>
@@ -51,6 +79,7 @@ namespace Plop.Presentation
                 float now = Time.unscaledTime;
                 foreach (var p in _plops) if (p.IsBusy(now)) return true;
                 for (int i = 0; i < _pulseNest.Length; i++) if (_pulseNest[i] != null) return true;
+                if (HasQueuedSteps || _spinUntil.Count > 0) return true;
                 return false;
             }
         }
@@ -116,6 +145,10 @@ namespace Plop.Presentation
             foreach (var p in _plops) Destroy(p.Root.gameObject);
             _static.Clear();
             _plops.Clear();
+            _queues.Clear();
+            _fanBlades.Clear();
+            _portalRings.Clear();
+            _spinUntil.Clear();
             _tiles.Clear();
             _pebbles.Clear();
             _nestByCell.Clear();
@@ -157,6 +190,44 @@ namespace Plop.Presentation
                 }
             }
 
+            // ---- Phase 10 mechanic tiles (above floor tiles, below Nests and Plops) ----
+            foreach (var t in level.Tiles)
+            {
+                var at = CellToLocal(t.Position);
+                int cell = level.CellIndex(t.Position);
+                switch (t.Kind)
+                {
+                    case TileKind.Frost:
+                        Simple("Frost " + t.Position, atlas.Get(ShapeAtlas.FrostKey), -976).transform.localPosition = at;
+                        break;
+                    case TileKind.Lava:
+                        Simple("Lava " + t.Position, atlas.Get(ShapeAtlas.LavaKey), -976).transform.localPosition = at;
+                        break;
+                    case TileKind.Portal:
+                        var ring = Simple("Loop " + t.Pair + " " + t.Position, atlas.Get(ShapeAtlas.PortalKey(t.Pair)), -976);
+                        ring.transform.localPosition = at;
+                        _portalRings[cell] = ring.transform;
+                        break;
+                    case TileKind.Fan:
+                        Simple("Breeze " + t.Position, atlas.Get(ShapeAtlas.FanKey), -976).transform.localPosition = at;
+                        var blades = Simple("Breeze blades " + t.Position, atlas.Get(ShapeAtlas.FanBladesKey), -975);
+                        blades.transform.localPosition = at;
+                        _fanBlades[cell] = blades.transform;
+                        var dir = Delta(t.Direction);
+                        var arrow = Simple("Breeze arrow " + t.Position, atlas.Get(ShapeAtlas.FanArrowKey), -974);
+                        arrow.transform.localPosition = at + (Vector3)(dir * 0.395f);
+                        arrow.transform.localRotation = Quaternion.FromToRotation(Vector3.up, dir);
+                        for (int k = 0; k < t.Power; k++)
+                        {
+                            // Power pips sit opposite the chevron: one dot per cell of push.
+                            var across = new Vector2(-dir.y, dir.x);
+                            var pip = Simple("Breeze power " + t.Position, atlas.Get(ShapeAtlas.FanPipKey), -974);
+                            pip.transform.localPosition = at + (Vector3)(-dir * 0.395f + across * ((k - (t.Power - 1) * 0.5f) * 0.075f));
+                        }
+                        break;
+                }
+            }
+
             foreach (var nest in level.Nests)
             {
                 var n = Simple("Nest " + nest.Color, atlas.Get(ShapeAtlas.NestKey((int)nest.Color)), -970);
@@ -169,7 +240,10 @@ namespace Plop.Presentation
 
             // ---- Plops (cosmetic look from the atlas; logical colour decides body colour and match mark) ----
             for (int id = 0; id < level.Plops.Count; id++)
+            {
                 _plops.Add(new PlopView(transform, atlas, (int)level.PlopColorOf(id), id + 1, _reducedMotion));
+                _queues.Add(new Queue<Step>());
+            }
 
             var effects = new GameObject("Move effects");
             effects.transform.SetParent(transform, false);
@@ -189,6 +263,7 @@ namespace Plop.Presentation
             }
             ClearNestPulses();
             _effects?.Clear();
+            foreach (var q in _queues) q.Clear();
         }
 
         private void ClearNestPulses()
@@ -222,10 +297,25 @@ namespace Plop.Presentation
                         break;
                     }
                     case GameEventType.PlopBlocked:
+                        if (e.BlockReason == BlockReason.PortalExit) { Pulse(e.To, now); break; }
+                        if (_queues.Count > e.PlopId && _queues[e.PlopId].Count > 0) break; // the chain ended against it
                         _plops[e.PlopId].StartBump(Delta(e.Direction), now, e.BlockReason);
                         break;
                     case GameEventType.PlopSettled:
-                        _plops[e.PlopId].QueueSleep(now);
+                        if (_queues[e.PlopId].Count > 0) _queues[e.PlopId].Enqueue(new Step(StepKind.Settle, e.To, e.To, e.Direction));
+                        else _plops[e.PlopId].QueueSleep(now);
+                        break;
+                    case GameEventType.PlopSlid:
+                        Enqueue(e.PlopId, new Step(StepKind.Slide, e.From, e.To, e.Direction), now);
+                        break;
+                    case GameEventType.PlopPushed:
+                        Enqueue(e.PlopId, new Step(StepKind.Push, e.From, e.To, e.Direction), now);
+                        break;
+                    case GameEventType.PlopTeleported:
+                        Enqueue(e.PlopId, new Step(StepKind.Teleport, e.From, e.To, e.Direction), now);
+                        break;
+                    case GameEventType.PlopBurned:
+                        Enqueue(e.PlopId, new Step(StepKind.Burn, e.To, e.To, e.Direction), now);
                         break;
                     case GameEventType.LevelCompleted:
                         for (int i = 0; i < _plops.Count; i++)
@@ -240,6 +330,9 @@ namespace Plop.Presentation
             if (_level == null || _reducedMotion) return;
             float now = Time.unscaledTime;
             _effects?.Tick(now);
+            for (int i = 0; i < _queues.Count; i++)
+                if (_queues[i].Count > 0 && !_plops[i].IsSliding) StartStep(i, _queues[i].Dequeue(), now);
+            if (_spinUntil.Count > 0) SpinTiles(now);
             for (int i = 0; i < _plops.Count; i++)
             {
                 var p = _plops[i];
@@ -264,6 +357,78 @@ namespace Plop.Presentation
                 float pulse = Mathf.Sin(Mathf.PI * u);
                 _pulseNest[i].localScale = new Vector3(1f + 0.049f * pulse, 1f + 0.023f * pulse, 1f);
             }
+        }
+
+        private void Enqueue(int plopId, Step step, float now)
+        {
+            if (_reducedMotion)
+            {
+                StartStep(plopId, step, now); // Reduced Motion: every step lands at once
+                return;
+            }
+            _queues[plopId].Enqueue(step);
+        }
+
+        /// <summary>Plays one forced-movement step. Logic already happened; this only shows it.</summary>
+        private void StartStep(int plopId, Step step, float now)
+        {
+            var view = _plops[plopId];
+            int cells = Mathf.Abs(step.To.X - step.From.X) + Mathf.Abs(step.To.Y - step.From.Y);
+            switch (step.Kind)
+            {
+                case StepKind.Slide:
+                case StepKind.Push:
+                    float perCell = step.Kind == StepKind.Slide ? SlideSecondsPerCell : PushSecondsPerCell;
+                    view.StartMove(CellToLocal(step.To), Delta(step.Direction), now, 0.05f + perCell * cells, false);
+                    view.SetSortingBase(RowOrder(Mathf.Min(step.From.Y, step.To.Y)));
+                    if (step.Kind == StepKind.Push && _fanBlades.TryGetValue(_level.CellIndex(step.From), out var blades))
+                        _spinUntil[blades] = now + 0.55f;
+                    break;
+                case StepKind.Teleport:
+                    Pulse(step.From, now);
+                    Pulse(step.To, now);
+                    view.Snap(CellToLocal(step.To), false);
+                    view.SetSortingBase(RowOrder(step.To.Y));
+                    view.React(Reaction.Surprised, now);
+                    break;
+                case StepKind.Settle:
+                    view.QueueSleep(now);
+                    break;
+                case StepKind.Burn:
+                    view.SetExpression(Expression.Worried);
+                    view.StartBump(Vector2.up, now, BlockReason.Wall);
+                    _effects?.Spawn(CellToLocal(step.To), Vector2.up, PlopPalette.Hex(0xF6A266), now, RowOrder(step.To.Y) + 15);
+                    break;
+            }
+        }
+
+        private void Pulse(GridPosition at, float now)
+        {
+            if (_level == null || !_level.InBounds(at)) return;
+            if (_portalRings.TryGetValue(_level.CellIndex(at), out var ring)) _spinUntil[ring] = now + 0.35f;
+        }
+
+        private void SpinTiles(float now)
+        {
+            _spinDone.Clear();
+            foreach (var kv in _spinUntil)
+            {
+                float left = kv.Value - now;
+                if (left <= 0f)
+                {
+                    kv.Key.localRotation = Quaternion.identity;
+                    kv.Key.localScale = Vector3.one;
+                    _spinDone.Add(kv.Key);
+                    continue;
+                }
+                if (_portalRings.ContainsValue(kv.Key))
+                {
+                    float pulse = Mathf.Sin(Mathf.PI * left / 0.35f);
+                    kv.Key.localScale = new Vector3(1f + 0.08f * pulse, 1f + 0.08f * pulse, 1f);
+                }
+                else kv.Key.localRotation = Quaternion.AngleAxis(-900f * Time.unscaledDeltaTime, Vector3.forward) * kv.Key.localRotation;
+            }
+            foreach (var t in _spinDone) _spinUntil.Remove(t);
         }
 
         private void StartPulse(Transform nest, float now)

@@ -49,7 +49,8 @@ namespace Plop.Tests.PlayMode
                 return Task.FromResult(DeadlockStatus.Unknown);
             };
 
-            for (int i = 0; i < 7; i++)
+            var trap = FindShippedTrap();
+            for (int i = 0; i < trap.Level; i++)
             {
                 foreach (var direction in BfsSolver.Solve(controller.Engine.Level).Moves) controller.Move(direction);
                 Assert.IsTrue(controller.Engine.IsCompleted);
@@ -57,10 +58,10 @@ namespace Plop.Tests.PlayMode
             }
             var hud = _root.GetComponent<GameHud>();
             var initial = controller.Engine.GetState();
-            controller.Move(Direction.Up);
+            controller.Move(trap.First);
             var previous = controller.Engine.GetState();
             Assert.AreEqual(SolverStatus.Solved, BfsSolver.Solve(controller.Engine.Level, previous).Status);
-            controller.Move(Direction.Left);
+            controller.Move(trap.Second);
             var stuck = controller.Engine.GetState();
             Assert.AreEqual(SolverStatus.ProvenUnsolvable, BfsSolver.Solve(controller.Engine.Level, stuck).Status);
             Assert.That(MoveRuleDirections(controller.Engine.Level, stuck), Is.GreaterThan(0));
@@ -75,15 +76,15 @@ namespace Plop.Tests.PlayMode
             Assert.AreEqual(1, controller.Engine.MoveCount);
             AssertViewsMatch(controller);
 
-            controller.Move(Direction.Left);
+            controller.Move(trap.Second);
             yield return WaitFor(() => hud.IsDeadlockOpen, "second proven deadlock");
             Click("Restart Level");
             Assert.IsFalse(hud.IsDeadlockOpen);
             Assert.AreEqual(initial, controller.Engine.CurrentState);
             Assert.AreEqual(0, controller.Engine.MoveCount);
             AssertViewsMatch(controller);
-            Assert.IsTrue(controller.IsLevelCompleted(6), "recovery must preserve campaign progress");
-            Assert.IsTrue(controller.IsLevelUnlocked(7));
+            Assert.IsTrue(controller.IsLevelCompleted(trap.Level - 1), "recovery must preserve campaign progress");
+            Assert.IsTrue(controller.IsLevelUnlocked(trap.Level));
             Assert.AreEqual(0, fallbackCalls, "the shipped proof should bypass fallback search");
         }
 
@@ -93,16 +94,17 @@ namespace Plop.Tests.PlayMode
             var controller = CreateController();
             yield return null;
             controller.StartCampaign(); // dismiss the main menu with PLAY
-            for (int i = 0; i < 7; i++)
+            var trap = FindShippedTrap();
+            for (int i = 0; i < trap.Level; i++)
             {
                 foreach (var direction in BfsSolver.Solve(controller.Engine.Level).Moves) controller.Move(direction);
                 controller.NextLevel();
             }
             controller.SetReducedMotion(true);
             var hud = _root.GetComponent<GameHud>();
-            controller.Move(Direction.Up);
-            controller.Move(Direction.Left);
-            yield return WaitFor(() => hud.IsDeadlockOpen, "proven Level 8 deadlock");
+            controller.Move(trap.First);
+            controller.Move(trap.Second);
+            yield return WaitFor(() => hud.IsDeadlockOpen, "proven deadlock on Level " + (trap.Level + 1));
             var trapped = controller.Engine.GetState();
 
             Click("Keep playing");
@@ -113,7 +115,7 @@ namespace Plop.Tests.PlayMode
             Assert.AreEqual(trapped, controller.Engine.CurrentState);
 
             controller.Undo();
-            controller.Move(Direction.Left);
+            controller.Move(trap.Second);
             yield return WaitFor(() => hud.IsDeadlockOpen, "new proof after a board change");
         }
 
@@ -230,6 +232,37 @@ namespace Plop.Tests.PlayMode
             controller.RememberProgress = false;
             if (levels.Length > 0) controller.UseLevels(new List<LevelDefinition>(levels));
             return controller;
+        }
+
+        /// <summary>
+        /// The first shipped campaign level (after Level 1) with a two-swipe trap: the first swipe keeps it
+        /// solvable, the second leaves a live board that is proven unsolvable (not a Lava failure).
+        /// </summary>
+        private static (int Level, Direction First, Direction Second) FindShippedTrap()
+        {
+            var levels = LevelLibrary.Load(LevelLibrary.DefaultPack);
+            for (int index = 1; index < levels.Count; index++)
+            {
+                var level = levels[index];
+                for (int a = 0; a < 4; a++)
+                {
+                    var engine = new GameEngine();
+                    engine.LoadLevel(level);
+                    if (!engine.TryMove((Direction)a).Changed || engine.IsFailed || engine.IsCompleted) continue;
+                    if (BfsSolver.Solve(level, engine.GetState()).Status != SolverStatus.Solved) continue;
+                    var afterFirst = engine.GetState();
+                    for (int b = 0; b < 4; b++)
+                    {
+                        engine.LoadState(level, afterFirst);
+                        if (!engine.TryMove((Direction)b).Changed || engine.IsFailed || engine.IsCompleted) continue;
+                        var stuck = engine.GetState();
+                        if (BfsSolver.Solve(level, stuck).Status == SolverStatus.ProvenUnsolvable && MoveRuleDirections(level, stuck) > 0)
+                            return (index, (Direction)a, (Direction)b);
+                    }
+                }
+            }
+            Assert.Fail("No two-swipe trap in the shipped campaign.");
+            return default;
         }
 
         private static int MoveRuleDirections(LevelDefinition level, GameState state)

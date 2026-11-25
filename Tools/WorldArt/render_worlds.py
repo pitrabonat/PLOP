@@ -349,13 +349,13 @@ def snowflake(canvas, x, y, size, opacity=0.9):
     for angle in (0, 60, 120):
         dx = math.cos(math.radians(angle)) * size * 0.5
         dy = math.sin(math.radians(angle)) * size * 0.5
-        canvas.segment(x - dx, y - dy, x + dx, y + dy, max(1.4, size * 0.13), 0xFFFFFF, opacity)
+        canvas.segment(x - dx, y - dy, x + dx, y + dy, max(1.6, size * 0.15), 0x9FC3DC, opacity)
 
 
 def frosted(canvas, preview):
-    ice = (0xEAF6FC, 0xB9D6EA)
+    ice = (0xE4F2FB, 0xA4C8E2)
     if preview:
-        canvas.oval(160, 132, 250, 54, 0xD5EAF5, 0xA9CBE0, opacity=0.95)
+        canvas.oval(160, 132, 250, 54, 0xBFDCEE, 0x86B2D0, opacity=0.95)
         canvas.mist(140, 124, 120, 18, 0xFFFFFF, 0.55)
         toy(canvas, 66, 116, 56, 44, ice[0], ice[1], -10)
         toy(canvas, 262, 112, 48, 40, ice[0], ice[1], 12)
@@ -370,7 +370,7 @@ def frosted(canvas, preview):
         leaf(canvas, x, y, w, h, angle, 0xE7F3F5, 0xA6C6D0, with_dew=False)
     for x, y, size in ((96, 60, 18), (160, 120, 11), (60, 150, 9), (280, 40, 12), (380, 96, 9), (220, 170, 7), (120, 930, 10), (430, 912, 12)):
         snowflake(canvas, x, y, size, 0.8)
-    canvas.oval(290, 1012, 620, 120, 0xD8ECF6, 0xA5C7DD, opacity=0.95)
+    canvas.oval(290, 1012, 620, 120, 0xBFDCEE, 0x86B2D0, opacity=0.95)
     canvas.mist(250, 990, 360, 40, 0xFFFFFF, 0.42)
     toy(canvas, 52, 980, 84, 70, ice[0], ice[1], -12)
     toy(canvas, 112, 1000, 56, 46, 0xF2F9FD, 0xC4DCEC, 8)
@@ -480,9 +480,9 @@ WORLDS = (
     ("rainy-window", 0xDCE7F4, 0xE3DCE7, 0xF0F1EF, (0.39, 0.16), rainy),
     ("twilight-attic", 0xEBDFED, 0xD6BFD1, 0xFAE8DB, (0.66, 0.11), attic),
     ("moonlit-clouds", 0xDCE3F7, 0xD0D8F1, 0xF2EEF9, (0.72, 0.12), moonlit),
-    ("frosted-pond", 0xE4F1F8, 0xD5E6F2, 0xF8FCFF, (0.30, 0.12), frosted),
+    ("frosted-pond", 0xDCECF7, 0xC9DFEE, 0xF6FBFF, (0.30, 0.12), frosted),
     ("breezy-meadow", 0xEDF5DC, 0xDDEBC5, 0xFCFBE9, (0.70, 0.10), meadow),
-    ("ember-hollow", 0x6E5661, 0x4F3C47, 0xF0B48A, (0.50, 0.16), ember),
+    ("ember-hollow", 0xB08A86, 0x8E6B6E, 0xFBD1A6, (0.50, 0.12), ember),
     ("prism-observatory", 0xE7E1F5, 0xD9D2EC, 0xFFF4FA, (0.50, 0.10), prism),
 )
 

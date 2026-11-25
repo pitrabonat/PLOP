@@ -6,9 +6,19 @@ namespace Plop.Tests.PlayMode
 {
     public sealed class WorldAssetsTests
     {
+        // Phase 10: nine Worlds over 160 levels; the five original ids are unchanged.
         private static readonly string[] Ids =
         {
-            "cozy-nest", "dewdrop-garden", "rainy-window", "twilight-attic", "moonlit-clouds"
+            "cozy-nest", "frosted-pond", "breezy-meadow", "ember-hollow", "prism-observatory",
+            "dewdrop-garden", "rainy-window", "twilight-attic", "moonlit-clouds"
+        };
+        private static readonly int[] First = { 1, 7, 21, 35, 49, 64, 86, 109, 134 };
+        private static readonly int[] Last = { 6, 20, 34, 48, 63, 85, 108, 133, 160 };
+        private static readonly WorldAmbience[] Beds =
+        {
+            WorldAmbience.CozyNest, WorldAmbience.FrostedPond, WorldAmbience.BreezyMeadow, WorldAmbience.EmberHollow,
+            WorldAmbience.PrismObservatory, WorldAmbience.DewdropGarden, WorldAmbience.RainyWindow,
+            WorldAmbience.TwilightAttic, WorldAmbience.MoonlitClouds
         };
 
         [Test]
@@ -21,11 +31,11 @@ namespace Plop.Tests.PlayMode
             {
                 WorldTheme theme = catalog.Worlds[i];
                 Assert.AreEqual(Ids[i], theme.Id);
-                Assert.AreEqual(20 * i + 1, theme.FirstLevel);
-                Assert.AreEqual(20 * (i + 1), theme.LastLevel);
+                Assert.AreEqual(First[i], theme.FirstLevel);
+                Assert.AreEqual(Last[i], theme.LastLevel);
                 Assert.AreSame(theme, catalog.ForLevelIndex(theme.FirstLevel - 1));
                 Assert.AreSame(theme, catalog.ForLevelIndex(theme.LastLevel - 1));
-                Assert.AreEqual((WorldAmbience)i, theme.Ambience);
+                Assert.AreEqual(Beds[i], theme.Ambience);
                 Assert.IsNotNull(theme.Preview, theme.Id + " preview must resolve to the imported sprite.");
                 Assert.AreEqual(new Vector2(320f, 160f), theme.Preview.rect.size);
 
@@ -35,7 +45,7 @@ namespace Plop.Tests.PlayMode
             }
 
             Assert.IsNull(catalog.ForLevelIndex(-1));
-            Assert.IsNull(catalog.ForLevelIndex(100));
+            Assert.IsNull(catalog.ForLevelIndex(160));
             Assert.IsNull(WorldCatalog.Empty.ForLevelIndex(0));
         }
 

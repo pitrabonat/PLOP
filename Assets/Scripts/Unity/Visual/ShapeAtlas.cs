@@ -134,6 +134,7 @@ namespace Plop.Presentation
             if ((content & Content.Board) != 0)
             {
                 AddBoardShapes(specs);
+                AddMechanicTiles(specs);
                 for (int c = 0; c < PlopPalette.SlotCount; c++) AddNestSeal(specs, c);
                 AddWorriedPlop(specs);
             }

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   _id: dewdrop-garden
   _displayName: Dewdrop Garden
-  _firstLevel: 21
-  _lastLevel: 40
+  _firstLevel: 64
+  _lastLevel: 85
   _backgroundColor: {r: 0.878431, g: 0.929412, b: 0.854902, a: 1}
   _accentColor: {r: 0.658824, g: 0.784314, b: 0.647059, a: 1}
   _trayTint: {r: 0.8, g: 0.984314, b: 0.878431, a: 1}

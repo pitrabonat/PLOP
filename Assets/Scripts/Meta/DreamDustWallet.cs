@@ -20,6 +20,7 @@ namespace Plop.Meta
         private readonly IKeyValueStore _store;
         private readonly HashSet<string> _grants = new HashSet<string>(StringComparer.Ordinal);
         private readonly HashSet<string> _owned = new HashSet<string>(StringComparer.Ordinal);
+        private readonly HashSet<string> _spent = new HashSet<string>(StringComparer.Ordinal);
 
         public int Balance { get; private set; }
         public int LifetimeEarned { get; private set; }
@@ -62,6 +63,27 @@ namespace Plop.Meta
 
         public bool Owns(string cosmeticId) => _owned.Contains(cosmeticId);
 
+        public enum SpendResult { Charged, AlreadyPaid, InsufficientDust }
+
+        public bool HasSpent(string key) => _spent.Contains(key);
+
+        /// <summary>
+        /// One-time spend for a service (hints): charges <paramref name="cost"/> once per key and records the key in the
+        /// same write. A key that was already paid returns <see cref="SpendResult.AlreadyPaid"/> without charging.
+        /// </summary>
+        public SpendResult TrySpend(string key, int cost)
+        {
+            if (string.IsNullOrEmpty(key) || cost < 0) throw new ArgumentException("Invalid spend.");
+            if (_spent.Contains(key)) return SpendResult.AlreadyPaid;
+            if (Balance < cost) return SpendResult.InsufficientDust;
+            Commit(() =>
+            {
+                Balance -= cost;
+                _spent.Add(key);
+            });
+            return SpendResult.Charged;
+        }
+
         /// <summary>
         /// Spends <paramref name="cost"/> and records ownership of <paramref name="itemId"/> in one write.
         /// Returns false (and changes nothing) when already owned or unaffordable. If the save throws, the
@@ -95,6 +117,7 @@ namespace Plop.Meta
             int balance = Balance, earned = LifetimeEarned;
             var grants = new List<string>(_grants);
             var owned = new List<string>(_owned);
+            var spent = new List<string>(_spent);
             change();
             try { Persist(); }
             catch
@@ -103,6 +126,7 @@ namespace Plop.Meta
                 LifetimeEarned = earned;
                 _grants.Clear(); foreach (var g in grants) _grants.Add(g);
                 _owned.Clear(); foreach (var o in owned) _owned.Add(o);
+                _spent.Clear(); foreach (var k in spent) _spent.Add(k);
                 throw;
             }
         }
@@ -128,6 +152,7 @@ namespace Plop.Meta
             LifetimeEarned = 0;
             _grants.Clear();
             _owned.Clear();
+            _spent.Clear();
             try
             {
                 var o = MiniJson.AsObject(MiniJson.Parse(json), "wallet");
@@ -137,6 +162,8 @@ namespace Plop.Meta
                     foreach (var k in grants) if (k is string s) _grants.Add(s);
                 if (o.TryGetValue("owned", out var w) && w is List<object> owned)
                     foreach (var k in owned) if (k is string s) _owned.Add(s);
+                if (o.TryGetValue("spent", out var sp) && sp is List<object> spent)
+                    foreach (var k in spent) if (k is string s) _spent.Add(s);
                 return true;
             }
             catch (FormatException)
@@ -145,6 +172,7 @@ namespace Plop.Meta
                 LifetimeEarned = 0;
                 _grants.Clear();
                 _owned.Clear();
+                _spent.Clear();
                 return false;
             }
         }
@@ -166,6 +194,14 @@ namespace Plop.Meta
             owned.Sort(StringComparer.Ordinal);
             foreach (var k in owned) w.Value(k);
             w.EndArray();
+            if (_spent.Count > 0)
+            {
+                w.Key("spent").BeginArray();
+                var spent = new List<string>(_spent);
+                spent.Sort(StringComparer.Ordinal);
+                foreach (var k in spent) w.Value(k);
+                w.EndArray();
+            }
             w.EndObject();
             string json = w.ToString();
             _store.SetString(StoreKey, json);

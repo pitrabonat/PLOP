@@ -14,7 +14,7 @@ namespace Plop.Tests.PlayMode
         public IEnumerator EveryShippedBoard_LoadsPlaysUndoesRestartsAndAdvances()
         {
             var levels = LevelLibrary.Load();
-            Assert.AreEqual(100, levels.Count);
+            Assert.AreEqual(160, levels.Count);
             var camera = new GameObject("Catalog camera") { tag = "MainCamera" };
             camera.AddComponent<Camera>();
             var root = new GameObject("Catalog test");

@@ -11,12 +11,15 @@ namespace Plop.Presentation
     /// </summary>
     public static class LevelLibrary
     {
-        public const string DefaultPack = "Levels/PLOP_Pack_001";
+        /// <summary>Phase 10 campaign (160 levels, nine Worlds).</summary>
+        public const string DefaultPack = "Levels/PLOP_Pack_002";
+        /// <summary>The Phase 8 campaign. No longer shipped; its progress key is read once for migration.</summary>
+        public const string PreviousPack = "Levels/PLOP_Pack_001";
         public const string DailyPack = "Levels/PLOP_Daily_001";
 
         public static DeadlockCatalog LoadDeadlocks()
         {
-            var asset = Resources.Load<TextAsset>("Levels/PLOP_Deadlocks_001");
+            var asset = Resources.Load<TextAsset>("Levels/PLOP_Deadlocks_002");
             if (asset == null) return null;
             bool valid = DeadlockCatalog.TryRead(asset.bytes, out var catalog);
             Resources.UnloadAsset(asset);

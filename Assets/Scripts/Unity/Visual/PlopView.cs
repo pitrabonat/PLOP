@@ -44,6 +44,7 @@ namespace Plop.Presentation
         private Vector2 _moveDir, _bumpDir, _landDir, _look;
         private float _moveT0 = -1f, _bumpT0 = -1f, _landT0 = -1f, _sleepT0 = -1f, _hopT0 = -1f, _blinkT0 = -1f, _wobbleT0 = -1f;
         private float _nextBlink, _lookUntil, _restoreT0 = -1f;
+        private float _moveDuration = MoveDuration, _anticipation = AnticipationDuration;
         private readonly float _phase;
         private bool _asleep, _sleepPending, _sleepPoseFrozen, _reducedMotion;
         private uint _rng;
@@ -263,8 +264,16 @@ namespace Plop.Presentation
             ApplyFace(Vector2.zero, 1f, _asleep ? 1f : 0f, 0f, now);
         }
 
-        public void StartMove(Vector3 to, Vector2 dir, float now)
+        public void StartMove(Vector3 to, Vector2 dir, float now) => StartMove(to, dir, now, MoveDuration, true);
+
+        /// <summary>
+        /// Travel to <paramref name="to"/> over <paramref name="duration"/> seconds. Forced movement (slides, fan pushes)
+        /// passes a longer duration for several cells and skips the anticipation squash.
+        /// </summary>
+        public void StartMove(Vector3 to, Vector2 dir, float now, float duration, bool anticipate)
         {
+            _moveDuration = Mathf.Max(0.05f, duration);
+            _anticipation = anticipate ? AnticipationDuration : 0f;
             if (_reducedMotion)
             {
                 Snap(to, false);
@@ -332,10 +341,10 @@ namespace Plop.Presentation
             if (_sleepPoseFrozen) return;
 
             Vector3 position = _to;
-            float moveTime = IsSliding ? now - _moveT0 : MoveDuration;
+            float moveTime = IsSliding ? now - _moveT0 : _moveDuration;
             if (IsSliding)
             {
-                float travel = (moveTime - AnticipationDuration) / (MoveDuration - AnticipationDuration);
+                float travel = (moveTime - _anticipation) / (_moveDuration - _anticipation);
                 if (travel >= 1f)
                 {
                     _moveT0 = -1f;
@@ -382,13 +391,13 @@ namespace Plop.Presentation
             if (IsSliding)
             {
                 float along;
-                if (moveTime < AnticipationDuration)
+                if (moveTime < _anticipation)
                 {
-                    along = 1f - 0.15f * p.Reaction * Smooth(moveTime / AnticipationDuration);
+                    along = 1f - 0.15f * p.Reaction * Smooth(moveTime / _anticipation);
                 }
                 else
                 {
-                    float travel = Mathf.Clamp01((moveTime - AnticipationDuration) / (MoveDuration - AnticipationDuration));
+                    float travel = Mathf.Clamp01((moveTime - _anticipation) / (_moveDuration - _anticipation));
                     float stretch = Mathf.Sin(Mathf.PI * travel);
                     float release = 1f - Smooth(travel / 0.31f);
                     float landing = Smooth((travel - 0.71f) / 0.29f);

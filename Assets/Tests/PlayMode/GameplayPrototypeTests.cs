@@ -192,7 +192,7 @@ namespace Plop.Tests.PlayMode
         public IEnumerator ShippedPack_LoadsFromResources_AndFirstLevelIsPlayable()
         {
             var levels = LevelLibrary.Load();
-            Assert.AreEqual(100, levels.Count, "PLOP_Pack_001 should contain 100 levels");
+            Assert.AreEqual(160, levels.Count, "PLOP_Pack_002 should contain 160 levels");
             Assert.IsNull(levels[0].Metadata, "runtime load must skip developer metadata");
             var c = CreateController(levels);
             yield return null;
@@ -291,8 +291,10 @@ namespace Plop.Tests.PlayMode
             const string frameRate = "plop.frameRate";
             const string debugLevel = "plop.debug.level";
             const string debugMoves = "plop.debug.moves";
+            const string previousProgress = "plop.progress.v1." + LevelLibrary.PreviousPack;
 
             string savedProgress = PlayerPrefs.HasKey(progress) ? PlayerPrefs.GetString(progress) : null;
+            string savedPrevious = PlayerPrefs.HasKey(previousProgress) ? PlayerPrefs.GetString(previousProgress) : null;
             int? savedIndex = PlayerPrefs.HasKey(legacyIndex) ? PlayerPrefs.GetInt(legacyIndex) : (int?)null;
             int? savedRate = PlayerPrefs.HasKey(frameRate) ? PlayerPrefs.GetInt(frameRate) : (int?)null;
             int? savedDebugLevel = PlayerPrefs.HasKey(debugLevel) ? PlayerPrefs.GetInt(debugLevel) : (int?)null;
@@ -301,6 +303,7 @@ namespace Plop.Tests.PlayMode
             try
             {
                 PlayerPrefs.DeleteKey(progress);
+                PlayerPrefs.DeleteKey(previousProgress);
                 PlayerPrefs.DeleteKey(debugLevel);
                 PlayerPrefs.DeleteKey(debugMoves);
                 PlayerPrefs.SetInt(legacyIndex, 4);
@@ -335,6 +338,7 @@ namespace Plop.Tests.PlayMode
             finally
             {
                 RestorePreference(progress, savedProgress);
+                RestorePreference(previousProgress, savedPrevious);
                 RestorePreference(legacyIndex, savedIndex);
                 RestorePreference(frameRate, savedRate);
                 RestorePreference(debugLevel, savedDebugLevel);

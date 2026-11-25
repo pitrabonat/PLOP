@@ -7,11 +7,17 @@ namespace Plop.Meta
     /// <summary>Dream Dust amounts and grant keys. Small and cosmetic-only by design.</summary>
     public static class RewardRules
     {
-        public const int LevelComplete = 5;
-        public const int LevelPerfect = 10;
-        public const int DailyGift = 20;
-        public const int DailyPuzzle = 15;
-        public const int DailyPuzzlePerfect = 10;
+        // Phase 10 economy (only new grants use these; earned balances are never touched).
+        public const int LevelComplete = 8;
+        public const int LevelPerfect = 4;
+        public const int DailyGift = 10;
+        public const int DailyPuzzle = 12;
+        public const int DailyPuzzlePerfect = 6;
+        /// <summary>Dream Dust price of a verified hint for one exact board state (free on intro levels).</summary>
+        public const int HintCost = 15;
+
+        /// <summary>Spend key for a hint: one charge per level and exact state, ever.</summary>
+        public static string HintKey(string levelId, ulong stateKey) => "hint:" + levelId + ":" + stateKey.ToString("X");
 
         public static string CompleteKey(string levelId) => "complete:" + levelId;
         public static string PerfectKey(string levelId) => "perfect:" + levelId;

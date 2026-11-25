@@ -387,3 +387,36 @@ namespace Plop.Tests
         }
     }
 }
+
+namespace Plop.Tests
+{
+    /// <summary>Phase 10 economy: Dream Dust hint purchases.</summary>
+    public class HintEconomyTests
+    {
+        [NUnit.Framework.Test]
+        public void HintSpend_ChargesOncePerState_AndSurvivesRelaunch()
+        {
+            var store = new Plop.Meta.MemoryStore();
+            var wallet = new Plop.Meta.DreamDustWallet(store);
+            wallet.Grant("test", 40);
+            string key = Plop.Meta.RewardRules.HintKey("PLOP-X", 0xABCDUL);
+            NUnit.Framework.Assert.AreEqual(Plop.Meta.DreamDustWallet.SpendResult.Charged, wallet.TrySpend(key, Plop.Meta.RewardRules.HintCost));
+            NUnit.Framework.Assert.AreEqual(Plop.Meta.DreamDustWallet.SpendResult.AlreadyPaid, wallet.TrySpend(key, Plop.Meta.RewardRules.HintCost));
+            NUnit.Framework.Assert.AreEqual(40 - Plop.Meta.RewardRules.HintCost, wallet.Balance);
+            var reloaded = new Plop.Meta.DreamDustWallet(store);
+            NUnit.Framework.Assert.IsTrue(reloaded.HasSpent(key), "re-showing the same hint after a restart stays free");
+            NUnit.Framework.Assert.AreEqual(Plop.Meta.DreamDustWallet.SpendResult.AlreadyPaid, reloaded.TrySpend(key, Plop.Meta.RewardRules.HintCost));
+            NUnit.Framework.Assert.AreEqual(40 - Plop.Meta.RewardRules.HintCost, reloaded.Balance);
+        }
+
+        [NUnit.Framework.Test]
+        public void HintSpend_InsufficientDustChargesNothing()
+        {
+            var wallet = new Plop.Meta.DreamDustWallet(new Plop.Meta.MemoryStore());
+            wallet.Grant("test", Plop.Meta.RewardRules.HintCost - 1);
+            NUnit.Framework.Assert.AreEqual(Plop.Meta.DreamDustWallet.SpendResult.InsufficientDust, wallet.TrySpend("hint:a:1", Plop.Meta.RewardRules.HintCost));
+            NUnit.Framework.Assert.AreEqual(Plop.Meta.RewardRules.HintCost - 1, wallet.Balance);
+            NUnit.Framework.Assert.IsFalse(wallet.HasSpent("hint:a:1"));
+        }
+    }
+}

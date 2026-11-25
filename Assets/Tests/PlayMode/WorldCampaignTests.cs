@@ -29,7 +29,7 @@ namespace Plop.Tests.PlayMode
                 var catalog = WorldCatalog.Load();
                 var audio = root.GetComponent<PlopAudio>();
                 var hud = root.GetComponent<GameHud>();
-                Assert.AreEqual(100, controller.LevelCount);
+                Assert.AreEqual(160, controller.LevelCount);
                 Assert.AreEqual("cozy-nest", controller.CurrentWorld.Id);
                 controller.SetHaptics(true);
                 controller.SetReducedMotion(true);
@@ -56,13 +56,13 @@ namespace Plop.Tests.PlayMode
                 }
 
                 Assert.AreEqual(80, controller.LevelIndex);
-                Assert.AreEqual("moonlit-clouds", controller.CurrentWorld.Id);
+                Assert.AreEqual("dewdrop-garden", controller.CurrentWorld.Id);
                 Assert.AreEqual(80, controller.CampaignResumeIndex);
                 Assert.IsTrue(controller.TrySelectLevel(0));
                 Assert.AreEqual("cozy-nest", controller.CurrentWorld.Id);
                 Assert.AreEqual(80, controller.CampaignResumeIndex);
                 Assert.IsTrue(controller.TrySelectLevel(controller.CampaignResumeIndex));
-                Assert.AreEqual("moonlit-clouds", controller.CurrentWorld.Id);
+                Assert.AreEqual("dewdrop-garden", controller.CurrentWorld.Id);
             }
             finally
             {

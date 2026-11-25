@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6851ca73d1f257eaae4bc810b18d6d14, type: 3}
+  m_Name: Breezy Meadow
+  m_EditorClassIdentifier:
+  _id: breezy-meadow
+  _displayName: Breezy Meadow
+  _firstLevel: 21
+  _lastLevel: 34
+  _backgroundColor: {r: 0.929412, g: 0.960784, b: 0.862745, a: 1}
+  _accentColor: {r: 0.647059, g: 0.776471, b: 0.541176, a: 1}
+  _trayTint: {r: 0.970000, g: 1.000000, b: 0.940000, a: 1}
+  _tileTint: {r: 0.990000, g: 1.000000, b: 0.970000, a: 1}
+  _pebbleTint: {r: 0.950000, g: 1.000000, b: 0.950000, a: 1}
+  _keyLight: {r: 1.000000, g: 0.980000, b: 0.900000, a: 1}
+  _lightStrength: 0.26
+  _ambience: 6
+  _preview: {fileID: 21300000, guid: aeea1453bda342ee9862921df7eaf9b7, type: 3}
+  _backdropResource: WorldBackdrops/breezy-meadow
+  _revealSeconds: 0.28

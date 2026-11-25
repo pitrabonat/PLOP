@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: cozy-nest
   _displayName: Cozy Nest
   _firstLevel: 1
-  _lastLevel: 20
+  _lastLevel: 6
   _backgroundColor: {r: 0.976471, g: 0.901961, b: 0.85098, a: 1}
   _accentColor: {r: 0.870588, g: 0.662745, b: 0.552941, a: 1}
   _trayTint: {r: 1.0, g: 0.976471, b: 0.952941, a: 1}

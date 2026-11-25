@@ -17,7 +17,7 @@ namespace Plop.Tests.PlayMode
                 var hud = root.AddComponent<GameHud>();
                 var campaign = LevelLibrary.Load();
                 var worlds = WorldCatalog.Load().Worlds;
-                Assert.AreEqual(5, worlds.Count);
+                Assert.AreEqual(9, worlds.Count);
                 int chosen = -1;
                 hud.LevelChosen += index => chosen = index;
 
@@ -30,16 +30,18 @@ namespace Plop.Tests.PlayMode
                 var ranges = root.GetComponentsInChildren<Text>()
                     .Where(text => text.name == "World levels and progress")
                     .Select(text => text.text).ToArray();
-                CollectionAssert.Contains(ranges, "Levels 1–20 · 20/20");
-                CollectionAssert.Contains(ranges, "Levels 21–40 · 2/20");
+                CollectionAssert.Contains(ranges, "Levels 1–6 · 6/6");
+                CollectionAssert.Contains(ranges, "Levels 7–20 · 14/14");
+                CollectionAssert.Contains(ranges, "Levels 21–34 · 2/14");
                 Assert.IsTrue(root.GetComponentsInChildren<Text>().Any(text => text.name == "World status" && text.text == "Current"));
                 var rainyWindow = FindButton(root, "Rainy Window");
                 Assert.IsFalse(rainyWindow.IsInteractable());
                 rainyWindow.onClick.Invoke();
-                Assert.IsTrue(FindButton(root, "Dewdrop Garden").IsInteractable());
+                Assert.IsFalse(FindButton(root, "Dewdrop Garden").IsInteractable());
+                Assert.IsTrue(FindButton(root, "Breezy Meadow").IsInteractable());
 
-                FindButton(root, "Dewdrop Garden").onClick.Invoke();
-                Assert.AreEqual("Dewdrop Garden", FindText(root, "Picker title").text);
+                FindButton(root, "Breezy Meadow").onClick.Invoke();
+                Assert.AreEqual("Breezy Meadow", FindText(root, "Picker title").text);
                 Assert.AreEqual("Levels 21–30", FindText(root, "Level range").text);
                 var available = root.GetComponentsInChildren<Button>().Single(button =>
                     button.name == "Level Button" && button.GetComponentInChildren<Text>().text == "Level 23");
@@ -53,7 +55,7 @@ namespace Plop.Tests.PlayMode
 
                 var more = FindButton(root, "More");
                 more.onClick.Invoke();
-                Assert.AreEqual("Levels 31–40", FindText(root, "Level range").text);
+                Assert.AreEqual("Levels 31–34", FindText(root, "Level range").text);
                 Assert.IsFalse(more.IsInteractable());
                 FindButton(root, "Close").onClick.Invoke();
                 var resume = FindButton(root, "Resume");

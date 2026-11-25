@@ -101,7 +101,7 @@ namespace Plop.Tests.PlayMode
                     Assert.That(Mathf.Abs(start[0] - end[window - 1]), Is.LessThan(0.006f),
                         "The imported PCM must not have a sharp wrap discontinuity.");
                 }
-                Assert.AreEqual(5, names.Count);
+                Assert.AreEqual(9, names.Count);
             }
             finally
             {

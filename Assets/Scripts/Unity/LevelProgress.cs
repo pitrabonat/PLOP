@@ -68,11 +68,56 @@ namespace Plop.Presentation
                     if (IsCompleted(i)) _unlocked.Add(levels[i + 1].Id);
                 if (migrated) Save();
             }
-            else if (packResource == LevelLibrary.DefaultPack && PlayerPrefs.HasKey(LegacyIndexKey))
+            else if (packResource == LevelLibrary.DefaultPack &&
+                     MigrateFromPreviousCampaign(PlayerPrefs.GetString(SavePrefix + LevelLibrary.PreviousPack, ""),
+                         PlayerPrefs.GetInt(LegacyIndexKey, -1)))
             {
-                MigrateLegacyIndex();
                 Save();
             }
+        }
+
+        /// <summary>
+        /// Phase 10 replaced the 100-level campaign with 160 levels. Players keep (a) completion of every puzzle
+        /// that still exists unchanged (same id: the five basics and reused pure-logic levels) and (b) access to as
+        /// many campaign slots as levels they had beaten. Changed puzzles are never marked complete, so nothing
+        /// is awarded twice and no record is invented. The old save is left untouched.
+        /// </summary>
+        internal bool MigrateFromPreviousCampaign(string previousJson, int legacyIndex)
+        {
+            var data = ReadJson<ProgressData>(previousJson);
+            var oldCompleted = new HashSet<string>(StringComparer.Ordinal);
+            if (data?.completedIds != null) oldCompleted.UnionWith(data.completedIds);
+            int beaten;
+            if (data != null)
+            {
+                // Pre-Phase-8 ids map through the Phase 8 slot history first.
+                var history = Resources.Load<TextAsset>(SlotHistoryResource);
+                if (history != null)
+                {
+                    var slots = ReadJson<SlotHistory>(history.text)?.slots;
+                    Resources.UnloadAsset(history);
+                    if (slots != null)
+                        foreach (var slot in slots)
+                            if (slot.previousIds != null)
+                                foreach (var previous in slot.previousIds)
+                                    if (oldCompleted.Contains(previous)) oldCompleted.Add(slot.id);
+                }
+                beaten = data.completedIds?.Length ?? 0;
+            }
+            else if (legacyIndex >= 0) beaten = legacyIndex;
+            else return false;
+
+            for (int i = 0; i < _levels.Count; i++)
+                if (oldCompleted.Contains(_levels[i].Id)) _completed.Add(_levels[i].Id);
+            int access = Math.Min(_levels.Count, Math.Max(1, beaten + 1));
+            for (int i = 0; i < access; i++) _unlocked.Add(_levels[i].Id);
+            _unlocked.UnionWith(_completed);
+            for (int i = 0; i < _levels.Count - 1; i++)
+                if (IsCompleted(i)) _unlocked.Add(_levels[i + 1].Id);
+            _resumeId = null;
+            for (int i = 0; i < _levels.Count && _resumeId == null; i++)
+                if (IsUnlocked(i) && !IsCompleted(i)) _resumeId = _levels[i].Id;
+            return true;
         }
 
         public bool IsUnlocked(int index) => InRange(index) && _unlocked.Contains(_levels[index].Id);

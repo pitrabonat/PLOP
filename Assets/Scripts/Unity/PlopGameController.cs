@@ -78,6 +78,11 @@ namespace Plop.Presentation
         private bool _playingDaily;
         private DateTime _dailyDate;
         private bool _assisted;            // a hint was shown during this level visit (no Perfect)
+        // ---- Phase 10 ----
+        private enum Recovery { None, Lava, OutOfMoves }
+        private Recovery _pendingRecovery;
+        /// <summary>Levels before this campaign index have free hints (onboarding), as do mechanic intro levels.</summary>
+        internal const int FreeHintLevels = 6;
         private bool _settingsFromMenu;
         private BoardView _board;
         private SwipeInput _input;
@@ -558,7 +563,11 @@ namespace Plop.Presentation
         }
 
         private bool CanCheckDeadlock => isActiveAndEnabled && !_suspended &&
-            _engine.HasLevel && !_engine.IsCompleted;
+            _engine.HasLevel && !_engine.IsCompleted && !_engine.IsFailed && !_engine.IsOutOfMoves;
+
+        /// <summary>Hints cost Dream Dust except on the first levels and on levels that teach something.</summary>
+        internal bool HintIsFree => _engine.HasLevel && !_playingDaily && (_index < FreeHintLevels || _engine.Level.Instruction != null);
+        internal int HintCost => HintIsFree ? 0 : RewardRules.HintCost;
 
         private void CheckCurrentDeadlock()
         {
@@ -683,6 +692,11 @@ namespace Plop.Presentation
             if (!isActiveAndEnabled || !_engine.HasLevel || _engine.IsCompleted ||
                 GameplayBlocked || _hintWork != null)
                 return null;
+            if (_engine.IsFailed || _engine.IsOutOfMoves)
+            {
+                ShowHint("Undo or Restart first.");
+                return null;
+            }
 
             var level = _engine.Level;
             var state = _engine.GetState();
@@ -715,6 +729,17 @@ namespace Plop.Presentation
                 if (result.Status == SolverStatus.Solved && result.Moves.Length > 0)
                 {
                     Direction direction = result.Moves[0];
+                    // Pay only for a verified hint for this exact, still-current board; re-showing it is free.
+                    if (!HintIsFree)
+                    {
+                        string key = RewardRules.HintKey(level.Id, new StateCodec(level).Encode(state));
+                        var spend = _wallet.TrySpend(key, RewardRules.HintCost);
+                        if (spend == DreamDustWallet.SpendResult.InsufficientDust)
+                        {
+                            ShowHint("A hint costs " + RewardRules.HintCost + " Dream Dust. You have " + _wallet.Balance + ".");
+                            return null;
+                        }
+                    }
                     _assisted = true; // a revealed route means this visit can no longer earn Perfect
                     ShowHint("Try swiping " + direction.ToString().ToLowerInvariant() + ".", direction: direction);
                     return direction;
@@ -845,12 +870,17 @@ namespace Plop.Presentation
                     _hud.SetSubtitle(_playingDaily
                         ? _dailyDate.ToString("MMMM d", System.Globalization.CultureInfo.InvariantCulture)
                         : _world?.DisplayName);
+                    _pendingRecovery = Recovery.None;
+                    _hud.SetMoveLimit(_engine.Level.MoveLimit);
+                    if (_engine.Level.MoveLimit > 0) _hud.SetSubtitle("Challenge · " + _engine.Level.MoveLimit + " moves");
+                    _hud.SetHintCost(HintCost);
                     _hud.SetMoves(0);
                     _hud.SetCanUndo(false);
                     _hud.SetCompleted(false, false);
                     break;
                 case GameEventType.MoveUndone:
                 case GameEventType.LevelRestarted:
+                    _pendingRecovery = Recovery.None;
                     _deadlockPresented = false;
                     ClearPendingInput();
                     CancelDeadlockCheck();
@@ -880,8 +910,31 @@ namespace Plop.Presentation
                     ClearPendingInput();
                     CompleteCurrentLevel(e.MoveCount);
                     break;
+                case GameEventType.LevelFailed:
+                    ClearPendingInput();
+                    CancelDeadlockCheck();
+                    _pendingRecovery = Recovery.Lava; // shown once the board has played the whole chain
+                    PlopLog.Info("Attempt failed (Lava) on " + _engine.Level.Id);
+                    break;
+                case GameEventType.OutOfMoves:
+                    ClearPendingInput();
+                    CancelDeadlockCheck();
+                    _pendingRecovery = Recovery.OutOfMoves;
+                    break;
             }
         }
+
+        /// <summary>Friendly failure card. No Dream Dust is taken and nothing restarts on its own.</summary>
+        private void ShowPendingRecovery()
+        {
+            var sprite = _board.Atlas?.Get(ShapeAtlas.WorriedPlopKey);
+            bool shown = _pendingRecovery == Recovery.Lava
+                ? _hud.ShowRecovery("Oops! Too hot!", "Lava is no place for a nap. Undo or try again.", _engine.CanUndo, sprite)
+                : _hud.ShowRecovery("Out of moves!", "This challenge allows " + _engine.Level.MoveLimit + " moves. Undo or try again.", _engine.CanUndo, sprite);
+            if (shown || _hud.IsDeadlockOpen) _pendingRecovery = Recovery.None;
+        }
+
+        internal bool RecoveryPending => _pendingRecovery != Recovery.None;
 
         private static CompletionReward SafeReward(Func<CompletionReward> award)
         {
@@ -1026,6 +1079,7 @@ namespace Plop.Presentation
         private void Update()
         {
             if (_suspended) return;
+            if (_pendingRecovery != Recovery.None && !_board.IsTraveling) ShowPendingRecovery();
             if (_pendingMove.HasValue && !_board.IsTraveling)
             {
                 var direction = _pendingMove.Value;

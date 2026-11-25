@@ -35,7 +35,7 @@ namespace Plop.Presentation
         private Text _gameName, _worldName, _pickerTitle, _pickerExitLabel, _hapticsLabel, _motionLabel;
         private Text _musicPercent, _soundPercent, _muteLabel, _undoLabel, _completionMessage, _completionResult;
         private Image _perfectStar, _completionDustIcon;
-        private int _optimalMoves;
+        private int _optimalMoves, _moveLimit;
         private bool _levelPerfected;
         private Slider _music, _sound;
         private Image _completionActionIcon, _deadlockMascot, _levelBadgeBody, _moveBadgeBody;
@@ -234,7 +234,29 @@ namespace Plop.Presentation
         public Func<int, bool> PerfectLookup { get; set; }
 
         public void SetMoves(int moves)
-            => _moves.text = _optimalMoves > 0 ? moves + " / " + _optimalMoves : moves == 1 ? "1 move" : moves + " moves";
+            => _moves.text = _moveLimit > 0 ? moves + " / " + _moveLimit
+                : _optimalMoves > 0 ? moves + " / " + _optimalMoves : moves == 1 ? "1 move" : moves + " moves";
+
+        /// <summary>Limited Moves challenge: the counter shows the limit and the badge a lock instead of the Perfect star.</summary>
+        public void SetMoveLimit(int limit)
+        {
+            _moveLimit = Mathf.Max(0, limit);
+            if (_moveLimit > 0)
+            {
+                _perfectStar.gameObject.SetActive(true);
+                _perfectStar.sprite = HudIcons.Get(HudIcons.Kind.Lock);
+                _perfectStar.color = Color.Lerp(PlopPalette.Berry, HudTheme.Ink, 0.25f);
+            }
+            else _perfectStar.sprite = HudIcons.Get(HudIcons.Kind.Star);
+        }
+
+        /// <summary>Shows the Dream Dust price on the Hint button (0 = free).</summary>
+        public void SetHintCost(int cost)
+        {
+            var label = _hint.transform.Find("Label")?.GetComponent<Text>() ?? _hint.GetComponentInChildren<Text>();
+            if (label != null) label.text = cost > 0 ? "Hint " + cost : "Hint";
+        }
+        public string HintLabel => (_hint.transform.Find("Label")?.GetComponent<Text>() ?? _hint.GetComponentInChildren<Text>())?.text;
 
         /// <summary>Perfect target for the current level (0 hides it) and whether it was already achieved.</summary>
         public void SetPerfectTarget(int optimalMoves, bool alreadyPerfect)
@@ -416,10 +438,16 @@ namespace Plop.Presentation
         }
 
         public bool ShowDeadlock(bool canUndo, Sprite mascot = null)
+            => ShowRecovery("Oops, we're stuck!", "There's no way to get everyone home from here.", canUndo, mascot);
+
+        /// <summary>The friendly recovery card (stuck, too hot, out of moves): Undo or Restart, never a penalty.</summary>
+        public bool ShowRecovery(string title, string message, bool canUndo, Sprite mascot = null)
         {
             if (_completed) return false;
             if (IsDeadlockOpen) return true;
             if (BlocksGameplayInput) return false;
+            _deadlockTitle.text = title;
+            _deadlockDescription.text = message;
 
             _deadlockUndo.interactable = canUndo;
             _deadlockUndo.image.color = canUndo ? HudTheme.RecoverySurface : PlopPalette.Milk;

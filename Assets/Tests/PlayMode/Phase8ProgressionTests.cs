@@ -92,7 +92,7 @@ namespace Plop.Tests.PlayMode
             Assert.IsTrue(_controller.Records.IsPerfect("one"));
             Assert.AreEqual(RewardRules.LevelComplete + RewardRules.LevelPerfect, _controller.Wallet.Balance);
             Assert.AreEqual("Perfect!", CompletionText("Completion message"));
-            StringAssert.Contains("+15", CompletionText("Completion result"));
+            StringAssert.Contains("+" + (RewardRules.LevelComplete + RewardRules.LevelPerfect), CompletionText("Completion result"));
             var hud = _root.GetComponent<GameHud>();
             Assert.IsTrue(hud.PerfectLookup(0), "the level list badges a Perfect level");
             Assert.IsFalse(hud.PerfectLookup(1));
