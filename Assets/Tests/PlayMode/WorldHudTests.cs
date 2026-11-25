@@ -30,8 +30,8 @@ namespace Plop.Tests.PlayMode
                 var ranges = root.GetComponentsInChildren<Text>()
                     .Where(text => text.name == "World levels and progress")
                     .Select(text => text.text).ToArray();
-                CollectionAssert.Contains(ranges, "Levels 1–6 · 6/6");
-                CollectionAssert.Contains(ranges, "Levels 7–20 · 14/14");
+                CollectionAssert.Contains(ranges, "Levels 1–5 · 5/5");
+                CollectionAssert.Contains(ranges, "Levels 6–20 · 15/15");
                 CollectionAssert.Contains(ranges, "Levels 21–34 · 2/14");
                 Assert.IsTrue(root.GetComponentsInChildren<Text>().Any(text => text.name == "World status" && text.text == "Current"));
                 var rainyWindow = FindButton(root, "Rainy Window");

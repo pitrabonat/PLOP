@@ -55,6 +55,9 @@ namespace Plop.Generation
         /// <summary>Optimal steps whose outcome depends on forced movement.</summary>
         public int MinMechanicSteps;
 
+        /// <summary>A shallow copy (Phase 11 derives hardened targets from Phase 10 slots).</summary>
+        public QualityTarget Clone() => (QualityTarget)MemberwiseClone();
+
         public string Describe() => Width + "x" + Height + " p" + Plops + " opt " + MinOptimal + "-" + MaxOptimal +
             " challenge " + MinChallenge + "-" + (double.IsInfinity(MaxChallenge) ? "∞" : MaxChallenge.ToString(System.Globalization.CultureInfo.InvariantCulture)) +
             (RequireGreedyFail ? " greedy-fails" : "") + " counter≥" + MinCounterIntuitive + " traps≥" + MinTraps +

@@ -15,11 +15,11 @@ namespace Plop.LevelLab
     /// PLOP Level Lab — developer-only level editor/generator/solver (Editor assembly, never in player builds).
     /// Menu: PLOP → Level Lab.
     /// </summary>
-    public sealed class LevelLabWindow : EditorWindow
+    public sealed partial class LevelLabWindow : EditorWindow
     {
         private enum Tool { Wall, Floor, Plop, Nest, Erase, Frost, Lava, Fan, Loop }
 
-        private const string DefaultPackPath = "Assets/Levels/Resources/Levels/PLOP_Pack_001.json";
+        private const string DefaultPackPath = "Assets/Levels/Resources/Levels/PLOP_Pack_003.json";
         private static readonly Color[] PlopColors =
         {
             new Color(0.92f, 0.30f, 0.30f), new Color(0.30f, 0.52f, 0.95f), new Color(0.96f, 0.82f, 0.25f),
@@ -105,6 +105,7 @@ namespace Plop.LevelLab
             DrawMetrics();
             DrawPackSection();
             DrawOverviewSection();
+            DrawBalanceSection();
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.HelpBox(_status, _statusType);

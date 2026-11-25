@@ -11,15 +11,23 @@ namespace Plop.Presentation
     /// </summary>
     public static class LevelLibrary
     {
-        /// <summary>Phase 10 campaign (160 levels, nine Worlds).</summary>
-        public const string DefaultPack = "Levels/PLOP_Pack_002";
-        /// <summary>The Phase 8 campaign. No longer shipped; its progress key is read once for migration.</summary>
-        public const string PreviousPack = "Levels/PLOP_Pack_001";
-        public const string DailyPack = "Levels/PLOP_Daily_001";
+        /// <summary>Phase 11 rebalanced campaign (160 levels, nine Worlds).</summary>
+        public const string DefaultPack = "Levels/PLOP_Pack_003";
+        /// <summary>The Phase 10 campaign. Archived; its progress key is read once for migration.</summary>
+        public const string PreviousPack = "Levels/PLOP_Pack_002";
+        /// <summary>The Phase 8 campaign. Archived; its progress key is read once for migration.</summary>
+        public const string LegacyPack = "Levels/PLOP_Pack_001";
+        /// <summary>Level ids of <see cref="PreviousPack"/> in campaign order (migration only).</summary>
+        public const string PreviousOrder = "Levels/PLOP_Pack_002_Order";
+        public const string DailyPack = "Levels/PLOP_Daily_002";
+        public const string DeadlockPack = "Levels/PLOP_Deadlocks_003";
+
+        /// <summary>True for a pack resource that is no longer shipped (scenes saved before a rebuild).</summary>
+        public static bool IsRetired(string resource) => resource == PreviousPack || resource == LegacyPack;
 
         public static DeadlockCatalog LoadDeadlocks()
         {
-            var asset = Resources.Load<TextAsset>("Levels/PLOP_Deadlocks_002");
+            var asset = Resources.Load<TextAsset>(DeadlockPack);
             if (asset == null) return null;
             bool valid = DeadlockCatalog.TryRead(asset.bytes, out var catalog);
             Resources.UnloadAsset(asset);

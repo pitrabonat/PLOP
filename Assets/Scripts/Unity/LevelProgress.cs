@@ -39,6 +39,8 @@ namespace Plop.Presentation
         private sealed class LegacyOrder
         {
             public string[] levelIds;
+            /// <summary>"oldId&gt;newId": same board, Limited Moves removed or loosened (Phase 11).</summary>
+            public string[] aliases;
         }
 
         private readonly IReadOnlyList<LevelDefinition> _levels;
@@ -62,18 +64,79 @@ namespace Plop.Presentation
                 _resumeId = data.resumeId;
                 if (data.completedIds != null) _completed.UnionWith(data.completedIds);
                 if (data.unlockedIds != null) _unlocked.UnionWith(data.unlockedIds);
-                bool migrated = packResource == LevelLibrary.DefaultPack && MigrateRebuiltSlots();
+                // The Phase 8 slot history applies to saves of the Phase 10 pack only (never rewritten since).
+                bool migrated = packResource == LevelLibrary.PreviousPack && MigrateRebuiltSlots();
                 _unlocked.UnionWith(_completed);
                 for (int i = 0; i < levels.Count - 1; i++)
                     if (IsCompleted(i)) _unlocked.Add(levels[i + 1].Id);
                 if (migrated) Save();
             }
             else if (packResource == LevelLibrary.DefaultPack &&
-                     MigrateFromPreviousCampaign(PlayerPrefs.GetString(SavePrefix + LevelLibrary.PreviousPack, ""),
-                         PlayerPrefs.GetInt(LegacyIndexKey, -1)))
+                     (MigrateFromRebalancedCampaign(PlayerPrefs.GetString(SavePrefix + LevelLibrary.PreviousPack, ""), LoadPreviousOrder(out var aliases), aliases) ||
+                      MigrateFromPreviousCampaign(PlayerPrefs.GetString(SavePrefix + LevelLibrary.LegacyPack, ""),
+                          PlayerPrefs.GetInt(LegacyIndexKey, -1))))
             {
                 Save();
             }
+        }
+
+        private static string[] LoadPreviousOrder(out string[] aliases)
+        {
+            aliases = null;
+            var asset = Resources.Load<TextAsset>(LevelLibrary.PreviousOrder);
+            if (asset == null) return null;
+            var order = ReadJson<LegacyOrder>(asset.text);
+            Resources.UnloadAsset(asset);
+            aliases = order?.aliases;
+            return order?.levelIds;
+        }
+
+        /// <summary>
+        /// Phase 11 rebalanced the 160-level campaign: weak puzzles were replaced, some kept puzzles moved within
+        /// their World. Players keep (a) completion of every puzzle that still exists (same id, unchanged board),
+        /// (b) access to every slot up to their old frontier (the furthest unlocked Phase 10 level), and (c) their
+        /// resume point when that puzzle still exists. Replaced puzzles are not marked complete: nothing is awarded
+        /// twice and no record is invented. The Phase 10 save is left untouched.
+        /// </summary>
+        internal bool MigrateFromRebalancedCampaign(string previousJson, IReadOnlyList<string> previousOrder, IReadOnlyList<string> aliases = null)
+        {
+            var data = ReadJson<ProgressData>(previousJson);
+            if (data == null) return false;
+            var oldCompleted = new HashSet<string>(data.completedIds ?? new string[0], StringComparer.Ordinal);
+            int oldCount = oldCompleted.Count;
+            if (aliases != null)
+                foreach (var alias in aliases)
+                {
+                    int bar = alias?.IndexOf('>') ?? -1;
+                    if (bar > 0 && oldCompleted.Contains(alias.Substring(0, bar))) oldCompleted.Add(alias.Substring(bar + 1));
+                }
+            var oldUnlocked = new HashSet<string>(data.unlockedIds ?? new string[0], StringComparer.Ordinal);
+            oldUnlocked.UnionWith(oldCompleted);
+            int access = oldCount + 1;
+            if (previousOrder != null)
+            {
+                for (int i = 0; i < previousOrder.Count; i++)
+                {
+                    if (!oldUnlocked.Contains(previousOrder[i])) continue;
+                    // Completing the old frontier opened the next slot.
+                    access = Math.Max(access, oldCompleted.Contains(previousOrder[i]) ? i + 2 : i + 1);
+                }
+            }
+            access = Math.Min(_levels.Count, Math.Max(1, access));
+            for (int i = 0; i < _levels.Count; i++)
+                if (oldCompleted.Contains(_levels[i].Id)) _completed.Add(_levels[i].Id);
+            for (int i = 0; i < access; i++) _unlocked.Add(_levels[i].Id);
+            _unlocked.UnionWith(_completed);
+            for (int i = 0; i < _levels.Count - 1; i++)
+                if (IsCompleted(i)) _unlocked.Add(_levels[i + 1].Id);
+            _resumeId = null;
+            if (data.resumeId != null)
+                for (int i = 0; i < _levels.Count; i++)
+                    if (_levels[i].Id == data.resumeId && IsUnlocked(i)) _resumeId = data.resumeId;
+            for (int i = 0; i < _levels.Count && _resumeId == null; i++)
+                if (IsUnlocked(i) && !IsCompleted(i)) _resumeId = _levels[i].Id;
+            Debug.Log("[PLOP] Migrated saved progress to the Phase 11 campaign (" + _completed.Count + " completions kept, " + access + " slots open).");
+            return true;
         }
 
         /// <summary>

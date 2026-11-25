@@ -192,7 +192,7 @@ namespace Plop.Tests.PlayMode
         public IEnumerator ShippedPack_LoadsFromResources_AndFirstLevelIsPlayable()
         {
             var levels = LevelLibrary.Load();
-            Assert.AreEqual(160, levels.Count, "PLOP_Pack_002 should contain 160 levels");
+            Assert.AreEqual(160, levels.Count, "PLOP_Pack_003 should contain 160 levels");
             Assert.IsNull(levels[0].Metadata, "runtime load must skip developer metadata");
             var c = CreateController(levels);
             yield return null;
@@ -292,9 +292,13 @@ namespace Plop.Tests.PlayMode
             const string debugLevel = "plop.debug.level";
             const string debugMoves = "plop.debug.moves";
             const string previousProgress = "plop.progress.v1." + LevelLibrary.PreviousPack;
+            const string legacyProgress = "plop.progress.v1." + LevelLibrary.LegacyPack;
+            const string dailyPick = "plop.daily.pick.v2";
 
             string savedProgress = PlayerPrefs.HasKey(progress) ? PlayerPrefs.GetString(progress) : null;
             string savedPrevious = PlayerPrefs.HasKey(previousProgress) ? PlayerPrefs.GetString(previousProgress) : null;
+            string savedLegacy = PlayerPrefs.HasKey(legacyProgress) ? PlayerPrefs.GetString(legacyProgress) : null;
+            string savedPick = PlayerPrefs.HasKey(dailyPick) ? PlayerPrefs.GetString(dailyPick) : null;
             int? savedIndex = PlayerPrefs.HasKey(legacyIndex) ? PlayerPrefs.GetInt(legacyIndex) : (int?)null;
             int? savedRate = PlayerPrefs.HasKey(frameRate) ? PlayerPrefs.GetInt(frameRate) : (int?)null;
             int? savedDebugLevel = PlayerPrefs.HasKey(debugLevel) ? PlayerPrefs.GetInt(debugLevel) : (int?)null;
@@ -304,6 +308,7 @@ namespace Plop.Tests.PlayMode
             {
                 PlayerPrefs.DeleteKey(progress);
                 PlayerPrefs.DeleteKey(previousProgress);
+                PlayerPrefs.DeleteKey(legacyProgress);
                 PlayerPrefs.DeleteKey(debugLevel);
                 PlayerPrefs.DeleteKey(debugMoves);
                 PlayerPrefs.SetInt(legacyIndex, 4);
@@ -339,6 +344,8 @@ namespace Plop.Tests.PlayMode
             {
                 RestorePreference(progress, savedProgress);
                 RestorePreference(previousProgress, savedPrevious);
+                RestorePreference(legacyProgress, savedLegacy);
+                RestorePreference(dailyPick, savedPick);
                 RestorePreference(legacyIndex, savedIndex);
                 RestorePreference(frameRate, savedRate);
                 RestorePreference(debugLevel, savedDebugLevel);

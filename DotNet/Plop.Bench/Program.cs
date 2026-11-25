@@ -42,6 +42,16 @@ namespace Plop.Bench
                     case "--mech-probe": return MechanicProbe.Run(i + 1 < args.Length ? int.Parse(args[i + 1]) : 3);
                     case "--search-probe": return SearchProbe.Run(i + 1 < args.Length ? int.Parse(args[i + 1]) : 2);
                     case "--audit": return CampaignAudit.Run(args[i + 1], i + 2 < args.Length ? args[i + 2] : null, i + 3 < args.Length ? args[i + 3] : null);
+                    case "--balanced": return BalancedBuildCommand.Run(i + 1 < args.Length ? ParseSeed(args[i + 1]) : BalancedCampaign.DefaultSeed, System.IO.Path.GetFullPath(".."));
+                    case "--candidates": return CandidateSearch.Run(args.Skip(i + 1).ToArray());
+                    case "--playtest-summary":
+                        Console.WriteLine(Plop.Meta.PlaytestLog.Summarize(Plop.Meta.PlaytestLog.Parse(System.IO.File.ReadAllText(args[i + 1]))));
+                        return 0;
+                    case "--economy": return EconomyCommand.Run(System.IO.Path.GetFullPath(".."), i + 1 < args.Length ? args[i + 1] : null, i + 2 < args.Length ? args[i + 2] : null);
+                    case "--probe": return LevelProbe.Run(args.Skip(i + 1).ToArray());
+                    case "--quality-audit":
+                        return QualityAuditCommand.Run(args[i + 1], i + 2 < args.Length ? args[i + 2] : null,
+                            i + 3 < args.Length ? args[i + 3] : null, i + 4 < args.Length ? args[i + 4] : null);
                     case "--insights": return Insights(args[i + 1], i + 2 < args.Length ? args[i + 2] : null);
                     case "--production": production = true; break;
                     case "--deadlocks": return BuildDeadlocks(args.Skip(i + 1).ToArray());

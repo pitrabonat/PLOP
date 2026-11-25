@@ -1,0 +1,6512 @@
+{
+  "schemaVersion": 2,
+  "packId": "PLOP_Daily_002",
+  "levels": [
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-42385871BDCE",
+      "name": "Daily 1",
+      "optimalMoves": 12,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [5, 0],
+        [4, 1],
+        [0, 2],
+        [1, 2],
+        [0, 3],
+        [2, 3],
+        [4, 3],
+        [2, 5],
+        [3, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [1, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x41B18A735DA79E61",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "RRDLUUULURUR",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 38.97,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.583,
+            "challenge": 38.97,
+            "coordinationMoves": 10,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.046,
+            "deadEndSettlements": 725,
+            "deadEndStates": 405,
+            "decisionPoints": 12,
+            "earlySettleTraps": 3,
+            "firstSettlementChoices": 5,
+            "forcedSteps": 11,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 27,
+            "patternCount": 5,
+            "plops": 3,
+            "randomSolveProbability": 0.0025,
+            "reachableStates": 8807,
+            "repetitionRatio": 0.273,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "solutionLength": 12,
+            "solutionTurns": 8,
+            "strategicBlocks": 10,
+            "temptingTraps": 0,
+            "trapMoves": 3,
+            "unusedSpaceRatio": 0.481,
+            "wallDetour": 0,
+            "wallInteractionMoves": 8,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-DEDFC6EAB5D4",
+      "name": "Daily 2",
+      "optimalMoves": 10,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 1],
+        [4, 1],
+        [4, 2],
+        [2, 3],
+        [4, 3],
+        [1, 4],
+        [2, 4],
+        [2, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 1]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xF85712DBC6D21371",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DURDDRDRDR",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 41.38,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.9,
+            "challenge": 41.38,
+            "coordinationMoves": 7,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0901,
+            "deadEndSettlements": 206,
+            "deadEndStates": 223,
+            "decisionPoints": 10,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 6,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 26,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0019,
+            "reachableStates": 2476,
+            "repetitionRatio": 0.111,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 8,
+            "strategicBlocks": 7,
+            "temptingTraps": 2,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.5,
+            "wallDetour": 2,
+            "wallInteractionMoves": 7,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-56DE5621493F",
+      "name": "Daily 3",
+      "optimalMoves": 10,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [2, 1],
+        [3, 2],
+        [5, 2],
+        [1, 4],
+        [2, 4],
+        [3, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [5, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [3, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [0, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x9B73D68DF1FC7699",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DLDDDULLUU",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 33.76,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.2,
+            "challenge": 33.76,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0497,
+            "deadEndSettlements": 695,
+            "deadEndStates": 626,
+            "decisionPoints": 8,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 8,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 19,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0078,
+            "reachableStates": 12594,
+            "repetitionRatio": 0.444,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 4,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 5,
+            "strategicBlocks": 4,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.414,
+            "wallDetour": 2,
+            "wallInteractionMoves": 3,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-FE6652C778DB",
+      "name": "Daily 4",
+      "optimalMoves": 11,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [0, 1],
+        [1, 1],
+        [1, 3],
+        [2, 3],
+        [3, 3],
+        [0, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xD677983F8EA6DC55",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "UULLDRRRUUL",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 40.81,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3,
+            "challenge": 40.81,
+            "coordinationMoves": 2,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0681,
+            "deadEndSettlements": 10,
+            "deadEndStates": 13,
+            "decisionPoints": 9,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 19,
+            "patternCount": 7,
+            "plops": 2,
+            "randomSolveProbability": 0.003,
+            "reachableStates": 191,
+            "repetitionRatio": 0.5,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 3,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "solutionLength": 11,
+            "solutionTurns": 5,
+            "strategicBlocks": 2,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.333,
+            "wallDetour": 2,
+            "wallInteractionMoves": 1,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-F6909DE8A89E",
+      "name": "Daily 5",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [2, 0],
+        [0, 2],
+        [2, 2],
+        [1, 4],
+        [0, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 1]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x1A99BE3756AD8D97",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "UULLDLDRDDRDR",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 38.87,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.692,
+            "challenge": 38.87,
+            "coordinationMoves": 10,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0057,
+            "deadEndSettlements": 91,
+            "deadEndStates": 43,
+            "decisionPoints": 11,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 7,
+            "forcedSteps": 7,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 25,
+            "patternCount": 5,
+            "plops": 3,
+            "randomSolveProbability": 0.0039,
+            "reachableStates": 7573,
+            "repetitionRatio": 0.25,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 68,
+            "sleeperBlocks": 0,
+            "solutionLength": 13,
+            "solutionTurns": 9,
+            "strategicBlocks": 10,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.217,
+            "wallDetour": 0,
+            "wallInteractionMoves": 10,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-DBEAF278C192",
+      "name": "Daily 6",
+      "optimalMoves": 10,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [1, 1],
+        [3, 1],
+        [3, 2],
+        [4, 2],
+        [0, 4],
+        [1, 4],
+        [3, 4],
+        [4, 4],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [5, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x7868253A19093728",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LLUUURURRU",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 39.8,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.7,
+            "challenge": 39.8,
+            "coordinationMoves": 8,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0444,
+            "deadEndSettlements": 800,
+            "deadEndStates": 577,
+            "decisionPoints": 10,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 8,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 23,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0016,
+            "reachableStates": 12981,
+            "repetitionRatio": 0.444,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 5,
+            "strategicBlocks": 8,
+            "temptingTraps": 0,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.308,
+            "wallDetour": 0,
+            "wallInteractionMoves": 5,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-D0E187ECE841",
+      "name": "Daily 7",
+      "optimalMoves": 11,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [1, 1],
+        [3, 1],
+        [4, 1],
+        [0, 3],
+        [3, 3],
+        [2, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [1, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x26FB3FD2F02E0E3C",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "UURULUDRURU",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 42.72,
+          "category": "Expert",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.364,
+            "challenge": 42.72,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.258,
+            "deadEndSettlements": 575,
+            "deadEndStates": 337,
+            "decisionPoints": 11,
+            "earlySettleTraps": 3,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 22,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.003,
+            "reachableStates": 1306,
+            "repetitionRatio": 0.1,
+            "requiredSettlementPairs": 1,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "solutionLength": 11,
+            "solutionTurns": 9,
+            "strategicBlocks": 5,
+            "temptingTraps": 1,
+            "trapMoves": 3,
+            "unusedSpaceRatio": 0.391,
+            "wallDetour": 0,
+            "wallInteractionMoves": 3,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-2D4417B14DBD",
+      "name": "Daily 8",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 1],
+        [4, 1],
+        [1, 2],
+        [2, 3],
+        [4, 3],
+        [0, 4],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [1, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xBEFDE6E4043B0CB5",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "URUURDDDDDLUL",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 38.88,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.077,
+            "challenge": 38.88,
+            "coordinationMoves": 9,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0848,
+            "deadEndSettlements": 322,
+            "deadEndStates": 342,
+            "decisionPoints": 12,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 5,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 25,
+            "patternCount": 5,
+            "plops": 3,
+            "randomSolveProbability": 0.0007,
+            "reachableStates": 4031,
+            "repetitionRatio": 0.417,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "solutionLength": 13,
+            "solutionTurns": 7,
+            "strategicBlocks": 9,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.435,
+            "wallDetour": 4,
+            "wallInteractionMoves": 8,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-4E86EDBE931C",
+      "name": "Daily 9",
+      "optimalMoves": 8,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [4, 0],
+        [0, 1],
+        [1, 2],
+        [3, 2],
+        [4, 2],
+        [1, 4],
+        [3, 4],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x8A4EA9607D1905A4",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "ULRUULLD",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 29.74,
+          "category": "Normal",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.5,
+            "challenge": 29.74,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0637,
+            "deadEndSettlements": 12,
+            "deadEndStates": 13,
+            "decisionPoints": 8,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 6,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 17,
+            "patternCount": 6,
+            "plops": 2,
+            "randomSolveProbability": 0.0191,
+            "reachableStates": 204,
+            "repetitionRatio": 0.286,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 5,
+            "sleeperBlocks": 0,
+            "solutionLength": 8,
+            "solutionTurns": 5,
+            "strategicBlocks": 4,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.471,
+            "wallDetour": 4,
+            "wallInteractionMoves": 4,
+            "walls": 8
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-A894DBFDF20F",
+      "name": "Daily 10",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [4, 0],
+        [0, 1],
+        [4, 1],
+        [0, 2],
+        [1, 2],
+        [2, 4],
+        [1, 5],
+        [2, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [3, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xF374352603F18470",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DDRRURULULDDL",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 43.34,
+          "category": "Expert",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.615,
+            "challenge": 43.34,
+            "coordinationMoves": 8,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.1097,
+            "deadEndSettlements": 300,
+            "deadEndStates": 268,
+            "decisionPoints": 12,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 32,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0038,
+            "reachableStates": 2442,
+            "repetitionRatio": 0.25,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 5,
+            "sleeperBlocks": 0,
+            "solutionLength": 13,
+            "solutionTurns": 9,
+            "strategicBlocks": 8,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.238,
+            "wallDetour": 0,
+            "wallInteractionMoves": 5,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-13DFF58C77DE",
+      "name": "Daily 11",
+      "optimalMoves": 8,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [3, 0],
+        [4, 0],
+        [0, 1],
+        [2, 1],
+        [3, 2],
+        [3, 4],
+        [0, 5],
+        [1, 5],
+        [3, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [1, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x2A4324466C334ED9",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "URDDLLUL",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 40.39,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.25,
+            "challenge": 40.39,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.093,
+            "deadEndSettlements": 659,
+            "deadEndStates": 266,
+            "decisionPoints": 8,
+            "earlySettleTraps": 4,
+            "firstSettlementChoices": 6,
+            "forcedSteps": 7,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 12,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0037,
+            "reachableStates": 2859,
+            "repetitionRatio": 0.286,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 2,
+            "solutionLength": 8,
+            "solutionTurns": 5,
+            "strategicBlocks": 5,
+            "temptingTraps": 1,
+            "trapMoves": 5,
+            "unusedSpaceRatio": 0.35,
+            "wallDetour": 2,
+            "wallInteractionMoves": 2,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-A397CC623155",
+      "name": "Daily 12",
+      "optimalMoves": 13,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [3, 0],
+        [4, 1],
+        [0, 2],
+        [1, 2],
+        [3, 2],
+        [0, 3],
+        [4, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 5]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [1, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [5, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xFFDAB86B38339A02",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "RUUURRRDLDLDD",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 40.03,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.154,
+            "challenge": 40.03,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0983,
+            "deadEndSettlements": 507,
+            "deadEndStates": 733,
+            "decisionPoints": 13,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 5,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 24,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0006,
+            "reachableStates": 7460,
+            "repetitionRatio": 0.417,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 5,
+            "sleeperBlocks": 0,
+            "solutionLength": 13,
+            "solutionTurns": 7,
+            "strategicBlocks": 4,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.483,
+            "wallDetour": 2,
+            "wallInteractionMoves": 0,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-50DD629E04F4",
+      "name": "Daily 13",
+      "optimalMoves": 8,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [3, 0],
+        [4, 0],
+        [1, 2],
+        [4, 2],
+        [2, 3],
+        [1, 4],
+        [2, 5],
+        [3, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [3, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xE1AA2910A9CC35F8",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LDDRDLDL",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 35.01,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3,
+            "challenge": 35.01,
+            "coordinationMoves": 3,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.1114,
+            "deadEndSettlements": 465,
+            "deadEndStates": 314,
+            "decisionPoints": 8,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 8,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 14,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0093,
+            "reachableStates": 2819,
+            "repetitionRatio": 0.143,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 8,
+            "solutionTurns": 6,
+            "strategicBlocks": 3,
+            "temptingTraps": 1,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.5,
+            "wallDetour": 0,
+            "wallInteractionMoves": 3,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-C9B77071E00A",
+      "name": "Daily 14",
+      "optimalMoves": 11,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [4, 0],
+        [0, 2],
+        [3, 3],
+        [0, 4],
+        [1, 4],
+        [4, 4],
+        [5, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x475D91EA48467576",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "LULURURRRUR",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 42.03,
+          "category": "Expert",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.545,
+            "challenge": 42.03,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0449,
+            "deadEndSettlements": 864,
+            "deadEndStates": 565,
+            "decisionPoints": 11,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 7,
+            "forcedSteps": 7,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 22,
+            "patternCount": 5,
+            "plops": 3,
+            "randomSolveProbability": 0.0019,
+            "reachableStates": 12577,
+            "repetitionRatio": 0.2,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 16,
+            "sleeperBlocks": 0,
+            "solutionLength": 11,
+            "solutionTurns": 8,
+            "strategicBlocks": 6,
+            "temptingTraps": 2,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.483,
+            "wallDetour": 2,
+            "wallInteractionMoves": 4,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-3F9D155FA120",
+      "name": "Daily 15",
+      "optimalMoves": 10,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [3, 0],
+        [4, 0],
+        [0, 2],
+        [1, 2],
+        [4, 2],
+        [5, 2],
+        [1, 3],
+        [0, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [1, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [5, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xE99E45BE6E0A47E8",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DDULRDRRRD",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 39.1,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.6,
+            "challenge": 39.1,
+            "coordinationMoves": 3,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0124,
+            "deadEndSettlements": 243,
+            "deadEndStates": 143,
+            "decisionPoints": 10,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 24,
+            "patternCount": 6,
+            "plops": 3,
+            "randomSolveProbability": 0.0018,
+            "reachableStates": 11524,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "solutionLength": 10,
+            "solutionTurns": 6,
+            "strategicBlocks": 3,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.481,
+            "wallDetour": 0,
+            "wallInteractionMoves": 2,
+            "walls": 9
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-D3639FBEF394",
+      "name": "Daily 16",
+      "optimalMoves": 9,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [3, 0],
+        [3, 1],
+        [3, 2],
+        [1, 3],
+        [2, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xEBD7114BED23FDEB",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "UDDRRURUR",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 37.7,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 3.111,
+            "challenge": 37.7,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0558,
+            "deadEndSettlements": 9,
+            "deadEndStates": 11,
+            "decisionPoints": 9,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 17,
+            "patternCount": 7,
+            "plops": 2,
+            "randomSolveProbability": 0.0083,
+            "reachableStates": 197,
+            "repetitionRatio": 0.25,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 9,
+            "solutionTurns": 6,
+            "strategicBlocks": 4,
+            "temptingTraps": 2,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.5,
+            "wallDetour": 2,
+            "wallInteractionMoves": 4,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-D13FE5B345C6",
+      "name": "Daily 17",
+      "optimalMoves": 7,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [4, 0],
+        [0, 2],
+        [4, 2],
+        [0, 3],
+        [4, 3],
+        [0, 4],
+        [4, 4],
+        [0, 5],
+        [1, 5],
+        [2, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 1]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x1F4F9D1D4FEEC08B",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "RRRDLDL",
+        "solutionLength": 7,
+        "difficulty": {
+          "score": 29.52,
+          "category": "Normal",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.857,
+            "challenge": 29.52,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0259,
+            "deadEndSettlements": 177,
+            "deadEndStates": 96,
+            "decisionPoints": 7,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 5,
+            "forcedSteps": 6,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 18,
+            "patternCount": 5,
+            "plops": 3,
+            "randomSolveProbability": 0.0104,
+            "reachableStates": 3707,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "solutionLength": 7,
+            "solutionTurns": 4,
+            "strategicBlocks": 5,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.368,
+            "wallDetour": 0,
+            "wallInteractionMoves": 3,
+            "walls": 11
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-41F4A13569BD",
+      "name": "Daily 18",
+      "optimalMoves": 12,
+      "width": 5,
+      "height": 5,
+      "walls": [
+        [0, 0],
+        [2, 1],
+        [4, 1],
+        [3, 2],
+        [0, 3],
+        [1, 3],
+        [3, 3]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x2279392303F2F5E1",
+        "generatorParams": "quality-search v1 plan v1 daily 5x5 p2 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "RRRLDDLDDRRU",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 40.97,
+          "category": "Hard",
+          "metrics": {
+            "area": 25,
+            "avgBranching": 2.75,
+            "challenge": 40.97,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0278,
+            "deadEndSettlements": 3,
+            "deadEndStates": 2,
+            "decisionPoints": 12,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 19,
+            "patternCount": 7,
+            "plops": 2,
+            "randomSolveProbability": 0.0056,
+            "reachableStates": 72,
+            "repetitionRatio": 0.455,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 12,
+            "solutionTurns": 6,
+            "strategicBlocks": 4,
+            "temptingTraps": 1,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.278,
+            "wallDetour": 4,
+            "wallInteractionMoves": 2,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-5AA023433937",
+      "name": "Daily 19",
+      "optimalMoves": 12,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [2, 0],
+        [2, 1],
+        [1, 3],
+        [2, 3],
+        [1, 4],
+        [3, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [4, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x7D8B67A624688C7C",
+        "generatorParams": "quality-search v1 plan v1 daily 5x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "DDLUULDLLULU",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 42.55,
+          "category": "Expert",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.25,
+            "challenge": 42.55,
+            "coordinationMoves": 11,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0136,
+            "deadEndSettlements": 190,
+            "deadEndStates": 120,
+            "decisionPoints": 12,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 26,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0013,
+            "reachableStates": 8793,
+            "repetitionRatio": 0.273,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "solutionLength": 12,
+            "solutionTurns": 8,
+            "strategicBlocks": 11,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.348,
+            "wallDetour": 0,
+            "wallInteractionMoves": 8,
+            "walls": 7
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "PLOP-F207D496DF9D",
+      "name": "Daily 20",
+      "optimalMoves": 11,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [2, 0],
+        [2, 1],
+        [4, 2],
+        [2, 3],
+        [1, 4],
+        [0, 5],
+        [3, 5],
+        [4, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xC2F4D61528CAFB70",
+        "generatorParams": "quality-search v1 plan v1 daily 6x6 p3 opt 7-13 challenge 24-44 greedy-fails counter≥1 traps≥1 blocks≥0 patterns≥4 retry=0",
+        "solverVersion": 1,
+        "solution": "URRRULLDDLU",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 39.28,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.636,
+            "challenge": 39.28,
+            "coordinationMoves": 7,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0531,
+            "deadEndSettlements": 470,
+            "deadEndStates": 391,
+            "decisionPoints": 11,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 7,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "misleadingMoves": 27,
+            "patternCount": 7,
+            "plops": 3,
+            "randomSolveProbability": 0.0008,
+            "reachableStates": 7366,
+            "repetitionRatio": 0.4,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "solutionLength": 11,
+            "solutionTurns": 6,
+            "strategicBlocks": 7,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.462,
+            "wallDetour": 2,
+            "wallInteractionMoves": 4,
+            "walls": 10
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-4E1B56045DA3",
+      "name": "Daily 21",
+      "optimalMoves": 8,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [4, 0],
+        [1, 1],
+        [0, 2],
+        [0, 3],
+        [2, 3],
+        [2, 4],
+        [4, 4],
+        [3, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 0]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Frost",
+          "pos": [3, 2]
+        },
+        {
+          "type": "Frost",
+          "pos": [2, 2]
+        },
+        {
+          "type": "Frost",
+          "pos": [4, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x0B3C44852E64DDA0",
+        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=0",
+        "solverVersion": 1,
+        "solution": "DRULDRDL",
+        "solutionLength": 8,
+        "difficulty": {
+          "score": 45.36,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 2.625,
+            "challenge": 45.36,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.059,
+            "deadEndSettlements": 48,
+            "deadEndStates": 16,
+            "decisionPoints": 8,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 8,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 4,
+            "misleadingMoves": 11,
+            "patternCount": 7,
+            "plops": 2,
+            "pushes": 0,
+            "randomSolveProbability": 0.011,
+            "reachableStates": 271,
+            "repetitionRatio": 0,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "slides": 4,
+            "solutionLength": 8,
+            "solutionTurns": 7,
+            "strategicBlocks": 4,
+            "teleports": 0,
+            "temptingTraps": 2,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.476,
+            "wallDetour": 0,
+            "wallInteractionMoves": 2,
+            "walls": 9
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-1"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-3CDF7083A272",
+      "name": "Daily 22",
+      "optimalMoves": 12,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [1, 1],
+        [3, 1],
+        [3, 2],
+        [4, 2],
+        [2, 3],
+        [3, 3],
+        [5, 3],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [5, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 4]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Frost",
+          "pos": [0, 3]
+        },
+        {
+          "type": "Frost",
+          "pos": [2, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x51EDD0FEFE3C5521",
+        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=0",
+        "solverVersion": 1,
+        "solution": "DLLDLUULDURU",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 45.05,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.25,
+            "challenge": 45.05,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0219,
+            "deadEndSettlements": 16,
+            "deadEndStates": 9,
+            "decisionPoints": 12,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 1,
+            "misleadingMoves": 23,
+            "patternCount": 7,
+            "plops": 2,
+            "pushes": 0,
+            "randomSolveProbability": 0.0031,
+            "reachableStates": 411,
+            "repetitionRatio": 0.182,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 6,
+            "sleeperBlocks": 0,
+            "slides": 1,
+            "solutionLength": 12,
+            "solutionTurns": 9,
+            "strategicBlocks": 5,
+            "teleports": 0,
+            "temptingTraps": 2,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.37,
+            "wallDetour": 2,
+            "wallInteractionMoves": 2,
+            "walls": 9
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-1"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-AEF0DECCB489",
+      "name": "Daily 23",
+      "optimalMoves": 7,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [4, 0],
+        [1, 1],
+        [2, 1],
+        [4, 2],
+        [1, 4],
+        [2, 4],
+        [3, 4],
+        [1, 5],
+        [2, 5],
+        [3, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 1]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 2]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Frost",
+          "pos": [3, 3]
+        },
+        {
+          "type": "Frost",
+          "pos": [1, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x6A8F0562F96094DD",
+        "generatorParams": "daily balanced v1 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=12",
+        "solverVersion": 1,
+        "solution": "LDRLDDR",
+        "solutionLength": 7,
+        "difficulty": {
+          "score": 38.36,
+          "category": "Normal",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.143,
+            "challenge": 38.36,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.1241,
+            "deadEndSettlements": 249,
+            "deadEndStates": 257,
+            "decisionPoints": 7,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 7,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 2,
+            "misleadingMoves": 14,
+            "patternCount": 7,
+            "plops": 3,
+            "pushes": 0,
+            "randomSolveProbability": 0.0058,
+            "reachableStates": 2071,
+            "repetitionRatio": 0.167,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 1,
+            "slides": 2,
+            "solutionLength": 7,
+            "solutionTurns": 5,
+            "strategicBlocks": 4,
+            "teleports": 0,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.421,
+            "wallDetour": 0,
+            "wallInteractionMoves": 2,
+            "walls": 11
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-1"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-87C73FCECE46",
+      "name": "Daily 24",
+      "optimalMoves": 12,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 1],
+        [2, 1],
+        [4, 2],
+        [0, 3],
+        [1, 3],
+        [0, 4],
+        [1, 4],
+        [3, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 5]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Frost",
+          "pos": [3, 4]
+        },
+        {
+          "type": "Frost",
+          "pos": [4, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x99759AE2B9043A63",
+        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=8",
+        "solverVersion": 1,
+        "solution": "UDRLUUULULUL",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 55.82,
+          "category": "Expert",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.333,
+            "challenge": 55.82,
+            "coordinationMoves": 7,
+            "counterIntuitiveSteps": 6,
+            "deadEndRatio": 0.0404,
+            "deadEndSettlements": 22,
+            "deadEndStates": 24,
+            "decisionPoints": 12,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 2,
+            "misleadingMoves": 26,
+            "patternCount": 7,
+            "plops": 2,
+            "pushes": 0,
+            "randomSolveProbability": 0.0012,
+            "reachableStates": 594,
+            "repetitionRatio": 0.182,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "slides": 2,
+            "solutionLength": 12,
+            "solutionTurns": 9,
+            "strategicBlocks": 7,
+            "teleports": 0,
+            "temptingTraps": 2,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.5,
+            "wallDetour": 0,
+            "wallInteractionMoves": 4,
+            "walls": 10
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-1"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-21505F60C382",
+      "name": "Daily 25",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [0, 1],
+        [1, 1],
+        [3, 1],
+        [0, 2],
+        [2, 2],
+        [0, 3],
+        [2, 3],
+        [0, 5],
+        [1, 5],
+        [2, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 3]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Frost",
+          "pos": [2, 4]
+        },
+        {
+          "type": "Frost",
+          "pos": [1, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x4F57998947AD02D3",
+        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=4",
+        "solverVersion": 1,
+        "solution": "DDRRULULUULDR",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 68.75,
+          "category": "Expert",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.077,
+            "challenge": 68.75,
+            "coordinationMoves": 8,
+            "counterIntuitiveSteps": 5,
+            "deadEndRatio": 0.0766,
+            "deadEndSettlements": 50,
+            "deadEndStates": 18,
+            "decisionPoints": 12,
+            "earlySettleTraps": 5,
+            "firstSettlementChoices": 1,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 3,
+            "misleadingMoves": 20,
+            "patternCount": 7,
+            "plops": 2,
+            "pushes": 0,
+            "randomSolveProbability": 0.0002,
+            "reachableStates": 235,
+            "repetitionRatio": 0.25,
+            "requiredSettlementPairs": 1,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 3,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "slides": 3,
+            "solutionLength": 13,
+            "solutionTurns": 9,
+            "strategicBlocks": 8,
+            "teleports": 0,
+            "temptingTraps": 5,
+            "trapMoves": 6,
+            "unusedSpaceRatio": 0.263,
+            "wallDetour": 6,
+            "wallInteractionMoves": 4,
+            "walls": 11
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-1"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-D550E444CD59",
+      "name": "Daily 26",
+      "optimalMoves": 13,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [3, 0],
+        [0, 1],
+        [3, 1],
+        [5, 1],
+        [1, 2],
+        [2, 3],
+        [1, 4],
+        [5, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 2]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 5]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Frost",
+          "pos": [4, 4]
+        },
+        {
+          "type": "Frost",
+          "pos": [0, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x85DFAB432719EFDE",
+        "generatorParams": "daily balanced v1 6x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=0",
+        "solverVersion": 1,
+        "solution": "RURURUULDULLD",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 47.67,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.154,
+            "challenge": 47.67,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0539,
+            "deadEndSettlements": 708,
+            "deadEndStates": 524,
+            "decisionPoints": 12,
+            "earlySettleTraps": 3,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 2,
+            "misleadingMoves": 24,
+            "patternCount": 6,
+            "plops": 3,
+            "pushes": 0,
+            "randomSolveProbability": 0.0012,
+            "reachableStates": 9728,
+            "repetitionRatio": 0.167,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "slides": 2,
+            "solutionLength": 13,
+            "solutionTurns": 10,
+            "strategicBlocks": 5,
+            "teleports": 0,
+            "temptingTraps": 0,
+            "trapMoves": 3,
+            "unusedSpaceRatio": 0.214,
+            "wallDetour": 12,
+            "wallInteractionMoves": 1,
+            "walls": 8
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-1"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-2CE2B38021FF",
+      "name": "Daily 27",
+      "optimalMoves": 10,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [4, 0],
+        [0, 1],
+        [4, 1],
+        [0, 3],
+        [1, 3],
+        [3, 3],
+        [0, 4],
+        [1, 4],
+        [2, 4],
+        [0, 5],
+        [1, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 3]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Frost",
+          "pos": [4, 4]
+        },
+        {
+          "type": "Frost",
+          "pos": [2, 2]
+        },
+        {
+          "type": "Frost",
+          "pos": [3, 2]
+        },
+        {
+          "type": "Frost",
+          "pos": [1, 2]
+        },
+        {
+          "type": "Frost",
+          "pos": [4, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x2535276CD959302F",
+        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=11",
+        "solverVersion": 1,
+        "solution": "RRDLDLDDRU",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 49.3,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 2.6,
+            "challenge": 49.3,
+            "coordinationMoves": 7,
+            "counterIntuitiveSteps": 4,
+            "deadEndRatio": 0.0654,
+            "deadEndSettlements": 5,
+            "deadEndStates": 7,
+            "decisionPoints": 9,
+            "earlySettleTraps": 3,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 5,
+            "misleadingMoves": 12,
+            "patternCount": 7,
+            "plops": 2,
+            "pushes": 0,
+            "randomSolveProbability": 0.014,
+            "reachableStates": 107,
+            "repetitionRatio": 0.222,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "slides": 5,
+            "solutionLength": 10,
+            "solutionTurns": 7,
+            "strategicBlocks": 7,
+            "teleports": 0,
+            "temptingTraps": 2,
+            "trapMoves": 3,
+            "unusedSpaceRatio": 0.316,
+            "wallDetour": 4,
+            "wallInteractionMoves": 5,
+            "walls": 11
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-1"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-DE5A6C449292",
+      "name": "Daily 28",
+      "optimalMoves": 9,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [5, 0],
+        [0, 1],
+        [5, 1],
+        [2, 2],
+        [2, 3],
+        [3, 3],
+        [3, 4],
+        [4, 4],
+        [0, 5],
+        [1, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [5, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 5]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Frost",
+          "pos": [3, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x44D19F4B01CC5A4A",
+        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=7",
+        "solverVersion": 1,
+        "solution": "DLDLUUURU",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 33.65,
+          "category": "Normal",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.556,
+            "challenge": 33.65,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 0,
+            "deadEndRatio": 0.0464,
+            "deadEndSettlements": 33,
+            "deadEndStates": 14,
+            "decisionPoints": 9,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 8,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 1,
+            "misleadingMoves": 20,
+            "patternCount": 5,
+            "plops": 2,
+            "pushes": 0,
+            "randomSolveProbability": 0.0045,
+            "reachableStates": 302,
+            "repetitionRatio": 0.25,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "slides": 1,
+            "solutionLength": 9,
+            "solutionTurns": 6,
+            "strategicBlocks": 6,
+            "teleports": 0,
+            "temptingTraps": 1,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.44,
+            "wallDetour": 6,
+            "wallInteractionMoves": 3,
+            "walls": 11
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-1"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-2BBBD03926A8",
+      "name": "Daily 29",
+      "optimalMoves": 9,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [0, 2],
+        [2, 2],
+        [0, 3],
+        [4, 3],
+        [1, 5],
+        [3, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 2]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 0]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Frost",
+          "pos": [1, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xC3FE6E52C1655AFA",
+        "generatorParams": "daily balanced v1 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=2",
+        "solverVersion": 1,
+        "solution": "LUUDURRDR",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 46.8,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.667,
+            "challenge": 46.8,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0565,
+            "deadEndSettlements": 494,
+            "deadEndStates": 365,
+            "decisionPoints": 9,
+            "earlySettleTraps": 3,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 1,
+            "misleadingMoves": 21,
+            "patternCount": 7,
+            "plops": 3,
+            "pushes": 0,
+            "randomSolveProbability": 0.0025,
+            "reachableStates": 6465,
+            "repetitionRatio": 0.25,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "slides": 1,
+            "solutionLength": 9,
+            "solutionTurns": 6,
+            "strategicBlocks": 4,
+            "teleports": 0,
+            "temptingTraps": 3,
+            "trapMoves": 3,
+            "unusedSpaceRatio": 0.273,
+            "wallDetour": 0,
+            "wallInteractionMoves": 4,
+            "walls": 8
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-1"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-D880931B96D6",
+      "name": "Daily 30",
+      "optimalMoves": 9,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [2, 0],
+        [3, 0],
+        [4, 0],
+        [0, 2],
+        [1, 2],
+        [1, 3],
+        [3, 4],
+        [0, 5],
+        [2, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [5, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 0]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Frost",
+          "pos": [4, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x09F28DC3D2CA37BA",
+        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=8",
+        "solverVersion": 1,
+        "solution": "URRDRRDRD",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 37.52,
+          "category": "Normal",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.333,
+            "challenge": 37.52,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0423,
+            "deadEndSettlements": 39,
+            "deadEndStates": 22,
+            "decisionPoints": 9,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 1,
+            "misleadingMoves": 20,
+            "patternCount": 6,
+            "plops": 2,
+            "pushes": 0,
+            "randomSolveProbability": 0.0032,
+            "reachableStates": 520,
+            "repetitionRatio": 0.25,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "slides": 1,
+            "solutionLength": 9,
+            "solutionTurns": 6,
+            "strategicBlocks": 5,
+            "teleports": 0,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.44,
+            "wallDetour": 2,
+            "wallInteractionMoves": 0,
+            "walls": 11
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-1"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-A444639A5D12",
+      "name": "Daily 31",
+      "optimalMoves": 9,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [1, 1],
+        [3, 2],
+        [4, 2],
+        [0, 3],
+        [4, 3],
+        [0, 4],
+        [1, 4],
+        [2, 4],
+        [0, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 2]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Fan",
+          "pos": [2, 2],
+          "dir": "Left",
+          "power": 3
+        },
+        {
+          "type": "Fan",
+          "pos": [4, 4],
+          "dir": "Left",
+          "power": 3
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x789A30A32166ED3A",
+        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=5",
+        "solverVersion": 1,
+        "solution": "DDLLRDDUR",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 42.03,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.111,
+            "challenge": 42.03,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0976,
+            "deadEndSettlements": 13,
+            "deadEndStates": 8,
+            "decisionPoints": 9,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 2,
+            "misleadingMoves": 17,
+            "patternCount": 7,
+            "plops": 2,
+            "pushes": 2,
+            "randomSolveProbability": 0.0018,
+            "reachableStates": 82,
+            "repetitionRatio": 0.375,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "slides": 0,
+            "solutionLength": 9,
+            "solutionTurns": 5,
+            "strategicBlocks": 4,
+            "teleports": 0,
+            "temptingTraps": 2,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.5,
+            "wallDetour": 0,
+            "wallInteractionMoves": 3,
+            "walls": 10
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-2"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-1C325A585ED9",
+      "name": "Daily 32",
+      "optimalMoves": 13,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [3, 0],
+        [4, 0],
+        [5, 0],
+        [4, 2],
+        [5, 2],
+        [1, 3],
+        [2, 3],
+        [4, 3],
+        [5, 3],
+        [3, 4],
+        [5, 4],
+        [1, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [5, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 4]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Fan",
+          "pos": [1, 2],
+          "dir": "Right",
+          "power": 3
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x46906E5D990552F9",
+        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=3",
+        "solverVersion": 1,
+        "solution": "LUDLULDRDRDRR",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 40.4,
+          "category": "Normal",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 2.923,
+            "challenge": 40.4,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0123,
+            "deadEndSettlements": 4,
+            "deadEndStates": 4,
+            "decisionPoints": 13,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 1,
+            "misleadingMoves": 23,
+            "patternCount": 7,
+            "plops": 2,
+            "pushes": 1,
+            "randomSolveProbability": 0.002,
+            "reachableStates": 326,
+            "repetitionRatio": 0.083,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "slides": 0,
+            "solutionLength": 13,
+            "solutionTurns": 11,
+            "strategicBlocks": 6,
+            "teleports": 0,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.364,
+            "wallDetour": 6,
+            "wallInteractionMoves": 3,
+            "walls": 14
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-2"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-7AFAF8EAECBD",
+      "name": "Daily 33",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [4, 2],
+        [0, 3],
+        [1, 4],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 0]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 5]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 5]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Fan",
+          "pos": [2, 3],
+          "dir": "Up",
+          "power": 1
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xE8BF85B9A319B5E1",
+        "generatorParams": "daily balanced v1 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=2",
+        "solverVersion": 1,
+        "solution": "LULDDRURRUULL",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 48.01,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 2.769,
+            "challenge": 48.01,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0688,
+            "deadEndSettlements": 606,
+            "deadEndStates": 428,
+            "decisionPoints": 11,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 7,
+            "forcedSteps": 11,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 2,
+            "misleadingMoves": 19,
+            "patternCount": 6,
+            "plops": 3,
+            "pushes": 2,
+            "randomSolveProbability": 0.0051,
+            "reachableStates": 6222,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 9,
+            "sleeperBlocks": 1,
+            "slides": 0,
+            "solutionLength": 13,
+            "solutionTurns": 8,
+            "strategicBlocks": 5,
+            "teleports": 0,
+            "temptingTraps": 2,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.36,
+            "wallDetour": 0,
+            "wallInteractionMoves": 3,
+            "walls": 5
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-2"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-B5347C19B289",
+      "name": "Daily 34",
+      "optimalMoves": 11,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [4, 1],
+        [0, 2],
+        [1, 2],
+        [2, 2],
+        [4, 2],
+        [1, 3],
+        [2, 3],
+        [5, 3],
+        [1, 5],
+        [2, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [5, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 2]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Frost",
+          "pos": [3, 3]
+        },
+        {
+          "type": "Fan",
+          "pos": [4, 5],
+          "dir": "Right",
+          "power": 2
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x7484E363A316B679",
+        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=1",
+        "solverVersion": 1,
+        "solution": "LRRDRULLURD",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 54.32,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.636,
+            "challenge": 54.32,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0415,
+            "deadEndSettlements": 20,
+            "deadEndStates": 11,
+            "decisionPoints": 11,
+            "earlySettleTraps": 3,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 11,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 2,
+            "mechanicSteps": 3,
+            "misleadingMoves": 26,
+            "patternCount": 7,
+            "plops": 2,
+            "pushes": 1,
+            "randomSolveProbability": 0.002,
+            "reachableStates": 265,
+            "repetitionRatio": 0.2,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "slides": 2,
+            "solutionLength": 11,
+            "solutionTurns": 8,
+            "strategicBlocks": 6,
+            "teleports": 0,
+            "temptingTraps": 3,
+            "trapMoves": 3,
+            "unusedSpaceRatio": 0.48,
+            "wallDetour": 0,
+            "wallInteractionMoves": 5,
+            "walls": 11
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-2"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-DF8AAF20E4DA",
+      "name": "Daily 35",
+      "optimalMoves": 12,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 1],
+        [1, 1],
+        [3, 1],
+        [4, 2],
+        [1, 3],
+        [0, 4],
+        [2, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 1]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Fan",
+          "pos": [3, 4],
+          "dir": "Right",
+          "power": 2
+        },
+        {
+          "type": "Frost",
+          "pos": [2, 3]
+        },
+        {
+          "type": "Fan",
+          "pos": [3, 0],
+          "dir": "Left",
+          "power": 3
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x5CADE7B8976D9A78",
+        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=0",
+        "solverVersion": 1,
+        "solution": "DLRRUULDLLUD",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 45.28,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.25,
+            "challenge": 45.28,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0212,
+            "deadEndSettlements": 12,
+            "deadEndStates": 5,
+            "decisionPoints": 12,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 2,
+            "mechanicSteps": 4,
+            "misleadingMoves": 26,
+            "patternCount": 7,
+            "plops": 2,
+            "pushes": 3,
+            "randomSolveProbability": 0.0039,
+            "reachableStates": 236,
+            "repetitionRatio": 0.273,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "slides": 1,
+            "solutionLength": 12,
+            "solutionTurns": 8,
+            "strategicBlocks": 4,
+            "teleports": 0,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.182,
+            "wallDetour": 2,
+            "wallInteractionMoves": 3,
+            "walls": 8
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-2"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-E4786C0D155F",
+      "name": "Daily 36",
+      "optimalMoves": 11,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [5, 0],
+        [2, 1],
+        [5, 1],
+        [0, 2],
+        [4, 2],
+        [0, 4],
+        [3, 4],
+        [5, 4],
+        [2, 5],
+        [3, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [5, 3]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [5, 5]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Fan",
+          "pos": [1, 4],
+          "dir": "Down",
+          "power": 3
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xE471F7B2CC12262C",
+        "generatorParams": "daily balanced v1 6x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=3",
+        "solverVersion": 1,
+        "solution": "URDURURURUL",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 40.5,
+          "category": "Normal",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.455,
+            "challenge": 40.5,
+            "coordinationMoves": 8,
+            "counterIntuitiveSteps": 0,
+            "deadEndRatio": 0.3855,
+            "deadEndSettlements": 297,
+            "deadEndStates": 352,
+            "decisionPoints": 11,
+            "earlySettleTraps": 9,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 7,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 1,
+            "misleadingMoves": 14,
+            "patternCount": 3,
+            "plops": 3,
+            "pushes": 1,
+            "randomSolveProbability": 0.0017,
+            "reachableStates": 913,
+            "repetitionRatio": 0,
+            "requiredSettlementPairs": 1,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 24,
+            "sleeperBlocks": 0,
+            "slides": 0,
+            "solutionLength": 11,
+            "solutionTurns": 10,
+            "strategicBlocks": 8,
+            "teleports": 0,
+            "temptingTraps": 0,
+            "trapMoves": 9,
+            "unusedSpaceRatio": 0.333,
+            "wallDetour": 2,
+            "wallInteractionMoves": 5,
+            "walls": 12
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-2"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-3FE11FCB5FC4",
+      "name": "Daily 37",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [4, 0],
+        [0, 1],
+        [1, 1],
+        [4, 1],
+        [1, 2],
+        [3, 2],
+        [4, 2],
+        [4, 3],
+        [1, 4],
+        [0, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 5]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Fan",
+          "pos": [2, 2],
+          "dir": "Up",
+          "power": 1
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x8866DC8718BE9A90",
+        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=4",
+        "solverVersion": 1,
+        "solution": "URRLULDDDRUUR",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 53.24,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.462,
+            "challenge": 53.24,
+            "coordinationMoves": 3,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.041,
+            "deadEndSettlements": 18,
+            "deadEndStates": 12,
+            "decisionPoints": 12,
+            "earlySettleTraps": 3,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 11,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 1,
+            "misleadingMoves": 27,
+            "patternCount": 7,
+            "plops": 2,
+            "pushes": 1,
+            "randomSolveProbability": 0.0002,
+            "reachableStates": 293,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 4,
+            "sleeperBlocks": 0,
+            "slides": 0,
+            "solutionLength": 13,
+            "solutionTurns": 8,
+            "strategicBlocks": 3,
+            "teleports": 0,
+            "temptingTraps": 3,
+            "trapMoves": 3,
+            "unusedSpaceRatio": 0.4,
+            "wallDetour": 0,
+            "wallInteractionMoves": 2,
+            "walls": 10
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-2"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-9C1F9FAE22C3",
+      "name": "Daily 38",
+      "optimalMoves": 13,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [5, 1],
+        [1, 2],
+        [1, 3],
+        [2, 3],
+        [3, 3],
+        [0, 4],
+        [0, 5],
+        [2, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [5, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 0]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Fan",
+          "pos": [2, 0],
+          "dir": "Left",
+          "power": 1
+        },
+        {
+          "type": "Fan",
+          "pos": [4, 0],
+          "dir": "Left",
+          "power": 2
+        },
+        {
+          "type": "Frost",
+          "pos": [1, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xABF7FE05DAE70BB6",
+        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=1",
+        "solverVersion": 1,
+        "solution": "RRULLDRDDLDDR",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 51.92,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.538,
+            "challenge": 51.92,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 6,
+            "deadEndRatio": 0.049,
+            "deadEndSettlements": 127,
+            "deadEndStates": 28,
+            "decisionPoints": 12,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 1,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 2,
+            "mechanicSteps": 1,
+            "misleadingMoves": 31,
+            "patternCount": 6,
+            "plops": 2,
+            "pushes": 2,
+            "randomSolveProbability": 0.0001,
+            "reachableStates": 571,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "slides": 1,
+            "solutionLength": 13,
+            "solutionTurns": 8,
+            "strategicBlocks": 6,
+            "teleports": 0,
+            "temptingTraps": 0,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.357,
+            "wallDetour": 0,
+            "wallInteractionMoves": 4,
+            "walls": 8
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-2"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-63282505D365",
+      "name": "Daily 39",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [3, 1],
+        [1, 2],
+        [4, 2],
+        [0, 3],
+        [2, 3],
+        [2, 4],
+        [0, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 5]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [2, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 3]
+        },
+        {
+          "color": "Yellow",
+          "pos": [3, 2]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Fan",
+          "pos": [2, 0],
+          "dir": "Left",
+          "power": 2
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xA4B4A765E9753D06",
+        "generatorParams": "daily balanced v1 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=0",
+        "solverVersion": 1,
+        "solution": "DLURURRUUURDD",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 42.44,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.154,
+            "challenge": 42.44,
+            "coordinationMoves": 9,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.1218,
+            "deadEndSettlements": 151,
+            "deadEndStates": 304,
+            "decisionPoints": 11,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 2,
+            "misleadingMoves": 23,
+            "patternCount": 5,
+            "plops": 3,
+            "pushes": 2,
+            "randomSolveProbability": 0.0029,
+            "reachableStates": 2496,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 12,
+            "sleeperBlocks": 0,
+            "slides": 0,
+            "solutionLength": 13,
+            "solutionTurns": 8,
+            "strategicBlocks": 9,
+            "teleports": 0,
+            "temptingTraps": 0,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.261,
+            "wallDetour": 2,
+            "wallInteractionMoves": 5,
+            "walls": 7
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-2"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-A3988291C6F9",
+      "name": "Daily 40",
+      "optimalMoves": 13,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [4, 0],
+        [5, 0],
+        [1, 1],
+        [3, 1],
+        [3, 2],
+        [5, 2],
+        [2, 3],
+        [2, 4],
+        [3, 4],
+        [0, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 2]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Frost",
+          "pos": [4, 5]
+        },
+        {
+          "type": "Fan",
+          "pos": [1, 2],
+          "dir": "Up",
+          "power": 1
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xFE01EA7C10B5496E",
+        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=5",
+        "solverVersion": 1,
+        "solution": "URLDDRLDRRDLD",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 49.95,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.077,
+            "challenge": 49.95,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0439,
+            "deadEndSettlements": 14,
+            "deadEndStates": 18,
+            "decisionPoints": 13,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 0,
+            "mechanicKindsUsed": 2,
+            "mechanicSteps": 6,
+            "misleadingMoves": 24,
+            "patternCount": 7,
+            "plops": 2,
+            "pushes": 5,
+            "randomSolveProbability": 0.0007,
+            "reachableStates": 410,
+            "repetitionRatio": 0.167,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 3,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "slides": 2,
+            "solutionLength": 13,
+            "solutionTurns": 10,
+            "strategicBlocks": 6,
+            "teleports": 0,
+            "temptingTraps": 1,
+            "trapMoves": 1,
+            "unusedSpaceRatio": 0.48,
+            "wallDetour": 2,
+            "wallInteractionMoves": 5,
+            "walls": 11
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-2"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-BC16A1E617B5",
+      "name": "Daily 41",
+      "optimalMoves": 10,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [2, 0],
+        [0, 1],
+        [1, 1],
+        [4, 1],
+        [4, 2],
+        [0, 3],
+        [1, 3],
+        [1, 4],
+        [4, 4],
+        [3, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 4]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Frost",
+          "pos": [3, 3]
+        },
+        {
+          "type": "Lava",
+          "pos": [3, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xEE48796FC5093B39",
+        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
+        "solverVersion": 1,
+        "solution": "URRUUULULD",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 36.07,
+          "category": "Normal",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.1,
+            "challenge": 36.07,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0685,
+            "deadEndSettlements": 8,
+            "deadEndStates": 10,
+            "decisionPoints": 9,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 7,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 1,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 2,
+            "misleadingMoves": 15,
+            "patternCount": 7,
+            "plops": 2,
+            "pushes": 0,
+            "randomSolveProbability": 0.0059,
+            "reachableStates": 146,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 5,
+            "sleeperBlocks": 0,
+            "slides": 2,
+            "solutionLength": 10,
+            "solutionTurns": 6,
+            "strategicBlocks": 6,
+            "teleports": 0,
+            "temptingTraps": 1,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.353,
+            "wallDetour": 6,
+            "wallInteractionMoves": 4,
+            "walls": 13
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-3"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-DAAA5B5E6509",
+      "name": "Daily 42",
+      "optimalMoves": 12,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [3, 0],
+        [1, 1],
+        [3, 1],
+        [1, 2],
+        [5, 2],
+        [2, 3],
+        [4, 3],
+        [1, 4],
+        [2, 4],
+        [2, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 4]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 4]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Lava",
+          "pos": [5, 1]
+        },
+        {
+          "type": "Fan",
+          "pos": [0, 0],
+          "dir": "Right",
+          "power": 2
+        },
+        {
+          "type": "Lava",
+          "pos": [0, 5]
+        },
+        {
+          "type": "Lava",
+          "pos": [1, 3]
+        },
+        {
+          "type": "Frost",
+          "pos": [3, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x28F26B886D869465",
+        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
+        "solverVersion": 1,
+        "solution": "DDLDDLUULUUR",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 55.15,
+          "category": "Expert",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 2.917,
+            "challenge": 55.15,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 4,
+            "deadEndRatio": 0.0943,
+            "deadEndSettlements": 14,
+            "deadEndStates": 15,
+            "decisionPoints": 12,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 1,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 1,
+            "mechanicKindsUsed": 2,
+            "mechanicSteps": 2,
+            "misleadingMoves": 17,
+            "patternCount": 7,
+            "plops": 2,
+            "pushes": 1,
+            "randomSolveProbability": 0.0014,
+            "reachableStates": 159,
+            "repetitionRatio": 0.364,
+            "requiredSettlementPairs": 1,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 4,
+            "sleeperBlocks": 0,
+            "slides": 1,
+            "solutionLength": 12,
+            "solutionTurns": 7,
+            "strategicBlocks": 5,
+            "teleports": 0,
+            "temptingTraps": 2,
+            "trapMoves": 3,
+            "unusedSpaceRatio": 0.48,
+            "wallDetour": 4,
+            "wallInteractionMoves": 2,
+            "walls": 11
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-3"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-6DAB3C1EC7F7",
+      "name": "Daily 43",
+      "optimalMoves": 12,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [4, 0],
+        [1, 1],
+        [2, 1],
+        [3, 1],
+        [2, 2],
+        [2, 3],
+        [4, 3],
+        [4, 4],
+        [0, 5],
+        [2, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 4]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [1, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 4]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Lava",
+          "pos": [3, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x06ADAE757CF0D4D8",
+        "generatorParams": "daily balanced v1 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=1",
+        "solverVersion": 1,
+        "solution": "ULLDRDDDRUUR",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 40.43,
+          "category": "Normal",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.25,
+            "challenge": 40.43,
+            "coordinationMoves": 10,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.118,
+            "deadEndSettlements": 305,
+            "deadEndStates": 328,
+            "decisionPoints": 12,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 1,
+            "mechanicKindsUsed": 0,
+            "mechanicSteps": 0,
+            "misleadingMoves": 25,
+            "patternCount": 7,
+            "plops": 3,
+            "pushes": 0,
+            "randomSolveProbability": 0.0006,
+            "reachableStates": 2780,
+            "repetitionRatio": 0.364,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "slides": 0,
+            "solutionLength": 12,
+            "solutionTurns": 7,
+            "strategicBlocks": 10,
+            "teleports": 0,
+            "temptingTraps": 1,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.3,
+            "wallDetour": 0,
+            "wallInteractionMoves": 8,
+            "walls": 10
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-3"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-1FB5C0BE69DF",
+      "name": "Daily 44",
+      "optimalMoves": 12,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [5, 1],
+        [1, 2],
+        [0, 3],
+        [2, 3],
+        [3, 3],
+        [2, 4],
+        [5, 4],
+        [4, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 2]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Fan",
+          "pos": [4, 1],
+          "dir": "Left",
+          "power": 2
+        },
+        {
+          "type": "Lava",
+          "pos": [2, 2]
+        },
+        {
+          "type": "Lava",
+          "pos": [5, 3]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x812A231E76FA9B35",
+        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=1",
+        "solverVersion": 1,
+        "solution": "DLURUUULULLD",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 41.67,
+          "category": "Normal",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 2.833,
+            "challenge": 41.67,
+            "coordinationMoves": 1,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0264,
+            "deadEndSettlements": 16,
+            "deadEndStates": 10,
+            "decisionPoints": 12,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 2,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 1,
+            "misleadingMoves": 16,
+            "patternCount": 5,
+            "plops": 2,
+            "pushes": 1,
+            "randomSolveProbability": 0.0018,
+            "reachableStates": 379,
+            "repetitionRatio": 0.273,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "slides": 0,
+            "solutionLength": 12,
+            "solutionTurns": 8,
+            "strategicBlocks": 1,
+            "teleports": 0,
+            "temptingTraps": 1,
+            "trapMoves": 4,
+            "unusedSpaceRatio": 0.36,
+            "wallDetour": 2,
+            "wallInteractionMoves": 0,
+            "walls": 11
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-3"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-F45160199DEC",
+      "name": "Daily 45",
+      "optimalMoves": 10,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [0, 1],
+        [2, 1],
+        [4, 1],
+        [0, 2],
+        [2, 3],
+        [3, 3],
+        [1, 4],
+        [1, 5],
+        [2, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 0]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Lava",
+          "pos": [1, 3]
+        },
+        {
+          "type": "Fan",
+          "pos": [2, 2],
+          "dir": "Left",
+          "power": 2
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xE6089E691585D966",
+        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
+        "solverVersion": 1,
+        "solution": "DLLDRDRUUR",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 36.63,
+          "category": "Normal",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.1,
+            "challenge": 36.63,
+            "coordinationMoves": 7,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.1224,
+            "deadEndSettlements": 13,
+            "deadEndStates": 12,
+            "decisionPoints": 10,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 8,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 1,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 1,
+            "misleadingMoves": 17,
+            "patternCount": 6,
+            "plops": 2,
+            "pushes": 1,
+            "randomSolveProbability": 0.0052,
+            "reachableStates": 98,
+            "repetitionRatio": 0.222,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 4,
+            "sleeperBlocks": 0,
+            "slides": 0,
+            "solutionLength": 10,
+            "solutionTurns": 7,
+            "strategicBlocks": 7,
+            "teleports": 0,
+            "temptingTraps": 0,
+            "trapMoves": 2,
+            "unusedSpaceRatio": 0.5,
+            "wallDetour": 0,
+            "wallInteractionMoves": 4,
+            "walls": 10
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-3"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-57F1375BA382",
+      "name": "Daily 46",
+      "optimalMoves": 12,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [5, 0],
+        [5, 2],
+        [5, 3],
+        [1, 4],
+        [3, 4],
+        [5, 4],
+        [3, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 1]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 5]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 1]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 1]
+        },
+        {
+          "color": "Yellow",
+          "pos": [1, 3]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Lava",
+          "pos": [3, 1]
+        },
+        {
+          "type": "Frost",
+          "pos": [3, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x8B3FF26730A75A05",
+        "generatorParams": "daily balanced v1 6x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
+        "solverVersion": 1,
+        "solution": "URUDLDDRRDRU",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 56.77,
+          "category": "Expert",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.583,
+            "challenge": 56.77,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0503,
+            "deadEndSettlements": 577,
+            "deadEndStates": 575,
+            "decisionPoints": 12,
+            "earlySettleTraps": 3,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 6,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 1,
+            "misleadingMoves": 22,
+            "patternCount": 6,
+            "plops": 3,
+            "pushes": 0,
+            "randomSolveProbability": 0.0002,
+            "reachableStates": 11429,
+            "repetitionRatio": 0.182,
+            "requiredSettlementPairs": 1,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 2,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "slides": 1,
+            "solutionLength": 12,
+            "solutionTurns": 9,
+            "strategicBlocks": 6,
+            "teleports": 0,
+            "temptingTraps": 0,
+            "trapMoves": 9,
+            "unusedSpaceRatio": 0.393,
+            "wallDetour": 0,
+            "wallInteractionMoves": 3,
+            "walls": 8
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-3"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-E7AE8B16287F",
+      "name": "Daily 47",
+      "optimalMoves": 11,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [4, 0],
+        [2, 1],
+        [3, 1],
+        [1, 2],
+        [2, 3],
+        [1, 4],
+        [4, 4]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 1]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 3]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Frost",
+          "pos": [0, 5]
+        },
+        {
+          "type": "Lava",
+          "pos": [1, 3]
+        },
+        {
+          "type": "Frost",
+          "pos": [3, 3]
+        },
+        {
+          "type": "Fan",
+          "pos": [0, 1],
+          "dir": "Up",
+          "power": 2
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xD6CA4A1B38B9485B",
+        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
+        "solverVersion": 1,
+        "solution": "ULUURDRRDDR",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 44.98,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.545,
+            "challenge": 44.98,
+            "coordinationMoves": 7,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0563,
+            "deadEndSettlements": 21,
+            "deadEndStates": 17,
+            "decisionPoints": 11,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 1,
+            "mechanicKindsUsed": 2,
+            "mechanicSteps": 3,
+            "misleadingMoves": 24,
+            "patternCount": 6,
+            "plops": 2,
+            "pushes": 1,
+            "randomSolveProbability": 0.0008,
+            "reachableStates": 302,
+            "repetitionRatio": 0.3,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "slides": 2,
+            "solutionLength": 11,
+            "solutionTurns": 7,
+            "strategicBlocks": 7,
+            "teleports": 0,
+            "temptingTraps": 1,
+            "trapMoves": 3,
+            "unusedSpaceRatio": 0.364,
+            "wallDetour": 6,
+            "wallInteractionMoves": 5,
+            "walls": 8
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-3"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-DE2133ED1097",
+      "name": "Daily 48",
+      "optimalMoves": 11,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [1, 0],
+        [2, 0],
+        [3, 0],
+        [4, 0],
+        [5, 0],
+        [2, 2],
+        [3, 2],
+        [0, 3],
+        [1, 3],
+        [2, 3],
+        [0, 4],
+        [4, 4],
+        [0, 5],
+        [2, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [5, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [5, 3]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Lava",
+          "pos": [4, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xC1E84AE43193A6F8",
+        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
+        "solverVersion": 1,
+        "solution": "UDRRRDRUUUR",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 49.65,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.455,
+            "challenge": 49.65,
+            "coordinationMoves": 8,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.1269,
+            "deadEndSettlements": 13,
+            "deadEndStates": 17,
+            "decisionPoints": 11,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 1,
+            "forcedSteps": 11,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 6,
+            "mechanicKindsUsed": 0,
+            "mechanicSteps": 0,
+            "misleadingMoves": 18,
+            "patternCount": 7,
+            "plops": 2,
+            "pushes": 0,
+            "randomSolveProbability": 0.0004,
+            "reachableStates": 134,
+            "repetitionRatio": 0.4,
+            "requiredSettlementPairs": 1,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "slides": 0,
+            "solutionLength": 11,
+            "solutionTurns": 6,
+            "strategicBlocks": 8,
+            "teleports": 0,
+            "temptingTraps": 2,
+            "trapMoves": 9,
+            "unusedSpaceRatio": 0.381,
+            "wallDetour": 2,
+            "wallInteractionMoves": 8,
+            "walls": 15
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-3"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-6525BAC13BA8",
+      "name": "Daily 49",
+      "optimalMoves": 9,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [0, 2],
+        [3, 3],
+        [0, 4],
+        [3, 4],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [3, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [1, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 5]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Lava",
+          "pos": [3, 2]
+        },
+        {
+          "type": "Frost",
+          "pos": [2, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x9AD2FF17A10B18DA",
+        "generatorParams": "daily balanced v1 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
+        "solverVersion": 1,
+        "solution": "UULDRRDDL",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 37.54,
+          "category": "Normal",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.667,
+            "challenge": 37.54,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0117,
+            "deadEndSettlements": 149,
+            "deadEndStates": 64,
+            "decisionPoints": 9,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 5,
+            "forcedSteps": 8,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 2,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 1,
+            "misleadingMoves": 20,
+            "patternCount": 7,
+            "plops": 3,
+            "pushes": 0,
+            "randomSolveProbability": 0.0122,
+            "reachableStates": 5454,
+            "repetitionRatio": 0.375,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "slides": 1,
+            "solutionLength": 9,
+            "solutionTurns": 5,
+            "strategicBlocks": 5,
+            "teleports": 0,
+            "temptingTraps": 1,
+            "trapMoves": 3,
+            "unusedSpaceRatio": 0.417,
+            "wallDetour": 0,
+            "wallInteractionMoves": 3,
+            "walls": 6
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-3"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-91F019BC404A",
+      "name": "Daily 50",
+      "optimalMoves": 12,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 1],
+        [4, 1],
+        [1, 3],
+        [3, 3],
+        [4, 3],
+        [1, 4],
+        [2, 4],
+        [3, 4],
+        [4, 4],
+        [1, 5],
+        [2, 5],
+        [3, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [5, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [1, 2]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Frost",
+          "pos": [0, 4]
+        },
+        {
+          "type": "Lava",
+          "pos": [2, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xC59D1F39F6FCA969",
+        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
+        "solverVersion": 1,
+        "solution": "LUDURRDLRDRR",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 47.52,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3,
+            "challenge": 47.52,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 2,
+            "deadEndRatio": 0.0137,
+            "deadEndSettlements": 5,
+            "deadEndStates": 4,
+            "decisionPoints": 10,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 11,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 3,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 1,
+            "misleadingMoves": 18,
+            "patternCount": 7,
+            "plops": 2,
+            "pushes": 0,
+            "randomSolveProbability": 0.0013,
+            "reachableStates": 291,
+            "repetitionRatio": 0.182,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "slides": 1,
+            "solutionLength": 12,
+            "solutionTurns": 9,
+            "strategicBlocks": 5,
+            "teleports": 0,
+            "temptingTraps": 2,
+            "trapMoves": 5,
+            "unusedSpaceRatio": 0.391,
+            "wallDetour": 0,
+            "wallInteractionMoves": 3,
+            "walls": 13
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-3"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-8E7F4719B497",
+      "name": "Daily 51",
+      "optimalMoves": 13,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [1, 1],
+        [4, 1],
+        [3, 2],
+        [4, 2],
+        [1, 3],
+        [1, 4],
+        [2, 4],
+        [4, 4],
+        [0, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [0, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [3, 0]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 5]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Portal",
+          "pos": [3, 1],
+          "pair": 0
+        },
+        {
+          "type": "Portal",
+          "pos": [3, 4],
+          "pair": 0
+        },
+        {
+          "type": "Lava",
+          "pos": [4, 0]
+        },
+        {
+          "type": "Lava",
+          "pos": [2, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x7283A4153CD6A728",
+        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
+        "solverVersion": 1,
+        "solution": "DDURURURURUUD",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 56.93,
+          "category": "Expert",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.077,
+            "challenge": 56.93,
+            "coordinationMoves": 8,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.1011,
+            "deadEndSettlements": 6,
+            "deadEndStates": 18,
+            "decisionPoints": 13,
+            "earlySettleTraps": 3,
+            "firstSettlementChoices": 1,
+            "forcedSteps": 13,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 6,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 1,
+            "misleadingMoves": 17,
+            "patternCount": 6,
+            "plops": 2,
+            "pushes": 0,
+            "randomSolveProbability": 0.0002,
+            "reachableStates": 178,
+            "repetitionRatio": 0.167,
+            "requiredSettlementPairs": 1,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "slides": 0,
+            "solutionLength": 13,
+            "solutionTurns": 10,
+            "strategicBlocks": 8,
+            "teleports": 1,
+            "temptingTraps": 1,
+            "trapMoves": 10,
+            "unusedSpaceRatio": 0.368,
+            "wallDetour": 0,
+            "wallInteractionMoves": 6,
+            "walls": 11
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-4"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-672F34772CE7",
+      "name": "Daily 52",
+      "optimalMoves": 11,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [3, 0],
+        [3, 1],
+        [3, 2],
+        [5, 3],
+        [0, 4],
+        [5, 4],
+        [0, 5],
+        [1, 5],
+        [3, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [4, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 2]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Portal",
+          "pos": [5, 2],
+          "pair": 0
+        },
+        {
+          "type": "Portal",
+          "pos": [4, 4],
+          "pair": 0
+        },
+        {
+          "type": "Lava",
+          "pos": [1, 3]
+        },
+        {
+          "type": "Lava",
+          "pos": [5, 1]
+        },
+        {
+          "type": "Lava",
+          "pos": [3, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0x84C00F2F4CC11CFC",
+        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
+        "solverVersion": 1,
+        "solution": "LDULULLDLLU",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 42.28,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.273,
+            "challenge": 42.28,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0615,
+            "deadEndSettlements": 4,
+            "deadEndStates": 4,
+            "decisionPoints": 10,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 10,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 6,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 1,
+            "misleadingMoves": 15,
+            "patternCount": 6,
+            "plops": 2,
+            "pushes": 0,
+            "randomSolveProbability": 0.0002,
+            "reachableStates": 65,
+            "repetitionRatio": 0.2,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 2,
+            "sleeperBlocks": 0,
+            "slides": 0,
+            "solutionLength": 11,
+            "solutionTurns": 8,
+            "strategicBlocks": 4,
+            "teleports": 1,
+            "temptingTraps": 1,
+            "trapMoves": 9,
+            "unusedSpaceRatio": 0.462,
+            "wallDetour": 0,
+            "wallInteractionMoves": 3,
+            "walls": 10
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-4"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-BA1A4923A240",
+      "name": "Daily 53",
+      "optimalMoves": 10,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [3, 2],
+        [4, 2],
+        [1, 3],
+        [3, 3],
+        [4, 3],
+        [0, 4],
+        [0, 5],
+        [3, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 5]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [0, 3]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [2, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 2]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Portal",
+          "pos": [3, 0],
+          "pair": 0
+        },
+        {
+          "type": "Portal",
+          "pos": [0, 2],
+          "pair": 0
+        },
+        {
+          "type": "Lava",
+          "pos": [0, 1]
+        },
+        {
+          "type": "Lava",
+          "pos": [4, 1]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xF6358AFCEFACBDC1",
+        "generatorParams": "daily balanced v1 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
+        "solverVersion": 1,
+        "solution": "URDUUDRUUR",
+        "solutionLength": 10,
+        "difficulty": {
+          "score": 41.62,
+          "category": "Normal",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.9,
+            "challenge": 41.62,
+            "coordinationMoves": 7,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.2879,
+            "deadEndSettlements": 184,
+            "deadEndStates": 387,
+            "decisionPoints": 9,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 5,
+            "forcedSteps": 8,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 4,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 2,
+            "misleadingMoves": 22,
+            "patternCount": 6,
+            "plops": 3,
+            "pushes": 0,
+            "randomSolveProbability": 0.0004,
+            "reachableStates": 1344,
+            "repetitionRatio": 0.222,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 4,
+            "sleeperBlocks": 0,
+            "slides": 0,
+            "solutionLength": 10,
+            "solutionTurns": 7,
+            "strategicBlocks": 7,
+            "teleports": 2,
+            "temptingTraps": 1,
+            "trapMoves": 5,
+            "unusedSpaceRatio": 0.286,
+            "wallDetour": 0,
+            "wallInteractionMoves": 7,
+            "walls": 9
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-4"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-4ECFF37E6F92",
+      "name": "Daily 54",
+      "optimalMoves": 12,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [5, 0],
+        [1, 1],
+        [3, 1],
+        [3, 2],
+        [4, 2],
+        [5, 2],
+        [2, 3],
+        [5, 3],
+        [0, 4],
+        [3, 4],
+        [0, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [0, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 2]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Portal",
+          "pos": [5, 4],
+          "pair": 0
+        },
+        {
+          "type": "Portal",
+          "pos": [0, 3],
+          "pair": 0
+        },
+        {
+          "type": "Lava",
+          "pos": [1, 5]
+        },
+        {
+          "type": "Lava",
+          "pos": [4, 5]
+        },
+        {
+          "type": "Lava",
+          "pos": [3, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xE74647BAD7EB27F0",
+        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
+        "solverVersion": 1,
+        "solution": "UULDURUDLLRR",
+        "solutionLength": 12,
+        "difficulty": {
+          "score": 44.26,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.167,
+            "challenge": 44.26,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.0523,
+            "deadEndSettlements": 2,
+            "deadEndStates": 8,
+            "decisionPoints": 11,
+            "earlySettleTraps": 0,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 8,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 4,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 3,
+            "misleadingMoves": 15,
+            "patternCount": 5,
+            "plops": 2,
+            "pushes": 0,
+            "randomSolveProbability": 0.0032,
+            "reachableStates": 153,
+            "repetitionRatio": 0.273,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 30,
+            "sleeperBlocks": 0,
+            "slides": 0,
+            "solutionLength": 12,
+            "solutionTurns": 8,
+            "strategicBlocks": 6,
+            "teleports": 3,
+            "temptingTraps": 1,
+            "trapMoves": 6,
+            "unusedSpaceRatio": 0.5,
+            "wallDetour": 4,
+            "wallInteractionMoves": 4,
+            "walls": 14
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-4"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-3CE553648799",
+      "name": "Daily 55",
+      "optimalMoves": 9,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [2, 0],
+        [0, 1],
+        [2, 1],
+        [4, 1],
+        [0, 2],
+        [2, 3],
+        [2, 4],
+        [1, 5],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [3, 5]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [3, 0]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Portal",
+          "pos": [1, 1],
+          "pair": 0
+        },
+        {
+          "type": "Portal",
+          "pos": [3, 1],
+          "pair": 0
+        },
+        {
+          "type": "Lava",
+          "pos": [2, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xECF1EDE25CC8072A",
+        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=1",
+        "solverVersion": 1,
+        "solution": "DDDLURDDU",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 36.59,
+          "category": "Normal",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3,
+            "challenge": 36.59,
+            "coordinationMoves": 7,
+            "counterIntuitiveSteps": 0,
+            "deadEndRatio": 0.2778,
+            "deadEndSettlements": 16,
+            "deadEndStates": 15,
+            "decisionPoints": 8,
+            "earlySettleTraps": 3,
+            "firstSettlementChoices": 1,
+            "forcedSteps": 7,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 1,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 1,
+            "misleadingMoves": 12,
+            "patternCount": 5,
+            "plops": 2,
+            "pushes": 0,
+            "randomSolveProbability": 0.0131,
+            "reachableStates": 54,
+            "repetitionRatio": 0.375,
+            "requiredSettlementPairs": 1,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 6,
+            "sleeperBlocks": 0,
+            "slides": 0,
+            "solutionLength": 9,
+            "solutionTurns": 5,
+            "strategicBlocks": 7,
+            "teleports": 1,
+            "temptingTraps": 1,
+            "trapMoves": 4,
+            "unusedSpaceRatio": 0.474,
+            "wallDetour": 0,
+            "wallInteractionMoves": 4,
+            "walls": 11
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-4"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-08997FBFA2B9",
+      "name": "Daily 56",
+      "optimalMoves": 11,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [4, 0],
+        [0, 1],
+        [2, 2],
+        [5, 2],
+        [2, 3],
+        [4, 3],
+        [5, 3],
+        [0, 4],
+        [2, 4],
+        [2, 5],
+        [5, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [5, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 1]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [3, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [4, 2]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 0]
+        },
+        {
+          "color": "Yellow",
+          "pos": [4, 1]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Portal",
+          "pos": [3, 2],
+          "pair": 0
+        },
+        {
+          "type": "Portal",
+          "pos": [0, 5],
+          "pair": 0
+        },
+        {
+          "type": "Lava",
+          "pos": [2, 1]
+        },
+        {
+          "type": "Lava",
+          "pos": [2, 0]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xFD7BCA10FA96E097",
+        "generatorParams": "daily balanced v1 6x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
+        "solverVersion": 1,
+        "solution": "UULURLDRDDL",
+        "solutionLength": 11,
+        "difficulty": {
+          "score": 44.39,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3.364,
+            "challenge": 44.39,
+            "coordinationMoves": 3,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0118,
+            "deadEndSettlements": 100,
+            "deadEndStates": 77,
+            "decisionPoints": 10,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 11,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 5,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 2,
+            "misleadingMoves": 19,
+            "patternCount": 7,
+            "plops": 3,
+            "pushes": 0,
+            "randomSolveProbability": 0.0003,
+            "reachableStates": 6508,
+            "repetitionRatio": 0.2,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "slides": 0,
+            "solutionLength": 11,
+            "solutionTurns": 8,
+            "strategicBlocks": 3,
+            "teleports": 2,
+            "temptingTraps": 1,
+            "trapMoves": 7,
+            "unusedSpaceRatio": 0.36,
+            "wallDetour": 0,
+            "wallInteractionMoves": 2,
+            "walls": 11
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-4"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-CABB5480B5CE",
+      "name": "Daily 57",
+      "optimalMoves": 9,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [4, 1],
+        [2, 2],
+        [1, 3],
+        [3, 3],
+        [4, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [4, 0]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 4]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [0, 4]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Portal",
+          "pos": [4, 3],
+          "pair": 0
+        },
+        {
+          "type": "Portal",
+          "pos": [1, 5],
+          "pair": 0
+        },
+        {
+          "type": "Lava",
+          "pos": [0, 2]
+        },
+        {
+          "type": "Lava",
+          "pos": [2, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xD44ADA6E091BC9D8",
+        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=1",
+        "solverVersion": 1,
+        "solution": "ULUURUDLD",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 44.14,
+          "category": "Hard",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 2.889,
+            "challenge": 44.14,
+            "coordinationMoves": 5,
+            "counterIntuitiveSteps": 3,
+            "deadEndRatio": 0.064,
+            "deadEndSettlements": 18,
+            "deadEndStates": 19,
+            "decisionPoints": 9,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 2,
+            "forcedSteps": 9,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 2,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 3,
+            "misleadingMoves": 14,
+            "patternCount": 7,
+            "plops": 2,
+            "pushes": 0,
+            "randomSolveProbability": 0.0011,
+            "reachableStates": 297,
+            "repetitionRatio": 0.125,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 1,
+            "sleeperBlocks": 0,
+            "slides": 0,
+            "solutionLength": 9,
+            "solutionTurns": 7,
+            "strategicBlocks": 5,
+            "teleports": 3,
+            "temptingTraps": 1,
+            "trapMoves": 3,
+            "unusedSpaceRatio": 0.478,
+            "wallDetour": 0,
+            "wallInteractionMoves": 4,
+            "walls": 7
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-4"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-F999100E1588",
+      "name": "Daily 58",
+      "optimalMoves": 7,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [2, 0],
+        [3, 0],
+        [5, 0],
+        [5, 1],
+        [0, 2],
+        [1, 2],
+        [0, 3],
+        [4, 3],
+        [0, 4],
+        [1, 4],
+        [5, 4],
+        [3, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [5, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [0, 5]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 4]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Portal",
+          "pos": [4, 2],
+          "pair": 0
+        },
+        {
+          "type": "Portal",
+          "pos": [2, 1],
+          "pair": 0
+        },
+        {
+          "type": "Lava",
+          "pos": [3, 2]
+        },
+        {
+          "type": "Frost",
+          "pos": [1, 5]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xF13C936F8D76F80A",
+        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=3",
+        "solverVersion": 1,
+        "solution": "LUURUUL",
+        "solutionLength": 7,
+        "difficulty": {
+          "score": 32.49,
+          "category": "Normal",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 3,
+            "challenge": 32.49,
+            "coordinationMoves": 4,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.0494,
+            "deadEndSettlements": 30,
+            "deadEndStates": 19,
+            "decisionPoints": 6,
+            "earlySettleTraps": 1,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 6,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 2,
+            "mechanicKindsUsed": 2,
+            "mechanicSteps": 2,
+            "misleadingMoves": 10,
+            "patternCount": 6,
+            "plops": 2,
+            "pushes": 0,
+            "randomSolveProbability": 0.0129,
+            "reachableStates": 385,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 3,
+            "sleeperBlocks": 0,
+            "slides": 1,
+            "solutionLength": 7,
+            "solutionTurns": 4,
+            "strategicBlocks": 4,
+            "teleports": 1,
+            "temptingTraps": 1,
+            "trapMoves": 3,
+            "unusedSpaceRatio": 0.5,
+            "wallDetour": 2,
+            "wallInteractionMoves": 4,
+            "walls": 12
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-4"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-9CA48AE79DD6",
+      "name": "Daily 59",
+      "optimalMoves": 9,
+      "width": 5,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [4, 0],
+        [4, 2],
+        [0, 3],
+        [1, 3],
+        [2, 3],
+        [4, 3],
+        [0, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 2]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [1, 5]
+        },
+        {
+          "id": 2,
+          "color": "Yellow",
+          "pos": [1, 2]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 4]
+        },
+        {
+          "color": "Blue",
+          "pos": [4, 4]
+        },
+        {
+          "color": "Yellow",
+          "pos": [2, 5]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Portal",
+          "pos": [0, 4],
+          "pair": 0
+        },
+        {
+          "type": "Portal",
+          "pos": [3, 1],
+          "pair": 0
+        },
+        {
+          "type": "Lava",
+          "pos": [3, 4]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xE68A77568DCBB724",
+        "generatorParams": "daily balanced v1 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
+        "solverVersion": 1,
+        "solution": "RURRDRDUR",
+        "solutionLength": 9,
+        "difficulty": {
+          "score": 34.41,
+          "category": "Normal",
+          "metrics": {
+            "area": 30,
+            "avgBranching": 3.333,
+            "challenge": 34.41,
+            "coordinationMoves": 6,
+            "counterIntuitiveSteps": 1,
+            "deadEndRatio": 0.2614,
+            "deadEndSettlements": 130,
+            "deadEndStates": 657,
+            "decisionPoints": 8,
+            "earlySettleTraps": 0,
+            "firstSettlementChoices": 4,
+            "forcedSteps": 7,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 3,
+            "mechanicKindsUsed": 1,
+            "mechanicSteps": 2,
+            "misleadingMoves": 14,
+            "patternCount": 5,
+            "plops": 3,
+            "pushes": 0,
+            "randomSolveProbability": 0.0041,
+            "reachableStates": 2513,
+            "repetitionRatio": 0.125,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 0,
+            "shortestSolutionCount": 4,
+            "sleeperBlocks": 0,
+            "slides": 0,
+            "solutionLength": 9,
+            "solutionTurns": 7,
+            "strategicBlocks": 6,
+            "teleports": 2,
+            "temptingTraps": 1,
+            "trapMoves": 5,
+            "unusedSpaceRatio": 0.455,
+            "wallDetour": 4,
+            "wallInteractionMoves": 6,
+            "walls": 8
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-4"
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "id": "PLOP-4F24EFAF0C3D",
+      "name": "Daily 60",
+      "optimalMoves": 13,
+      "width": 6,
+      "height": 6,
+      "walls": [
+        [0, 0],
+        [1, 0],
+        [3, 0],
+        [4, 0],
+        [5, 0],
+        [1, 1],
+        [3, 1],
+        [3, 2],
+        [4, 2],
+        [2, 4],
+        [3, 4],
+        [4, 4],
+        [1, 5]
+      ],
+      "plops": [
+        {
+          "id": 0,
+          "color": "Red",
+          "pos": [2, 5]
+        },
+        {
+          "id": 1,
+          "color": "Blue",
+          "pos": [2, 0]
+        }
+      ],
+      "nests": [
+        {
+          "color": "Red",
+          "pos": [1, 3]
+        },
+        {
+          "color": "Blue",
+          "pos": [2, 3]
+        }
+      ],
+      "tiles": [
+        {
+          "type": "Frost",
+          "pos": [2, 2]
+        },
+        {
+          "type": "Portal",
+          "pos": [4, 1],
+          "pair": 0
+        },
+        {
+          "type": "Portal",
+          "pos": [5, 4],
+          "pair": 0
+        },
+        {
+          "type": "Lava",
+          "pos": [5, 2]
+        }
+      ],
+      "dev": {
+        "generatorVersion": 3,
+        "seed": "0xFEFA8AD4C0FDB964",
+        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=3",
+        "solverVersion": 1,
+        "solution": "RRRDRLDLULLLU",
+        "solutionLength": 13,
+        "difficulty": {
+          "score": 52.88,
+          "category": "Hard",
+          "metrics": {
+            "area": 36,
+            "avgBranching": 2.846,
+            "challenge": 52.88,
+            "coordinationMoves": 12,
+            "counterIntuitiveSteps": 4,
+            "deadEndRatio": 0.0581,
+            "deadEndSettlements": 25,
+            "deadEndStates": 10,
+            "decisionPoints": 11,
+            "earlySettleTraps": 2,
+            "firstSettlementChoices": 3,
+            "forcedSteps": 12,
+            "greedyLength": -1,
+            "greedySolves": 0,
+            "hazardAlternatives": 2,
+            "mechanicKindsUsed": 2,
+            "mechanicSteps": 3,
+            "misleadingMoves": 19,
+            "patternCount": 7,
+            "plops": 2,
+            "pushes": 0,
+            "randomSolveProbability": 0.0015,
+            "reachableStates": 172,
+            "repetitionRatio": 0.333,
+            "requiredSettlementPairs": 0,
+            "requiresAwayMove": 1,
+            "requiresCoordination": 1,
+            "retreatSteps": 1,
+            "shortestSolutionCount": 4,
+            "sleeperBlocks": 0,
+            "slides": 1,
+            "solutionLength": 13,
+            "solutionTurns": 8,
+            "strategicBlocks": 12,
+            "teleports": 2,
+            "temptingTraps": 2,
+            "trapMoves": 4,
+            "unusedSpaceRatio": 0.348,
+            "wallDetour": 6,
+            "wallInteractionMoves": 10,
+            "walls": 13
+          }
+        },
+        "notes": "Phase 11 Daily pool, tier daily-4"
+      }
+    }
+  ]
+}

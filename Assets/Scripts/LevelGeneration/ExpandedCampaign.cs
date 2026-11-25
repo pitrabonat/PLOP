@@ -368,7 +368,7 @@ namespace Plop.Generation
         }
 
         /// <summary>Canonical id, verified shortest solution, insight metrics and the Perfect target.</summary>
-        private static LevelDefinition Finalize(LevelDefinition level, StateSpaceAnalysis analysis, PuzzleInsight insight, ulong? seed,
+        internal static LevelDefinition Finalize(LevelDefinition level, StateSpaceAnalysis analysis, PuzzleInsight insight, ulong? seed,
             string parameters, string instruction)
         {
             string id = LevelCanonicalizer.CanonicalId(level);

@@ -44,7 +44,7 @@ namespace Plop.Tests
         [Test]
         public void ShippedCampaign_HasNoForcedMovementLoops()
         {
-            string path = GenerationTests.FindLevelFile(ExpandedCampaign.PackId + ".json");
+            string path = GenerationTests.FindLevelFile(BalancedCampaign.PackId + ".json");
             if (path == null) Assert.Ignore("campaign pack not found in this environment.");
             foreach (var level in LevelSerializer.PackFromJson(File.ReadAllText(path)).Where(l => l.HasMechanics))
             {

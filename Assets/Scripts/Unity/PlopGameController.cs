@@ -78,6 +78,7 @@ namespace Plop.Presentation
         private bool _playingDaily;
         private DateTime _dailyDate;
         private bool _assisted;            // a hint was shown during this level visit (no Perfect)
+        private int _attempts;             // restarts, failures and dead ends this visit (hint grace)
         // ---- Phase 10 ----
         private enum Recovery { None, Lava, OutOfMoves }
         private Recovery _pendingRecovery;
@@ -278,8 +279,8 @@ namespace Plop.Presentation
         private void Start()
         {
             if (_progress != null) return; // catalog supplied by tests or tools
-            // A scene saved before Phase 10 still names the retired pack; it is archived outside Resources.
-            if (levelPackResource == LevelLibrary.PreviousPack) levelPackResource = LevelLibrary.DefaultPack;
+            // A scene saved before Phase 11 still names a retired pack; those are archived outside Resources.
+            if (LevelLibrary.IsRetired(levelPackResource)) levelPackResource = LevelLibrary.DefaultPack;
             _levels = LevelLibrary.Load(levelPackResource);
             if (_levels.Count == 0) return;
             if (levelPackResource == LevelLibrary.DefaultPack)
@@ -366,6 +367,7 @@ namespace Plop.Presentation
 
         private void OnApplicationPause(bool paused)
         {
+            if (paused) Playtest(PlaytestEvent.Left);
             _applicationPaused = paused;
             ApplyApplicationActivity();
         }
@@ -401,8 +403,42 @@ namespace Plop.Presentation
 
         private void OnDestroy()
         {
+            Playtest(PlaytestEvent.Left);
             _engine.EventRaised -= OnEngineEvent;
             OnDemandRendering.renderFrameInterval = 1;
+        }
+
+        // ------------------------------------------------------------------ Phase 11 local playtest metrics
+
+        /// <summary>Development builds: set to 1 to append one CSV row per level visit to persistentDataPath.</summary>
+        internal const string PlaytestPreference = "plop.debug.playtest";
+        internal const string PlaytestFile = "playtest_metrics.csv";
+        private PlaytestLog _playtest;
+
+        internal static string PlaytestPath => System.IO.Path.Combine(Application.persistentDataPath, PlaytestFile);
+
+        /// <summary>Compiled out of release players. Local file only; nothing is sent anywhere.</summary>
+        [System.Diagnostics.Conditional("UNITY_EDITOR"), System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        private void Playtest(PlaytestEvent e, int moves = -1)
+        {
+            if (_playtest == null)
+            {
+                if (e != PlaytestEvent.Start || !rememberProgress || PlayerPrefs.GetInt(PlaytestPreference, 0) != 1) return;
+                _playtest = new PlaytestLog(DateTime.UtcNow.ToString("yyyyMMdd-HHmmss", System.Globalization.CultureInfo.InvariantCulture));
+            }
+            var level = _engine.HasLevel ? _engine.Level : null;
+            string row = _playtest.Record(e, DateTime.UtcNow, _playingDaily ? 0 : _index + 1, level?.Id, level?.OptimalMoves ?? 0,
+                moves >= 0 ? moves : _engine.MoveCount);
+            if (row == null) return;
+            try
+            {
+                if (!System.IO.File.Exists(PlaytestPath)) System.IO.File.WriteAllText(PlaytestPath, PlaytestLog.Header + "\n");
+                System.IO.File.AppendAllText(PlaytestPath, row + "\n");
+            }
+            catch (Exception ex) when (ex is System.IO.IOException || ex is UnauthorizedAccessException)
+            {
+                PlopLog.Info("Playtest log not written: " + ex.GetType().Name);
+            }
         }
 
         public void ApplyFrameRate()
@@ -507,7 +543,7 @@ namespace Plop.Presentation
             if (GameplayBlocked) return;
             ClearPendingInput();
             MarkActive();
-            _engine.Undo();
+            if (_engine.Undo()) Playtest(PlaytestEvent.Undo);
         }
 
         public void Restart()
@@ -515,6 +551,7 @@ namespace Plop.Presentation
             if (GameplayBlocked) return;
             ClearPendingInput();
             MarkActive();
+            if (_engine.HasLevel && _engine.MoveCount > 0) { _attempts++; Playtest(PlaytestEvent.Restart); }
             _engine.Restart();
         }
 
@@ -577,6 +614,7 @@ namespace Plop.Presentation
         /// <summary>Hints cost Dream Dust except on the first levels and on levels that teach something.</summary>
         internal bool HintIsFree => _engine.HasLevel && !_playingDaily && (_index < FreeHintLevels || _engine.Level.Instruction != null);
         internal int HintCost => HintIsFree ? 0 : RewardRules.HintCost;
+        internal int AttemptsThisVisit => _attempts;
 
         private void CheckCurrentDeadlock()
         {
@@ -655,8 +693,9 @@ namespace Plop.Presentation
 
         private void RevealDeadlock()
         {
-            if (!_deadlockPresented && _deadlockReveal == null && !_hud.IsDeadlockOpen)
-                _deadlockReveal = StartCoroutine(RevealDeadlockAfterMotion(_deadlockRevision));
+            if (_deadlockPresented || _deadlockReveal != null || _hud.IsDeadlockOpen) return;
+            _attempts++;
+            _deadlockReveal = StartCoroutine(RevealDeadlockAfterMotion(_deadlockRevision));
         }
 
         private IEnumerator RevealDeadlockAfterMotion(int revision)
@@ -742,18 +781,24 @@ namespace Plop.Presentation
                     string charged = "";
                     if (!HintIsFree)
                     {
-                        string key = RewardRules.HintKey(level.Id, new StateCodec(level).Encode(state));
-                        var spend = _wallet.TrySpend(key, RewardRules.HintCost);
-                        if (spend == DreamDustWallet.SpendResult.InsufficientDust)
+                        var spend = HintPolicy.Charge(_wallet, level.Id, new StateCodec(level).Encode(state), _attempts);
+                        if (spend == HintCharge.Insufficient)
                         {
-                            ShowHint("A hint costs " + RewardRules.HintCost + " Dream Dust. You have " + _wallet.Balance + ".");
+                            int more = HintPolicy.GraceAttempts - _attempts;
+                            ShowHint("A hint costs " + RewardRules.HintCost + " Dream Dust. You have " + _wallet.Balance + "." +
+                                (more > 0 && !_wallet.HasSpent(HintPolicy.GraceKey(level.Id))
+                                    ? "\nKeep trying: after " + more + " more " + (more == 1 ? "try" : "tries") + " the first hint here is free."
+                                    : ""));
                             return null;
                         }
-                        if (spend == DreamDustWallet.SpendResult.Charged)
+                        if (spend == HintCharge.Charged)
                             charged = "\n−" + RewardRules.HintCost + " Dream Dust · " + _wallet.Balance + " left";
+                        else if (spend == HintCharge.Grace)
+                            charged = "\nThis one is on the house.";
                     }
                     _assisted = true; // a revealed route means this visit can no longer earn Perfect
                     ShowHint("Try swiping " + direction.ToString().ToLowerInvariant() + "." + charged, direction: direction);
+                    Playtest(PlaytestEvent.Hint);
                     return direction;
                 }
 
@@ -885,6 +930,8 @@ namespace Plop.Presentation
                     _board.Build(_engine.Level, _engine.CurrentState, ShapeAtlas.ForDensity(FitCamera(), _look));
                     InvalidateHint();
                     _assisted = false;
+                    _attempts = 0;
+                    Playtest(PlaytestEvent.Start);
                     _hud.SetPerfectTarget(_engine.Level.OptimalMoves, _records.IsPerfect(_engine.Level.Id));
                     _hud.SetLevel(_engine.Level.Name, _engine.Level.Instruction);
                     _hud.SetSubtitle(_playingDaily
@@ -927,6 +974,7 @@ namespace Plop.Presentation
                     _hud.SetCanUndo(true);
                     break;
                 case GameEventType.LevelCompleted:
+                    Playtest(PlaytestEvent.Solved, e.MoveCount);
                     ClearPendingInput();
                     CompleteCurrentLevel(e.MoveCount);
                     break;
@@ -934,12 +982,16 @@ namespace Plop.Presentation
                     ClearPendingInput();
                     CancelDeadlockCheck();
                     _pendingRecovery = Recovery.Lava; // shown once the board has played the whole chain
+                    _attempts++;
+                    Playtest(PlaytestEvent.Failure);
                     PlopLog.Info("Attempt failed (Lava) on " + _engine.Level.Id);
                     break;
                 case GameEventType.OutOfMoves:
                     ClearPendingInput();
                     CancelDeadlockCheck();
                     _pendingRecovery = Recovery.OutOfMoves;
+                    _attempts++;
+                    Playtest(PlaytestEvent.Failure);
                     break;
             }
         }
@@ -1021,7 +1073,7 @@ namespace Plop.Presentation
             if (_dailyPool.Count == 0) { _menu.ShowToast("Daily puzzle unavailable"); return false; }
             var now = Clock.LocalNow;
             _dailyDate = now.Date;
-            var puzzle = _dailyPool[DailySchedule.PoolIndex(now, _dailyPool.Count)];
+            var puzzle = _dailyPool[DailyPickIndex(now)];
             _menu.Hide();
             ClearPendingInput();
             InvalidateHint();
@@ -1029,6 +1081,33 @@ namespace Plop.Presentation
             _engine.LoadLevel(puzzle.WithMetadata(null, name: "Daily Puzzle"));
             MarkActive();
             return true;
+        }
+
+        private const string DailyPickKey = "plop.daily.pick.v2";
+
+        /// <summary>
+        /// Today's puzzle among those whose mechanics the player has met. The choice is remembered for the day, so
+        /// finishing a World does not swap a puzzle that was already started.
+        /// </summary>
+        internal int DailyPickIndex(DateTime now)
+        {
+            string date = DailySchedule.DateKey(now);
+            string saved = rememberProgress ? PlayerPrefs.GetString(DailyPickKey, "") : "";
+            int bar = saved.IndexOf('|');
+            if (bar > 0 && saved.Substring(0, bar) == date)
+            {
+                string id = saved.Substring(bar + 1);
+                for (int i = 0; i < _dailyPool.Count; i++) if (_dailyPool[i].Id == id) return i;
+            }
+            int completed = 0;
+            for (int i = 0; i < _levels.Count; i++) if (_progress != null && _progress.IsCompleted(i)) completed = i + 1;
+            int index = Math.Max(0, DailySchedule.PickIndex(_dailyPool, now, completed));
+            if (SavesProgress)
+            {
+                PlayerPrefs.SetString(DailyPickKey, date + "|" + _dailyPool[index].Id);
+                PlayerPrefs.Save();
+            }
+            return index;
         }
 
         /// <summary>Supplies a daily pool directly (tests, tools).</summary>

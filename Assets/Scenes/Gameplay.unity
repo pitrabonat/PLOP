@@ -372,7 +372,7 @@ MonoBehaviour:
   targetFrameRate: 60
   idleRenderInterval: 3
   idleDelay: 0.75
-  levelPackResource: Levels/PLOP_Pack_002
+  levelPackResource: Levels/PLOP_Pack_003
   rememberProgress: 1
 --- !u!4 &712097112
 Transform:

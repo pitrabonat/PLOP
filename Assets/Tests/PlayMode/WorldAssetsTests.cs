@@ -6,14 +6,14 @@ namespace Plop.Tests.PlayMode
 {
     public sealed class WorldAssetsTests
     {
-        // Phase 10: nine Worlds over 160 levels; the five original ids are unchanged.
+        // Phase 10: nine Worlds over 160 levels (Phase 11: Frost begins at level 6); the five original ids are unchanged.
         private static readonly string[] Ids =
         {
             "cozy-nest", "frosted-pond", "breezy-meadow", "ember-hollow", "prism-observatory",
             "dewdrop-garden", "rainy-window", "twilight-attic", "moonlit-clouds"
         };
-        private static readonly int[] First = { 1, 7, 21, 35, 49, 64, 86, 109, 134 };
-        private static readonly int[] Last = { 6, 20, 34, 48, 63, 85, 108, 133, 160 };
+        private static readonly int[] First = { 1, 6, 21, 35, 49, 64, 86, 109, 134 };
+        private static readonly int[] Last = { 5, 20, 34, 48, 63, 85, 108, 133, 160 };
         private static readonly WorldAmbience[] Beds =
         {
             WorldAmbience.CozyNest, WorldAmbience.FrostedPond, WorldAmbience.BreezyMeadow, WorldAmbience.EmberHollow,

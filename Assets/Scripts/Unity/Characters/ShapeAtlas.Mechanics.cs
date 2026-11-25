@@ -7,6 +7,8 @@ namespace Plop.Presentation
     /// Phase 10 tile art, baked into the board atlas: each mechanic has its own silhouette, not just a colour.
     /// Frost: faceted pale ice. Lava: scalloped warning rim with an ember glow. Breeze: a fan housing with
     /// separate blades (they spin when the fan pushes) and a direction chevron. Loops: a ring with a soft swirl.
+    /// Phase 11: each Loop pair also carries 1–6 dice pips, so pairs never rely on colour alone, and fan power
+    /// pips are larger so one, two and three cells of push read at phone size.
     /// </summary>
     public sealed partial class ShapeAtlas
     {
@@ -33,12 +35,17 @@ namespace Plop.Presentation
             specs.Add(Make(FanKey, -0.5f, -0.5f, 1f, 1f, PaintFanBase));
             specs.Add(Make(FanBladesKey, -0.3f, -0.3f, 0.6f, 0.6f, PaintFanBlades));
             specs.Add(Make(FanArrowKey, -0.12f, -0.09f, 0.24f, 0.18f, PaintFanArrow, 192));
-            specs.Add(Make(FanPipKey, -0.04f, -0.04f, 0.08f, 0.08f, (x, y, px) =>
-                FanInk.WithAlpha(Sdf.Coverage(Sdf.Circle(x, y, 0f, 0f, 0.028f), px)), 128));
+            specs.Add(Make(FanPipKey, -0.055f, -0.055f, 0.11f, 0.11f, (x, y, px) =>
+            {
+                // Ink dot with a pale halo so it reads on both the tile and the fan housing.
+                var halo = PlopPalette.Highlight.WithAlpha(0.85f * Sdf.Coverage(Sdf.Circle(x, y, 0f, 0f, 0.047f), px));
+                return Sdf.Over(halo, FanInk, Sdf.Coverage(Sdf.Circle(x, y, 0f, 0f, 0.036f), px));
+            }, 128));
             for (int i = 0; i < PortalColors; i++)
             {
                 var tint = PortalTints[i];
-                specs.Add(Make(PortalKey(i), -0.5f, -0.5f, 1f, 1f, (x, y, px) => PaintPortal(x, y, px, tint)));
+                int pips = i + 1;
+                specs.Add(Make(PortalKey(i), -0.5f, -0.5f, 1f, 1f, (x, y, px) => PaintPortal(x, y, px, tint, pips)));
             }
             specs.Add(Make(BurnKey, -0.18f, -0.18f, 0.36f, 0.36f, (x, y, px) =>
             {
@@ -139,7 +146,18 @@ namespace Plop.Presentation
             return FanInk.WithAlpha(0.95f * Sdf.Coverage(d, pixel));
         }
 
-        private static Color PaintPortal(float x, float y, float pixel, Color tint)
+        /// <summary>Dice layouts (unit square ±1) for 1–6 pips.</summary>
+        private static readonly Vector2[][] DicePips =
+        {
+            new[] { new Vector2(0, 0) },
+            new[] { new Vector2(-1, 1), new Vector2(1, -1) },
+            new[] { new Vector2(-1, 1), new Vector2(0, 0), new Vector2(1, -1) },
+            new[] { new Vector2(-1, 1), new Vector2(1, 1), new Vector2(-1, -1), new Vector2(1, -1) },
+            new[] { new Vector2(-1, 1), new Vector2(1, 1), new Vector2(0, 0), new Vector2(-1, -1), new Vector2(1, -1) },
+            new[] { new Vector2(-1, 1), new Vector2(1, 1), new Vector2(-1, 0), new Vector2(1, 0), new Vector2(-1, -1), new Vector2(1, -1) },
+        };
+
+        private static Color PaintPortal(float x, float y, float pixel, Color tint, int pips)
         {
             var c = PaintTile(x, y, pixel);
             float r = Mathf.Sqrt(x * x + y * y);
@@ -153,7 +171,13 @@ namespace Plop.Presentation
             var core = Color.Lerp(Color.Lerp(tint, PlopPalette.Highlight, 0.55f), PlopPalette.Highlight, 0.35f * swirl + 0.5f * Smooth(1f - r / 0.2f));
             c = Sdf.Over(c, core, Sdf.Coverage(inner, pixel));
             float glint = Sdf.Ellipse(x, y, -0.13f, 0.2f, 0.05f, 0.022f);
-            return Sdf.Over(c, PlopPalette.Highlight, 0.7f * Sdf.Soft(glint, 0.02f));
+            c = Sdf.Over(c, PlopPalette.Highlight, 0.7f * Sdf.Soft(glint, 0.02f));
+            // Pair mark: the two ends of a Loop show the same pip count.
+            float pip = 10f;
+            foreach (var p in DicePips[Mathf.Clamp(pips, 1, 6) - 1])
+                pip = Mathf.Min(pip, Sdf.Circle(x, y, p.x * 0.075f, p.y * 0.075f, 0.03f));
+            var ink = Color.Lerp(tint, PlopPalette.Ink, 0.72f);
+            return Sdf.Over(c, ink, 0.92f * Sdf.Coverage(pip, pixel));
         }
     }
 }

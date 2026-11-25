@@ -222,7 +222,7 @@ namespace Plop.Presentation
                             // Power pips sit opposite the chevron: one dot per cell of push.
                             var across = new Vector2(-dir.y, dir.x);
                             var pip = Simple("Breeze power " + t.Position, atlas.Get(ShapeAtlas.FanPipKey), -974);
-                            pip.transform.localPosition = at + (Vector3)(-dir * 0.395f + across * ((k - (t.Power - 1) * 0.5f) * 0.075f));
+                            pip.transform.localPosition = at + (Vector3)(-dir * 0.40f + across * ((k - (t.Power - 1) * 0.5f) * 0.1f));
                         }
                         break;
                 }

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   _id: frosted-pond
   _displayName: Frosted Pond
-  _firstLevel: 7
+  _firstLevel: 6
   _lastLevel: 20
   _backgroundColor: {r: 0.862745, g: 0.925490, b: 0.968627, a: 1}
   _accentColor: {r: 0.611765, g: 0.768627, b: 0.870588, a: 1}
