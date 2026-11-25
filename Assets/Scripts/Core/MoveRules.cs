@@ -14,6 +14,24 @@ namespace Plop.Core
     ///    Because the front Plop moves first, a Plop directly behind it follows in the same command.
     ///  * A Plop entering a Nest of its own color falls asleep immediately and never moves again.
     ///  * Non-matching Nests are ordinary floor.
+    ///
+    /// Phase 10 mechanics resolve in two deterministic phases inside the same atomic command:
+    ///  A. Step: every awake Plop takes its normal one-cell step (exactly as above). Entering Lava fails the
+    ///     attempt at once and nothing else resolves.
+    ///  B. Effects: each Plop that stepped onto a mechanic tile resolves its whole forced-movement chain,
+    ///     one Plop at a time, in the same front-to-back order. On every entered cell, in this order:
+    ///       1. Lava          — the attempt fails; resolution stops for every Plop.
+    ///       2. Matching Nest — the Plop falls asleep and stops.
+    ///       3. Loop          — first portal this command: teleport to its pair (direction kept) if the pair cell
+    ///                          is free, else stay on the entry portal and stop. Later portals act as floor.
+    ///       4. Breeze fan    — first visit of that fan this command: a walking Plop is pushed up to Power cells
+    ///                          in the fan's direction; a sliding Plop turns and keeps sliding. Revisits act as floor.
+    ///       5. Frost         — the Plop starts sliding in its current direction until stopped.
+    ///     Forced movement stops before walls, the board edge and any Plop (awake or asleep; Plops that have not
+    ///     resolved yet are where Phase A left them). Every chain is finite (each fan acts once, one teleport,
+    ///     straight lines between); a safety budget throws <see cref="UnresolvedMovementException"/> instead of
+    ///     ever returning a truncated result.
+    /// A failed state is terminal: <see cref="Apply"/> returns false without changes.
     /// </summary>
     public static class MoveRules
     {
@@ -27,6 +45,9 @@ namespace Plop.Core
         public static bool Apply(LevelDefinition level, GameState state, Direction dir,
             List<GameEvent> events = null, int[] orderScratch = null)
         {
+            if (state.Failed) return false;
+            bool mechanics = level.HasMechanics;
+            uint forced = 0; // Plops that stepped onto a mechanic tile and still need Phase B
             int n = state.PlopCount;
             int[] order = orderScratch != null && orderScratch.Length >= n ? orderScratch : new int[n];
             int count = BuildOrder(level, state, dir, order);
@@ -69,13 +90,150 @@ namespace Plop.Core
                 changed = true;
                 var to = new GridPosition(tx, ty);
                 events?.Add(new GameEvent(GameEventType.PlopMoved, id, new GridPosition(x, y), to, dir, BlockReason.None, -1, -1));
+                if (mechanics && level.TileAt(target) == TileKind.Lava)
+                {
+                    Burn(state, id, to, dir, events);
+                    return true;
+                }
                 if (level.IsMatchingNest(id, target))
                 {
                     state.SetAsleep(id);
                     events?.Add(new GameEvent(GameEventType.PlopSettled, id, to, to, dir, BlockReason.None, -1, -1));
                 }
+                else if (mechanics && level.TileAt(target) != TileKind.Floor) forced |= 1u << id;
+            }
+
+            if (forced == 0) return changed;
+            for (int k = 0; k < count; k++)
+            {
+                int id = order[k];
+                if ((forced & (1u << id)) == 0 || state.IsAsleep(id)) continue;
+                if (!ResolveForced(level, state, id, dir, events)) return true; // failed: stop all resolution
             }
             return changed;
+        }
+
+        private enum Motion : byte { Step, Push, Slide }
+
+        private static void Burn(GameState state, int id, GridPosition at, Direction dir, List<GameEvent> events)
+        {
+            state.SetFailed(id, FailureReason.Lava);
+            events?.Add(new GameEvent(GameEventType.PlopBurned, id, at, at, dir, BlockReason.None, -1, -1));
+        }
+
+        /// <summary>
+        /// Phase B for one Plop standing on the cell it just stepped onto. Returns false when the attempt failed.
+        /// </summary>
+        private static bool ResolveForced(LevelDefinition level, GameState state, int id, Direction dir, List<GameEvent> events)
+        {
+            int width = level.Width;
+            int cell = state.CellOf(id);
+            var motion = Motion.Step;
+            int budget = 0;
+            ulong fansUsed = 0;
+            bool teleported = false;
+            int segmentStart = cell;
+            var segmentType = GameEventType.PlopSlid;
+            var segmentDir = dir;
+            int guard = 0;
+            int maxSteps = (level.FanCount + 3) * (level.Width + level.Height) + 8;
+
+            while (true)
+            {
+                // ---- entry effects of the current cell, in precedence order ----
+                var tile = level.TileAt(cell);
+                if (tile == TileKind.Lava)
+                {
+                    Flush(level, id, ref segmentStart, cell, segmentType, segmentDir, events);
+                    Burn(state, id, level.PositionOf(cell), dir, events);
+                    return false;
+                }
+                if (level.IsMatchingNest(id, cell))
+                {
+                    Flush(level, id, ref segmentStart, cell, segmentType, segmentDir, events);
+                    state.SetAsleep(id);
+                    var at = level.PositionOf(cell);
+                    events?.Add(new GameEvent(GameEventType.PlopSettled, id, at, at, dir, BlockReason.None, -1, -1));
+                    return true;
+                }
+                if (tile == TileKind.Portal && !teleported)
+                {
+                    Flush(level, id, ref segmentStart, cell, segmentType, segmentDir, events);
+                    teleported = true;
+                    int exit = level.PortalExitAt(cell);
+                    if (exit < 0 || state.PlopAt(exit) >= 0)
+                    {
+                        var here = level.PositionOf(cell);
+                        events?.Add(new GameEvent(GameEventType.PlopBlocked, id, here, here, dir, BlockReason.PortalExit,
+                            exit < 0 ? -1 : state.PlopAt(exit), -1));
+                        return true; // the teleport is cancelled and the Plop rests on the entry portal
+                    }
+                    events?.Add(new GameEvent(GameEventType.PlopTeleported, id, level.PositionOf(cell), level.PositionOf(exit), dir,
+                        BlockReason.None, -1, -1));
+                    state.SetCell(id, exit);
+                    cell = exit;
+                    segmentStart = cell;
+                    continue; // the exit is a portal too, so no further entry effect applies there
+                }
+                if (tile == TileKind.Fan)
+                {
+                    int fan = level.FanIndexAt(cell);
+                    ulong bit = fan >= 0 ? 1UL << fan : 0;
+                    if ((fansUsed & bit) == 0)
+                    {
+                        fansUsed |= bit;
+                        Flush(level, id, ref segmentStart, cell, segmentType, segmentDir, events);
+                        var def = level.TileDefinitionAt(cell);
+                        dir = def.Direction;
+                        if (motion != Motion.Slide) { motion = Motion.Push; budget = def.Power; }
+                    }
+                }
+                else if (tile == TileKind.Frost && motion != Motion.Slide)
+                {
+                    Flush(level, id, ref segmentStart, cell, segmentType, segmentDir, events);
+                    motion = Motion.Slide;
+                }
+
+                // ---- continue forced movement ----
+                if (motion == Motion.Step || (motion == Motion.Push && budget <= 0))
+                {
+                    Flush(level, id, ref segmentStart, cell, segmentType, segmentDir, events);
+                    return true;
+                }
+                int x = cell % width, y = cell / width;
+                switch (dir)
+                {
+                    case Direction.Up: y++; break;
+                    case Direction.Down: y--; break;
+                    case Direction.Left: x--; break;
+                    default: x++; break;
+                }
+                int next = y * width + x;
+                if (!level.InBounds(x, y) || level.IsWallCell(next) || state.PlopAt(next) >= 0)
+                {
+                    Flush(level, id, ref segmentStart, cell, segmentType, segmentDir, events);
+                    return true;
+                }
+                if (++guard > maxSteps)
+                    throw new UnresolvedMovementException("Forced movement of Plop " + id + " exceeded " + maxSteps + " steps in " + level.Id);
+
+                var type = motion == Motion.Slide ? GameEventType.PlopSlid : GameEventType.PlopPushed;
+                if (segmentStart != cell && (type != segmentType || dir != segmentDir))
+                    Flush(level, id, ref segmentStart, cell, segmentType, segmentDir, events);
+                if (segmentStart == cell) { segmentType = type; segmentDir = dir; }
+                state.SetCell(id, next);
+                cell = next;
+                if (motion == Motion.Push) budget--;
+            }
+        }
+
+        /// <summary>Emits the straight forced segment that ended at <paramref name="end"/> (if any) and starts a new one.</summary>
+        private static void Flush(LevelDefinition level, int id, ref int start, int end, GameEventType type, Direction dir,
+            List<GameEvent> events)
+        {
+            if (start != end)
+                events?.Add(new GameEvent(type, id, level.PositionOf(start), level.PositionOf(end), dir, BlockReason.None, -1, -1));
+            start = end;
         }
 
         /// <summary>

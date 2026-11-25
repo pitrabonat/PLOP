@@ -96,6 +96,7 @@ namespace Plop.Core
                     slot++;
                 }
             }
+            target.ClearFailure(); // keys only ever describe live states; failed states are terminal sinks
         }
 
         public GameState Decode(ulong key)

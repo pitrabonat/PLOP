@@ -14,6 +14,12 @@ namespace Plop.Core
     public static class LevelSerializer
     {
         public const int SchemaVersion = 1;
+        /// <summary>Schema 2 adds "tiles" (Frost, Lava, Breeze, Loops) and "moveLimit". Levels without them still write 1,
+        /// so classic packs stay byte-identical and older builds reject (never misplay) mechanic levels.</summary>
+        public const int MechanicsSchemaVersion = 2;
+
+        private static int VersionFor(LevelDefinition level)
+            => level.HasMechanics || level.MoveLimit > 0 ? MechanicsSchemaVersion : SchemaVersion;
 
         // ---------------- levels ----------------
 
@@ -31,7 +37,9 @@ namespace Plop.Core
         {
             var w = new JsonWriter(true);
             w.BeginObject();
-            w.Key("schemaVersion").Value(SchemaVersion);
+            int packVersion = SchemaVersion;
+            foreach (var level in levels) packVersion = Math.Max(packVersion, VersionFor(level));
+            w.Key("schemaVersion").Value(packVersion);
             w.Key("packId").Value(packId ?? "");
             w.Key("levels").BeginArray();
             foreach (var level in levels) WriteLevel(w, level, includeDevData);
@@ -53,11 +61,12 @@ namespace Plop.Core
         private static void WriteLevel(JsonWriter w, LevelDefinition level, bool includeDevData)
         {
             w.BeginObject();
-            w.Key("schemaVersion").Value(SchemaVersion);
+            w.Key("schemaVersion").Value(VersionFor(level));
             w.Key("id").Value(level.Id);
             w.Key("name").Value(level.Name);
             if (level.Instruction != null) w.Key("instruction").Value(level.Instruction);
             if (level.OptimalMoves > 0) w.Key("optimalMoves").Value(level.OptimalMoves);
+            if (level.MoveLimit > 0) w.Key("moveLimit").Value(level.MoveLimit);
             w.Key("width").Value(level.Width);
             w.Key("height").Value(level.Height);
 
@@ -87,6 +96,25 @@ namespace Plop.Core
                 w.EndObject();
             }
             w.EndArray();
+
+            if (level.HasMechanics)
+            {
+                w.Key("tiles").BeginArray();
+                foreach (var t in level.Tiles)
+                {
+                    w.BeginObject();
+                    w.Key("type").Value(t.Kind.ToString());
+                    w.Key("pos").InlineInts(t.Position.X, t.Position.Y);
+                    if (t.Kind == TileKind.Fan)
+                    {
+                        w.Key("dir").Value(t.Direction.ToString());
+                        w.Key("power").Value(t.Power);
+                    }
+                    if (t.Kind == TileKind.Portal) w.Key("pair").Value(t.Pair);
+                    w.EndObject();
+                }
+                w.EndArray();
+            }
 
             var m = level.Metadata;
             if (includeDevData && m != null)
@@ -118,8 +146,8 @@ namespace Plop.Core
         private static void CheckSchema(Dictionary<string, object> obj)
         {
             int version = MiniJson.GetInt(obj, "schemaVersion");
-            if (version < 1 || version > SchemaVersion)
-                throw new FormatException("Unsupported schemaVersion " + version + " (supported: 1.." + SchemaVersion + ").");
+            if (version < 1 || version > MechanicsSchemaVersion)
+                throw new FormatException("Unsupported schemaVersion " + version + " (supported: 1.." + MechanicsSchemaVersion + ").");
         }
 
         private static LevelDefinition ReadLevel(Dictionary<string, object> o, bool includeDevData)
@@ -155,7 +183,26 @@ namespace Plop.Core
 
             int optimal = MiniJson.GetInt(o, "optimalMoves", 0);
             if (optimal < 0) throw new FormatException("optimalMoves must be positive.");
-            return new LevelDefinition(id, name, width, height, walls, plops, nests, meta, MiniJson.GetString(o, "instruction", false), optimal);
+            int moveLimit = MiniJson.GetInt(o, "moveLimit", 0);
+            if (moveLimit < 0) throw new FormatException("moveLimit must not be negative.");
+            var tiles = new List<MechanicTile>();
+            if (o.TryGetValue("tiles", out object tilesObj) && tilesObj != null)
+            {
+                foreach (var item in MiniJson.AsArray(tilesObj, "tiles"))
+                {
+                    var t = MiniJson.AsObject(item, "tile");
+                    string type = MiniJson.GetString(t, "type");
+                    if (!Enum.TryParse(type, false, out TileKind kind) || kind == TileKind.Floor || !Enum.IsDefined(typeof(TileKind), kind))
+                        throw new FormatException("Unknown tile type '" + type + "'.");
+                    var pos = ReadPos(MiniJson.Get(t, "pos"), "tile.pos");
+                    var dir = Direction.Up;
+                    if (kind == TileKind.Fan && (!Enum.TryParse(MiniJson.GetString(t, "dir"), false, out dir) || !Enum.IsDefined(typeof(Direction), dir)))
+                        throw new FormatException("Fan at " + pos + " has an invalid direction.");
+                    tiles.Add(new MechanicTile(kind, pos, dir, MiniJson.GetInt(t, "power", 0), MiniJson.GetInt(t, "pair", -1)));
+                }
+            }
+            return new LevelDefinition(id, name, width, height, walls, plops, nests, meta, MiniJson.GetString(o, "instruction", false), optimal,
+                tiles, moveLimit);
         }
 
         private static LevelMetadata ReadMeta(Dictionary<string, object> d)

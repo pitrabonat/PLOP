@@ -65,6 +65,8 @@ namespace Plop.Core
                 if (!nestCells.Add(cell)) r.Add("Nests overlap at " + nest.Position + ".");
             }
 
+            ValidateTiles(level, r, wallCells, plopCells, nestCells);
+
             for (int c = 0; c < PlopColorUtil.Count; c++)
             {
                 if (plopsPerColor[c] != nestsPerColor[c])
@@ -80,6 +82,37 @@ namespace Plop.Core
                 if (!StateCodec.Fits(level)) r.Add("Board/Plop count too large for the 64-bit state key.");
             }
             return r;
+        }
+
+        /// <summary>Phase 10 tiles: one per floor cell, no Plop starts or Nests on them, fans 1–3, Loops in pairs.</summary>
+        private static void ValidateTiles(LevelDefinition level, ValidationResult r, HashSet<int> walls, HashSet<int> plops, HashSet<int> nests)
+        {
+            if (level.MoveLimit < 0) r.Add("Move limit must not be negative.");
+            var tileCells = new HashSet<int>();
+            var pairs = new Dictionary<int, int>();
+            foreach (var t in level.Tiles)
+            {
+                if (t.Kind == TileKind.Floor || (int)t.Kind > (int)TileKind.Portal) { r.Add("Tile " + t + " has an unknown kind."); continue; }
+                if (!level.InBounds(t.Position)) { r.Add("Tile " + t + " is outside the grid."); continue; }
+                int cell = level.CellIndex(t.Position);
+                if (!tileCells.Add(cell)) r.Add("Two tiles share " + t.Position + ".");
+                if (walls.Contains(cell)) r.Add("Tile " + t + " is on a wall.");
+                if (plops.Contains(cell)) r.Add("A Plop starts on tile " + t + "; Plops start on plain floor.");
+                if (nests.Contains(cell)) r.Add("A Nest sits on tile " + t + "; Nests need plain floor.");
+                if (t.Kind == TileKind.Fan)
+                {
+                    if (t.Power < 1 || t.Power > MechanicTile.MaxFanPower) r.Add("Fan " + t.Position + " power must be 1.." + MechanicTile.MaxFanPower + ".");
+                    if ((int)t.Direction > 3) r.Add("Fan " + t.Position + " has no valid direction.");
+                }
+                if (t.Kind == TileKind.Portal)
+                {
+                    if (t.Pair < 0 || t.Pair >= MechanicTile.MaxPortalPairs) r.Add("Loop " + t.Position + " pair must be 0.." + (MechanicTile.MaxPortalPairs - 1) + ".");
+                    else pairs[t.Pair] = pairs.TryGetValue(t.Pair, out int c) ? c + 1 : 1;
+                }
+            }
+            foreach (var kv in pairs)
+                if (kv.Value != 2) r.Add("Loop pair " + kv.Key + " has " + kv.Value + " end(s); it needs exactly 2.");
+            if (level.FanCount > 64) r.Add("At most 64 fans per level.");
         }
 
         /// <summary>Checks that an arbitrary state is consistent with the level.</summary>

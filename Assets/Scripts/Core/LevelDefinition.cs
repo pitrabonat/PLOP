@@ -52,6 +52,13 @@ namespace Plop.Core
         public IReadOnlyList<GridPosition> Walls => _wallList;
         public IReadOnlyList<PlopDefinition> Plops => _plops;
         public IReadOnlyList<NestDefinition> Nests => _nests;
+        /// <summary>Phase 10 mechanic tiles (Frost, Lava, Breeze fans, Loop portals). Empty for classic levels.</summary>
+        public IReadOnlyList<MechanicTile> Tiles => _tiles;
+        public bool HasMechanics => _tiles.Length > 0;
+        /// <summary>Optional Limited Moves challenge: the attempt ends after this many commands (0 = no limit).</summary>
+        public int MoveLimit { get; }
+        /// <summary>Number of fans; fans are numbered 0..FanCount-1 in tile order (stable per level).</summary>
+        public int FanCount { get; }
 
         /// <summary>Developer-only data (difficulty, solution, generator info). May be null. Not needed at runtime.</summary>
         public LevelMetadata Metadata { get; }
@@ -62,10 +69,15 @@ namespace Plop.Core
         private readonly bool[] _isWall;      // per cell
         private readonly sbyte[] _nestColor;  // per cell, NoNest if none
         private readonly PlopColor[] _plopColors; // per plop id
+        private readonly MechanicTile[] _tiles;
+        private readonly TileKind[] _tileKind;    // per cell
+        private readonly sbyte[] _fanIndex;       // per cell, -1 if none
+        private readonly int[] _portalExit;       // per cell, linked portal cell or -1
 
         public LevelDefinition(string id, string name, int width, int height,
             IEnumerable<GridPosition> walls, IEnumerable<PlopDefinition> plops, IEnumerable<NestDefinition> nests,
-            LevelMetadata metadata = null, string instruction = null, int optimalMoves = 0)
+            LevelMetadata metadata = null, string instruction = null, int optimalMoves = 0,
+            IEnumerable<MechanicTile> tiles = null, int moveLimit = 0)
         {
             if (width <= 0 || height <= 0) throw new ArgumentException("Width and height must be positive.");
             Id = id ?? string.Empty;
@@ -87,6 +99,31 @@ namespace Plop.Core
             for (int i = 0; i < _nestColor.Length; i++) _nestColor[i] = NoNest;
             foreach (var n in _nests)
                 if (InBounds(n.Position)) _nestColor[CellIndex(n.Position)] = (sbyte)n.Color;
+
+            MoveLimit = Math.Max(0, moveLimit);
+            _tiles = tiles == null ? Array.Empty<MechanicTile>() : new List<MechanicTile>(tiles).ToArray();
+            _tileKind = new TileKind[width * height];
+            _fanIndex = new sbyte[width * height];
+            _portalExit = new int[width * height];
+            for (int i = 0; i < _fanIndex.Length; i++) { _fanIndex[i] = -1; _portalExit[i] = -1; }
+            int fans = 0;
+            foreach (var t in _tiles)
+            {
+                if (!InBounds(t.Position)) continue;
+                int cell = CellIndex(t.Position);
+                _tileKind[cell] = t.Kind;
+                if (t.Kind == TileKind.Fan && fans < 64) _fanIndex[cell] = (sbyte)fans++;
+            }
+            FanCount = fans;
+            for (int i = 0; i < _tiles.Length; i++)
+            {
+                if (_tiles[i].Kind != TileKind.Portal || !InBounds(_tiles[i].Position)) continue;
+                for (int j = 0; j < _tiles.Length; j++)
+                {
+                    if (j == i || _tiles[j].Kind != TileKind.Portal || _tiles[j].Pair != _tiles[i].Pair || !InBounds(_tiles[j].Position)) continue;
+                    _portalExit[CellIndex(_tiles[i].Position)] = CellIndex(_tiles[j].Position);
+                }
+            }
 
             _plopColors = new PlopColor[_plops.Length];
             for (int i = 0; i < _plops.Length; i++)
@@ -111,20 +148,43 @@ namespace Plop.Core
 
         public PlopColor PlopColorOf(int plopId) => _plopColors[plopId];
 
+        public TileKind TileAt(int cell) => _tileKind[cell];
+        public TileKind TileAt(GridPosition p) => InBounds(p) ? _tileKind[CellIndex(p)] : TileKind.Floor;
+        /// <summary>Fan number (0-based, stable) at a cell, or -1.</summary>
+        public int FanIndexAt(int cell) => _fanIndex[cell];
+        /// <summary>The tile definition at a cell (Kind = Floor when the cell is plain).</summary>
+        public MechanicTile TileDefinitionAt(int cell)
+        {
+            if (_tileKind[cell] == TileKind.Floor) return default;
+            var p = PositionOf(cell);
+            foreach (var t in _tiles) if (t.Position == p) return t;
+            return default;
+        }
+        /// <summary>The paired portal's cell for a portal cell, else -1.</summary>
+        public int PortalExitAt(int cell) => _portalExit[cell];
+
         /// <summary>True when the cell contains a Nest matching the given Plop's color.</summary>
         public bool IsMatchingNest(int plopId, int cell) => _nestColor[cell] == (sbyte)_plopColors[plopId];
 
         /// <summary>Returns a copy of this level with different metadata (geometry is shared semantics, not reference).</summary>
         public LevelDefinition WithMetadata(LevelMetadata metadata, string id = null, string name = null)
-            => new LevelDefinition(id ?? Id, name ?? Name, Width, Height, _wallList, _plops, _nests, metadata, Instruction, OptimalMoves);
+            => new LevelDefinition(id ?? Id, name ?? Name, Width, Height, _wallList, _plops, _nests, metadata, Instruction, OptimalMoves, _tiles, MoveLimit);
 
         /// <summary>Copy with a different tutorial line (null removes it).</summary>
         public LevelDefinition WithInstruction(string instruction)
-            => new LevelDefinition(Id, Name, Width, Height, _wallList, _plops, _nests, Metadata, instruction, OptimalMoves);
+            => new LevelDefinition(Id, Name, Width, Height, _wallList, _plops, _nests, Metadata, instruction, OptimalMoves, _tiles, MoveLimit);
 
         /// <summary>Copy with the verified optimal move count (Perfect target).</summary>
         public LevelDefinition WithOptimalMoves(int optimalMoves)
-            => new LevelDefinition(Id, Name, Width, Height, _wallList, _plops, _nests, Metadata, Instruction, optimalMoves);
+            => new LevelDefinition(Id, Name, Width, Height, _wallList, _plops, _nests, Metadata, Instruction, optimalMoves, _tiles, MoveLimit);
+
+        /// <summary>Copy with mechanic tiles (replacing any existing ones).</summary>
+        public LevelDefinition WithTiles(IEnumerable<MechanicTile> tiles)
+            => new LevelDefinition(Id, Name, Width, Height, _wallList, _plops, _nests, Metadata, Instruction, OptimalMoves, tiles, MoveLimit);
+
+        /// <summary>Copy with a Limited Moves challenge (0 removes it).</summary>
+        public LevelDefinition WithMoveLimit(int moveLimit)
+            => new LevelDefinition(Id, Name, Width, Height, _wallList, _plops, _nests, Metadata, Instruction, OptimalMoves, _tiles, moveLimit);
 
         /// <summary>Creates the initial mutable state for this level.</summary>
         public GameState CreateInitialState()

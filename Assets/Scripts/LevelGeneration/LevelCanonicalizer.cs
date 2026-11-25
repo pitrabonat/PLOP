@@ -74,8 +74,22 @@ namespace Plop.Generation
             foreach (var p in level.Plops) plops.Add(new PlopDefinition(p.Id, p.Color, Transform(t, p.Start, level.Width, level.Height, out nw, out nh)));
             var nests = new List<NestDefinition>();
             foreach (var n in level.Nests) nests.Add(new NestDefinition(n.Color, Transform(t, n.Position, level.Width, level.Height, out nw, out nh)));
+            var tiles = new List<MechanicTile>();
+            foreach (var tile in level.Tiles)
+                tiles.Add(new MechanicTile(tile.Kind, Transform(t, tile.Position, level.Width, level.Height, out nw, out nh),
+                    TransformDirection(t, tile.Direction, level.Width, level.Height), tile.Power, tile.Pair));
             Transform(t, new GridPosition(0, 0), level.Width, level.Height, out nw, out nh);
-            return new LevelDefinition(level.Id, level.Name, nw, nh, walls, plops, nests, level.Metadata, level.Instruction, level.OptimalMoves);
+            return new LevelDefinition(level.Id, level.Name, nw, nh, walls, plops, nests, level.Metadata, level.Instruction, level.OptimalMoves,
+                tiles, level.MoveLimit);
+        }
+
+        /// <summary>Where a direction points after symmetry <paramref name="t"/> (fans rotate with the board).</summary>
+        public static Direction TransformDirection(int t, Direction d, int w, int h)
+        {
+            var a = Transform(t, new GridPosition(1, 1), Math.Max(w, 3), Math.Max(h, 3), out _, out _);
+            var b = Transform(t, new GridPosition(1, 1).Offset(d), Math.Max(w, 3), Math.Max(h, 3), out _, out _);
+            int dx = b.X - a.X, dy = b.Y - a.Y;
+            return dx > 0 ? Direction.Right : dx < 0 ? Direction.Left : dy > 0 ? Direction.Up : Direction.Down;
         }
 
         internal static string Build(LevelDefinition level, int t)
@@ -111,6 +125,38 @@ namespace Plop.Generation
             var sb = new StringBuilder();
             sb.Append(nw).Append('x').Append(nh).Append('|').Append(wallBits).Append('|');
             for (int i = 0; i < groups.Count; i++) sb.Append(i).Append(':').Append(groups[i]).Append(';');
+            if (level.HasMechanics || level.MoveLimit > 0)
+            {
+                // Mechanics change the rules of a cell, so they are part of identity. Loops are named by their
+                // partner cell (pair labels are arbitrary). Classic levels keep their original ids.
+                var codes = new List<string>();
+                foreach (var tile in level.Tiles)
+                {
+                    var q = Transform(t, tile.Position, level.Width, level.Height, out _, out _);
+                    int cell = q.Y * nw + q.X;
+                    switch (tile.Kind)
+                    {
+                        case TileKind.Frost: codes.Add("F" + cell); break;
+                        case TileKind.Lava: codes.Add("L" + cell); break;
+                        case TileKind.Fan:
+                            codes.Add("W" + cell + "" + "UDLR"[(int)TransformDirection(t, tile.Direction, level.Width, level.Height)] + tile.Power);
+                            break;
+                        case TileKind.Portal:
+                            int partner = -1;
+                            foreach (var other in level.Tiles)
+                                if (other.Kind == TileKind.Portal && other.Pair == tile.Pair && other.Position != tile.Position)
+                                {
+                                    var o = Transform(t, other.Position, level.Width, level.Height, out _, out _);
+                                    partner = o.Y * nw + o.X;
+                                }
+                            codes.Add("P" + Math.Min(cell, partner) + "-" + Math.Max(cell, partner));
+                            break;
+                    }
+                }
+                codes.Sort(StringComparer.Ordinal);
+                sb.Append("t:").Append(string.Join(",", codes));
+                if (level.MoveLimit > 0) sb.Append(";limit").Append(level.MoveLimit);
+            }
             return sb.ToString();
         }
     }

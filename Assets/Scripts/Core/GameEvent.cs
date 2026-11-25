@@ -15,7 +15,19 @@ namespace Plop.Core
         /// <summary>Restart restored the initial state; presentation should resync from the engine state.</summary>
         LevelRestarted,
         /// <summary>A new level (or arbitrary state) was loaded; presentation should rebuild.</summary>
-        LevelLoaded
+        LevelLoaded,
+        /// <summary>Frost slide: a Plop slid in a straight line From -> To (one or more cells).</summary>
+        PlopSlid,
+        /// <summary>Breeze: a fan pushed a Plop From -> To in the fan's direction (one or more cells).</summary>
+        PlopPushed,
+        /// <summary>Loop: a Plop teleported from one portal (From) to its pair (To).</summary>
+        PlopTeleported,
+        /// <summary>A Plop entered Lava at To. The attempt fails (see <see cref="LevelFailed"/>).</summary>
+        PlopBurned,
+        /// <summary>The attempt failed (Lava). Undo or Restart recover.</summary>
+        LevelFailed,
+        /// <summary>A Limited Moves challenge ran out of moves without completing.</summary>
+        OutOfMoves
     }
 
     public enum BlockReason : byte
@@ -23,7 +35,9 @@ namespace Plop.Core
         None,
         Edge,
         Wall,
-        Plop
+        Plop,
+        /// <summary>A Loop's exit was occupied, so the teleport was cancelled.</summary>
+        PortalExit
     }
 
     /// <summary>
@@ -63,6 +77,10 @@ namespace Plop.Core
                 case GameEventType.PlopMoved: return "Moved p" + PlopId + " " + From + "->" + To;
                 case GameEventType.PlopBlocked: return "Blocked p" + PlopId + " at " + From + " by " + BlockReason + (BlockerId >= 0 ? " p" + BlockerId : "");
                 case GameEventType.PlopSettled: return "Settled p" + PlopId + " at " + To;
+                case GameEventType.PlopSlid: return "Slid p" + PlopId + " " + From + "->" + To + " " + Direction;
+                case GameEventType.PlopPushed: return "Pushed p" + PlopId + " " + From + "->" + To + " " + Direction;
+                case GameEventType.PlopTeleported: return "Teleported p" + PlopId + " " + From + "->" + To;
+                case GameEventType.PlopBurned: return "Burned p" + PlopId + " at " + To;
                 default: return Type + " moves=" + MoveCount;
             }
         }

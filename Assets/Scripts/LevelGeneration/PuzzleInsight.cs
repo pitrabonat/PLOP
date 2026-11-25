@@ -21,6 +21,10 @@ namespace Plop.Generation
         public double SleeperBlock = 1.0;           // optimal steps that use a sleeping Plop as an obstacle
         public double RepetitionPenalty = 4.0;      // × share of repeated consecutive swipes
         public double UnusedSpacePenalty = 3.0;     // × share of floor never touched by any Plop on the route
+        // ---- Phase 10 mechanics (weights stay modest: mechanics must create thinking, not just motion) ----
+        public double HazardAlternative = 1.2;      // per optimal step that has a Lava (fatal) alternative, capped at 4
+        public double MechanicStep = 0.6;           // per optimal step whose result depends on Frost/Breeze/Loops, capped at 6
+        public double MechanicVariety = 1.0;        // per distinct mechanic kind the solution actually uses, beyond the first
 
         public static ChallengeWeights Default => new ChallengeWeights();
     }
@@ -55,6 +59,12 @@ namespace Plop.Generation
         public double UnusedSpaceRatio;
         public int ShortestSolutionCount;
         public int SolvableAlternatives;   // non-optimal swipes along the route that keep the level solvable
+        // ---- Phase 10 ----
+        public int HazardAlternatives;     // optimal steps where another swipe would fail (Lava)
+        public int MechanicSteps;          // optimal steps that slide, get pushed or teleport
+        public int Slides, Pushes, Teleports;
+        public int MechanicKindsUsed;      // distinct kinds (Frost, Breeze, Loop) on the solution route
+        public int FailingMoves;           // fatal edges in the whole reachable graph
 
         public double Challenge;
         /// <summary>Which design patterns (A–G from the Phase 8 brief) this puzzle exhibits.</summary>
@@ -79,6 +89,7 @@ namespace Plop.Generation
             uint[] asleep = new uint[g.Count];
             for (int s = 0; s < g.Count; s++)
             {
+                if (g.IsFail(s)) { h[s] = int.MaxValue / 4; continue; } // a player sees Lava and avoids it
                 codec.Decode(g.Keys[s], state);
                 h[s] = heuristic.Evaluate(state);
                 asleep[s] = SettledNestMask(level, state);
@@ -91,7 +102,8 @@ namespace Plop.Generation
                 DeadEndRatio = analysis.DeadEndRatio,
                 SettlementOrderMatters = analysis.RequiredSettlementPairs > 0,
                 RequiresCoordination = analysis.RequiresCoordination,
-                ShortestSolutionCount = analysis.ShortestSolutionCount
+                ShortestSolutionCount = analysis.ShortestSolutionCount,
+                FailingMoves = analysis.FailingMoves
             };
 
             RunGreedy(g, h, r);
@@ -122,7 +134,10 @@ namespace Plop.Generation
                 w.EarlySettleTrap * Math.Min(3, r.EarlySettleTraps) +
                 (r.SettlementOrderMatters ? w.SettlementOrder : 0) +
                 (r.RequiresCoordination ? w.RequiredCoordination : 0) +
-                w.SleeperBlock * r.SleeperBlocks -
+                w.SleeperBlock * r.SleeperBlocks +
+                w.HazardAlternative * Math.Min(4, r.HazardAlternatives) +
+                w.MechanicStep * Math.Min(6, r.MechanicSteps) +
+                w.MechanicVariety * Math.Max(0, r.MechanicKindsUsed - 1) -
                 w.RepetitionPenalty * r.RepetitionRatio -
                 w.UnusedSpacePenalty * r.UnusedSpaceRatio;
             return Math.Round(Math.Max(0, score), 2);
@@ -140,7 +155,7 @@ namespace Plop.Generation
                 for (int d = 0; d < 4; d++)
                 {
                     int t = g.Next(cur, d);
-                    if (t < 0 || t == cur || visited.Contains(t)) continue;
+                    if (t < 0 || t == cur || g.IsFail(t) || visited.Contains(t)) continue;
                     if (best < 0 || h[t] < h[best]) best = t;
                 }
                 if (best < 0) break; // stuck: every swipe revisits a known board
@@ -189,11 +204,11 @@ namespace Plop.Generation
             engine.LoadLevel(level);
             for (int id = 0; id < level.Plops.Count; id++) touched.Add(engine.CurrentState.CellOf(id));
 
-            int cur = 0;
+            int cur = 0, kinds = 0;
             foreach (var move in analysis.Solution)
             {
                 int bestH = int.MaxValue, optimalCount = 0;
-                bool greedyChoiceOptimal = false, retreatNeeded = true, costlyAlternative = false;
+                bool greedyChoiceOptimal = false, retreatNeeded = true, costlyAlternative = false, fatalAlternative = false;
                 for (int d = 0; d < 4; d++)
                 {
                     int t = g.Next(cur, d);
@@ -211,6 +226,11 @@ namespace Plop.Generation
                         if (h[t] <= h[cur]) retreatNeeded = false;
                         continue;
                     }
+                    if (g.IsFail(t))
+                    {
+                        costlyAlternative = fatalAlternative = true;
+                        continue;
+                    }
                     if (g.Distance[t] < 0)
                     {
                         costlyAlternative = true;
@@ -226,21 +246,32 @@ namespace Plop.Generation
                 if (!greedyChoiceOptimal) r.CounterIntuitiveSteps++;
                 if (retreatNeeded && optimalCount > 0) r.RetreatSteps++;
                 if (costlyAlternative) r.DecisionPoints++;
+                if (fatalAlternative) r.HazardAlternatives++;
 
                 var result = engine.TryMove(move);
-                bool moved = false, blockedBySleeper = false, blockedByWall = false;
+                bool moved = false, blockedBySleeper = false, blockedByWall = false, mechanicStep = false;
                 foreach (var e in result.Events)
                 {
                     if (e.Type == GameEventType.PlopMoved) { moved = true; touched.Add(level.CellIndex(e.To)); }
+                    if (e.Type == GameEventType.PlopSlid || e.Type == GameEventType.PlopPushed || e.Type == GameEventType.PlopTeleported)
+                    {
+                        mechanicStep = true;
+                        touched.Add(level.CellIndex(e.To));
+                        if (e.Type == GameEventType.PlopSlid) { r.Slides++; kinds |= 1; }
+                        if (e.Type == GameEventType.PlopPushed) { r.Pushes++; kinds |= 2; }
+                        if (e.Type == GameEventType.PlopTeleported) { r.Teleports++; kinds |= 4; }
+                    }
                     if (e.Type != GameEventType.PlopBlocked) continue;
                     if (e.BlockReason == BlockReason.Wall || e.BlockReason == BlockReason.Edge) blockedByWall = true;
                     if (e.BlockReason == BlockReason.Plop && e.BlockerId >= 0 && engine.CurrentState.IsAsleep(e.BlockerId)) blockedBySleeper = true;
                 }
                 if (moved && blockedBySleeper) r.SleeperBlocks++;
                 if (moved && blockedByWall) r.WallBlocks++;
+                if (mechanicStep) r.MechanicSteps++;
                 cur = g.Next(cur, (int)move);
             }
 
+            r.MechanicKindsUsed = (kinds & 1) + ((kinds >> 1) & 1) + ((kinds >> 2) & 1);
             var sol = analysis.Solution;
             int runs = sol.Length == 0 ? 0 : 1;
             for (int i = 1; i < sol.Length; i++) if (sol[i] != sol[i - 1]) runs++;
@@ -294,7 +325,7 @@ namespace Plop.Generation
                         {
                             if (!level.InBounds(nx, ny)) return;
                             int n = level.CellIndex(nx, ny);
-                            if (level.IsWallCell(n) || dist[n] <= dist[c] + 1) return;
+                            if (level.IsWallCell(n) || level.TileAt(n) == TileKind.Lava || dist[n] <= dist[c] + 1) return;
                             dist[n] = dist[c] + 1;
                             queue[tail++] = n;
                         }

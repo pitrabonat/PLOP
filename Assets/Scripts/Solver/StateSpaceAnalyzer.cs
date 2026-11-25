@@ -20,6 +20,8 @@ namespace Plop.Solver
         public int GoalStates;
         /// <summary>Reachable states from which no solved state is reachable.</summary>
         public int DeadEndStates;
+        /// <summary>Edges that end in failure (Lava), counted over the whole reachable graph.</summary>
+        public int FailingMoves;
         /// <summary>Shortest solution length from the start, or -1 if unsolvable.</summary>
         public int StartDistance = -1;
         /// <summary>A shortest solution (deterministic: first optimal direction in U,D,L,R order).</summary>
@@ -69,12 +71,18 @@ namespace Plop.Solver
         public ulong[] Keys;
         public int[] Edges;
         public int[] Distance;
+        /// <summary>Index of the terminal "failed" node (Lava), or -1 when no move can fail. Its key is not a state.</summary>
+        public int FailIndex = -1;
+        public bool IsFail(int state) => state == FailIndex;
         public int Count => Keys.Length;
         public int Next(int state, int direction) => Edges[state * 4 + direction];
     }
 
     public static class StateSpaceAnalyzer
     {
+        /// <summary>Key stored for the failure sink. Never looked up; consumers check <see cref="StateGraph.IsFail"/>.</summary>
+        public const ulong FailKey = ulong.MaxValue;
+
         private const int SolutionCountCap = 1_000_000;
 
         public static StateSpaceAnalysis Analyze(LevelDefinition level, int maxStates = 2_000_000)
@@ -112,8 +120,18 @@ namespace Plop.Solver
             var scratch = new GameState(start.PlopCount);
             var order = new int[start.PlopCount];
 
+            int failIndex = -1;
             for (int head = 0; head < keys.Count; head++)
             {
+                if (head == failIndex)
+                {
+                    // Terminal sink for every Lava move: no successors, never a goal.
+                    settledNests.Add(0);
+                    for (int d = 0; d < 4; d++) edges.Add(-1);
+                    awayMoves.Add(0);
+                    coordinationMoves.Add(0);
+                    continue;
+                }
                 codec.Decode(keys[head], state);
                 uint settled = 0;
                 for (int id = 0; id < state.PlopCount; id++)
@@ -125,6 +143,17 @@ namespace Plop.Solver
                 {
                     scratch.CopyFrom(state);
                     if (!MoveRules.Apply(level, scratch, (Direction)d, null, order)) { edges.Add(-1); continue; }
+                    if (scratch.Failed)
+                    {
+                        if (failIndex < 0)
+                        {
+                            failIndex = keys.Count;
+                            keys.Add(FailKey);
+                        }
+                        a.FailingMoves++;
+                        edges.Add(failIndex);
+                        continue;
+                    }
 
                     // Compare live ids before the codec reorders interchangeable same-color Plops.
                     for (int id = 0; id < state.PlopCount; id++)
@@ -208,12 +237,14 @@ namespace Plop.Solver
 
             for (int i = 0; i < n; i++)
             {
+                if (i == failIndex) continue; // not a board state
                 bool canFinish = dist[i] >= 0;
                 if (!canFinish) a.DeadEndStates++;
                 classify?.Invoke(keys[i], canFinish);
             }
+            if (failIndex >= 0) a.ReachableStates = n - 1;
             a.StartDistance = dist[0];
-            if (keepGraph) a.Graph = new StateGraph { Keys = keys.ToArray(), Edges = edges.ToArray(), Distance = dist };
+            if (keepGraph) a.Graph = new StateGraph { Keys = keys.ToArray(), Edges = edges.ToArray(), Distance = dist, FailIndex = failIndex };
 
             if (dist[0] >= 0)
             {

@@ -14,6 +14,8 @@ namespace Plop.Core
 
         private readonly int[] _cells;
         private uint _asleepMask;
+        private sbyte _failedPlop = -1;
+        private FailureReason _failure;
 
         public GameState(int plopCount)
         {
@@ -30,7 +32,19 @@ namespace Plop.Core
 
         public uint AsleepMask => _asleepMask;
 
-        public bool AllAsleep => PlopCount > 0 && _asleepMask == AllMask(PlopCount);
+        public bool AllAsleep => PlopCount > 0 && _asleepMask == AllMask(PlopCount) && _failure == FailureReason.None;
+
+        /// <summary>True after a fatal interaction (Lava). A failed state is terminal: no further moves apply.</summary>
+        public bool Failed => _failure != FailureReason.None;
+        public FailureReason Failure => _failure;
+        /// <summary>The Plop that caused the failure, or -1.</summary>
+        public int FailedPlop => _failedPlop;
+
+        internal void SetFailed(int plopId, FailureReason reason)
+        {
+            _failedPlop = (sbyte)plopId;
+            _failure = reason;
+        }
 
         public int AwakeCount
         {
@@ -64,6 +78,8 @@ namespace Plop.Core
             var c = new GameState(_cells.Length);
             Array.Copy(_cells, c._cells, _cells.Length);
             c._asleepMask = _asleepMask;
+            c._failedPlop = _failedPlop;
+            c._failure = _failure;
             return c;
         }
 
@@ -73,6 +89,15 @@ namespace Plop.Core
             if (other._cells.Length != _cells.Length) throw new ArgumentException("Plop count mismatch.");
             Array.Copy(other._cells, _cells, _cells.Length);
             _asleepMask = other._asleepMask;
+            _failedPlop = other._failedPlop;
+            _failure = other._failure;
+        }
+
+        /// <summary>Clears any failure (used by codecs that only ever store live states).</summary>
+        internal void ClearFailure()
+        {
+            _failedPlop = -1;
+            _failure = FailureReason.None;
         }
 
         /// <summary>Exact equality: every Plop id has the same cell and sleep flag.</summary>
@@ -80,6 +105,7 @@ namespace Plop.Core
         {
             if (ReferenceEquals(this, other)) return true;
             if (other == null || other._cells.Length != _cells.Length || other._asleepMask != _asleepMask) return false;
+            if (other._failure != _failure || other._failedPlop != _failedPlop) return false;
             for (int i = 0; i < _cells.Length; i++) if (_cells[i] != other._cells[i]) return false;
             return true;
         }
@@ -90,7 +116,7 @@ namespace Plop.Core
         {
             unchecked
             {
-                int h = (int)2166136261 ^ (int)_asleepMask;
+                int h = (int)2166136261 ^ (int)_asleepMask ^ ((int)_failure << 24) ^ (_failedPlop << 16);
                 for (int i = 0; i < _cells.Length; i++) h = (h * 16777619) ^ _cells[i];
                 return h;
             }
@@ -107,6 +133,7 @@ namespace Plop.Core
                 sb.Append(i).Append(':').Append(level.PositionOf(_cells[i]));
                 if (IsAsleep(i)) sb.Append('z');
             }
+            if (Failed) sb.Append(" failed:").Append(_failure).Append(" p").Append(_failedPlop);
             return sb.ToString();
         }
     }

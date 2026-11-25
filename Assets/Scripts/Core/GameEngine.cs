@@ -9,7 +9,7 @@ namespace Plop.Core
         Moved,
         /// <summary>Nothing could move; state and move count are unchanged.</summary>
         NoOp,
-        /// <summary>The level is already completed (or no level is loaded); command ignored.</summary>
+        /// <summary>The level is completed, failed, out of moves or not loaded; command ignored.</summary>
         Ignored
     }
 
@@ -64,6 +64,14 @@ namespace Plop.Core
         /// <summary>Number of state-changing moves made since load/restart (no-ops are not counted).</summary>
         public int MoveCount => _history.Count;
         public bool IsCompleted => _state != null && _state.AllAsleep;
+        /// <summary>The attempt failed (a Plop entered Lava). Only Undo and Restart continue.</summary>
+        public bool IsFailed => _state != null && _state.Failed;
+        /// <summary>A Limited Moves challenge used its last move without completing.</summary>
+        public bool IsOutOfMoves => _level != null && _level.MoveLimit > 0 && MoveCount >= _level.MoveLimit && !IsCompleted;
+        /// <summary>Moves left in a Limited Moves challenge, or -1 without a limit.</summary>
+        public int MovesRemaining => _level == null || _level.MoveLimit <= 0 ? -1 : Math.Max(0, _level.MoveLimit - MoveCount);
+        /// <summary>True while a command could still change the board.</summary>
+        public bool CanPlay => _state != null && !IsCompleted && !IsFailed && !IsOutOfMoves;
         public bool CanUndo => _history.Count > 0;
 
         /// <summary>Validates and loads a level. Throws <see cref="InvalidLevelException"/> if invalid.</summary>
@@ -117,7 +125,7 @@ namespace Plop.Core
         /// <summary>Attempts one command. No-ops leave state, history and move count unchanged.</summary>
         public MoveResult TryMove(Direction direction)
         {
-            if (_state == null || IsCompleted)
+            if (!CanPlay)
                 return new MoveResult(MoveStatus.Ignored, direction, MoveCount, false, null);
 
             var before = _state.Clone();
@@ -127,8 +135,10 @@ namespace Plop.Core
             if (changed) _history.Add(new HistoryEntry(before, direction));
             int moveCount = MoveCount;
             bool completed = changed && _state.AllAsleep;
+            bool failed = changed && _state.Failed;
+            bool outOfMoves = changed && !completed && !failed && IsOutOfMoves;
 
-            int extra = completed ? 1 : 0;
+            int extra = completed || failed || outOfMoves ? 1 : 0;
             var events = new GameEvent[_eventBuffer.Count + extra];
             for (int i = 0; i < _eventBuffer.Count; i++)
             {
@@ -137,6 +147,10 @@ namespace Plop.Core
             }
             if (completed)
                 events[events.Length - 1] = new GameEvent(GameEventType.LevelCompleted, -1, default, default, direction, BlockReason.None, -1, moveCount);
+            else if (failed)
+                events[events.Length - 1] = new GameEvent(GameEventType.LevelFailed, _state.FailedPlop, default, default, direction, BlockReason.None, -1, moveCount);
+            else if (outOfMoves)
+                events[events.Length - 1] = new GameEvent(GameEventType.OutOfMoves, -1, default, default, direction, BlockReason.None, -1, moveCount);
 
             for (int i = 0; i < events.Length; i++) Raise(events[i]);
             return new MoveResult(changed ? MoveStatus.Moved : MoveStatus.NoOp, direction, moveCount, completed, events);

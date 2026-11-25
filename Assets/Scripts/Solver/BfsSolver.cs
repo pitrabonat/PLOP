@@ -130,6 +130,7 @@ namespace Plop.Solver
                 {
                     codec.Decode(key, scratch);
                     if (!MoveRules.Apply(level, scratch, (Direction)d, null, order)) continue; // no-op
+                    if (scratch.Failed) continue; // Lava: a losing move, never part of a solution
                     ulong next = codec.Encode(scratch);
                     if (index.ContainsKey(next)) continue;
 
