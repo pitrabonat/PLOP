@@ -13,7 +13,7 @@ namespace Plop.Presentation
     ///
     /// Corner radii are fractions of the cell size (1 world unit), so they scale with the board.
     /// </summary>
-    public sealed class ShapeAtlas
+    public sealed partial class ShapeAtlas
     {
         // ---- geometry constants (fractions of one cell) ----
         public const float TileSize = 0.94f;            // 0.06 cell gap between ivory pieces
@@ -27,23 +27,65 @@ namespace Plop.Presentation
         public const string WorriedPlopKey = "plopWorried";
 
         private static readonly int[] Buckets = { 64, 96, 128, 160, 192, 256 };
-        private static readonly Dictionary<int, ShapeAtlas> Cache = new Dictionary<int, ShapeAtlas>();
+        private static readonly Dictionary<string, ShapeAtlas> Cache = new Dictionary<string, ShapeAtlas>(StringComparer.Ordinal);
+        private static readonly int[] AllColors = { 0, 1, 2, 3, 4, 5 };
+
+        /// <summary>What an atlas contains. Gameplay atlases hold everything; Studio previews only characters.</summary>
+        [Flags]
+        public enum Content { Board = 1, Characters = 2, Nests = 4, All = Board | Characters | Nests }
 
         public int PixelsPerUnit { get; }
         public Texture2D Texture { get; }
+        public CharacterLook Look { get; }
+        /// <summary>Milliseconds spent rasterizing this atlas (profiling).</summary>
+        public float BakeMilliseconds { get; }
+        public long TextureBytes => Texture == null ? 0 : (long)Texture.width * Texture.height * 4;
         private readonly Dictionary<string, Sprite> _sprites = new Dictionary<string, Sprite>(StringComparer.Ordinal);
 
-        /// <summary>Returns the cached atlas for the bucket closest to the given on-screen density.</summary>
-        public static ShapeAtlas ForDensity(float pixelsPerUnit)
+        /// <summary>Returns the cached default-look atlas for the bucket closest to the given on-screen density.</summary>
+        public static ShapeAtlas ForDensity(float pixelsPerUnit) => ForDensity(pixelsPerUnit, CharacterLook.Default);
+
+        /// <summary>Returns the cached atlas for a density bucket and cosmetic look.</summary>
+        public static ShapeAtlas ForDensity(float pixelsPerUnit, CharacterLook look)
         {
+            look = look ?? CharacterLook.Default;
             int bucket = Bucket(pixelsPerUnit);
-            if (!Cache.TryGetValue(bucket, out var atlas) || atlas.Texture == null)
+            string key = bucket + "|" + look.Key;
+            if (!Cache.TryGetValue(key, out var atlas) || atlas.Texture == null)
             {
-                atlas = new ShapeAtlas(bucket);
-                Cache[bucket] = atlas;
+                atlas = new ShapeAtlas(bucket, look, Content.All, AllColors);
+                Cache[key] = atlas;
             }
             return atlas;
         }
+
+        /// <summary>An uncached atlas owned by the caller (Studio previews). Call <see cref="Dispose"/> when done.</summary>
+        public static ShapeAtlas Build(int pixelsPerUnit, CharacterLook look, Content content, params int[] colors)
+            => new ShapeAtlas(pixelsPerUnit, look ?? CharacterLook.Default, content, colors.Length == 0 ? AllColors : colors);
+
+        /// <summary>Destroys cached atlases of other looks (the default look is always kept for tools and tests).</summary>
+        public static int ReleaseUnused(CharacterLook keep)
+        {
+            var remove = new List<string>();
+            foreach (var kv in Cache)
+            {
+                string look = kv.Value.Look?.Key;
+                if (look == keep?.Key || look == CharacterLook.Default.Key) continue;
+                kv.Value.Dispose();
+                remove.Add(kv.Key);
+            }
+            foreach (var k in remove) Cache.Remove(k);
+            return remove.Count;
+        }
+
+        public void Dispose()
+        {
+            foreach (var sprite in _sprites.Values) if (sprite != null) UnityEngine.Object.Destroy(sprite);
+            _sprites.Clear();
+            if (Texture != null) UnityEngine.Object.Destroy(Texture);
+        }
+
+        public bool Has(string key) => _sprites.ContainsKey(key);
 
         public static int Bucket(float pixelsPerUnit)
         {
@@ -77,19 +119,28 @@ namespace Plop.Presentation
             public RectInt Slot;
         }
 
+        /// <summary>Painter host only: exposes <see cref="Make"/> at a density without rasterizing anything.</summary>
         private ShapeAtlas(int ppu)
         {
             PixelsPerUnit = ppu;
+        }
+
+        private ShapeAtlas(int ppu, CharacterLook look, Content content, int[] colors, Action<List<Spec>> extra = null)
+        {
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            PixelsPerUnit = ppu;
+            Look = look;
             var specs = new List<Spec>();
-            AddBoardShapes(specs);
-            AddFaceShapes(specs);
-            for (int c = 0; c < PlopPalette.SlotCount; c++)
+            if ((content & Content.Board) != 0)
             {
-                AddNest(specs, c);
-                AddPlop(specs, c);
-                AddNestSeal(specs, c);
+                AddBoardShapes(specs);
+                for (int c = 0; c < PlopPalette.SlotCount; c++) AddNestSeal(specs, c);
+                AddWorriedPlop(specs);
             }
-            AddWorriedPlop(specs);
+            if ((content & Content.Characters) != 0) AddCharacterParts(specs, look, colors);
+            if ((content & Content.Nests) != 0)
+                foreach (int c in colors) AddStyledNest(specs, NestKey(c), look.Nest, look.Palette, c);
+            extra?.Invoke(specs);
 
             int width = ppu >= 192 ? 2048 : 1024;
             int height = Pack(specs, width);
@@ -111,6 +162,18 @@ namespace Plop.Presentation
                 sprite.name = s.Key;
                 _sprites[s.Key] = sprite;
             }
+            // Earlier key names stay valid for existing tools and tests.
+            Alias("eye", EyeKey(EyeShape.Open));
+            Alias("eyeClosed", EyeKey(EyeShape.Closed));
+            Alias("mouth", MouthKey(MouthShape.Neutral));
+            Alias("mouthSleep", MouthKey(MouthShape.Sleep));
+            Alias("mouthBump", MouthKey(MouthShape.Open));
+            BakeMilliseconds = (float)clock.Elapsed.TotalMilliseconds;
+        }
+
+        private void Alias(string alias, string key)
+        {
+            if (_sprites.TryGetValue(key, out var sprite) && !_sprites.ContainsKey(alias)) _sprites[alias] = sprite;
         }
 
         /// <summary>Packs sprites into the first shelf with room and leaves two pixels between shapes.</summary>
@@ -278,37 +341,6 @@ namespace Plop.Presentation
             return Sdf.Over(c, lip, topInside);
         }
 
-        private void AddFaceShapes(List<Spec> specs)
-        {
-            specs.Add(Make("plopShadow", -0.46f, -0.165f, 0.92f, 0.33f, (x, y, px) =>
-            {
-                float ambient = ContactFalloff(x - 0.035f, y + 0.023f, 0.414f, 0.119f);
-                float contact = ContactFalloff(x - 0.018f, y - 0.010f, 0.293f, 0.046f);
-                float alpha = 0.25f * ambient + 0.21f * contact;
-                return PlopPalette.ContactShadow.WithAlpha(alpha);
-            }));
-
-            specs.Add(Make("eye", -0.07f, -0.08f, 0.14f, 0.16f, PaintEye));
-            specs.Add(Make("eyeClosed", -0.08f, -0.06f, 0.16f, 0.12f, (x, y, px) =>
-                Sdf.Over(PlopPalette.FaceInk.WithAlpha(0f), PlopPalette.FaceInk,
-                    Sdf.Coverage(Sdf.LowerArc(x, y, 0f, 0.021f, 0.048f, 1.03f, 0.0135f), px))));
-
-            var cheek = Color.Lerp(PlopPalette.ToySlot(0), PlopPalette.Ink, 0.11f);
-            specs.Add(Make("cheek", -0.08f, -0.06f, 0.16f, 0.12f, (x, y, px) =>
-                Sdf.Over(cheek.WithAlpha(0f), cheek, 0.48f * Sdf.Soft(Sdf.Ellipse(x, y, 0f, 0f, 0.054f, 0.028f), 0.022f))));
-
-            var mouth = PlopPalette.FaceInk.WithAlpha(0.95f);
-            specs.Add(Make("mouth", -0.075f, -0.052f, 0.15f, 0.104f, (x, y, px) =>
-                Sdf.Over(mouth.WithAlpha(0f), mouth,
-                    Sdf.Coverage(Sdf.LowerArc(x, y, 0f, 0.015f, 0.041f, 1f, 0.013f), px))));
-            specs.Add(Make("mouthSleep", -0.06f, -0.05f, 0.12f, 0.10f, (x, y, px) =>
-                Sdf.Over(mouth.WithAlpha(0f), mouth,
-                    Sdf.Coverage(Sdf.Ellipse(x, y, 0f, -0.006f, 0.017f, 0.012f), px))));
-            specs.Add(Make("mouthBump", -0.06f, -0.05f, 0.12f, 0.10f, (x, y, px) =>
-                Sdf.Over(mouth.WithAlpha(0f), mouth,
-                    Sdf.Coverage(Sdf.Ellipse(x, y, 0f, 0f, 0.020f, 0.026f), px))));
-        }
-
         private static Color PaintEye(float x, float y, float pixel)
         {
             Color ink = PlopPalette.FaceInk;
@@ -318,13 +350,11 @@ namespace Plop.Presentation
                 0.98f * Sdf.Coverage(Sdf.Circle(x, y, -0.013f, 0.021f, 0.0155f), pixel));
         }
 
-        private void AddNest(List<Spec> specs, int colorId)
+        private static Painter PillowPainter(Color cover, Color lining)
         {
-            var cover = PlopPalette.NestOuter(colorId);
-            var lining = PlopPalette.NestInner(colorId);
             var binding = Color.Lerp(cover, PlopPalette.Ink, 0.34f);
             var piping = Color.Lerp(cover, PlopPalette.Highlight, 0.70f);
-            specs.Add(Make(NestKey(colorId), -0.5f, -0.5f, 1f, 1f, (x, y, px) =>
+            return (x, y, px) =>
             {
                 float softContact = PillowDistance(x - 0.020f, y + 0.046f);
                 var c = Sdf.Over(cover.WithAlpha(0f), PlopPalette.ContactShadow, 0.36f * Sdf.Soft(softContact, 0.038f));
@@ -361,7 +391,7 @@ namespace Plop.Presentation
                 var moonFace = Color.Lerp(moonEdge, PlopPalette.Tile, Smooth(-moon / 0.023f));
                 cushion = Color.Lerp(cushion, moonFace, Sdf.Coverage(moon, px));
                 return Sdf.Over(c, cushion, inside);
-            }));
+            };
         }
 
         private static float CrescentDistance(float x, float y)
@@ -430,88 +460,9 @@ namespace Plop.Presentation
         private static float TaperedTip(float x, float y, float bottom, float tip, float halfWidth)
             => Mathf.Max(bottom - y, x - halfWidth * (tip - y) / (tip - bottom));
 
-        private sealed class JellyMaterial
-        {
-            private readonly int _colorId;
-            private readonly Color _body, _lit, _core, _scatter, _floor;
-            private readonly float _lean, _crown;
-
-            public JellyMaterial(int colorId)
-            {
-                _colorId = colorId;
-                _body = PlopPalette.PlopBody(colorId);
-                _lit = Color.Lerp(_body, PlopPalette.Highlight, 0.34f);
-                _core = Color.Lerp(_body, PlopPalette.FaceInk, 0.25f);
-                _scatter = Color.Lerp(_body, PlopPalette.GelBounce, 0.51f);
-                _floor = Color.Lerp(_body, PlopPalette.GelBounce, 0.67f);
-                _lean = (colorId % 3 - 1) * 0.051f;
-                _crown = 1f + (colorId / 3 * 2 - 1) * 0.018f;
-            }
-
-            public Color Paint(float x, float y, float pixel)
-            {
-                float d = BodyDistance(x + _lean * Mathf.Max(0f, y - 0.16f), y * _crown);
-                float inside = Sdf.Coverage(d, pixel);
-                if (inside <= 0f) return _body.WithAlpha(0f);
-
-                // Thin gel carries the light across its rim while the thicker center holds its tint.
-                float nx = (x + 0.018f) / 0.408f;
-                float ny = (y - 0.346f) / 0.399f;
-                float nz = Mathf.Sqrt(Mathf.Max(0f, 1f - nx * nx - ny * ny));
-                float diffuse = Smooth(0.22f - 0.36f * nx + 0.45f * ny + 0.58f * nz);
-                float thickness = Smooth(-d / 0.195f);
-                var gel = Color.Lerp(_scatter, _body, thickness);
-                float lowBody = Smooth((0.41f - y + 0.21f * x) / 0.38f);
-                gel = Color.Lerp(gel, _core, 0.72f * lowBody * thickness);
-                gel = Color.Lerp(gel, _lit, 0.61f * diffuse);
-
-                float softRim = (1f - Smooth(-d / 0.079f)) * Smooth(-d / 0.013f);
-                float side = Smooth(0.66f + 0.58f * y - 0.45f * x);
-                gel = Color.Lerp(gel, _scatter, softRim * side * 0.60f);
-                float bounced = Sdf.Soft(Sdf.Ellipse(x, y, 0.013f, 0.059f, 0.277f, 0.025f), 0.051f);
-                gel = Color.Lerp(gel, _floor, 0.83f * bounced);
-                // Two dim fillets ground the scalloped edge without a hard white perimeter.
-                if (y < 0.18f)
-                {
-                    float footX = Mathf.Abs(x) - 0.253f;
-                    float fillet = Sdf.Ellipse(footX, y, 0f, 0.088f, 0.101f, 0.019f);
-                    gel = Color.Lerp(gel, _floor, 0.68f * Sdf.Soft(fillet, 0.029f));
-                }
-
-                float specX = x + 0.199f;
-                float specY = y - 0.569f;
-                float along = specX * 0.80f + specY * 0.60f;
-                float across = specY * 0.80f - specX * 0.60f;
-                float softbox = Sdf.Ellipse(along, across, 0f, 0f, 0.130f, 0.075f);
-                gel = Color.Lerp(gel, _scatter, 0.52f * Sdf.Soft(softbox, 0.084f));
-                float sheen = Sdf.Ellipse(along, across, 0f, 0f, 0.084f, 0.039f);
-                gel = Color.Lerp(gel, PlopPalette.Highlight, 0.77f * Sdf.Soft(sheen, 0.026f));
-                float secondary = Sdf.Ellipse(x + (y - 0.630f) * 0.27f, y, 0.093f, 0.630f, 0.047f, 0.014f);
-                gel = Color.Lerp(gel, PlopPalette.Highlight, 0.40f * Sdf.Soft(secondary, 0.025f));
-
-                float stampX = x - 0.202f;
-                float stampY = y - 0.170f;
-                if (Mathf.Abs(stampX) < 0.11f && Mathf.Abs(stampY) < 0.11f)
-                {
-                    float stamp = Sdf.Circle(stampX, stampY, 0f, 0f, 0.090f);
-                    gel = Color.Lerp(gel, PlopPalette.SealCream, 0.56f * Sdf.Coverage(stamp, pixel));
-                    gel = Color.Lerp(gel, PlopPalette.SealInk,
-                        0.94f * SealInkCoverage(_colorId, stampX, stampY, 0.067f, pixel));
-                }
-
-                return gel.WithAlpha(inside * Mathf.Lerp(0.89f, 0.99f, thickness));
-            }
-        }
-
-        private void AddPlop(List<Spec> specs, int colorId)
-        {
-            var material = new JellyMaterial(colorId);
-            specs.Add(Make(PlopKey(colorId), -0.48f, -0.06f, 0.96f, 0.86f, material.Paint));
-        }
-
         private void AddWorriedPlop(List<Spec> specs)
         {
-            var material = new JellyMaterial(0);
+            var material = new JellyBody(CharacterArt.Styles["classic"], CharacterArt.Finishes["classic"], CharacterArt.Palettes["classic"], 0);
             var blush = Color.Lerp(PlopPalette.Berry, PlopPalette.Ink, 0.13f);
             specs.Add(Make(WorriedPlopKey, -0.49f, -0.10f, 0.98f, 0.90f, (x, y, px) =>
             {

@@ -7,108 +7,110 @@ namespace Plop.Presentation
 {
     /// <summary>
     /// Portrait main menu in Soft Toy Minimalism, built in code (uGUI) above the gameplay HUD.
-    /// Hierarchy: logo → sleepy jelly Plops → large PLAY → Daily Gift · Daily Puzzle → Levels → Settings.
-    /// Minimal text, rounded controls, comfortable touch targets, everything inside the safe area.
-    /// The Plops reuse the gameplay atlas sprites; their idle bob runs only while the menu is visible.
+    /// Hierarchy: logo → sleepy jelly Plops → large PLAY → Daily Gift · Daily Puzzle → Levels · Studio → Settings.
+    /// The mascots are real Plop rigs wearing the equipped look; they animate only while the menu is visible
+    /// and react when tapped.
     /// </summary>
     public sealed class MainMenu : MonoBehaviour
     {
-        public event Action PlayClicked, DailyGiftClicked, DailyPuzzleClicked, LevelsClicked, SettingsClicked;
+        public event Action PlayClicked, DailyGiftClicked, DailyPuzzleClicked, LevelsClicked, SettingsClicked, StudioClicked;
 
         private const float FadeSeconds = 0.22f;
-        private RectTransform _root, _safe, _mascots;
+        private static readonly Vector2[] MascotGround = { new Vector2(-220f, -112f), new Vector2(0f, -112f), new Vector2(220f, -112f) };
+        private static readonly float[] MascotScale = { 250f, 300f, 250f };
+        private static readonly int[] MascotColors = { 0, 1, 2 };
+        private static readonly Reaction[] TapReactions = { Reaction.Bounce, Reaction.HappyBlink, Reaction.Wobble, Reaction.Squash, Reaction.Surprised };
+
+        private MenuKit _kit;
+        private RectTransform _root, _safe, _mascots, _mascotRigs;
         private CanvasGroup _group;
         private Text _dust, _playSubtitle, _giftLabel, _dailyLabel, _toast;
-        private Image _giftDot, _dailyCheck;
+        private Image _giftDot, _dailyCheck, _studioDot;
         private Button _giftButton;
-        private Font _font, _display;
-        private readonly RectTransform[] _plopBodies = new RectTransform[3];
-        private readonly Image[][] _plopEyes = { new Image[2], new Image[2], new Image[2] };
-        private Sprite _eyeOpen, _eyeClosed;
-        private float[] _nextBlink = new float[3];
+        private readonly PlopView[] _plops = new PlopView[3];
+        private CharacterLook _look;
         private Coroutine _fade, _toastAnim;
         private bool _reducedMotion;
+        private int _tapCount;
+        private float _nextTap;
 
         /// <summary>True while the menu covers the board and takes input (false once a fade-out has begun).</summary>
         public bool IsOpen => _root != null && _root.gameObject.activeSelf && _group.blocksRaycasts;
-        public bool ReducedMotion { set => _reducedMotion = value; }
+
+        public bool ReducedMotion
+        {
+            set
+            {
+                _reducedMotion = value;
+                foreach (var p in _plops) p?.SetReducedMotion(value);
+            }
+        }
+
+        internal PlopView Mascot(int i) => _plops[i];
+        internal CharacterLook Look => _look;
 
         private void Awake()
         {
-            _font = Resources.Load<Font>("Typography/Nunito-Text") ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            _display = Resources.Load<Font>("Typography/Nunito-Display") ?? _font;
-
-            var canvasGo = new GameObject("Main Menu Canvas", typeof(RectTransform));
-            canvasGo.transform.SetParent(transform, false);
-            _root = (RectTransform)canvasGo.transform;
-            var canvas = canvasGo.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 50; // above the gameplay HUD
-            var scaler = canvasGo.AddComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = BoardLayout.ReferenceResolution;
-            scaler.matchWidthOrHeight = HudTheme.CanvasMatch;
-            canvasGo.AddComponent<GraphicRaycaster>();
-            _group = canvasGo.AddComponent<CanvasGroup>();
-
-            var background = Rect("Background", _root);
-            var bg = background.gameObject.AddComponent<Image>();
-            bg.color = PlopPalette.PlayBackground;
-
-            _safe = Rect("SafeArea", _root);
-            _safe.gameObject.AddComponent<RectChangeNotifier>().Changed += ApplySafeArea;
-            ApplySafeArea();
+            _kit = new MenuKit();
+            _root = MenuKit.Canvas(transform, "Main Menu Canvas", 50, out _group); // above the gameplay HUD
+            var background = MenuKit.Rect("Background", _root);
+            background.gameObject.AddComponent<Image>().color = PlopPalette.PlayBackground;
+            _safe = MenuKit.Rect("SafeArea", _root);
+            MenuKit.FitSafeArea(_safe);
 
             // ---- top bar: Settings (left), Dream Dust balance (right) ----
-            var settings = Pill(_safe, "Menu Settings", new Vector2(0f, 1f), new Vector2(110, -100), new Vector2(124, 116),
+            var settings = _kit.Pill(_safe, "Menu Settings", new Vector2(0f, 1f), new Vector2(110, -100), new Vector2(124, 116),
                 PlopPalette.ButtonFill, null, HudIcons.Kind.Settings, () => SettingsClicked?.Invoke());
             settings.GetComponentInChildren<Text>()?.gameObject.SetActive(false);
 
-            var dustPill = Card(_safe, "Dream Dust", new Vector2(1f, 1f), new Vector2(-150, -100), new Vector2(236, 96), PlopPalette.ButtonFill);
-            Glyph(dustPill, HudIcons.Kind.Star, new Vector2(-66, 0), 54, PlopPalette.Honey);
-            _dust = Label(dustPill, "Dust amount", HudTheme.Action, FontStyle.Bold, HudTheme.Ink, new Vector2(24, 0), new Vector2(140, 70));
+            var dustPill = MenuKit.Card(_safe, "Dream Dust", new Vector2(1f, 1f), new Vector2(-150, -100), new Vector2(236, 96), PlopPalette.ButtonFill);
+            MenuKit.Glyph(dustPill, HudIcons.Kind.Star, new Vector2(-66, 0), 54, PlopPalette.Honey);
+            _dust = _kit.Label(dustPill, "Dust amount", HudTheme.Action, FontStyle.Bold, HudTheme.Ink, new Vector2(24, 0), new Vector2(140, 70));
 
             // ---- logo ----
-            var logo = Label(_safe, "Logo", 196, FontStyle.Bold, HudTheme.Ink, new Vector2(0, 560), new Vector2(900, 230), _display);
+            var logo = _kit.Label(_safe, "Logo", 196, FontStyle.Bold, HudTheme.Ink, new Vector2(0, 560), new Vector2(900, 230), _kit.Display);
             logo.text = "PLOP!";
-            var tagline = Label(_safe, "Tagline", HudTheme.Caption + 4, FontStyle.Bold, HudTheme.SecondaryText, new Vector2(0, 436), new Vector2(700, 60));
+            var tagline = _kit.Label(_safe, "Tagline", HudTheme.Caption + 4, FontStyle.Bold, HudTheme.SecondaryText, new Vector2(0, 436), new Vector2(700, 60));
             tagline.text = "Sleepy Puzzle";
 
-            // ---- jelly Plops on a pillow ----
-            _mascots = Rect("Mascots", _safe);
+            // ---- jelly Plops on a pillow (tap them) ----
+            _mascots = MenuKit.Rect("Mascots", _safe);
             _mascots.anchorMin = _mascots.anchorMax = new Vector2(0.5f, 0.5f);
             _mascots.sizeDelta = new Vector2(760, 330);
             _mascots.anchoredPosition = new Vector2(0, 170);
-            var pillow = Card(_mascots, "Pillow", new Vector2(0.5f, 0.5f), new Vector2(0, -110), new Vector2(640, 110),
+            var pillow = MenuKit.Card(_mascots, "Pillow", new Vector2(0.5f, 0.5f), new Vector2(0, -110), new Vector2(640, 110),
                 Color.Lerp(PlopPalette.TrayRim, PlopPalette.Berry, 0.18f));
             pillow.SetAsFirstSibling();
-            var atlas = ShapeAtlas.ForDensity(256);
-            _eyeOpen = atlas.Get("eye");
-            _eyeClosed = atlas.Get("eyeClosed");
-            int[] colors = { 0, 1, 2 };
-            float[] xs = { -220f, 0f, 220f };
-            for (int i = 0; i < 3; i++) BuildPlop(i, atlas, colors[i], new Vector2(xs[i], -112f), i == 1 ? 300f : 250f);
+            var tap = MenuKit.Rect("Mascot tap area", _mascots);
+            tap.gameObject.AddComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
+            tap.gameObject.AddComponent<Button>().onClick.AddListener(PokeMascots);
+            SetLook(CharacterLook.Default);
 
             // ---- PLAY ----
-            var play = Pill(_safe, "Play", new Vector2(0.5f, 0.5f), new Vector2(0, -170), new Vector2(600, 176),
+            var play = _kit.Pill(_safe, "Play", new Vector2(0.5f, 0.5f), new Vector2(0, -170), new Vector2(600, 176),
                 Color.Lerp(PlopPalette.Berry, PlopPalette.ButtonFill, 0.12f), "Play", HudIcons.Kind.Play, () => PlayClicked?.Invoke(), 64);
-            _playSubtitle = Label(play, "Play level", HudTheme.Caption, FontStyle.Bold, HudTheme.ActionInk, new Vector2(40, -52), new Vector2(360, 44));
+            _playSubtitle = _kit.Label(play, "Play level", HudTheme.Caption, FontStyle.Bold, HudTheme.ActionInk, new Vector2(40, -52), new Vector2(360, 44));
             var playLabel = play.Find("Label");
             if (playLabel != null) ((RectTransform)playLabel).anchoredPosition = new Vector2(40, 14);
 
             // ---- Daily Gift · Daily Puzzle ----
-            _giftButton = Tile(_safe, "Daily Gift", new Vector2(-165, -420), HudIcons.Kind.Gift, PlopPalette.Honey, () => DailyGiftClicked?.Invoke(), out _giftLabel);
-            _giftDot = Glyph((RectTransform)_giftButton.transform, HudIcons.Kind.Star, new Vector2(108, 64), 40, PlopPalette.Berry);
+            _giftButton = _kit.Tile(_safe, "Daily Gift", new Vector2(-165, -420), HudIcons.Kind.Gift, PlopPalette.Honey, () => DailyGiftClicked?.Invoke(), out _giftLabel);
+            _giftDot = MenuKit.Glyph((RectTransform)_giftButton.transform, HudIcons.Kind.Star, new Vector2(108, 64), 40, PlopPalette.Berry);
             _giftDot.name = "Gift available";
-            var daily = Tile(_safe, "Daily Puzzle", new Vector2(165, -420), HudIcons.Kind.Calendar, PlopPalette.Mint, () => DailyPuzzleClicked?.Invoke(), out _dailyLabel);
-            _dailyCheck = Glyph((RectTransform)daily.transform, HudIcons.Kind.Check, new Vector2(108, 64), 44, Color.Lerp(PlopPalette.Mint, PlopPalette.Ink, 0.45f));
+            var daily = _kit.Tile(_safe, "Daily Puzzle", new Vector2(165, -420), HudIcons.Kind.Calendar, PlopPalette.Mint, () => DailyPuzzleClicked?.Invoke(), out _dailyLabel);
+            _dailyCheck = MenuKit.Glyph((RectTransform)daily.transform, HudIcons.Kind.Check, new Vector2(108, 64), 44, Color.Lerp(PlopPalette.Mint, PlopPalette.Ink, 0.45f));
             _dailyCheck.name = "Daily done";
 
-            // ---- Levels ----
-            Pill(_safe, "Levels", new Vector2(0.5f, 0.5f), new Vector2(0, -640), new Vector2(380, 116), PlopPalette.ButtonFill,
+            // ---- Levels · Studio (both smaller than PLAY) ----
+            _kit.Pill(_safe, "Levels", new Vector2(0.5f, 0.5f), new Vector2(-165, -640), new Vector2(300, 116), PlopPalette.ButtonFill,
                 "Levels", HudIcons.Kind.Levels, () => LevelsClicked?.Invoke());
+            var studio = _kit.Pill(_safe, "Studio", new Vector2(0.5f, 0.5f), new Vector2(165, -640), new Vector2(300, 116),
+                Color.Lerp(PlopPalette.ButtonFill, PlopPalette.Lavender, 0.22f), "Studio", HudIcons.Kind.Studio, () => StudioClicked?.Invoke());
+            _studioDot = MenuKit.Glyph(studio, HudIcons.Kind.Star, new Vector2(128, 44), 34, PlopPalette.Berry);
+            _studioDot.name = "Studio news";
+            _studioDot.gameObject.SetActive(false);
 
-            _toast = Label(_safe, "Toast", HudTheme.Action, FontStyle.Bold, HudTheme.Ink, new Vector2(0, -300), new Vector2(800, 60));
+            _toast = _kit.Label(_safe, "Toast", HudTheme.Action, FontStyle.Bold, HudTheme.Ink, new Vector2(0, -300), new Vector2(900, 60));
             _toast.gameObject.SetActive(false);
             _root.gameObject.SetActive(false);
         }
@@ -127,6 +129,30 @@ namespace Plop.Presentation
             _dailyLabel.text = "Daily";
         }
 
+        /// <summary>Shows a small dot on Studio when a milestone unlocked something new.</summary>
+        public void SetStudioNews(bool news) => _studioDot.gameObject.SetActive(news);
+
+        /// <summary>Re-dresses the mascots in the equipped look.</summary>
+        public void SetLook(CharacterLook look)
+        {
+            look = look ?? CharacterLook.Default;
+            if (_look != null && _look.Key == look.Key) return;
+            _look = look;
+            if (_mascotRigs != null) Destroy(_mascotRigs.gameObject);
+            _mascotRigs = MenuKit.Rect("Mascot rigs", _mascots);
+            _mascotRigs.SetSiblingIndex(1); // above the pillow, below the tap area
+            var atlas = ShapeAtlas.ForDensity(256, look);
+            for (int i = 0; i < 3; i++)
+            {
+                var view = new PlopView(_mascotRigs, atlas, MascotColors[i], 11 + i * 7, _reducedMotion, ui: true);
+                view.Root.localScale = new Vector3(MascotScale[i], MascotScale[i], 1f);
+                // The root is a cell centre; the jelly's ground sits 0.345 cells below it.
+                view.Snap(new Vector3(MascotGround[i].x, MascotGround[i].y + 0.345f * MascotScale[i], 0f), false);
+                if (i == 1) view.SetExpression(Expression.Sleepy); // the middle one dozes
+                _plops[i] = view;
+            }
+        }
+
         public void ShowToast(string message)
         {
             _toast.text = message;
@@ -140,6 +166,7 @@ namespace Plop.Presentation
             if (_fade != null) StopCoroutine(_fade);
             _root.gameObject.SetActive(true);
             _group.blocksRaycasts = true;
+            MenuKit.FitSafeArea(_safe);
             if (_reducedMotion) { _group.alpha = 1f; return; }
             _fade = StartCoroutine(Fade(0f, 1f, false));
         }
@@ -153,21 +180,29 @@ namespace Plop.Presentation
             _fade = StartCoroutine(Fade(1f, 0f, true));
         }
 
+        private void PokeMascots()
+        {
+            float now = Time.unscaledTime;
+            if (now < _nextTap) return; // short cooldown: rapid taps never stack animations
+            _nextTap = now + 0.45f;
+            int who = _tapCount % 3 == 0 ? 0 : _tapCount % 3 == 1 ? 2 : 1;
+            var reaction = who == 1 ? Reaction.HappyBlink : TapReactions[(_tapCount / 3 + who) % TapReactions.Length];
+            _tapCount++;
+            _plops[who]?.React(reaction, now);
+        }
+
         // ------------------------------------------------------------------ animation
 
         private void Update()
         {
             if (_root == null || !_root.gameObject.activeSelf) return;
-            float t = Time.unscaledTime;
-            for (int i = 0; i < 3; i++)
+            float now = Time.unscaledTime;
+            for (int i = 0; i < _plops.Length; i++)
             {
-                float breath = _reducedMotion ? 0f : Mathf.Sin(t * 2.1f + i * 1.7f);
-                _plopBodies[i].localScale = new Vector3(1f - 0.025f * breath, 1f + 0.035f * breath, 1f);
-                bool blink = t >= _nextBlink[i] && t < _nextBlink[i] + 0.14f;
-                if (t >= _nextBlink[i] + 0.14f) _nextBlink[i] = t + 2.2f + ((i * 7919 + (int)(t * 13)) % 30) * 0.1f;
-                var eye = i == 1 || blink ? _eyeClosed : _eyeOpen; // the middle Plop dozes; the others blink
-                _plopEyes[i][0].sprite = eye;
-                _plopEyes[i][1].sprite = eye;
+                var p = _plops[i];
+                if (p == null) continue;
+                p.Tick(now);
+                if (i == 1 && p.CurrentExpression == Expression.Neutral) p.SetExpression(Expression.Sleepy);
             }
         }
 
@@ -188,174 +223,6 @@ namespace Plop.Presentation
             yield return new WaitForSecondsRealtime(1.6f);
             _toast.gameObject.SetActive(false);
             _toastAnim = null;
-        }
-
-        // ------------------------------------------------------------------ builders
-
-        private void BuildPlop(int index, ShapeAtlas atlas, int colorId, Vector2 ground, float unitsPerCell)
-        {
-            var root = Rect("Plop " + index, _mascots);
-            root.anchorMin = root.anchorMax = new Vector2(0.5f, 0.5f);
-            root.sizeDelta = Vector2.zero;
-            root.anchoredPosition = ground;
-            var shadow = AtlasImage(root, atlas, atlas.Get("plopShadow"), new Vector2(0f, 0.005f), unitsPerCell);
-            shadow.name = "Shadow";
-            var body = AtlasImage(root, atlas, atlas.Get(ShapeAtlas.PlopKey(colorId)), Vector2.zero, unitsPerCell);
-            body.name = "Body";
-            _plopBodies[index] = body.rectTransform;
-            AtlasImage(body.rectTransform, atlas, atlas.Get("cheek"), new Vector2(-0.219f, 0.320f), unitsPerCell, relativeToPivot: true);
-            AtlasImage(body.rectTransform, atlas, atlas.Get("cheek"), new Vector2(0.204f, 0.319f), unitsPerCell, relativeToPivot: true);
-            _plopEyes[index][0] = AtlasImage(body.rectTransform, atlas, _eyeOpen, new Vector2(-0.138f, 0.407f), unitsPerCell, relativeToPivot: true);
-            _plopEyes[index][1] = AtlasImage(body.rectTransform, atlas, _eyeOpen, new Vector2(0.122f, 0.403f), unitsPerCell, relativeToPivot: true);
-            AtlasImage(body.rectTransform, atlas, atlas.Get(index == 1 ? "mouthSleep" : "mouth"), new Vector2(-0.005f, 0.300f), unitsPerCell, relativeToPivot: true);
-            _nextBlink[index] = 1.2f + index * 0.9f;
-        }
-
-        /// <summary>Places an atlas sprite as a UI image so its pivot lands at <paramref name="world"/> (cell units).</summary>
-        private static Image AtlasImage(RectTransform parent, ShapeAtlas atlas, Sprite sprite, Vector2 world, float unitsPerCell,
-            bool relativeToPivot = false)
-        {
-            var rt = Rect(sprite.name, parent);
-            float ppu = atlas.PixelsPerUnit;
-            var size = sprite.rect.size / ppu * unitsPerCell;
-            rt.anchorMin = rt.anchorMax = relativeToPivot ? (Vector2)parent.pivot : new Vector2(0.5f, 0.5f);
-            rt.pivot = new Vector2(sprite.pivot.x / sprite.rect.width, sprite.pivot.y / sprite.rect.height);
-            rt.sizeDelta = size;
-            rt.anchoredPosition = world * unitsPerCell;
-            var img = rt.gameObject.AddComponent<Image>();
-            img.sprite = sprite;
-            img.raycastTarget = false;
-            img.preserveAspect = true;
-            return img;
-        }
-
-        private void ApplySafeArea()
-        {
-            Rect area = Screen.safeArea;
-            float w = Mathf.Max(1, Screen.width), h = Mathf.Max(1, Screen.height);
-            if (area.width <= 0 || area.height <= 0) area = new Rect(0, 0, w, h);
-            _safe.anchorMin = new Vector2(area.xMin / w, area.yMin / h);
-            _safe.anchorMax = new Vector2(area.xMax / w, area.yMax / h);
-            _safe.offsetMin = _safe.offsetMax = Vector2.zero;
-        }
-
-        private static RectTransform Rect(string name, Transform parent)
-        {
-            var go = new GameObject(name, typeof(RectTransform));
-            go.transform.SetParent(parent, false);
-            var rt = (RectTransform)go.transform;
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.offsetMin = rt.offsetMax = Vector2.zero;
-            return rt;
-        }
-
-        private Text Label(Transform parent, string name, int size, FontStyle style, Color color, Vector2 pos, Vector2 box, Font font = null)
-        {
-            var rt = Rect(name, parent);
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.anchoredPosition = pos;
-            rt.sizeDelta = box;
-            var t = rt.gameObject.AddComponent<Text>();
-            t.font = font ?? _font;
-            t.fontSize = size;
-            t.fontStyle = style;
-            t.color = color;
-            t.alignment = TextAnchor.MiddleCenter;
-            t.raycastTarget = false;
-            t.horizontalOverflow = HorizontalWrapMode.Overflow;
-            t.verticalOverflow = VerticalWrapMode.Overflow;
-            return t;
-        }
-
-        private static Image Glyph(RectTransform parent, HudIcons.Kind kind, Vector2 pos, float size, Color color)
-        {
-            var rt = Rect("Icon", parent);
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.anchoredPosition = pos;
-            rt.sizeDelta = new Vector2(size, size);
-            var img = rt.gameObject.AddComponent<Image>();
-            img.sprite = HudIcons.Get(kind);
-            img.color = color;
-            img.raycastTarget = false;
-            return img;
-        }
-
-        private static RectTransform Card(RectTransform parent, string name, Vector2 anchor, Vector2 pos, Vector2 size, Color fill)
-        {
-            var shadow = Rect(name + " Shadow", parent);
-            shadow.anchorMin = shadow.anchorMax = anchor;
-            shadow.anchoredPosition = pos + HudTheme.ShadowOffset;
-            shadow.sizeDelta = size + Vector2.one * (2 * HudTheme.CardShadowSpread);
-            var s = shadow.gameObject.AddComponent<Image>();
-            s.sprite = UiSprites.CardShadow;
-            s.type = Image.Type.Sliced;
-            s.color = PlopPalette.Shadow.WithAlpha(HudTheme.CardShadow);
-            s.raycastTarget = false;
-
-            var rt = Rect(name, parent);
-            rt.anchorMin = rt.anchorMax = anchor;
-            rt.anchoredPosition = pos;
-            rt.sizeDelta = size;
-            var img = rt.gameObject.AddComponent<Image>();
-            img.sprite = UiSprites.Card;
-            img.type = Image.Type.Sliced;
-            img.color = fill;
-            return rt;
-        }
-
-        private RectTransform Pill(RectTransform parent, string name, Vector2 anchor, Vector2 pos, Vector2 size, Color fill,
-            string label, HudIcons.Kind icon, Action onClick, int fontSize = HudTheme.Action)
-        {
-            var shadow = Rect(name + " Shadow", parent);
-            shadow.anchorMin = shadow.anchorMax = anchor;
-            shadow.anchoredPosition = pos + HudTheme.ShadowOffset;
-            shadow.sizeDelta = size + Vector2.one * (2 * HudTheme.PillShadowSpread);
-            var s = shadow.gameObject.AddComponent<Image>();
-            s.sprite = UiSprites.PillShadow;
-            s.type = Image.Type.Sliced;
-            s.color = PlopPalette.Shadow.WithAlpha(HudTheme.ButtonShadow);
-            s.raycastTarget = false;
-
-            var rt = Rect(name + " Button", parent);
-            rt.anchorMin = rt.anchorMax = anchor;
-            rt.anchoredPosition = pos;
-            rt.sizeDelta = size;
-            var img = rt.gameObject.AddComponent<Image>();
-            img.sprite = UiSprites.Pill;
-            img.type = Image.Type.Sliced;
-            img.color = fill;
-            var button = rt.gameObject.AddComponent<Button>();
-            var colors = button.colors;
-            colors.pressedColor = new Color(0.94f, 0.92f, 0.90f);
-            colors.fadeDuration = HudTheme.TintDuration;
-            button.colors = colors;
-            button.onClick.AddListener(() => onClick());
-            rt.gameObject.AddComponent<PressScale>();
-            bool hasLabel = !string.IsNullOrEmpty(label);
-            Glyph(rt, icon, hasLabel ? new Vector2(-size.x * 0.5f + size.y * 0.55f, 0) : Vector2.zero, Mathf.Min(64, size.y * 0.55f), HudTheme.ActionInk);
-            if (hasLabel)
-            {
-                var text = Label(rt, "Label", fontSize, FontStyle.Bold, HudTheme.Ink, new Vector2(size.y * 0.25f, 0), new Vector2(size.x - size.y, size.y));
-                text.text = label;
-            }
-            return rt;
-        }
-
-        private Button Tile(RectTransform parent, string name, Vector2 pos, HudIcons.Kind icon, Color accent, Action onClick, out Text label)
-        {
-            var rt = Card(parent, name, new Vector2(0.5f, 0.5f), pos, new Vector2(300, 210), Color.Lerp(PlopPalette.ButtonFill, accent, 0.32f));
-            var button = rt.gameObject.AddComponent<Button>();
-            var colors = button.colors;
-            colors.pressedColor = new Color(0.94f, 0.92f, 0.90f);
-            colors.fadeDuration = HudTheme.TintDuration;
-            button.colors = colors;
-            button.onClick.AddListener(() => onClick());
-            rt.gameObject.AddComponent<PressScale>();
-            rt.name = name + " Button";
-            Glyph(rt, icon, new Vector2(0, 28), 92, Color.Lerp(accent, PlopPalette.Ink, 0.45f));
-            label = Label(rt, "Label", HudTheme.Control, FontStyle.Bold, HudTheme.Ink, new Vector2(0, -62), new Vector2(280, 50));
-            return button;
         }
     }
 }

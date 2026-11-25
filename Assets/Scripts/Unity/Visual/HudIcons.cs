@@ -5,10 +5,10 @@ namespace Plop.Presentation
     /// <summary>Small round-ended control glyphs in a single baked alpha sheet.</summary>
     internal static class HudIcons
     {
-        internal enum Kind { Levels, Settings, Undo, Restart, Hint, Next, Moves, Lock, Check, Home, Star, Gift, Calendar, Play }
+        internal enum Kind { Levels, Settings, Undo, Restart, Hint, Next, Moves, Lock, Check, Home, Star, Gift, Calendar, Play, Back, Studio }
 
         private const int Size = 64;
-        private const int IconCount = 14;
+        private const int IconCount = 16;
         private static Sprite[] _sprites;
 
         internal static Sprite Get(Kind kind)
@@ -101,6 +101,18 @@ namespace Plop.Presentation
                     float frame = Mathf.Max(outer, -inner);
                     float rings = Mathf.Min(Stroke(p, 24f, 44f, 24f, 50f), Stroke(p, 40f, 44f, 40f, 50f));
                     return Mathf.Min(Mathf.Min(frame, rings), Sdf.Circle(p.x, p.y, 38f, 22f, 4f));
+                }
+                case Kind.Back:
+                    return Mathf.Min(Stroke(p, 38f, 48f, 22f, 32f), Stroke(p, 22f, 32f, 38f, 16f));
+                case Kind.Studio:
+                {
+                    // A little jelly silhouette with a sparkle: the character customisation room.
+                    float dome = Sdf.Ellipse(p.x, p.y, 29f, 27f, 17f, 16f);
+                    float jelly = Mathf.Max(dome, 14f - p.y);
+                    float face = Mathf.Min(Sdf.Circle(p.x, p.y, 23.5f, 28f, 2.6f), Sdf.Circle(p.x, p.y, 34.5f, 28f, 2.6f));
+                    float sx = Mathf.Abs(p.x - 49f), sy = Mathf.Abs(p.y - 47f);
+                    float sparkle = (Mathf.Sqrt(sx) + Mathf.Sqrt(sy) - 3.2f) * 2.4f;
+                    return Mathf.Min(Mathf.Max(jelly, -face), sparkle);
                 }
                 case Kind.Play:
                 {

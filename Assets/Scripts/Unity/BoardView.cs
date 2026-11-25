@@ -28,7 +28,8 @@ namespace Plop.Presentation
         private ShapeAtlas _atlas;
         private SpriteRenderer _tray;
         private Color _trayTint = Color.white, _tileTint = Color.white, _pebbleTint = Color.white;
-        private bool _reducedMotion;
+        private bool _reducedMotion, _batterySaver;
+        private MoveEffects _effects;
 
         /// <summary>True while any Plop is still travelling/bumping (logical positions not yet reached visually).</summary>
         public bool IsAnimating
@@ -58,6 +59,17 @@ namespace Plop.Presentation
         public ShapeAtlas Atlas => _atlas;
         public int PixelsPerUnitBucket => _atlas?.PixelsPerUnit ?? 0;
         public bool ReducedMotion => _reducedMotion;
+        public CharacterLook Look => _atlas?.Look;
+        internal MoveEffects Effects => _effects;
+        internal PlopView PlopViewAt(int plopId) => _plops[plopId];
+        public int PlopCount => _plops.Count;
+
+        /// <summary>Battery Saver (30 FPS) halves cosmetic move effects.</summary>
+        public void SetBatterySaver(bool saver)
+        {
+            _batterySaver = saver;
+            if (_effects != null) _effects.BatterySaver = saver;
+        }
 
         /// <summary>Applies the current World's surface colors on the shared board atlas.</summary>
         public void SetPalette(Color trayTint, Color tileTint, Color pebbleTint)
@@ -82,6 +94,11 @@ namespace Plop.Presentation
                 plop.SetSortingBase(RowOrder(row));
             }
             if (reduced) ClearNestPulses();
+            if (_effects != null)
+            {
+                _effects.Enabled = !reduced;
+                if (reduced) _effects.Clear();
+            }
         }
 
         public Vector3 CellToLocal(GridPosition p) =>
@@ -150,9 +167,14 @@ namespace Plop.Presentation
                 _nestByCell[level.CellIndex(nest.Position)] = n.transform;
             }
 
-            // ---- Plops ----
+            // ---- Plops (cosmetic look from the atlas; logical colour decides body colour and match mark) ----
             for (int id = 0; id < level.Plops.Count; id++)
                 _plops.Add(new PlopView(transform, atlas, (int)level.PlopColorOf(id), id + 1, _reducedMotion));
+
+            var effects = new GameObject("Move effects");
+            effects.transform.SetParent(transform, false);
+            _static.Add(effects);
+            _effects = new MoveEffects(effects.transform, atlas, false) { Enabled = !_reducedMotion, BatterySaver = _batterySaver };
             Sync(state);
         }
 
@@ -166,6 +188,7 @@ namespace Plop.Presentation
                 _plops[id].SetSortingBase(RowOrder(pos.Y));
             }
             ClearNestPulses();
+            _effects?.Clear();
         }
 
         private void ClearNestPulses()
@@ -189,6 +212,12 @@ namespace Plop.Presentation
                     {
                         var view = _plops[e.PlopId];
                         view.StartMove(CellToLocal(e.To), Delta(e.Direction), now);
+                        if (_effects != null && _effects.Enabled)
+                        {
+                            var tint = _atlas.Look?.Palette.Toy((int)_level.PlopColorOf(e.PlopId)) ?? Color.white;
+                            int order = RowOrder(e.From.Y) + (_effects.Kind == EffectKind.Sparkle ? 15 : 1);
+                            _effects.Spawn(CellToLocal(e.From), Delta(e.Direction), tint, now, order);
+                        }
                         view.SetSortingBase(RowOrder(_reducedMotion ? e.To.Y : Mathf.Min(e.From.Y, e.To.Y)));
                         break;
                     }
@@ -210,6 +239,7 @@ namespace Plop.Presentation
         {
             if (_level == null || _reducedMotion) return;
             float now = Time.unscaledTime;
+            _effects?.Tick(now);
             for (int i = 0; i < _plops.Count; i++)
             {
                 var p = _plops[i];

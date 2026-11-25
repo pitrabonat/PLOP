@@ -65,6 +65,12 @@ namespace Plop.Presentation
         private Direction? _pendingMove;
         // ---- Phase 8: menu, Perfect Moves, Dream Dust, daily features ----
         private MainMenu _menu;
+        // ---- Phase 9: cosmetics and Character Studio ----
+        private CharacterStudio _studio;
+        private CosmeticCatalog _catalog;
+        private CosmeticCollection _cosmetics;
+        private CharacterLook _look = CharacterLook.Default;
+        private readonly List<string> _newCosmetics = new List<string>();
         private DreamDustWallet _wallet;
         private LevelRecords _records;
         private List<LevelDefinition> _dailyPool = new List<LevelDefinition>();
@@ -101,13 +107,17 @@ namespace Plop.Presentation
             = SearchForDeadlockAsync;
         internal Direction? PendingMove => _pendingMove;
         private bool SavesProgress => rememberProgress && !_debugPreview;
-        private bool GameplayBlocked => !isActiveAndEnabled || _suspended || _hud.BlocksGameplayInput || (_menu != null && _menu.IsOpen);
+        private bool GameplayBlocked => !isActiveAndEnabled || _suspended || _hud.BlocksGameplayInput || (_menu != null && _menu.IsOpen) || (_studio != null && _studio.IsOpen);
 
         /// <summary>Local calendar source for the daily features (tests inject a fixed clock).</summary>
         internal IClock Clock { get; set; } = new SystemClock();
         public DreamDustWallet Wallet => _wallet;
         public LevelRecords Records => _records;
         public MainMenu Menu => _menu;
+        public CharacterStudio Studio => _studio;
+        internal CosmeticCollection Cosmetics => _cosmetics;
+        /// <summary>The equipped cosmetic look (visual only; never read by rules, solver or progress).</summary>
+        public CharacterLook Look => _look;
         public bool PlayingDaily => _playingDaily;
         public bool HintUsedThisVisit => _assisted;
 
@@ -125,6 +135,7 @@ namespace Plop.Presentation
             _audio = gameObject.AddComponent<PlopAudio>();
             _hud = gameObject.AddComponent<GameHud>();
             _menu = gameObject.AddComponent<MainMenu>();
+            _studio = gameObject.AddComponent<CharacterStudio>();
             InitMeta(persist: false); // tests and tools get an isolated in-memory wallet
 
             _engine.EventRaised += OnEngineEvent;
@@ -163,6 +174,10 @@ namespace Plop.Presentation
             _menu.DailyPuzzleClicked += () => StartDaily();
             _menu.LevelsClicked += OpenLevelsFromMenu;
             _menu.SettingsClicked += OpenSettingsFromMenu;
+            _menu.StudioClicked += OpenStudio;
+            _studio.Closed += OnStudioClosed;
+            _studio.ButtonPressed += _audio.PlayButton;
+            _board.SetBatterySaver(targetFrameRate == FrameRateMode.Fps30);
         }
 
         private void InitMeta(bool persist)
@@ -170,6 +185,71 @@ namespace Plop.Presentation
             IKeyValueStore store = persist ? new PlayerPrefsStore() : (IKeyValueStore)new MemoryStore();
             _wallet = new DreamDustWallet(store);
             _records = new LevelRecords(store);
+            _catalog = CosmeticCatalogLoader.Load();
+            _cosmetics = new CosmeticCollection(_catalog, _wallet, new AppearanceStore(store, _catalog));
+            _look = CharacterArt.Resolve(_cosmetics.Equipped, _catalog);
+            _menu?.SetLook(_look);
+        }
+
+        /// <summary>Progress counts for milestone cosmetics, derived from existing saves (never stored twice).</summary>
+        internal ProgressSnapshot CosmeticProgress()
+        {
+            var snapshot = new ProgressSnapshot
+            {
+                PerfectLevels = _records?.PerfectCount ?? 0,
+                DailyPuzzles = _wallet?.CountGrants("daily:") ?? 0
+            };
+            if (_progress == null) return snapshot;
+            for (int i = 0; i < _levels.Count; i++) if (_progress.IsCompleted(i)) snapshot.LevelsCompleted++;
+            foreach (var world in _worlds.Worlds)
+            {
+                if (!world.HasValidRange || world.LastLevel > _levels.Count) continue;
+                bool all = true;
+                for (int level = world.FirstLevel; level <= world.LastLevel && all; level++) all = _progress.IsCompleted(level - 1);
+                if (all) snapshot.WorldsCompleted++;
+            }
+            return snapshot;
+        }
+
+        private void UpdateCosmeticProgress()
+        {
+            if (_cosmetics == null) return;
+            foreach (var item in _cosmetics.UpdateProgress(CosmeticProgress()))
+            {
+                _newCosmetics.Add(item.Name);
+                PlopLog.Info("Cosmetic unlocked by progress: " + item.Id);
+            }
+            if (_newCosmetics.Count > 0) _menu?.SetStudioNews(true);
+        }
+
+        /// <summary>Main menu → Character Studio.</summary>
+        public void OpenStudio()
+        {
+            if (_studio == null || _studio.IsOpen) return;
+            ClearPendingInput();
+            InvalidateHint();
+            _menu.Hide(instant: true);
+            _menu.SetStudioNews(false);
+            _studio.Open(_cosmetics, ReducedMotionEnabled, targetFrameRate == FrameRateMode.Fps30);
+            MarkActive();
+        }
+
+        private void OnStudioClosed()
+        {
+            ApplyLook();
+            ShowMenu();
+        }
+
+        /// <summary>Re-dresses the board and menu after the equipped look changed. Gameplay state is untouched.</summary>
+        internal void ApplyLook()
+        {
+            var look = CharacterArt.Resolve(_cosmetics.Equipped, _catalog);
+            if (look.Key == _look.Key) return;
+            _look = look;
+            if (_engine.HasLevel) _board.Build(_engine.Level, _engine.CurrentState, ShapeAtlas.ForDensity(FitCamera(), _look));
+            _menu.SetLook(_look);
+            ShapeAtlas.ReleaseUnused(_look);
+            PlopLog.Info("Look " + _look.Key);
         }
 
         private void Start()
@@ -212,6 +292,7 @@ namespace Plop.Presentation
             }
             _hud.SetComfortOptions(HapticsEnabled, ReducedMotionEnabled);
             _audio.Initialize(SavesProgress, _worlds.ForLevelIndex(_index)?.Ambience ?? WorldAmbience.CozyNest);
+            UpdateCosmeticProgress();
             LoadCurrent();
             if (!_debugPreview) ShowMenu(); // the game opens on the main menu
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -307,6 +388,7 @@ namespace Plop.Presentation
             if (mode != FrameRateMode.Fps30 && mode != FrameRateMode.Fps60) return;
             targetFrameRate = mode;
             ApplyFrameRate();
+            _board.SetBatterySaver(mode == FrameRateMode.Fps30);
             _hud.SetFrameRate(mode);
             if (SavesProgress)
             {
@@ -708,6 +790,7 @@ namespace Plop.Presentation
                 var daily = SafeReward(() => CompletionRewards.ForDaily(_wallet, _records, level.Id, _dailyDate, moveCount, level.OptimalMoves, _assisted));
                 _hud.SetCompleted(true, true);
                 _hud.SetCompletionResult(moveCount, level.OptimalMoves, daily.Attempt.Perfect, daily.DustEarned, returnsToMenu: true);
+                UpdateCosmeticProgress();
                 PlopLog.Info("Daily puzzle " + level.Id + " completed in " + moveCount);
                 return;
             }
@@ -718,6 +801,7 @@ namespace Plop.Presentation
             _hud.SetCompleted(true, nextUnlocked);
             var reward = SafeReward(() => CompletionRewards.ForLevel(_wallet, _records, level.Id, moveCount, level.OptimalMoves, _assisted));
             _hud.SetCompletionResult(moveCount, level.OptimalMoves, reward.Attempt.Perfect, reward.DustEarned, returnsToMenu: false);
+            UpdateCosmeticProgress();
 
             var nextWorld = _worlds.ForLevelIndex(nextIndex);
             if (!nextWasUnlocked && nextUnlocked && nextWorld != null && nextWorld != _world)
@@ -739,7 +823,7 @@ namespace Plop.Presentation
                     CancelDeadlockCheck();
                     _hud.CloseDeadlock();
                     _deadlockTable = _deadlockCatalog?.ForLevel(_engine.Level);
-                    _board.Build(_engine.Level, _engine.CurrentState, ShapeAtlas.ForDensity(FitCamera()));
+                    _board.Build(_engine.Level, _engine.CurrentState, ShapeAtlas.ForDensity(FitCamera(), _look));
                     InvalidateHint();
                     _assisted = false;
                     _hud.SetPerfectTarget(_engine.Level.OptimalMoves, _records.IsPerfect(_engine.Level.Id));
@@ -812,7 +896,13 @@ namespace Plop.Presentation
                 if (_levels.Count > 0) LoadCurrent();
             }
             RefreshMenu();
+            _menu.SetLook(_look);
             _menu.Show();
+            if (_newCosmetics.Count > 0)
+            {
+                _menu.ShowToast("New in Studio: " + string.Join(", ", _newCosmetics));
+                _newCosmetics.Clear();
+            }
         }
 
         private void RefreshMenu()
@@ -908,8 +998,8 @@ namespace Plop.Presentation
         {
             if (!_engine.HasLevel) return;
             float ppu = FitCamera();
-            if (ShapeAtlas.Bucket(ppu) != _board.PixelsPerUnitBucket)
-                _board.Build(_engine.Level, _engine.CurrentState, ShapeAtlas.ForDensity(ppu));
+            if (ShapeAtlas.Bucket(ppu) != _board.PixelsPerUnitBucket || _board.Look?.Key != _look.Key)
+                _board.Build(_engine.Level, _engine.CurrentState, ShapeAtlas.ForDensity(ppu, _look));
             MarkActive();
         }
 

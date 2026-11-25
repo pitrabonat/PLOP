@@ -37,6 +37,14 @@ namespace Plop.Meta
 
         public bool HasGrant(string key) => _grants.Contains(key);
 
+        /// <summary>Number of grants whose key starts with <paramref name="prefix"/> (e.g. "daily:" = daily puzzles solved).</summary>
+        public int CountGrants(string prefix)
+        {
+            int n = 0;
+            foreach (var g in _grants) if (g.StartsWith(prefix, StringComparison.Ordinal)) n++;
+            return n;
+        }
+
         /// <summary>Pays <paramref name="amount"/> once for <paramref name="key"/>. Returns false if already granted.</summary>
         public bool Grant(string key, int amount)
         {

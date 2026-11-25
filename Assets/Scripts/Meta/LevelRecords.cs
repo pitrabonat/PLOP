@@ -47,6 +47,10 @@ namespace Plop.Meta
         public bool TryGet(string id, out Entry entry) => _entries.TryGetValue(id, out entry);
         public bool IsPerfect(string id) => _entries.TryGetValue(id, out var e) && e.Perfect;
         public int Count => _entries.Count;
+        public int PerfectCount
+        {
+            get { int n = 0; foreach (var e in _entries.Values) if (e.Perfect) n++; return n; }
+        }
 
         public AttemptResult Submit(string id, int moves, int optimalMoves, bool assisted)
         {

@@ -3,7 +3,12 @@ using UnityEngine;
 
 namespace Plop.Presentation
 {
-    /// <summary>Animates the shared jelly toy and its face from board events.</summary>
+    /// <summary>
+    /// Animates one jelly Plop from board events (or Studio/menu calls). The same rig renders with
+    /// SpriteRenderers on the board and with UI Images in menus, so there is a single animation implementation.
+    /// Cosmetics (style, finish, face, accessory, personality) come from the atlas's <see cref="CharacterLook"/>;
+    /// none of it changes where the Plop is: the root follows the endpoints the board supplies.
+    /// </summary>
     public sealed class PlopView
     {
         public const float MoveDuration = 0.155f;
@@ -23,15 +28,21 @@ namespace Plop.Presentation
         private const float LandingSqueeze = 0.095f;
         private const float SoftBumpDuration = 0.16f;
         private const float InterruptionBlend = 0.048f;
+        private const float WobbleDuration = 0.8f;
 
         public readonly Transform Root;
-        private readonly Transform _pose, _body, _eyeL, _eyeR, _cheekL, _cheekR, _mouth, _shadow;
-        private readonly SpriteRenderer _bodyR, _eyeLR, _eyeRR, _cheekLR, _cheekRR, _mouthR, _shadowR;
-        private readonly Sprite _eyeOpen, _eyeClosed, _mouthAwake, _mouthSleep, _mouthBump;
+        private readonly Transform _pose;
+        private readonly PlopPart _body, _shadow, _eyeL, _eyeR, _cheekL, _cheekR, _mouth, _browL, _browR, _accessory;
+        private readonly ShapeAtlas _atlas;
+        private readonly Sprite[] _eyes, _mouths; // cached per rig: no per-frame string keys
+        private readonly string _prefix;
+        private readonly BodyStyle _style;
+        private readonly Personality _personality;
+        private readonly bool _ui;
 
         private Vector3 _from, _to, _restoreOffset;
         private Vector2 _moveDir, _bumpDir, _landDir, _look;
-        private float _moveT0 = -1f, _bumpT0 = -1f, _landT0 = -1f, _sleepT0 = -1f, _hopT0 = -1f, _blinkT0 = -1f;
+        private float _moveT0 = -1f, _bumpT0 = -1f, _landT0 = -1f, _sleepT0 = -1f, _hopT0 = -1f, _blinkT0 = -1f, _wobbleT0 = -1f;
         private float _nextBlink, _lookUntil, _restoreT0 = -1f;
         private readonly float _phase;
         private bool _asleep, _sleepPending, _sleepPoseFrozen, _reducedMotion;
@@ -44,9 +55,13 @@ namespace Plop.Presentation
         private float _displayedShadowWidth = 1f;
         private int _sortingBase = int.MinValue;
 
+        private Expression _override = Expression.Neutral;
+        private float _overrideUntil = -1f;
+        private bool _overrideForever;
+        private float _sleepyDroop;
         private Vector2 _displayedLook;
-        private float _displayedFaceSleep = -1f, _displayedEyeScale = 1f;
-        private Sprite _displayedEye, _displayedMouth;
+        private float _displayedFaceSleep = -1f, _displayedEyeScale = -1f;
+        private Expression _displayedExpression = (Expression)(-1);
 
         internal bool IsSliding => _moveT0 >= 0f;
         public bool IsMoving => IsSliding || _bumpT0 >= 0f;
@@ -54,46 +69,68 @@ namespace Plop.Presentation
                                          (_sleepT0 >= 0f && now - _sleepT0 < SleepDuration);
         public Vector3 Target => _to;
         public bool SleepJustStarted { get; private set; }
+        public bool IsAsleep => _asleep;
+        public CharacterLook Look => _atlas.Look;
+        /// <summary>The expression currently shown (after overrides, sleep, recoil and celebration).</summary>
+        public Expression CurrentExpression => _displayedExpression;
+        public Transform AccessoryTransform => _accessory?.Transform;
 
         public PlopView(Transform parent, ShapeAtlas atlas, int colorId, int seed, bool reducedMotion = false)
-        {
-            _reducedMotion = reducedMotion;
-            Root = new GameObject("Plop").transform;
-            Root.SetParent(parent, false);
-            _pose = new GameObject("Pose").transform;
-            _pose.SetParent(Root, false);
-            _shadow = Child("Shadow", _pose, atlas.Get("plopShadow"), out _shadowR);
-            _shadow.localPosition = new Vector3(0f, GroundY + 0.005f, 0f);
-            _body = Child("Body", _pose, atlas.Get(ShapeAtlas.PlopKey(colorId)), out _bodyR);
-            _body.localPosition = new Vector3(0f, GroundY, 0f);
+            : this(parent, atlas, colorId, seed, reducedMotion, false) { }
 
-            _cheekL = Child("CheekL", _body, atlas.Get("cheek"), out _cheekLR);
-            _cheekR = Child("CheekR", _body, atlas.Get("cheek"), out _cheekRR);
-            _eyeOpen = atlas.Get("eye");
-            _eyeClosed = atlas.Get("eyeClosed");
-            _eyeL = Child("EyeL", _body, _eyeOpen, out _eyeLR);
-            _eyeR = Child("EyeR", _body, _eyeOpen, out _eyeRR);
-            _mouthAwake = atlas.Get("mouth");
-            _mouthSleep = atlas.Get("mouthSleep");
-            _mouthBump = atlas.Get("mouthBump");
-            _mouth = Child("Mouth", _body, _mouthAwake, out _mouthR);
-            _displayedEye = _eyeOpen;
-            _displayedMouth = _mouthAwake;
+        /// <param name="ui">Build with UI Images under a RectTransform parent (menus, Studio). The caller scales
+        /// <see cref="Root"/> to its pixels per cell.</param>
+        /// <param name="keyPrefix">Atlas key prefix for multi-variant atlases (Studio thumbnails).</param>
+        public PlopView(Transform parent, ShapeAtlas atlas, int colorId, int seed, bool reducedMotion, bool ui, string keyPrefix = "")
+        {
+            _atlas = atlas;
+            _prefix = keyPrefix ?? "";
+            _ui = ui;
+            _reducedMotion = reducedMotion;
+            var look = atlas.Look ?? CharacterLook.Default;
+            _style = look.Style;
+            _personality = _style.Personality;
+
+            Root = ui ? new GameObject("Plop", typeof(RectTransform)).transform : new GameObject("Plop").transform;
+            Root.SetParent(parent, false);
+            _pose = ui ? new GameObject("Pose", typeof(RectTransform)).transform : new GameObject("Pose").transform;
+            _pose.SetParent(Root, false);
+            if (ui) ((RectTransform)_pose).sizeDelta = ((RectTransform)Root).sizeDelta = Vector2.zero;
+
+            _shadow = new PlopPart("Shadow", _pose, Get(ShapeAtlas.ShadowKey), ui);
+            _shadow.Transform.localPosition = new Vector3(0f, GroundY + 0.005f, 0f);
+            _body = new PlopPart("Body", _pose, Get(ShapeAtlas.PlopKey(colorId)), ui);
+            _body.Transform.localPosition = new Vector3(0f, GroundY, 0f);
+
+            _eyes = new Sprite[System.Enum.GetValues(typeof(EyeShape)).Length];
+            for (int i = 0; i < _eyes.Length; i++) _eyes[i] = Get(ShapeAtlas.EyeKey((EyeShape)i));
+            _mouths = new Sprite[System.Enum.GetValues(typeof(MouthShape)).Length];
+            for (int i = 0; i < _mouths.Length; i++) _mouths[i] = Get(ShapeAtlas.MouthKey((MouthShape)i));
+
+            _cheekL = new PlopPart("CheekL", _body.Transform, Get(ShapeAtlas.CheekKey), ui);
+            _cheekR = new PlopPart("CheekR", _body.Transform, Get(ShapeAtlas.CheekKey), ui);
+            _mouth = new PlopPart("Mouth", _body.Transform, Get(ShapeAtlas.MouthKey(MouthShape.Neutral)), ui);
+            _eyeL = new PlopPart("EyeL", _body.Transform, Get(ShapeAtlas.EyeKey(EyeShape.Open)), ui);
+            _eyeR = new PlopPart("EyeR", _body.Transform, Get(ShapeAtlas.EyeKey(EyeShape.Open)), ui);
+            _browL = new PlopPart("BrowL", _body.Transform, Get(ShapeAtlas.BrowKey), ui) { Visible = false };
+            _browR = new PlopPart("BrowR", _body.Transform, Get(ShapeAtlas.BrowKey), ui) { Visible = false };
+
+            var accessory = look.Accessory;
+            if (accessory != null && accessory.Anchor != AccessoryAnchor.None && atlas.Has(_prefix + ShapeAtlas.AccessoryKey))
+            {
+                _accessory = new PlopPart("Accessory", _body.Transform, Get(ShapeAtlas.AccessoryKey), ui);
+                Vector2 anchor = accessory.Anchor == AccessoryAnchor.Top ? _style.TopAnchor : _style.SideAnchor;
+                _accessory.Transform.localPosition = anchor + accessory.Offset;
+                _accessory.Transform.localRotation = Quaternion.AngleAxis(accessory.Rotation, Vector3.forward);
+            }
 
             _rng = (uint)(seed * 747796405 + 2891336453);
             _phase = Rand() * Mathf.PI * 2f;
             _nextBlink = Time.unscaledTime + 1f + Rand() * 3f;
-            ApplyFace(Vector2.zero, 1f, 0f, 0f);
+            ApplyFace(Vector2.zero, 1f, 0f, 0f, Time.unscaledTime);
         }
 
-        private static Transform Child(string name, Transform parent, Sprite sprite, out SpriteRenderer renderer)
-        {
-            var go = new GameObject(name);
-            go.transform.SetParent(parent, false);
-            renderer = go.AddComponent<SpriteRenderer>();
-            renderer.sprite = sprite;
-            return go.transform;
-        }
+        private Sprite Get(string key) => _atlas.Get(_prefix + key);
 
         private float Rand()
         {
@@ -105,23 +142,85 @@ namespace Plop.Presentation
         {
             if (_sortingBase == order) return;
             _sortingBase = order;
-            _shadowR.sortingOrder = order + 2;
-            _bodyR.sortingOrder = order + 10;
-            _cheekLR.sortingOrder = order + 11;
-            _cheekRR.sortingOrder = order + 11;
-            _mouthR.sortingOrder = order + 12;
-            _eyeLR.sortingOrder = order + 12;
-            _eyeRR.sortingOrder = order + 12;
+            _shadow.Order = order + 2;
+            _body.Order = order + 10;
+            _cheekL.Order = _cheekR.Order = order + 11;
+            _mouth.Order = _eyeL.Order = _eyeR.Order = order + 12;
+            _browL.Order = _browR.Order = order + 12;
+            if (_accessory != null) _accessory.Order = order + 13;
         }
+
+        // ------------------------------------------------------------------ expressions & reactions
+
+        /// <summary>Shows an expression for <paramref name="seconds"/> (infinite keeps it until cleared). Visual only.</summary>
+        public void SetExpression(Expression expression, float seconds = float.PositiveInfinity)
+        {
+            _override = expression;
+            _overrideForever = float.IsPositiveInfinity(seconds);
+            _overrideUntil = _overrideForever ? float.MaxValue : Time.unscaledTime + seconds;
+            _sleepPoseFrozen = false;
+            if (_reducedMotion) ApplyStillPose();
+        }
+
+        public void ClearExpression()
+        {
+            _overrideUntil = -1f;
+            _overrideForever = false;
+            _sleepPoseFrozen = false;
+            if (_reducedMotion) ApplyStillPose();
+        }
+
+        /// <summary>A short playful response (Studio taps, menu). Reduced Motion keeps only the face change.</summary>
+        public void React(Reaction reaction, float now)
+        {
+            if (_asleep) return;
+            switch (reaction)
+            {
+                case Reaction.Bounce:
+                    SetOverride(Expression.Happy, now, 0.62f);
+                    if (!_reducedMotion) { _hopT0 = -1f; StartHop(now); }
+                    break;
+                case Reaction.Surprised:
+                    SetOverride(Expression.Surprised, now, 0.75f);
+                    if (!_reducedMotion) { _softBump = true; _bumpDir = Vector2.down; _bumpT0 = now; }
+                    break;
+                case Reaction.Wobble:
+                    SetOverride(Expression.Curious, now, 0.9f);
+                    if (!_reducedMotion) _wobbleT0 = now;
+                    break;
+                case Reaction.HappyBlink:
+                    SetOverride(Expression.Happy, now, 0.5f);
+                    break;
+                case Reaction.Squash:
+                    SetOverride(Expression.Excited, now, 0.55f);
+                    if (!_reducedMotion) { _landT0 = now; _landDir = Vector2.down; }
+                    break;
+                case Reaction.Sleepy:
+                    SetOverride(Expression.Sleepy, now, 1.4f);
+                    break;
+            }
+            _sleepPoseFrozen = false;
+            if (_reducedMotion) ApplyStillPose();
+        }
+
+        private void SetOverride(Expression e, float now, float seconds)
+        {
+            _override = e;
+            _overrideForever = false;
+            _overrideUntil = now + seconds;
+        }
+
+        // ------------------------------------------------------------------ board API
 
         /// <summary>Immediately restores a gameplay snapshot and clears transient animation.</summary>
         public void Snap(Vector3 position, bool asleep)
         {
             _from = _to = position;
-            _moveT0 = _bumpT0 = _landT0 = _hopT0 = _sleepT0 = _blinkT0 = _restoreT0 = _blendT0 = -1f;
+            _moveT0 = _bumpT0 = _landT0 = _hopT0 = _sleepT0 = _blinkT0 = _restoreT0 = _blendT0 = _wobbleT0 = -1f;
             _sleepPending = _sleepPoseFrozen = false;
             _asleep = asleep;
             _look = Vector2.zero;
+            if (!_overrideForever) _overrideUntil = -1f;
             SleepJustStarted = false;
             _nextBlink = Time.unscaledTime + 1f + Rand() * 3f;
             if (_reducedMotion) ApplyStillPose();
@@ -159,7 +258,7 @@ namespace Plop.Presentation
                 ? new Vector4(1.049f * BodyScale, 0.83f * BodyScale, -0.012f, 0f)
                 : new Vector4(BodyScale, BodyScale, 0f, 0f);
             DisplayPose(_to, Vector3.zero, body);
-            ApplyFace(Vector2.zero, 1f, _asleep ? 1f : 0f, 0f);
+            ApplyFace(Vector2.zero, 1f, _asleep ? 1f : 0f, 0f, Time.unscaledTime);
         }
 
         public void StartMove(Vector3 to, Vector2 dir, float now)
@@ -216,12 +315,23 @@ namespace Plop.Presentation
             _sleepPoseFrozen = false;
         }
 
+        // ------------------------------------------------------------------ per-frame pose
+
         public void Tick(float now)
         {
             SleepJustStarted = false;
-            if (_reducedMotion || _sleepPoseFrozen) return;
+            if (_reducedMotion)
+            {
+                // Still pose; only an expiring expression needs a redraw.
+                if (_overrideUntil >= 0f && !_overrideForever && now >= _overrideUntil)
+                {
+                    _overrideUntil = -1f;
+                    ApplyStillPose();
+                }
+                return;
+            }
+            if (_sleepPoseFrozen) return;
 
-            // The root follows the board's supplied endpoints. Every other offset stays on a child.
             Vector3 position = _to;
             float moveTime = IsSliding ? now - _moveT0 : MoveDuration;
             if (IsSliding)
@@ -243,26 +353,39 @@ namespace Plop.Presentation
                 SleepJustStarted = true;
             }
 
+            var p = _personality;
             float recoil = BumpAmount(now);
-            float recoilReach = _softBump ? 0.046f : 0.083f;
+            float recoilReach = (_softBump ? 0.046f : 0.083f) * p.Reaction;
             Vector3 offset = RestoreOffset(now) + (Vector3)(_bumpDir * (recoilReach * recoil));
 
             float asleep = !_asleep ? 0f : _sleepT0 < 0f ? 1f : Smooth((now - _sleepT0) / SleepDuration);
             float awake = 1f - asleep;
             float idle = IsMoving || _restoreT0 >= 0f ? awake * 0.24f : awake;
-            float breath = Mathf.Sin(now * (2f * Mathf.PI / 3.4f) + _phase);
-            float breathScale = 0.023f * breath * idle;
+            float breath = Mathf.Sin(now * (2f * Mathf.PI / p.BreathPeriod) + _phase);
+            float breathScale = p.BreathAmount * breath * idle;
             float sx = 1f - breathScale * 0.65f + 0.049f * asleep;
             float sy = 1f + breathScale - 0.17f * asleep;
             float lift = -0.012f * asleep;
-            float tilt = 0.85f * Mathf.Sin(now * 1.64f + _phase) * idle;
+            float tilt = p.Wobble * Mathf.Sin(now * 1.64f + _phase) * idle;
+
+            bool sleepy = Overriding(now) && _override == Expression.Sleepy;
+            _sleepyDroop = Mathf.MoveTowards(_sleepyDroop, sleepy ? 1f : 0f, Time.unscaledDeltaTime * 4f);
+            sy -= 0.045f * _sleepyDroop;
+            sx += 0.025f * _sleepyDroop;
+
+            if (_wobbleT0 >= 0f)
+            {
+                float u = (now - _wobbleT0) / WobbleDuration;
+                if (u >= 1f) _wobbleT0 = -1f;
+                else tilt += 7f * Mathf.Sin(2f * Mathf.PI * 2.5f * u) * (1f - u) * (1f - u);
+            }
 
             if (IsSliding)
             {
                 float along;
                 if (moveTime < AnticipationDuration)
                 {
-                    along = 1f - 0.15f * Smooth(moveTime / AnticipationDuration);
+                    along = 1f - 0.15f * p.Reaction * Smooth(moveTime / AnticipationDuration);
                 }
                 else
                 {
@@ -270,7 +393,7 @@ namespace Plop.Presentation
                     float stretch = Mathf.Sin(Mathf.PI * travel);
                     float release = 1f - Smooth(travel / 0.31f);
                     float landing = Smooth((travel - 0.71f) / 0.29f);
-                    along = 1f - 0.15f * release + 0.20f * stretch - LandingSqueeze * landing;
+                    along = 1f - 0.15f * release + 0.20f * p.Reaction * stretch - LandingSqueeze * landing;
                     tilt -= 4.2f * _moveDir.x * stretch;
                     lift += 0.029f * stretch;
                 }
@@ -283,14 +406,14 @@ namespace Plop.Presentation
                 else
                 {
                     float envelope = (1f - u) * (1f - u);
-                    float along = 1f - LandingSqueeze * Mathf.Cos(2.7f * Mathf.PI * u) * envelope;
+                    float along = 1f - LandingSqueeze * p.Reaction * Mathf.Cos(2.7f * Mathf.PI * u) * envelope;
                     ApplyAxis(_landDir, along, ref sx, ref sy);
                 }
             }
 
             if (recoil != 0f)
             {
-                float squash = _softBump ? 0.123f : 0.19f;
+                float squash = (_softBump ? 0.123f : 0.19f) * p.Reaction;
                 ApplyAxis(_bumpDir, 1f - squash * recoil, ref sx, ref sy);
             }
 
@@ -320,10 +443,12 @@ namespace Plop.Presentation
             Vector2 look = _look == Vector2.zero
                 ? Vector2.zero
                 : _look * ((1f - Smooth(lookTime)) * (1f - asleep));
-            ApplyFace(look, eyeOpen, asleep, recoil);
-            _sleepPoseFrozen = _asleep && asleep >= 1f && _hopT0 < 0f && _landT0 < 0f &&
-                               _restoreT0 < 0f && _blendT0 < 0f && !IsMoving;
+            ApplyFace(look, eyeOpen, asleep, recoil, now);
+            _sleepPoseFrozen = _asleep && asleep >= 1f && _hopT0 < 0f && _landT0 < 0f && _wobbleT0 < 0f &&
+                               _restoreT0 < 0f && _blendT0 < 0f && !IsMoving && !Overriding(now) && _sleepyDroop <= 0f;
         }
+
+        private bool Overriding(float now) => _overrideUntil >= 0f && (_overrideForever || now < _overrideUntil);
 
         private void DisplayPose(Vector3 root, Vector3 offset, Vector4 body)
         {
@@ -339,15 +464,16 @@ namespace Plop.Presentation
                 _pose.localPosition = offset;
                 _displayedOffset = offset;
             }
-            if (_displayedBody.z != body.z) _body.localPosition = new Vector3(0f, GroundY + body.z, 0f);
-            if (_displayedBody.w != body.w) _body.localRotation = Quaternion.AngleAxis(body.w, Vector3.forward);
+            var bodyT = _body.Transform;
+            if (_displayedBody.z != body.z) bodyT.localPosition = new Vector3(0f, GroundY + body.z, 0f);
+            if (_displayedBody.w != body.w) bodyT.localRotation = Quaternion.AngleAxis(body.w, Vector3.forward);
             if (_displayedBody.x != body.x || _displayedBody.y != body.y)
-                _body.localScale = new Vector3(body.x, body.y, 1f);
+                bodyT.localScale = new Vector3(body.x, body.y, 1f);
             _displayedBody = body;
 
             float shadowWidth = (body.x / BodyScale) * (1f - 1.2f * Mathf.Max(0f, body.z));
             if (_displayedShadowWidth == shadowWidth) return;
-            _shadow.localScale = new Vector3(shadowWidth, shadowWidth, 1f);
+            _shadow.Transform.localScale = new Vector3(shadowWidth, shadowWidth, 1f);
             _displayedShadowWidth = shadowWidth;
         }
 
@@ -365,7 +491,7 @@ namespace Plop.Presentation
             if (now >= _nextBlink)
             {
                 _blinkT0 = now;
-                _nextBlink = now + 2.6f + Rand() * 3.7f;
+                _nextBlink = now + _personality.BlinkMin + Rand() * _personality.BlinkRange;
             }
             if (_blinkT0 < 0f) return 1f;
             float u = (now - _blinkT0) / BlinkDuration;
@@ -403,40 +529,83 @@ namespace Plop.Presentation
             return 0f;
         }
 
-        private void ApplyFace(Vector2 look, float eyeOpen, float asleep, float recoil)
+        /// <summary>Chooses the expression for this frame: override, sleep, recoil, celebration, then neutral.</summary>
+        private Expression ResolveExpression(float asleep, float recoil, float now)
         {
-            bool sleepingFace = _asleep && asleep >= 0.38f;
-            bool closed = sleepingFace || (!_asleep && eyeOpen < 0.17f && recoil < 0.3f);
-            Sprite eyeSprite = closed ? _eyeClosed : _eyeOpen;
-            if (!ReferenceEquals(_displayedEye, eyeSprite))
-            {
-                _eyeLR.sprite = _eyeRR.sprite = eyeSprite;
-                _displayedEye = eyeSprite;
-            }
-            Sprite mouthSprite = sleepingFace ? _mouthSleep : recoil > 0.58f && !_softBump ? _mouthBump : _mouthAwake;
-            if (!ReferenceEquals(_displayedMouth, mouthSprite))
-            {
-                _mouthR.sprite = mouthSprite;
-                _displayedMouth = mouthSprite;
-            }
+            if (Overriding(now)) return _override;
+            if (_asleep && asleep >= 0.38f) return Expression.Sleeping;
+            if (!_asleep && recoil > 0.58f && !_softBump) return Expression.Collision;
+            if (_hopT0 >= 0f && now >= _hopT0) return Expression.Happy;
+            return _personality.Neutral;
+        }
 
-            float eyeScale = closed ? 1f : Mathf.Max(0.08f, eyeOpen);
+        private void ApplyFace(Vector2 look, float eyeOpen, float asleep, float recoil, float now)
+        {
+            var expression = ResolveExpression(asleep, recoil, now);
+            var f = FaceFeatures.For(expression);
+            bool blinkClosed = f.Blinks && !_asleep && eyeOpen < 0.17f && recoil < 0.3f;
+            var left = blinkClosed || (_asleep && expression == Expression.Sleeping) ? EyeShape.Closed : f.Left;
+            var right = blinkClosed || (_asleep && expression == Expression.Sleeping) ? EyeShape.Closed : f.Right;
+            _eyeL.Sprite = _eyes[(int)left];
+            _eyeR.Sprite = _eyes[(int)right];
+            _mouth.Sprite = _mouths[(int)f.Mouth];
+
+            float baseOpen = f.Left == EyeShape.Open && expression == _personality.Neutral ? _personality.NeutralEyeOpen : 1f;
+            float eyeScale = left == EyeShape.Closed || !f.Blinks ? 1f : Mathf.Max(0.08f, eyeOpen) * baseOpen;
             if (_displayedEyeScale != eyeScale)
             {
-                _eyeL.localScale = _eyeR.localScale = new Vector3(1f, eyeScale, 1f);
+                _eyeL.Transform.localScale = _eyeR.Transform.localScale = new Vector3(1f, eyeScale, 1f);
                 _displayedEyeScale = eyeScale;
+            }
+            if (_displayedExpression != expression)
+            {
+                _displayedExpression = expression;
+                float cheek = Mathf.Clamp01(f.Cheeks);
+                _cheekL.Color = _cheekR.Color = new Color(1f, 1f, 1f, Mathf.Clamp01(0.72f + 0.28f * cheek));
+                float cs = Mathf.Max(1f, f.Cheeks);
+                _cheekL.Transform.localScale = _cheekR.Transform.localScale = new Vector3(cs, cs, 1f);
+                ApplyBrows(f.Brows);
+                _displayedLook = new Vector2(float.NaN, float.NaN); // force a reposition
             }
             if (_displayedLook.Equals(look) && _displayedFaceSleep == asleep) return;
             _displayedLook = look;
             _displayedFaceSleep = asleep;
 
+            var st = _style;
             float faceOffset = -0.022f * asleep;
-            _eyeL.localPosition = new Vector3(-0.138f + look.x, 0.407f + look.y + faceOffset, 0f);
-            _eyeR.localPosition = new Vector3(0.122f + look.x, 0.403f + look.y + faceOffset, 0f);
-            _mouth.localPosition = new Vector3(-0.005f + look.x * 0.75f, 0.300f + look.y * 0.65f + faceOffset, 0f);
-            _cheekL.localPosition = new Vector3(-0.219f + look.x * 0.5f, 0.320f + look.y * 0.5f + faceOffset, 0f);
-            _cheekR.localPosition = new Vector3(0.204f + look.x * 0.5f, 0.319f + look.y * 0.5f + faceOffset, 0f);
+            Vector2 eyeL = st.EyeL, eyeR = st.EyeR, mouth = st.Mouth, cheekL = st.CheekL, cheekR = st.CheekR;
+            _eyeL.Transform.localPosition = new Vector3(eyeL.x + look.x, eyeL.y + look.y + faceOffset, 0f);
+            _eyeR.Transform.localPosition = new Vector3(eyeR.x + look.x, eyeR.y + look.y + faceOffset, 0f);
+            _mouth.Transform.localPosition = new Vector3(mouth.x + look.x * 0.75f, mouth.y + look.y * 0.65f + faceOffset, 0f);
+            _cheekL.Transform.localPosition = new Vector3(cheekL.x + look.x * 0.5f, cheekL.y + look.y * 0.5f + faceOffset, 0f);
+            _cheekR.Transform.localPosition = new Vector3(cheekR.x + look.x * 0.5f, cheekR.y + look.y * 0.5f + faceOffset, 0f);
+            Vector2 browL = st.BrowL + look, browR = st.BrowR + look;
+            float lift = BrowLift(_browL, _browR);
+            _browL.Transform.localPosition = new Vector3(browL.x, browL.y + lift + faceOffset, 0f);
+            _browR.Transform.localPosition = new Vector3(browR.x, browR.y + lift + faceOffset, 0f);
         }
+
+        private BrowPose _brows;
+
+        private void ApplyBrows(BrowPose pose)
+        {
+            _brows = pose;
+            _browL.Visible = pose == BrowPose.Raised || pose == BrowPose.Worried || pose == BrowPose.LeftUp;
+            _browR.Visible = pose == BrowPose.Raised || pose == BrowPose.Worried || pose == BrowPose.RightUp;
+            float l = 0f, r = 0f;
+            switch (pose)
+            {
+                case BrowPose.Raised: l = 8f; r = -8f; break;
+                case BrowPose.Worried: l = -16f; r = 16f; break;
+                case BrowPose.LeftUp: l = 12f; break;
+                case BrowPose.RightUp: r = -12f; break;
+            }
+            _browL.Transform.localRotation = Quaternion.AngleAxis(l, Vector3.forward);
+            _browR.Transform.localRotation = Quaternion.AngleAxis(r, Vector3.forward);
+        }
+
+        private float BrowLift(PlopPart left, PlopPart right)
+            => _brows == BrowPose.Raised ? 0.020f : _brows == BrowPose.LeftUp || _brows == BrowPose.RightUp ? 0.012f : 0f;
 
         private static void ApplyAxis(Vector2 dir, float along, ref float sx, ref float sy)
         {
