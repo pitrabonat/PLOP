@@ -20,7 +20,10 @@ namespace Plop.Tests
         }
 
         private static List<LevelDefinition> Load(string file)
-            => LevelSerializer.PackFromJson(File.ReadAllText(Path.Combine(LevelsDir(), file)));
+        {
+            LevelsDir();
+            return LevelSerializer.PackFromJson(File.ReadAllText(GenerationTests.FindLevelFile(file)));
+        }
 
         [Test]
         public void EveryLevel_HasVerifiedOptimalMoves_AndReplayableSolution()
@@ -37,7 +40,7 @@ namespace Plop.Tests
         [Test]
         public void RuntimeLoad_KeepsOptimalMoves_WithoutDevData()
         {
-            var runtime = LevelSerializer.PackFromJson(File.ReadAllText(Path.Combine(LevelsDir(), "PLOP_Pack_001.json")), includeDevData: false);
+            var runtime = LevelSerializer.PackFromJson(File.ReadAllText(GenerationTests.FindLevelFile("PLOP_Pack_001.json")), includeDevData: false);
             Assert.AreEqual(ProductionCatalog.LevelCount, runtime.Count);
             foreach (var level in runtime)
             {
@@ -68,7 +71,7 @@ namespace Plop.Tests
         public void Tutorials_KeepTheirIds_AndChangedSlotsHaveMigrationHistory()
         {
             var levels = Load("PLOP_Pack_001.json");
-            var history = MiniJson.AsObject(MiniJson.Parse(File.ReadAllText(Path.Combine(LevelsDir(), "PLOP_Pack_001_SlotHistory.json"))), "history");
+            var history = MiniJson.AsObject(MiniJson.Parse(File.ReadAllText(GenerationTests.FindLevelFile("PLOP_Pack_001_SlotHistory.json"))), "history");
             var slots = MiniJson.AsArray(history["slots"], "slots");
             Assert.AreEqual(levels.Count, slots.Count);
             for (int i = 0; i < levels.Count; i++)

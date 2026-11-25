@@ -9,7 +9,8 @@ namespace Plop.Presentation
         private const float CrossfadeSeconds = 0.56f;
         private static readonly string[] AssetNames =
         {
-            "cozy-nest", "dewdrop-garden", "rainy-window", "twilight-attic", "moonlit-clouds"
+            "cozy-nest", "dewdrop-garden", "rainy-window", "twilight-attic", "moonlit-clouds",
+            "frosted-pond", "breezy-meadow", "ember-hollow", "prism-observatory"
         };
 
         private readonly MonoBehaviour _host;

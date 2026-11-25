@@ -38,6 +38,8 @@ namespace Plop.Bench
                     case "--report": report = args[++i]; break;
                     case "--explore": explore = int.Parse(args[++i]); break;
                     case "--perf": return Perf(args[++i]);
+                    case "--expanded": return ExpandedBuild.Run(i + 1 < args.Length ? ParseSeed(args[i + 1]) : 0x504C4F50_31300000UL, System.IO.Path.GetFullPath(".."));
+                    case "--mech-probe": return MechanicProbe.Run(i + 1 < args.Length ? int.Parse(args[i + 1]) : 3);
                     case "--search-probe": return SearchProbe.Run(i + 1 < args.Length ? int.Parse(args[i + 1]) : 2);
                     case "--audit": return CampaignAudit.Run(args[i + 1], i + 2 < args.Length ? args[i + 2] : null, i + 3 < args.Length ? args[i + 3] : null);
                     case "--insights": return Insights(args[i + 1], i + 2 < args.Length ? args[i + 2] : null);

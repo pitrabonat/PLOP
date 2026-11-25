@@ -92,6 +92,7 @@ namespace Plop.Generation
     {
         public readonly List<LevelDefinition> Levels = new List<LevelDefinition>();
         public readonly BatchStats Stats = new BatchStats();
+        public string Message;
     }
 
     /// <summary>Generates a set of unique verified levels across several generator profiles.</summary>

@@ -65,6 +65,8 @@ namespace Plop.Generation
         public int Slides, Pushes, Teleports;
         public int MechanicKindsUsed;      // distinct kinds (Frost, Breeze, Loop) on the solution route
         public int FailingMoves;           // fatal edges in the whole reachable graph
+        /// <summary>Every cell a Plop occupies or crosses along the optimal route (forced segments included).</summary>
+        public int[] RouteCells = Array.Empty<int>();
 
         public double Challenge;
         /// <summary>Which design patterns (A–G from the Phase 8 brief) this puzzle exhibits.</summary>
@@ -257,6 +259,12 @@ namespace Plop.Generation
                     {
                         mechanicStep = true;
                         touched.Add(level.CellIndex(e.To));
+                        touched.Add(level.CellIndex(e.From));
+                        if (e.Type != GameEventType.PlopTeleported)
+                        {
+                            var c = e.From;
+                            while (c != e.To) { c = c.Offset(e.Direction); touched.Add(level.CellIndex(c)); }
+                        }
                         if (e.Type == GameEventType.PlopSlid) { r.Slides++; kinds |= 1; }
                         if (e.Type == GameEventType.PlopPushed) { r.Pushes++; kinds |= 2; }
                         if (e.Type == GameEventType.PlopTeleported) { r.Teleports++; kinds |= 4; }
@@ -272,6 +280,8 @@ namespace Plop.Generation
             }
 
             r.MechanicKindsUsed = (kinds & 1) + ((kinds >> 1) & 1) + ((kinds >> 2) & 1);
+            r.RouteCells = new int[touched.Count];
+            touched.CopyTo(r.RouteCells);
             var sol = analysis.Solution;
             int runs = sol.Length == 0 ? 0 : 1;
             for (int i = 1; i < sol.Length; i++) if (sol[i] != sol[i - 1]) runs++;

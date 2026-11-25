@@ -7,6 +7,10 @@ namespace Plop.Presentation
         DewdropGarden = 1,
         RainyWindow = 2,
         TwilightAttic = 3,
-        MoonlitClouds = 4
+        MoonlitClouds = 4,
+        FrostedPond = 5,
+        BreezyMeadow = 6,
+        EmberHollow = 7,
+        PrismObservatory = 8
     }
 }

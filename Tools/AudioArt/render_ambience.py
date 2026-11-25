@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render the five original PLOP world ambience beds as mono PCM WAVs."""
+"""Render the nine PLOP world ambience beds as mono PCM WAVs (use --only to render selected beds)."""
 import argparse
 from array import array
 from itertools import accumulate
@@ -106,6 +106,52 @@ def clouds():
     return output
 
 
+def pond():
+    # Still frozen air with sparse, soft ice chimes.
+    low, middle, _ = air(420)
+    output = []
+    for i, (far, near) in enumerate(zip(low, middle)):
+        hush = 0.88 + 0.12 * periodic(i, 2, 1.3)
+        frost = partial(i, 523.25, 0.2) + 0.5 * partial(i, 783.99, 1.1)
+        output.append(hush * (0.52 * far + 0.12 * near) + 0.004 * frost * (0.5 + 0.5 * periodic(i, 3, 0.4)))
+    add_drops(output, seed=421, count=14, start_hz=1320, finish_hz=1180, gain=0.012)
+    return output
+
+
+def meadow():
+    # Gentle gusts that swell and settle; seeds rustling in grass.
+    low, middle, high = air(422)
+    gusts = rustle_gate(423, 7, 1.1, 2.6, 0.38)
+    output = []
+    for i, (far, near, fine) in enumerate(zip(low, middle, high)):
+        breeze = 0.30 * far + gusts[i] * (0.30 * near + 0.18 * (fine - near))
+        output.append(breeze * (0.90 + 0.10 * periodic(i, 2, 0.2)))
+    return output
+
+
+def ember():
+    # A warm, low cavern hum with soft, slow crackles.
+    low, middle, _ = air(424)
+    output = []
+    for i, (far, near) in enumerate(zip(low, middle)):
+        warmth = partial(i, 98.0, 0.3) + 0.45 * partial(i, 146.83, 2.2)
+        pulse = 0.86 + 0.14 * periodic(i, 3, 0.8)
+        output.append(pulse * (0.58 * far + 0.08 * near) + 0.018 * warmth)
+    add_drops(output, seed=425, count=26, start_hz=420, finish_hz=260, gain=0.016)
+    return output
+
+
+def prism():
+    # Glassy shimmer under a quiet dome.
+    low, middle, _ = air(426)
+    output = []
+    for i, (far, near) in enumerate(zip(low, middle)):
+        shimmer = partial(i, 659.25, 0.5) * (0.6 + 0.4 * periodic(i, 4, 1.2)) + 0.6 * partial(i, 987.77, 2.4) * (0.5 + 0.5 * periodic(i, 3))
+        glow = partial(i, 220.0, 0.1) + 0.5 * partial(i, 329.63, 1.4)
+        output.append(0.40 * (0.70 * far + 0.15 * near) + 0.006 * shimmer + 0.009 * glow)
+    return output
+
+
 def add_drops(signal, seed, count, start_hz, finish_hz, gain):
     rng = random.Random(seed)
     for _ in range(count):
@@ -143,7 +189,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path,
                         default=Path(__file__).resolve().parents[2] / "Assets/Audio/Resources/Ambience")
-    output = parser.parse_args().output
+    parser.add_argument("--only", nargs="*", default=None, help="bed names to render (default: all)")
+    arguments = parser.parse_args()
+    output = arguments.output
     output.mkdir(parents=True, exist_ok=True)
     for name, render, level in (
         ("cozy-nest", cozy, -36.0),
@@ -151,7 +199,13 @@ def main():
         ("rainy-window", rain, -35.5),
         ("twilight-attic", attic, -37.0),
         ("moonlit-clouds", clouds, -36.0),
+        ("frosted-pond", pond, -37.0),
+        ("breezy-meadow", meadow, -35.5),
+        ("ember-hollow", ember, -36.5),
+        ("prism-observatory", prism, -37.0),
     ):
+        if arguments.only and name not in arguments.only:
+            continue
         samples = finish(render(), level)
         if sys.byteorder == "big":
             samples.byteswap()

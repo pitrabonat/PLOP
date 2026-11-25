@@ -253,16 +253,33 @@ namespace Plop.Tests
             StringAssert.Contains("No stored solution", report.ToString());
         }
 
-        internal static string FindPack()
+        /// <summary>The Phase 8 campaign (archived in Phase 10; it no longer ships).</summary>
+        internal static string FindPack() => FindLevelFile("PLOP_Pack_001.json");
+
+        /// <summary>Finds a level data file in Assets/Levels/Resources/Levels or Assets/Levels/Archive.</summary>
+        internal static string FindLevelFile(string name)
         {
             var dir = new System.IO.DirectoryInfo(System.IO.Directory.GetCurrentDirectory());
             while (dir != null)
             {
-                var candidate = System.IO.Path.Combine(dir.FullName, "Assets", "Levels", "Resources", "Levels", "PLOP_Pack_001.json");
-                if (System.IO.File.Exists(candidate)) return candidate;
+                foreach (var sub in new[] { System.IO.Path.Combine("Assets", "Levels", "Resources", "Levels"), System.IO.Path.Combine("Assets", "Levels", "Archive") })
+                {
+                    var candidate = System.IO.Path.Combine(dir.FullName, sub, name);
+                    if (System.IO.File.Exists(candidate)) return candidate;
+                }
                 dir = dir.Parent;
             }
             return null;
+        }
+
+        /// <summary>The project's Assets folder, or null outside the repository.</summary>
+        internal static string FindAssets()
+        {
+            string pack = FindPack();
+            if (pack == null) return null;
+            var dir = new System.IO.DirectoryInfo(System.IO.Path.GetDirectoryName(pack));
+            while (dir != null && dir.Name != "Assets") dir = dir.Parent;
+            return dir?.FullName;
         }
     }
 }

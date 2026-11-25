@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rasterize the five authored PLOP world backdrops and world-card art.
+"""Rasterize the nine authored PLOP world backdrops and world-card art.
 
 Run with the Unity project root as the optional first argument. Existing .meta
 files stay in place so art changes retain their Sprite and resource references.
@@ -338,18 +338,160 @@ def moonlit(canvas, preview):
         canvas.oval(x, y, size, size * 0.93, 0xFFF9EA, 0xD8D4ED, opacity=0.84)
 
 
+def ring(canvas, x, y, w, h, outer, inner, glow, angle=0):
+    canvas.mist(x, y, w * 1.5, h * 1.5, glow, 0.30, angle)
+    canvas.oval(x, y, w, h, outer, inner, angle, feather=1.6)
+    canvas.oval(x, y, w * 0.62, h * 0.62, glow, inner, angle, 0.92, feather=2.2)
+    canvas.mist(x, y, w * 0.48, h * 0.48, 0xFFFFFF, 0.25, angle)
+
+
+def snowflake(canvas, x, y, size, opacity=0.9):
+    for angle in (0, 60, 120):
+        dx = math.cos(math.radians(angle)) * size * 0.5
+        dy = math.sin(math.radians(angle)) * size * 0.5
+        canvas.segment(x - dx, y - dy, x + dx, y + dy, max(1.4, size * 0.13), 0xFFFFFF, opacity)
+
+
+def frosted(canvas, preview):
+    ice = (0xEAF6FC, 0xB9D6EA)
+    if preview:
+        canvas.oval(160, 132, 250, 54, 0xD5EAF5, 0xA9CBE0, opacity=0.95)
+        canvas.mist(140, 124, 120, 18, 0xFFFFFF, 0.55)
+        toy(canvas, 66, 116, 56, 44, ice[0], ice[1], -10)
+        toy(canvas, 262, 112, 48, 40, ice[0], ice[1], 12)
+        for x, y, w, h, angle in ((60, 50, 90, 30, -24), (110, 30, 80, 28, -58), (250, 44, 92, 30, 28)):
+            leaf(canvas, x, y, w, h, angle, 0xE4F2F4, 0xA8CAD2, with_dew=False)
+        for x, y, size in ((180, 40, 16), (212, 74, 10), (150, 82, 8), (290, 26, 9)):
+            snowflake(canvas, x, y, size)
+        return
+    canvas.mist(470, 70, 260, 160, 0xF4FAFF, 0.40)
+    canvas.segment(560, -6, 470, 104, 5, 0x9CB6C4, 0.55)
+    for x, y, w, h, angle in ((478, 56, 82, 28, -140), (520, 70, 76, 26, -50), (452, 92, 70, 24, -150), (504, 24, 76, 24, -150)):
+        leaf(canvas, x, y, w, h, angle, 0xE7F3F5, 0xA6C6D0, with_dew=False)
+    for x, y, size in ((96, 60, 18), (160, 120, 11), (60, 150, 9), (280, 40, 12), (380, 96, 9), (220, 170, 7), (120, 930, 10), (430, 912, 12)):
+        snowflake(canvas, x, y, size, 0.8)
+    canvas.oval(290, 1012, 620, 120, 0xD8ECF6, 0xA5C7DD, opacity=0.95)
+    canvas.mist(250, 990, 360, 40, 0xFFFFFF, 0.42)
+    toy(canvas, 52, 980, 84, 70, ice[0], ice[1], -12)
+    toy(canvas, 112, 1000, 56, 46, 0xF2F9FD, 0xC4DCEC, 8)
+    toy(canvas, 520, 985, 92, 74, ice[0], ice[1], 10)
+    canvas.mist(40, 1030, 200, 60, 0xFFFFFF, 0.55)
+    canvas.mist(540, 1036, 220, 60, 0xFFFFFF, 0.55)
+
+
+def windmill(canvas, x, y, scale, angle):
+    canvas.mist(x, y + 60 * scale, 120 * scale, 70 * scale, 0x9FBF8A, 0.25)
+    canvas.round(x, y + 40 * scale, 34 * scale, 80 * scale, 14 * scale, 0xF6EEDC, 0xD6C2A4)
+    canvas.round(x, y + 2 * scale, 42 * scale, 22 * scale, 10 * scale, 0xE7A98F, 0xC7826C)
+    for k in range(4):
+        a = math.radians(angle + k * 90)
+        ex, ey = x + math.cos(a) * 52 * scale, y + math.sin(a) * 52 * scale
+        canvas.segment(x, y, ex, ey, 11 * scale, 0xFFF6E6, 0.95)
+    canvas.oval(x, y, 12 * scale, 12 * scale, 0xD9B48F, 0xB68F70)
+
+
+def seed_puff(canvas, x, y, size, opacity=0.85):
+    canvas.mist(x, y, size * 2.2, size * 2.2, 0xFFFFFF, 0.35)
+    for k in range(8):
+        a = math.radians(k * 45 + 10)
+        canvas.segment(x, y, x + math.cos(a) * size, y + math.sin(a) * size, 1.4, 0xFFFDF4, opacity)
+    canvas.oval(x, y, size * 0.35, size * 0.35, 0xEDE2C4, 0xD2C29B, opacity=opacity)
+
+
+def grass(canvas, x, y, height, lean, top, bottom):
+    canvas.round(x + lean * 0.5, y - height * 0.5, 9, height, 4.5, top, bottom, lean)
+
+
+def meadow(canvas, preview):
+    greens = ((0xCFE5AE, 0x8FB577), (0xDDEEB9, 0xA5C68A), (0xBCDDA3, 0x7FA86E))
+    if preview:
+        canvas.oval(110, 150, 300, 70, 0xD4E8B4, 0xA9CA8E)
+        canvas.oval(270, 156, 220, 60, 0xCBE2AB, 0x9CBF82)
+        windmill(canvas, 250, 62, 0.65, 20)
+        for x, y, size in ((80, 50, 10), (140, 30, 8), (190, 80, 7)):
+            seed_puff(canvas, x, y, size)
+        for x in range(20, 320, 22):
+            grass(canvas, x, 158, 26 + (x * 7) % 14, (x % 3 - 1) * 12, *greens[x % 3])
+        return
+    canvas.mist(120, 60, 260, 140, 0xFFFDF0, 0.35)
+    windmill(canvas, 470, 90, 1.0, 18)
+    windmill(canvas, 380, 140, 0.55, 52)
+    for x, y, size in ((90, 70, 12), (180, 140, 9), (60, 190, 7), (300, 60, 8), (240, 210, 6), (520, 920, 9), (80, 900, 8)):
+        seed_puff(canvas, x, y, size)
+    canvas.oval(120, 1030, 420, 140, 0xD2E7B2, 0xA2C487)
+    canvas.oval(480, 1036, 380, 130, 0xC9E1A8, 0x98BC80)
+    for x in range(6, 576, 17):
+        grass(canvas, x, 1024 - (x * 13) % 18, 46 + (x * 7) % 26, (x % 5 - 2) * 9, *greens[x % 3])
+
+
+def ember(canvas, preview):
+    stones = ((0x8A6E78, 0x5C4651), (0x9B7C82, 0x6A515A))
+    if preview:
+        canvas.mist(160, 140, 260, 70, 0xF6A86A, 0.40)
+        canvas.oval(160, 146, 170, 30, 0xF7A35E, 0xE26F4A, opacity=0.95)
+        canvas.mist(160, 140, 120, 14, 0xFFE0A0, 0.6)
+        toy(canvas, 60, 120, 70, 56, *stones[0], -10)
+        toy(canvas, 266, 118, 64, 52, *stones[1], 12)
+        for x, y, size in ((120, 60, 6), (200, 40, 5), (240, 80, 4), (90, 90, 4)):
+            canvas.mist(x, y, size * 4, size * 4, 0xFFB46A, 0.45)
+            canvas.oval(x, y, size, size, 0xFFD08A, 0xF2924F)
+        return
+    canvas.mist(288, 40, 600, 160, 0xF3B07A, 0.28)
+    toy(canvas, 40, 30, 120, 96, *stones[0], 14)
+    toy(canvas, 540, 40, 140, 110, *stones[1], -12)
+    toy(canvas, 470, 110, 70, 56, *stones[0], 8)
+    for x, y, size in ((150, 120, 5), (260, 70, 4), (330, 150, 6), (420, 60, 4), (210, 190, 4), (100, 920, 5), (470, 930, 6), (300, 900, 4)):
+        canvas.mist(x, y, size * 5, size * 5, 0xFFB46A, 0.40)
+        canvas.oval(x, y, size, size, 0xFFD08A, 0xF2924F)
+    canvas.mist(300, 1000, 520, 140, 0xF6A266, 0.45)
+    canvas.oval(300, 1008, 360, 64, 0xF8A65E, 0xDF6C48, opacity=0.95)
+    canvas.mist(290, 996, 240, 22, 0xFFE2A0, 0.6)
+    toy(canvas, 50, 990, 110, 90, *stones[1], -10)
+    toy(canvas, 530, 996, 120, 92, *stones[0], 12)
+    toy(canvas, 140, 1010, 70, 54, *stones[0], 6)
+
+
+def prism(canvas, preview):
+    if preview:
+        canvas.oval(160, 170, 300, 160, 0xE9E2F4, 0xC9BEE2, opacity=0.6)
+        ring(canvas, 90, 90, 58, 58, 0xC6B4EE, 0xEFE6FF, 0xF9C6E2)
+        ring(canvas, 236, 96, 58, 58, 0xA9D7E8, 0xE6F6FF, 0xC6F0E4)
+        canvas.round(160, 128, 120, 22, 10, 0xD8CDEE, 0xB0A2CF, -18)
+        for x, y, size in ((160, 40, 12), (40, 40, 8), (290, 40, 9), (180, 74, 6)):
+            star(canvas, x, y, size, 0xFFF4D8, 0.9)
+        return
+    canvas.oval(288, -40, 640, 300, 0xEEE7F8, 0xCFC5E6, opacity=0.55)
+    for k in range(7):
+        a = math.radians(200 + k * 23)
+        canvas.segment(288, 110, 288 + math.cos(a) * 340, 110 + math.sin(a) * 160, 3, 0xC2B6DD, 0.35)
+    for x, y, size in ((80, 60, 14), (200, 40, 9), (380, 70, 12), (500, 150, 8), (130, 170, 7), (60, 930, 9), (520, 910, 11)):
+        star(canvas, x, y, size, 0xFFF4D8, 0.88)
+    ring(canvas, 470, 120, 62, 62, 0xC6B4EE, 0xEFE6FF, 0xF9C6E2)
+    ring(canvas, 110, 990, 80, 80, 0xA9D7E8, 0xE6F6FF, 0xC6F0E4)
+    canvas.round(440, 1000, 220, 34, 16, 0xDCD2F0, 0xB5A8D4, -16)
+    canvas.oval(345, 975, 46, 46, 0xEAE4F7, 0xBFB2DD)
+    canvas.oval(560, 1010, 60, 60, 0xF3EEFB, 0xC7BBE2, opacity=0.9)
+    canvas.mist(552, 1000, 26, 26, 0xFFFFFF, 0.6)
+
+
 WORLDS = (
     ("cozy-nest", 0xFBEBDC, 0xF5DBCA, 0xFFF6E7, (0.26, 0.10), cozy),
     ("dewdrop-garden", 0xE1EFE2, 0xD6E3CA, 0xF5F8DF, (0.31, 0.13), garden),
     ("rainy-window", 0xDCE7F4, 0xE3DCE7, 0xF0F1EF, (0.39, 0.16), rainy),
     ("twilight-attic", 0xEBDFED, 0xD6BFD1, 0xFAE8DB, (0.66, 0.11), attic),
     ("moonlit-clouds", 0xDCE3F7, 0xD0D8F1, 0xF2EEF9, (0.72, 0.12), moonlit),
+    ("frosted-pond", 0xE4F1F8, 0xD5E6F2, 0xF8FCFF, (0.30, 0.12), frosted),
+    ("breezy-meadow", 0xEDF5DC, 0xDDEBC5, 0xFCFBE9, (0.70, 0.10), meadow),
+    ("ember-hollow", 0x6E5661, 0x4F3C47, 0xF0B48A, (0.50, 0.16), ember),
+    ("prism-observatory", 0xE7E1F5, 0xD9D2EC, 0xFFF4FA, (0.50, 0.10), prism),
 )
 
 
-def main(root):
+def main(root, only=None):
     resources = root / "Assets" / "Art" / "Resources"
     for key, top, floor, light, light_at, compose in WORLDS:
+        if only and key not in only:
+            continue
         backdrop = Canvas(576, 1024, top, floor, light, light_at)
         compose(backdrop, False)
         backdrop.save(resources / "WorldBackdrops" / f"{key}.png")
@@ -360,4 +502,5 @@ def main(root):
 
 
 if __name__ == "__main__":
-    main(Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[2])
+    # Usage: render_worlds.py [project root] [world ids...]  (no ids: all nine)
+    main(Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[2], sys.argv[2:] or None)

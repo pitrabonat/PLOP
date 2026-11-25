@@ -51,14 +51,18 @@ namespace Plop.Generation
 
         /// <summary>Checks all shipped boards, including strict shortest replay and exact Undo/Restart.</summary>
         public static VerificationReport VerifyProductionPack(IEnumerable<LevelDefinition> levels, int maxStates = 2_000_000)
-            => VerifyCatalog(levels, maxStates, production: true);
+            => VerifyCatalog(levels, maxStates, production: true, ProductionCatalog.LevelCount);
 
-        private static VerificationReport VerifyCatalog(IEnumerable<LevelDefinition> levels, int maxStates, bool production)
+        /// <summary>Production checks for a pack of any size (Phase 10 campaign: 160).</summary>
+        public static VerificationReport VerifyProductionPack(IEnumerable<LevelDefinition> levels, int expectedCount, int maxStates = 2_000_000)
+            => VerifyCatalog(levels, maxStates, production: true, expectedCount);
+
+        private static VerificationReport VerifyCatalog(IEnumerable<LevelDefinition> levels, int maxStates, bool production, int expectedCount = 0)
         {
             var report = new VerificationReport();
             var list = new List<LevelDefinition>(levels);
-            if (production && list.Count != ProductionCatalog.LevelCount)
-                report.Errors.Add("Expected " + ProductionCatalog.LevelCount + " levels, found " + list.Count + ".");
+            if (production && list.Count != expectedCount)
+                report.Errors.Add("Expected " + expectedCount + " levels, found " + list.Count + ".");
             var pack = LevelValidator.ValidatePack(list);
             report.Errors.AddRange(pack.Errors);
             if (!pack.IsValid) return report;
@@ -79,6 +83,8 @@ namespace Plop.Generation
                     report.Errors.Add(prefix + "optimalMoves " + level.OptimalMoves + " differs from the verified shortest solution " + single.Analysis.StartDistance + ".");
                 var warningTarget = production ? report.Errors : report.Warnings;
                 foreach (var warning in single.Warnings) warningTarget.Add(prefix + warning);
+                if (level.MoveLimit > 0 && level.OptimalMoves > level.MoveLimit)
+                    report.Errors.Add(prefix + "Move limit " + level.MoveLimit + " is below the verified optimum " + level.OptimalMoves + ".");
                 if (production && single.IsValid && single.Warnings.Count == 0 && !VerifyHistory(level))
                     report.Errors.Add(prefix + "Undo or Restart failed while replaying the verified solution.");
             }

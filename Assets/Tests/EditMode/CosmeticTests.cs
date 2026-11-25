@@ -11,9 +11,8 @@ namespace Plop.Tests
     {
         internal static string CatalogPath()
         {
-            string pack = GenerationTests.FindPack();
-            if (pack == null) return null;
-            var assets = Directory.GetParent(pack).Parent.Parent.Parent.FullName; // …/Assets
+            var assets = GenerationTests.FindAssets();
+            if (assets == null) return null;
             string path = Path.Combine(assets, "Data", "Cosmetics", "Resources", "Cosmetics", "PLOP_Cosmetics_001.json");
             return File.Exists(path) ? path : null;
         }
