@@ -211,8 +211,8 @@ namespace Plop.Tests.PlayMode
             menu.SetLogo(logo);
             Assert.IsTrue(menu.LogoArt.gameObject.activeSelf);
             var size = ((RectTransform)menu.LogoArt.transform).sizeDelta;
-            Assert.LessOrEqual(size.x, 680.5f);
-            Assert.LessOrEqual(size.y, 250.5f);
+            Assert.LessOrEqual(size.x, 800.5f);
+            Assert.LessOrEqual(size.y, 380.5f);
             Assert.AreEqual(logo.rect.width / logo.rect.height, size.x / size.y, 0.01f, "aspect kept");
             menu.SetLogo(null);
             Assert.IsFalse(menu.LogoArt.gameObject.activeSelf);

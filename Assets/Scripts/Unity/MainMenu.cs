@@ -142,11 +142,13 @@ namespace Plop.Presentation
                 _logoArt = rt.gameObject.AddComponent<Image>();
                 _logoArt.raycastTarget = false;
             }
-            var box = new Vector2(680f, 250f); // same band as the text title, ending above the tagline
+            // Illustrated logos carry splash drops above the letters, so they need more height than the text title
+            // to read at the same size. The box ends just above the tagline and stays clear of the top bar.
+            var box = new Vector2(800f, 380f);
             float fit = Mathf.Min(box.x / logo.rect.width, box.y / logo.rect.height);
             var art = (RectTransform)_logoArt.transform;
             art.sizeDelta = new Vector2(logo.rect.width, logo.rect.height) * fit;
-            art.anchoredPosition = new Vector2(0f, 592f);
+            art.anchoredPosition = new Vector2(0f, 670f);
             _logoArt.sprite = logo;
             _logoArt.gameObject.SetActive(true);
             _logoText.gameObject.SetActive(false);

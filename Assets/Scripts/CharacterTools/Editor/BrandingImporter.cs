@@ -107,9 +107,37 @@ namespace Plop.CharacterTools
             // frame already matches the splash instead of flashing Unity's dark default.
             AssignIcons();
             PlayerSettings.SplashScreen.backgroundColor = profile.launchColor;
+            SetIOSLaunchScreen(profile.launchColor);
             PlayerSettings.SplashScreen.show = false;
             AssetDatabase.SaveAssets();
             Debug.Log($"[PLOP] Branding applied: icon {icon}, splash {splash}, menu logo {logo}, launch colour #{ColorUtility.ToHtmlStringRGB(profile.launchColor)}");
+        }
+
+        /// <summary>
+        /// iOS shows its launch storyboard until Unity draws the first frame (several seconds on a cold start). Unity's
+        /// default storyboard was white with an unset (black) colour; use a plain storyboard in the splash's colour so the
+        /// launch, the splash and the menu read as one continuous screen. There is no public setter for the colour.
+        /// </summary>
+        private static void SetIOSLaunchScreen(Color color)
+        {
+            PlayerSettings.iOS.SetiPhoneLaunchScreenType(iOSLaunchScreenType.ImageAndBackgroundRelative);
+            PlayerSettings.iOS.SetiPadLaunchScreenType(iOSLaunchScreenType.ImageAndBackgroundRelative);
+            var settings = Resources.FindObjectsOfTypeAll<PlayerSettings>();
+            if (settings.Length == 0) { Debug.LogWarning("[PLOP] PlayerSettings not found; iOS launch colour unchanged"); return; }
+            var so = new SerializedObject(settings[0]);
+            foreach (var name in new[] { "iOSLaunchScreenBackgroundColor", "iOSLaunchScreeniPadBackgroundColor" })
+            {
+                var prop = so.FindProperty(name);
+                if (prop == null) { Debug.LogWarning("[PLOP] No " + name); continue; }
+                if (prop.propertyType == SerializedPropertyType.Color) prop.colorValue = color;
+                else
+                {
+                    var rgba = prop.FindPropertyRelative("rgba");
+                    Color32 c = color;
+                    if (rgba != null) rgba.longValue = c.r | (c.g << 8) | (c.b << 16) | ((long)c.a << 24);
+                }
+            }
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private static string CurrentOr(Func<BrandingProfile, string> pick, string fallback)
