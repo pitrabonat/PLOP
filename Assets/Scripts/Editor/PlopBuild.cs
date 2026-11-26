@@ -3,6 +3,9 @@
 //   Unity -batchmode -quit -projectPath <PLOP> -executeMethod Plop.EditorTools.PlopBuild.ConfigureProject
 //   Unity -batchmode -quit -projectPath <PLOP> -executeMethod Plop.EditorTools.PlopBuild.BuildAndroid
 //   Unity -batchmode -quit -projectPath <PLOP> -executeMethod Plop.EditorTools.PlopBuild.ExportIOS
+// Release candidate (Phase 12, outputs under /Volumes/PLOP_DEV/Builds/ReleaseCandidate/1.0.0-RC1):
+//   ...PlopBuild.BuildAndroidRCDevelopment | BuildAndroidRCRelease | BuildAndroidRCBundle
+//   ...PlopBuild.ExportIOSRCDevice | ExportIOSRCSimulator
 using System;
 using System.IO;
 using System.Linq;
@@ -20,12 +23,30 @@ namespace Plop.EditorTools
         const string BootScene = "Assets/Scenes/Boot.unity";
         const string BuildsRoot = "/Volumes/PLOP_DEV/Builds";
 
+        // Single source of truth for the shipped version (Phase 12: 1.0.0 RC1). The Android version code and the
+        // iOS build number only ever go up; 100 = 1.0.0, so later 1.0.x builds can use 101, 102, …
+        public const string ReleaseVersion = "1.0.0";
+        public const string ReleaseLabel = "1.0.0-RC1";
+        public const int ReleaseVersionCode = 100;
+        public const string ReleaseBuildNumber = "100";
+        const string RCRoot = BuildsRoot + "/ReleaseCandidate/" + ReleaseLabel;
+
+        static void ApplyReleaseVersion()
+        {
+            PlayerSettings.bundleVersion = ReleaseVersion;
+            PlayerSettings.Android.bundleVersionCode = ReleaseVersionCode;
+            PlayerSettings.iOS.buildNumber = ReleaseBuildNumber;
+            // Phase 12 startup: no engine splash (optional in Unity 6 on every plan); the game scene draws its own
+            // background on the first frame.
+            PlayerSettings.SplashScreen.show = false;
+        }
+
         [MenuItem("PLOP/Configure Project Settings")]
         public static void ConfigureProject()
         {
             PlayerSettings.companyName = "PLOP";
             PlayerSettings.productName = "PLOP!";
-            PlayerSettings.bundleVersion = "0.1.0";
+            PlayerSettings.bundleVersion = ReleaseVersion;
 
             // Portrait only
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
@@ -41,13 +62,13 @@ namespace Plop.EditorTools
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
             PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevelAuto;
-            PlayerSettings.Android.bundleVersionCode = 1;
+            PlayerSettings.Android.bundleVersionCode = ReleaseVersionCode;
 
             // iOS
             var ios = NamedBuildTarget.iOS;
             PlayerSettings.SetApplicationIdentifier(ios, "com.plop.sleepypuzzle");
             PlayerSettings.iOS.targetOSVersionString = "15.0";
-            PlayerSettings.iOS.buildNumber = "1";
+            PlayerSettings.iOS.buildNumber = ReleaseBuildNumber;
             PlayerSettings.iOS.appleEnableAutomaticSigning = true;
 
             EnsureBootScene();
@@ -143,8 +164,132 @@ namespace Plop.EditorTools
             }
         }
 
+        // ---------- Phase 12 release candidate ----------
+
+        static string RCPath(string env, params string[] parts)
+        {
+            var path = Environment.GetEnvironmentVariable(env);
+            return Path.GetFullPath(string.IsNullOrWhiteSpace(path) ? Path.Combine(RCRoot, Path.Combine(parts)) : path);
+        }
+
+        /// Development APK (Visual Lab, diagnostics and debug prefs available) for internal testing.
+        [MenuItem("PLOP/Build/Release Candidate/Android APK (Development)")]
+        public static void BuildAndroidRCDevelopment()
+        {
+            EnsureBootScene();
+            EditorUserBuildSettings.buildAppBundle = false;
+            Build(BuildTarget.Android, RCPath("PLOP_ANDROID_APK", "Android", "Development", "PLOP-" + ReleaseLabel + "-dev.apk"), BuildOptions.Development);
+        }
+
+        /// Release-configured APK: no development player, no dev tools. Signed with the local debug key unless a
+        /// keystore is configured in Player Settings (never stored in the repository).
+        [MenuItem("PLOP/Build/Release Candidate/Android APK (Release, test-signed)")]
+        public static void BuildAndroidRCRelease()
+        {
+            EnsureBootScene();
+            EditorUserBuildSettings.buildAppBundle = false;
+            Build(BuildTarget.Android, RCPath("PLOP_ANDROID_APK", "Android", "Release", "PLOP-" + ReleaseLabel + "-release-testsigned.apk"), BuildOptions.None);
+        }
+
+        /// Android App Bundle for a future Google Play upload (same release configuration as the APK).
+        [MenuItem("PLOP/Build/Release Candidate/Android App Bundle (Release, test-signed)")]
+        public static void BuildAndroidRCBundle()
+        {
+            EnsureBootScene();
+            EditorUserBuildSettings.buildAppBundle = true;
+            try { Build(BuildTarget.Android, RCPath("PLOP_ANDROID_AAB", "Android", "AAB", "PLOP-" + ReleaseLabel + "-release-testsigned.aab"), BuildOptions.None); }
+            finally { EditorUserBuildSettings.buildAppBundle = false; }
+        }
+
+        /// All three Android release-candidate outputs in one editor session (development APK, release APK, AAB).
+        public static void BuildAndroidRCAll()
+        {
+            BuildAndroidRCDevelopment();
+            BuildAndroidRCRelease();
+            BuildAndroidRCBundle();
+        }
+
+        /// Both iOS release-candidate Xcode projects in one editor session.
+        public static void ExportIOSRCAll()
+        {
+            ExportIOSRCDevice();
+            ExportIOSRCSimulator();
+        }
+
+        /// Release Xcode project for physical iPhones (signing is done in Xcode with the owner's team).
+        [MenuItem("PLOP/Build/Release Candidate/iOS Xcode Project (Device, Release)")]
+        public static void ExportIOSRCDevice()
+        {
+            EnsureBootScene();
+            var previousSdk = PlayerSettings.iOS.sdkVersion;
+            try
+            {
+                PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
+                Build(BuildTarget.iOS, RCPath("PLOP_IOS_EXPORT", "iOS", "Xcode-Device"), BuildOptions.None);
+            }
+            finally { PlayerSettings.iOS.sdkVersion = previousSdk; AssetDatabase.SaveAssets(); }
+        }
+
+        /// Release-configured Xcode project for the iOS Simulator (arm64).
+        [MenuItem("PLOP/Build/Release Candidate/iOS Xcode Project (Simulator, Release)")]
+        public static void ExportIOSRCSimulator()
+        {
+            EnsureBootScene();
+            var previousSdk = PlayerSettings.iOS.sdkVersion;
+            var previousArchitecture = PlayerSettings.iOS.simulatorSdkArchitecture;
+            try
+            {
+                PlayerSettings.iOS.sdkVersion = iOSSdkVersion.SimulatorSDK;
+                PlayerSettings.iOS.simulatorSdkArchitecture = AppleMobileArchitectureSimulator.ARM64;
+                Build(BuildTarget.iOS, RCPath("PLOP_IOS_SIM_EXPORT", "iOS", "Xcode-Simulator"), BuildOptions.None);
+            }
+            finally
+            {
+                PlayerSettings.iOS.sdkVersion = previousSdk;
+                PlayerSettings.iOS.simulatorSdkArchitecture = previousArchitecture;
+                AssetDatabase.SaveAssets();
+            }
+        }
+
         static void Build(BuildTarget target, string path, BuildOptions options)
         {
+            ApplyReleaseVersion();
+            bool release = (options & BuildOptions.Development) == 0;
+            // Release players keep stack traces only for errors and exceptions (no per-log stack capture cost).
+            var logTrace = PlayerSettings.GetStackTraceLogType(LogType.Log);
+            var warnTrace = PlayerSettings.GetStackTraceLogType(LogType.Warning);
+            if (release)
+            {
+                PlayerSettings.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
+                PlayerSettings.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None);
+            }
+            try { BuildCore(target, path, options); }
+            finally
+            {
+                PlayerSettings.SetStackTraceLogType(LogType.Log, logTrace);
+                PlayerSettings.SetStackTraceLogType(LogType.Warning, warnTrace);
+                AssetDatabase.SaveAssets();
+            }
+        }
+
+        /// Gradle's incremental packaging rewrites the previous launcher APK/AAB in place and leaves dead space
+        /// (Phase 11 K-14: 64 MB files for 46 MB of content). The outputs folder is a regenerated build cache
+        /// inside Library, so it is cleared before every Android build.
+        static void ClearGradleOutputs()
+        {
+            var prj = Path.GetFullPath("Library/Bee/Android/Prj");
+            if (!Directory.Exists(prj)) return;
+            foreach (var outputs in Directory.GetDirectories(prj, "outputs", SearchOption.AllDirectories))
+            {
+                if (!outputs.Replace('\\', '/').EndsWith("/launcher/build/outputs")) continue;
+                Directory.Delete(outputs, true);
+                Debug.Log("[PLOP] Cleared Gradle outputs: " + outputs);
+            }
+        }
+
+        static void BuildCore(BuildTarget target, string path, BuildOptions options)
+        {
+            if (target == BuildTarget.Android) ClearGradleOutputs();
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
             {

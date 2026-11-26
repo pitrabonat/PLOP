@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da18cabaef059439da895b2184f1e5e6, type: 3}
+  m_Name: BrandingProfile
+  m_EditorClassIdentifier: PLOP.Unity::Plop.Presentation.BrandingProfile
+  iconVariant: Hero_Pink
+  splashVariant: Day
+  menuLogoName: 01_Jelly_Pink
+  splashBackground: {fileID: 21300000, guid: bea64781f9b0e4b569df5e8946e99aac, type: 3}
+  splashMascot: {fileID: 21300000, guid: 5d7edf9edc6c746d1b0639bcb460a884, type: 3}
+  splashShadow: {fileID: 21300000, guid: cb00fc8b7c6df4329b63d5a56ab680e7, type: 3}
+  splashLogo: {fileID: 21300000, guid: cfab5553d50bb425eb3870d0e8899cc5, type: 3}
+  splashTimeline: {fileID: 4900000, guid: 3e68389de6d5a4b6ca9507567386f5cc, type: 3}
+  launchColor: {r: 0.9898592, g: 0.8597386, b: 0.7667843, a: 1}
+  menuLogo: {fileID: 21300000, guid: 649b3ad4c76bb415f9aadd6ccf828099, type: 3}

@@ -27,6 +27,11 @@ namespace Plop.Meta
     public sealed class LevelRecords
     {
         public const string StoreKey = "plop.records.v1";
+        public const string BackupKey = StoreKey + ".bak";
+        /// <summary>True when the main record was unreadable and the backup was restored at load.</summary>
+        public bool RecoveredFromBackup { get; private set; }
+        /// <summary>Malformed entries ignored at load (the rest of the record is kept).</summary>
+        public int SkippedEntries { get; private set; }
 
         public struct Entry
         {
@@ -87,16 +92,37 @@ namespace Plop.Meta
         {
             string json = _store.GetString(StoreKey, "");
             if (string.IsNullOrEmpty(json)) return;
-            try
+            if (TryRead(json)) return;
+            // Phase 12: a torn or corrupt record is kept aside and the last good copy restored, so one bad
+            // write can never erase every completion and Perfect result.
+            _store.SetString(StoreKey + ".corrupt", json);
+            string backup = _store.GetString(BackupKey, "");
+            if (!string.IsNullOrEmpty(backup) && TryRead(backup))
             {
-                var o = MiniJson.AsObject(MiniJson.Parse(json), "records");
-                if (!(MiniJson.Get(o, "levels", false) is List<object> levels)) return;
-                foreach (var item in levels)
+                RecoveredFromBackup = true;
+                _store.SetString(StoreKey, backup);
+                _store.Save();
+            }
+        }
+
+        /// <summary>Reads a records document. One malformed entry is skipped (counted in <see cref="SkippedEntries"/>);
+        /// only an unreadable document as a whole returns false.</summary>
+        private bool TryRead(string json)
+        {
+            _entries.Clear();
+            SkippedEntries = 0;
+            Dictionary<string, object> o;
+            try { o = MiniJson.AsObject(MiniJson.Parse(json), "records"); }
+            catch (FormatException) { return false; }
+            if (!(MiniJson.Get(o, "levels", false) is List<object> levels)) return true;
+            foreach (var item in levels)
+            {
+                try
                 {
                     var l = MiniJson.AsObject(item, "record");
                     string id = MiniJson.GetString(l, "id");
                     int best = MiniJson.GetInt(l, "best");
-                    if (best <= 0) continue;
+                    if (string.IsNullOrEmpty(id) || best <= 0) { SkippedEntries++; continue; }
                     _entries[id] = new Entry
                     {
                         Best = best,
@@ -104,12 +130,9 @@ namespace Plop.Meta
                         Completions = Math.Max(1, MiniJson.GetInt(l, "completions", 1))
                     };
                 }
+                catch (FormatException) { SkippedEntries++; }
             }
-            catch (FormatException)
-            {
-                _store.SetString(StoreKey + ".corrupt", json);
-                _entries.Clear();
-            }
+            return true;
         }
 
         private void Persist()
@@ -132,7 +155,9 @@ namespace Plop.Meta
             }
             w.EndArray();
             w.EndObject();
-            _store.SetString(StoreKey, w.ToString());
+            string doc = w.ToString();
+            _store.SetString(StoreKey, doc);
+            _store.SetString(BackupKey, doc);
             _store.Save();
         }
     }

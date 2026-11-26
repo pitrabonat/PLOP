@@ -5,7 +5,9 @@
         "PLOP.Core",
         "PLOP.Solver"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

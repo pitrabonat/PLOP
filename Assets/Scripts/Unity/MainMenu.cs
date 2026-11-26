@@ -70,6 +70,7 @@ namespace Plop.Presentation
             // ---- logo ----
             var logo = _kit.Label(_safe, "Logo", 196, FontStyle.Bold, HudTheme.Ink, new Vector2(0, 560), new Vector2(900, 230), _kit.Display);
             logo.text = "PLOP!";
+            _logoText = logo;
             var tagline = _kit.Label(_safe, "Tagline", HudTheme.Caption + 4, FontStyle.Bold, HudTheme.SecondaryText, new Vector2(0, 436), new Vector2(700, 60));
             tagline.text = "Sleepy Puzzle";
 
@@ -116,6 +117,40 @@ namespace Plop.Presentation
         }
 
         // ------------------------------------------------------------------ API
+
+        private Text _logoText;
+        private Image _logoArt;
+        internal Image LogoArt => _logoArt;
+
+        /// <summary>
+        /// Phase 13 branding: shows <paramref name="logo"/> instead of the text title, fitted (aspect kept) into the
+        /// title's box above the tagline. Null restores the text title. Nothing else on the menu moves.
+        /// </summary>
+        public void SetLogo(Sprite logo)
+        {
+            if (_logoText == null) return;
+            if (logo == null)
+            {
+                if (_logoArt != null) _logoArt.gameObject.SetActive(false);
+                _logoText.gameObject.SetActive(true);
+                return;
+            }
+            if (_logoArt == null)
+            {
+                var rt = MenuKit.Rect("Logo art", _safe);
+                rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+                _logoArt = rt.gameObject.AddComponent<Image>();
+                _logoArt.raycastTarget = false;
+            }
+            var box = new Vector2(680f, 250f); // same band as the text title, ending above the tagline
+            float fit = Mathf.Min(box.x / logo.rect.width, box.y / logo.rect.height);
+            var art = (RectTransform)_logoArt.transform;
+            art.sizeDelta = new Vector2(logo.rect.width, logo.rect.height) * fit;
+            art.anchoredPosition = new Vector2(0f, 592f);
+            _logoArt.sprite = logo;
+            _logoArt.gameObject.SetActive(true);
+            _logoText.gameObject.SetActive(false);
+        }
 
         public void Refresh(int dust, int resumeLevelNumber, bool giftAvailable, bool dailyDone, bool dailyPerfect)
         {

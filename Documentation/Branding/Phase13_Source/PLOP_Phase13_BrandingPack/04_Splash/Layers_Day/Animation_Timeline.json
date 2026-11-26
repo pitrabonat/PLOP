@@ -1,0 +1,97 @@
+{
+  "canvas": [
+    1080,
+    1920
+  ],
+  "duration_seconds": 1.35,
+  "background": "Background_1080x1920.png",
+  "mascot": {
+    "file": "Mascot.png",
+    "pivot": "bottom-center",
+    "width": 540,
+    "rest_base_y": 1220,
+    "center_x": 540
+  },
+  "shadow": {
+    "file": "Shadow.png",
+    "center": [
+      540,
+      1230
+    ],
+    "width": 560
+  },
+  "logo": {
+    "file": "Logo.png",
+    "center": [
+      540,
+      680
+    ],
+    "max_width": 760,
+    "max_height": 340
+  },
+  "keyframes": [
+    {
+      "t": 0,
+      "y_offset": -300,
+      "sx": 0.85,
+      "sy": 1.1,
+      "mascot_alpha": 0,
+      "logo_alpha": 0,
+      "logo_scale": 0.84
+    },
+    {
+      "t": 0.22,
+      "y_offset": -145,
+      "sx": 0.86,
+      "sy": 1.12,
+      "mascot_alpha": 1,
+      "logo_alpha": 0,
+      "logo_scale": 0.84
+    },
+    {
+      "t": 0.39,
+      "y_offset": 0,
+      "sx": 1.18,
+      "sy": 0.76,
+      "mascot_alpha": 1,
+      "logo_alpha": 0.2,
+      "logo_scale": 0.9
+    },
+    {
+      "t": 0.58,
+      "y_offset": -86,
+      "sx": 0.93,
+      "sy": 1.07,
+      "mascot_alpha": 1,
+      "logo_alpha": 1,
+      "logo_scale": 1.06
+    },
+    {
+      "t": 0.8,
+      "y_offset": 0,
+      "sx": 1.06,
+      "sy": 0.94,
+      "mascot_alpha": 1,
+      "logo_alpha": 1,
+      "logo_scale": 0.98
+    },
+    {
+      "t": 1.05,
+      "y_offset": 0,
+      "sx": 1,
+      "sy": 1,
+      "mascot_alpha": 1,
+      "logo_alpha": 1,
+      "logo_scale": 1
+    },
+    {
+      "t": 1.35,
+      "y_offset": 0,
+      "sx": 1,
+      "sy": 1,
+      "mascot_alpha": 1,
+      "logo_alpha": 1,
+      "logo_scale": 1
+    }
+  ]
+}

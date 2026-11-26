@@ -586,7 +586,7 @@ def dome(canvas, x, y, scale):
 
 def enrich(key, canvas):
     if key == "cozy-nest":
-        fairy_lights(canvas, -10, 586, 176, 34, 14, 0xC9A28C, (0xFFD58F, 0xFFC0B0, 0xFFE6A6))
+        fairy_lights(canvas, -10, 586, 40, 24, 14, 0xC9A28C, (0xFFD58F, 0xFFC0B0, 0xFFE6A6))
         table_lamp(canvas, 512, 912, 1.0, 0xF6CDB4, 0xDDA48C)
         mug(canvas, 172, 966, 34, 0xF3B7C4, 0xCF8FA0)
     elif key == "frosted-pond":
@@ -629,7 +629,7 @@ def enrich(key, canvas):
         for x, y, r in ((60, 70, 5), (110, 40, 4), (520, 60, 5), (560, 100, 4), (470, 30, 3)):
             canvas.oval(x, y, r, r * 1.3, 0xFFFFFF, 0xB9CCE3, opacity=0.75)
     elif key == "twilight-attic":
-        fairy_lights(canvas, -10, 586, 150, 40, 12, 0xB79CB6, (0xFFD58F, 0xFFC6A6, 0xFFE9A6, 0xF6C2E0))
+        fairy_lights(canvas, -10, 586, 36, 26, 12, 0xB79CB6, (0xFFD58F, 0xFFC6A6, 0xFFE9A6, 0xF6C2E0))
         canvas.mist(288, 1000, 220, 70, 0xFFE2A8, 0.30)
         star(canvas, 288, 985, 26, 0xFFE7A8, 0.85)
         canvas.oval(288, 985, 22, 22, 0xFFF4C8, 0xF2CC80, opacity=0.95)

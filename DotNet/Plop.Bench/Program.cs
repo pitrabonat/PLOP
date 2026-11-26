@@ -55,6 +55,7 @@ namespace Plop.Bench
                     case "--insights": return Insights(args[i + 1], i + 2 < args.Length ? args[i + 2] : null);
                     case "--production": production = true; break;
                     case "--deadlocks": return BuildDeadlocks(args.Skip(i + 1).ToArray());
+                    case "--release-verify": return ReleaseVerify.Run(args[i + 1], i + 2 < args.Length ? args[i + 2] : null);
                     case "--verify-production":
                         var levels = LevelSerializer.PackFromJson(File.ReadAllText(args[++i]));
                         var verification = LevelVerifier.VerifyProductionPack(levels, expectedCount: levels.Count == ExpandedCampaign.LevelCount ? ExpandedCampaign.LevelCount : ProductionCatalog.LevelCount);

@@ -274,6 +274,7 @@ namespace Plop.Presentation
         {
             ClearPendingInput();
             _hud.CancelWorldAnnouncement();
+            if (_splash != null) { _splash.Skip(); return "splash"; }
             if (_studio != null && _studio.IsOpen) { _studio.Close(); return "studio"; }
             if (_hud.HandleBack()) { MarkActive(); return "modal"; }
             if (_menu != null && _menu.IsOpen)
@@ -368,10 +369,41 @@ namespace Plop.Presentation
             else if (!string.IsNullOrEmpty(debugWorld)) ShowWorldOverride(debugWorld);
 #endif
             if (!_debugPreview) ShowMenu(); // the game opens on the main menu
+            ShowBranding();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (PlayerPrefs.GetInt(PlopDiagnostics.Preference, 0) == 1) ToggleDiagnostics();
             if (!string.IsNullOrEmpty(debugMoves)) StartCoroutine(PlayDebugMoves(debugMoves));
 #endif
+        }
+
+        // ------------------------------------------------------------------ branding (Phase 13)
+
+        private BrandSplash _splash;
+        internal BrandSplash Splash => _splash;
+
+        /// <summary>
+        /// Main-menu logo and the cold-start splash from the selected <see cref="BrandingProfile"/>. The menu is already
+        /// built and live under the splash, so the splash never delays the game; it only plays for the real game (not
+        /// for tests, tools or development previews).
+        /// </summary>
+        private void ShowBranding()
+        {
+            var profile = BrandingProfile.Load();
+            _menu.SetLogo(profile != null ? profile.menuLogo : null);
+            bool show = SavesProgress;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (rememberProgress && BrandingReview.Apply(this, _menu, ReducedMotionEnabled, ref show)) return;
+#endif
+            if (!show) return;
+            _splash = BrandSplash.Show(transform, profile, ReducedMotionEnabled);
+            if (_splash != null) _splash.Finished += () => _splash = null;
+        }
+
+        internal void ShowReviewSplash(BrandSplash splash)
+        {
+            if (_splash != null) Destroy(_splash.gameObject);
+            _splash = splash;
+            if (_splash != null) _splash.Finished += () => _splash = null;
         }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -1241,8 +1273,16 @@ namespace Plop.Presentation
             OnDemandRendering.renderFrameInterval = 1;
         }
 
+        private bool _startupReported;
+
         private void Update()
         {
+            if (!_startupReported)
+            {
+                // One line in every build (release included) so cold and warm start can be measured from logcat / Xcode.
+                _startupReported = true;
+                Debug.Log("[PLOP] Startup: game scene ready " + (Time.realtimeSinceStartup * 1000f).ToString("F0", System.Globalization.CultureInfo.InvariantCulture) + " ms after engine start");
+            }
             UpdateSceneVisibility();
             if (_suspended) return;
             if (_pendingRecovery != Recovery.None && !_board.IsTraveling) ShowPendingRecovery();

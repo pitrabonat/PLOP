@@ -20,6 +20,11 @@ namespace Plop.Presentation
         private string _view = "";
         private string _recentIssue = "";
         private GUIStyle _style;
+        // Phase 12: frame-time distribution over 10 s windows, written to the log (logcat / Xcode) for reports.
+        private const float ReportSeconds = 10f;
+        private readonly float[] _window = new float[2400];
+        private int _windowCount, _gcAtWindow;
+        private float _windowStart = -1f;
 
         internal void Inspect(PlopGameController controller)
         {
@@ -39,10 +44,11 @@ namespace Plop.Presentation
 
         private void Update()
         {
-            if (_controller == null || _controller.IsSuspended) return;
+            if (_controller == null || _controller.IsSuspended) { _windowStart = -1f; return; }
             _frames[_cursor] = 1000f * Time.unscaledDeltaTime;
             _cursor = (_cursor + 1) % WindowSize;
             _count = Mathf.Min(_count + 1, WindowSize);
+            RecordWindow(1000f * Time.unscaledDeltaTime);
             if (Time.unscaledTime < _nextRefresh) return;
             _nextRefresh = Time.unscaledTime + 0.5f;
 
@@ -58,6 +64,30 @@ namespace Plop.Presentation
                 $"Main {FrameTime(_main)} · Render {FrameTime(_render)} · GC {Counter(_gc)} B · Draws {Counter(_draws)}\n" +
                 $"Unity allocated {Profiler.GetTotalAllocatedMemoryLong() / 1048576f:F1} MiB";
             if (_recentIssue.Length > 0) _view += "\n" + _recentIssue;
+        }
+
+        private void RecordWindow(float ms)
+        {
+            float now = Time.unscaledTime;
+            if (_windowStart < 0f) { _windowStart = now; _gcAtWindow = GC.CollectionCount(0); _windowCount = 0; return; }
+            if (_windowCount < _window.Length) _window[_windowCount++] = ms;
+            if (now - _windowStart < ReportSeconds) return;
+            int n = _windowCount;
+            if (n > 0)
+            {
+                Array.Sort(_window, 0, n);
+                double sum = 0; for (int i = 0; i < n; i++) sum += _window[i];
+                float budget = Application.targetFrameRate > 0 ? 1000f / Application.targetFrameRate : 16.7f;
+                int spikes = 0; for (int i = 0; i < n; i++) if (_window[i] > 2f * budget) spikes++;
+                float P(float f) => _window[Mathf.Clamp(Mathf.CeilToInt(n * f) - 1, 0, n - 1)];
+                Debug.Log($"[PLOP] frames target {Application.targetFrameRate} n {n} avg {1000.0 * n / sum:F1} FPS " +
+                    $"p50 {P(0.5f):F1} p95 {P(0.95f):F1} p99 {P(0.99f):F1} max {_window[n - 1]:F1} ms spikes>{2f * budget:F0}ms {spikes} " +
+                    $"gc0 {GC.CollectionCount(0) - _gcAtWindow} heap {Profiler.GetMonoUsedSizeLong() / 1048576f:F1} MiB " +
+                    $"unity {Profiler.GetTotalAllocatedMemoryLong() / 1048576f:F1} MiB level {(_controller.Engine.HasLevel ? _controller.Engine.Level.Id : "none")}");
+            }
+            _windowStart = now;
+            _windowCount = 0;
+            _gcAtWindow = GC.CollectionCount(0);
         }
 
         private float Percentile(float fraction) => _sorted[Mathf.CeilToInt(_count * fraction) - 1];
