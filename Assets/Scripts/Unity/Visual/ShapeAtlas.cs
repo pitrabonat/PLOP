@@ -122,12 +122,14 @@ namespace Plop.Presentation
         /// <summary>Painter host only: exposes <see cref="Make"/> at a density without rasterizing anything.</summary>
         private ShapeAtlas(int ppu)
         {
+            ArtPack.Load();
             PixelsPerUnit = ppu;
         }
 
         private ShapeAtlas(int ppu, CharacterLook look, Content content, int[] colors, Action<List<Spec>> extra = null)
         {
             var clock = System.Diagnostics.Stopwatch.StartNew();
+            ArtPack.Load();
             PixelsPerUnit = ppu;
             Look = look;
             var specs = new List<Spec>();
@@ -242,6 +244,7 @@ namespace Plop.Presentation
 
         private static Color PaintTile(float x, float y, float pixel)
         {
+            if (UsesArt) return ArtFloor(x, y, pixel);
             float half = TileSize * 0.5f;
             Color warmBase = Color.Lerp(PlopPalette.TileShade, PlopPalette.ContactShadow, 0.36f);
             float contact = Sdf.RoundBox(x, y, 0.014f, -0.021f, half - 0.016f, half - 0.016f, TileRadius);
@@ -267,6 +270,7 @@ namespace Plop.Presentation
 
         private static Color PaintPebble(float x, float y, float pixel)
         {
+            if (UsesArt) return ArtPebble(x, y, pixel);
             float half = PebbleSize * 0.5f;
             var sideColor = Color.Lerp(PlopPalette.PebbleSide, PlopPalette.Shadow, 0.24f);
             float contact = Sdf.RoundBox(x, y, 0.025f, -0.105f, half - 0.018f, half * 0.95f, PebbleRadius);

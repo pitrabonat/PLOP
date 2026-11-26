@@ -330,6 +330,7 @@ namespace Plop.Presentation
         /// <summary>Pebble (wall) in a World style. Same footprint and depth as <see cref="PaintPebble"/>.</summary>
         private static Color PaintWorldPebble(float x, float y, float pixel, BoardMaterialProfile p)
         {
+            if (UsesArt) return ArtWorldPebble(x, y, pixel, p);
             float half = PebbleSize * 0.5f;
             var sideColor = Color.Lerp(p.PebbleSide, PlopPalette.Shadow, 0.24f);
             float contact = Sdf.RoundBox(x, y, 0.025f, -0.105f, half - 0.018f, half * 0.95f, PebbleRadius);
@@ -421,6 +422,13 @@ namespace Plop.Presentation
             float reflection = Sdf.Ellipse(x + (y - 0.195f) * 0.24f, y, -0.13f, 0.195f, 0.22f, 0.098f);
             fill = Color.Lerp(fill, PlopPalette.Highlight, 0.18f * Sdf.Soft(reflection, 0.083f));
 
+            fill = ApplyCap(fill, x, y, pixel, face, deep, p);
+            return Sdf.Over(c, fill, inside);
+        }
+
+        /// <summary>World cap on a pebble's top face (snow, moss, ember fissures, dew).</summary>
+        private static Color ApplyCap(Color fill, float x, float y, float pixel, float face, float deep, BoardMaterialProfile p)
+        {
             switch (p.PebbleCap)
             {
                 case PebbleCap.Snow:
@@ -461,7 +469,48 @@ namespace Plop.Presentation
                     break;
                 }
             }
-            return Sdf.Over(c, fill, inside);
+            return fill;
+        }
+
+        /// <summary>
+        /// Phase 11.6 World pebble: the supplied pebble art, its shading re-dyed onto the World's pebble ramp,
+        /// a light touch of the World's style (ice facets, crystal table, ceramic glaze) and the World cap.
+        /// </summary>
+        private static Color ArtWorldPebble(float x, float y, float pixel, BoardMaterialProfile p)
+        {
+            float half = ArtPack.PebbleFootprint * 0.5f;
+            var sideColor = Color.Lerp(p.PebbleSide, PlopPalette.Shadow, 0.24f);
+            float contact = Sdf.RoundBox(x, y, 0.025f, -0.085f, half - 0.02f, half * 0.95f, PebbleRadius);
+            var c = Sdf.Over(PaintWorldTile(x, y, pixel, p), PlopPalette.Shadow, 0.40f * Sdf.Soft(contact, 0.047f));
+            var art = ArtPebbleColor(x, y, pixel, true, sideColor, p.PebbleTop, p.PebbleHighlight);
+            if (art.a <= 0f) return c;
+            var fill = art.WithAlpha(1f);
+            float face = PebbleTopDistance(x, y - 0.02f);
+            float deep = Smooth(-face / 0.05f);
+            switch (p.PebbleStyle)
+            {
+                case PebbleStyle.Ice:
+                {
+                    float facet = Mathf.Min(Mathf.Abs(x * 0.8f + y - 0.05f), Mathf.Abs(x - y * 0.6f + 0.12f));
+                    fill = Color.Lerp(fill, p.PebbleHighlight, 0.40f * (1f - Smooth(facet / 0.012f)) * deep);
+                    break;
+                }
+                case PebbleStyle.Crystal:
+                {
+                    float table = Mathf.Max(Mathf.Abs(x), Mathf.Abs(y + 0.01f)) - 0.17f;
+                    fill = Color.Lerp(fill, p.PebbleHighlight, 0.30f * (1f - Smooth(table / 0.02f)) * deep);
+                    fill = Color.Lerp(fill, Color.white, 0.40f * (1f - Smooth(Mathf.Abs(table) / 0.008f)) * deep);
+                    break;
+                }
+                case PebbleStyle.Ceramic:
+                {
+                    float spec = Sdf.Ellipse(x + (y - 0.18f) * 0.3f, y, -0.12f, 0.19f, 0.16f, 0.045f);
+                    fill = Color.Lerp(fill, Color.white, 0.45f * Sdf.Soft(spec, 0.03f));
+                    break;
+                }
+            }
+            fill = ApplyCap(fill, x, y, pixel, face, deep, p);
+            return Sdf.Over(c, fill, art.a);
         }
     }
 }

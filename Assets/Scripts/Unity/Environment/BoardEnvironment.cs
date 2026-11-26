@@ -6,9 +6,10 @@ using UnityEngine;
 namespace Plop.Presentation
 {
     /// <summary>
-    /// Phase 11.5 mechanic presentation on the board: connected Lava pools and Frost paths (procedural shaders),
-    /// fans with spinning blades and directional airflow, animated Loop portals, and the event-driven feedback
-    /// that follows the Core's movement trace (frost trail, wind gust, teleport flashes, lava steam).
+    /// Mechanic presentation on the board: connected Lava pools and Frost paths (Phase 11.6: shaders built from
+    /// the supplied art tiles), fans (supplied housing + blades spinning on their hub, strength chevrons,
+    /// directional airflow), Loop portals (supplied frame + a separately rotating vortex), and the event-driven
+    /// feedback that follows the Core's movement trace (frost trail, wind gust, teleport flashes, lava steam).
     /// Owned and ticked by <see cref="BoardView"/> (one Update for the whole board). Purely visual: it never
     /// reads or changes gameplay state beyond the level layout.
     /// </summary>
@@ -19,6 +20,8 @@ namespace Plop.Presentation
         public const int BackOrder = -960;    // behind every Plop, above Nests
         public const int FrontOrder = 950;    // above Plops, below Nest seals
         private const float IdleBladeSpeed = 75f;   // degrees per second
+        private const float IdleVortexSpeed = 42f;
+        private const float WarpVortexBoost = 520f;
         private const float PushBladeBoost = 980f;
         private const float WindIdle = 0.42f;
         private const float SurfaceEffectSeconds = 0.65f;
@@ -34,9 +37,10 @@ namespace Plop.Presentation
 
         private struct PortalView
         {
-            public SpriteRenderer Renderer;
-            public int Pair;
-            public float FlashT0, BlockT0;
+            public SpriteRenderer Renderer;     // static frame (carries the pair pips)
+            public SpriteRenderer Vortex;       // rotates independently under the frame
+            public int Pair, Cell;
+            public float FlashT0, BlockT0, Angle, Boost, Seed, NextSpark;
         }
 
         private struct FanView
@@ -149,17 +153,24 @@ namespace Plop.Presentation
                     }
                     case TileKind.Portal:
                     {
-                        SpriteRenderer r;
-                        if (_shaders)
+                        int slot = SurfaceConnectivity.PortalSlot(t.Pair);
+                        SpriteRenderer vortex = null;
+                        var vortexSprite = atlas.Get(ShapeAtlas.PortalVortexKey(slot));
+                        if (vortexSprite != null)
                         {
-                            r = make("Loop " + t.Pair + " " + t.Position, PlopShaders.Quad, -976);
-                            r.sharedMaterial = PlopShaders.Portal;
-                            r.color = PlopShaders.Pack(SurfaceConnectivity.EncodePortal(t.Pair, 0f, 0f));
+                            vortex = make("Vortex " + t.Pair + " " + t.Position, vortexSprite, -977);
+                            vortex.transform.localPosition = at;
                         }
-                        else r = make("Loop " + t.Pair + " " + t.Position, atlas.Get(ShapeAtlas.PortalKey(t.Pair)), -976);
+                        var r = make("Loop " + t.Pair + " " + t.Position, atlas.Get(ShapeAtlas.PortalKey(slot)), -976);
                         r.transform.localPosition = at;
+                        float pseed = (SurfaceConnectivity.Seed(t.Position.X, t.Position.Y) % 97) / 97f;
                         _portalByCell[cell] = _portals.Count;
-                        _portals.Add(new PortalView { Renderer = r, Pair = t.Pair, FlashT0 = -1f, BlockT0 = -1f });
+                        _portals.Add(new PortalView
+                        {
+                            Renderer = r, Vortex = vortex, Pair = t.Pair, Cell = cell, FlashT0 = -1f, BlockT0 = -1f,
+                            Angle = pseed * 360f, Seed = pseed, NextSpark = Time.unscaledTime + 0.5f + 1.5f * pseed
+                        });
+                        if (vortex != null) vortex.transform.localRotation = Quaternion.AngleAxis(pseed * 360f, Vector3.forward);
                         break;
                     }
                     case TileKind.Fan:
@@ -181,15 +192,15 @@ namespace Plop.Presentation
             var blades = make("Breeze blades " + t.Position, atlas.Get(ShapeAtlas.FanBladesKey), -975);
             blades.transform.localPosition = at;
             var dir = Delta(t.Direction);
-            var arrow = make("Breeze arrow " + t.Position, atlas.Get(ShapeAtlas.FanArrowKey), -974);
-            arrow.transform.localPosition = at + (Vector3)(dir * 0.395f);
-            arrow.transform.localRotation = Quaternion.FromToRotation(Vector3.up, dir);
-            var across = new Vector2(-dir.y, dir.x);
+            var spin = Quaternion.FromToRotation(Vector3.up, dir);
+            var chevron = atlas.Get(ShapeAtlas.FanChevronKey);
             for (int k = 0; k < t.Power; k++)
             {
-                // Power pips sit opposite the nozzle: one dot per cell of push.
-                var pip = make("Breeze power " + t.Position, atlas.Get(ShapeAtlas.FanPipKey), -974);
-                pip.transform.localPosition = at + (Vector3)(-dir * 0.40f + across * ((k - (t.Power - 1) * 0.5f) * 0.1f));
+                // Strength chevrons on the downwind rim: one per cell of push, pointing where the wind blows.
+                // They are static, so strength and direction read the same with animations off.
+                var c = make("Breeze power " + t.Position, chevron, -973);
+                c.transform.localPosition = at + (Vector3)(dir * (0.285f + 0.068f * k - 0.034f * (t.Power - 1)) + dir * 0.06f);
+                c.transform.localRotation = spin;
             }
 
             int run = SurfaceConnectivity.WindRun(_level, t.Position, t.Direction, t.Power);
@@ -259,8 +270,9 @@ namespace Plop.Presentation
             {
                 var p = _portals[i];
                 p.FlashT0 = p.BlockT0 = -1f;
+                p.Boost = 0f;
                 _portals[i] = p;
-                SetPortal(i, 0f, 0f);
+                SetPortal(i, 0f, 0f, PlopShaders.Time);
             }
             for (int i = 0; i < _fans.Count; i++)
             {
@@ -347,7 +359,7 @@ namespace Plop.Presentation
             var p = _portals[i];
             p.BlockT0 = now;
             _portals[i] = p;
-            if (_reduced) SetPortal(i, 0f, 0.6f);
+            if (_reduced) SetPortal(i, 0f, 0.6f, now);
         }
 
         public void OnBurn(int plopId, GridPosition cell, float now)
@@ -406,10 +418,35 @@ namespace Plop.Presentation
                 SetSurfaceEffect(i, v);
             }
 
+            bool ambient = !_reduced && _visible;
             for (int i = 0; i < _portals.Count; i++)
             {
                 var p = _portals[i];
-                if (p.FlashT0 < 0f && p.BlockT0 < 0f) continue;
+                if (ambient)
+                {
+                    p.Angle += (IdleVortexSpeed * (_saver ? 0.6f : 1f) + p.Boost) * dt;
+                    if (p.Angle > 360f) p.Angle -= 360f;
+                    p.Boost *= Mathf.Exp(-dt * 2.6f);
+                    if (p.Boost < 1f) p.Boost = 0f;
+                    if (p.Vortex != null) p.Vortex.transform.localRotation = Quaternion.AngleAxis(p.Angle, Vector3.forward);
+                    if (now >= p.NextSpark)
+                    {
+                        // A small mote drifts into the vortex now and then (half as often in Battery Saver).
+                        p.NextSpark = now + (_saver ? 2.6f : 1.3f) * (0.7f + 0.6f * Rand());
+                        float a = Rand() * Mathf.PI * 2f;
+                        var dir = new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0f);
+                        var c = _cellLocal(_level.PositionOf(p.Cell));
+                        var tint = PlopShaders.DefaultPortalTints[SurfaceConnectivity.PortalSlot(p.Pair)];
+                        Emit(BoardFx.Kind.Spark, c + dir * 0.30f, -dir * 0.32f, Color.Lerp(tint, Color.white, 0.6f).WithAlpha(0.85f),
+                            0.8f, 0.30f, 0.08f, BackOrder + 30, drag: 0.4f, now: now, ambient: true);
+                    }
+                }
+                if (p.FlashT0 < 0f && p.BlockT0 < 0f)
+                {
+                    _portals[i] = p;
+                    if (ambient) SetPortal(i, 0f, 0f, now);
+                    continue;
+                }
                 float flash = 0f, block = 0f;
                 if (p.FlashT0 >= 0f)
                 {
@@ -424,7 +461,7 @@ namespace Plop.Presentation
                     else block = Mathf.Sin(Mathf.PI * u);
                 }
                 _portals[i] = p;
-                SetPortal(i, _reduced ? 0f : flash, block);
+                SetPortal(i, _reduced ? 0f : flash, block, now);
             }
 
             for (int i = _pending.Count - 1; i >= 0; i--)
@@ -485,6 +522,7 @@ namespace Plop.Presentation
             if (!_level.InBounds(cell) || !_portalByCell.TryGetValue(_level.CellIndex(cell), out int i)) return;
             var p = _portals[i];
             p.FlashT0 = now;
+            if (!_reduced) p.Boost = WarpVortexBoost;
             _portals[i] = p;
         }
 
@@ -514,12 +552,24 @@ namespace Plop.Presentation
             s.Renderer.color = PlopShaders.Pack(SurfaceConnectivity.EncodeSurface(s.Mask, s.Seed, amount));
         }
 
-        private void SetPortal(int i, float flash, float blocked)
+        /// <summary>
+        /// Portal pose: the vortex breathes slightly and pops on a teleport flash; a blocked exit dims it and
+        /// wobbles the frame. Reduced Motion keeps only the static dim (no scale or wobble).
+        /// </summary>
+        private void SetPortal(int i, float flash, float blocked, float now)
         {
-            if (!_shaders) return;
             var p = _portals[i];
             if (p.Renderer == null) return;
-            p.Renderer.color = PlopShaders.Pack(SurfaceConnectivity.EncodePortal(p.Pair, flash, blocked));
+            bool still = _reduced || !_visible;
+            float breathe = still ? 0f : 0.025f * Mathf.Sin(now * 1.35f + p.Seed * 6.2831f);
+            if (p.Vortex != null)
+            {
+                p.Vortex.transform.localScale = Vector3.one * (1f + breathe + 0.20f * flash);
+                float dim = 1f - 0.38f * blocked;
+                p.Vortex.color = new Color(dim, dim, dim, 1f);
+            }
+            float wobble = still ? 0f : 9f * Mathf.Sin(blocked * Mathf.PI * 3f) * blocked;
+            p.Renderer.transform.localRotation = Quaternion.AngleAxis(wobble, Vector3.forward);
         }
 
         private void SetWind(int i, float intensity)
@@ -546,12 +596,12 @@ namespace Plop.Presentation
         }
 
         private void Emit(BoardFx.Kind kind, Vector3 at, Vector3 velocity, Color color, float life, float size0, float size1, int order,
-            float spin = 0f, float drag = 0f, float gravity = 0f, float now = 0f)
+            float spin = 0f, float drag = 0f, float gravity = 0f, float now = 0f, bool ambient = false)
         {
             _fx?.Spawn(new BoardFx.Emit
             {
                 Kind = kind, Position = at, Velocity = velocity, Color = color, Life = life, Size0 = size0, Size1 = size1,
-                Order = order, Spin = spin, Drag = drag, Gravity = gravity
+                Order = order, Spin = spin, Drag = drag, Gravity = gravity, Ambient = ambient
             }, now);
         }
 
@@ -578,6 +628,7 @@ namespace Plop.Presentation
         internal byte SurfaceMaskAt(GridPosition p) => _surfaceByCell.TryGetValue(_level.CellIndex(p), out int i) ? _surfaces[i].Mask : (byte)0;
         internal SpriteRenderer SurfaceRendererAt(GridPosition p) => _surfaceByCell.TryGetValue(_level.CellIndex(p), out int i) ? _surfaces[i].Renderer : null;
         internal SpriteRenderer PortalRendererAt(GridPosition p) => _portalByCell.TryGetValue(_level.CellIndex(p), out int i) ? _portals[i].Renderer : null;
+        internal SpriteRenderer VortexAt(GridPosition p) => _portalByCell.TryGetValue(_level.CellIndex(p), out int i) ? _portals[i].Vortex : null;
         internal int WindRunAt(GridPosition p) => _fanByCell.TryGetValue(_level.CellIndex(p), out int i) ? _fans[i].Run : 0;
         internal SpriteRenderer[] WindAt(GridPosition p) => _fanByCell.TryGetValue(_level.CellIndex(p), out int i) ? _fans[i].Wind : null;
         internal Transform BladesAt(GridPosition p) => _fanByCell.TryGetValue(_level.CellIndex(p), out int i) ? _fans[i].Blades : null;

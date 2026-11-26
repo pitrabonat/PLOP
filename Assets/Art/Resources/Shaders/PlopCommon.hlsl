@@ -162,6 +162,85 @@ float PlopSeam(float2 p, uint mask)
     return s;
 }
 
+// ---------------------------------------------------------------- Phase 11.6: supplied art tiles
+// The art-driven surfaces (Lava, Frost) sample one isolated hand-painted tile (_ArtTex). _ArtRect maps
+// "content" coordinates s (the opaque box, -0.5..0.5) to texture uv: uv = _ArtRect.xy + s * _ArtRect.zw.
+#if defined(PLOP_ART_TILE)
+TEXTURE2D(_ArtTex);
+SAMPLER(sampler_ArtTex);
+CBUFFER_START(UnityPerMaterial)
+    float4 _ArtRect;
+    float4 _ArtTex_TexelSize;
+CBUFFER_END
+
+// Straight-alpha art colour in sRGB (the shader maths, like the palette, works in sRGB).
+float4 PlopArt(float2 s)
+{
+    float4 c = SAMPLE_TEXTURE2D_LOD(_ArtTex, sampler_ArtTex, _ArtRect.xy + s * _ArtRect.zw, 0);
+#if !defined(UNITY_COLORSPACE_GAMMA)
+    c.rgb = LinearToSRGB(c.rgb);
+#endif
+    return c;
+}
+
+// Blob-tile remap of one isolated tile. p: cell coordinates (-0.5..0.5); footprint: opaque width in cells;
+// squeeze: content units per cell along connected sides (keeps them inside the art's interior).
+// Each quadrant of the cell is solved on its own: an open side keeps the art's real rim, a connected side
+// samples the interior, so rims never repeat between joined cells. At an inner corner (both sides joined,
+// diagonal open) a rim "nub" continues the two neighbours' rims around the corner.
+float4 PlopArtTile(float2 p, uint mask, float footprint, float squeeze, float rim)
+{
+    float sx = p.x >= 0.0 ? 1.0 : -1.0;
+    float sy = p.y >= 0.0 ? 1.0 : -1.0;
+    float2 q = abs(p);
+    uint hBit = sx > 0.0 ? 2u : 8u;
+    uint vBit = sy > 0.0 ? 1u : 4u;
+    uint dBit = sx > 0.0 ? (sy > 0.0 ? 16u : 32u) : (sy > 0.0 ? 128u : 64u);
+    bool h = (mask & hBit) != 0u;
+    bool v = (mask & vBit) != 0u;
+    bool d = (mask & dBit) != 0u;
+    float2 s = float2(h ? q.x * squeeze : q.x / footprint, v ? q.y * squeeze : q.y / footprint);
+    float4 c = PlopArt(s * float2(sx, sy));
+    if (h && v && !d)
+    {
+        float2 o = 0.5 - q;                         // distance to the shared corner
+        float gap = 0.5 - 0.5 * footprint;          // the open diagonal keeps the usual tile gap
+        float rf = rim * 0.55;
+        float inner = length(max(o - (rim - rf), 0.0)) - rf;
+        float aa = max(fwidth(inner), 1e-4);
+        float nub = saturate(0.5 - inner / aa);
+        // Sample the top/bottom rim band so it lines up with the horizontal neighbour's rim.
+        float2 ns = float2(q.x * squeeze, min((0.5 - o.y) / footprint, 0.485));
+        float4 n = PlopArt(ns * float2(sx, sy));
+        c = lerp(c, float4(n.rgb, 1.0), nub * n.a);
+        // The open diagonal keeps a rounded gap, like the corner between two separate tiles.
+        float g = length(max(o - (gap - 0.02), 0.0)) - 0.02;
+        c.a *= saturate(g / max(fwidth(g), 1e-4) + 0.5);
+    }
+    return c;
+}
+
+// Board-space sample of the art's interior: a mirrored (triangle-wave) tiling, continuous across cells.
+float4 PlopArtInterior(float2 board, float extent)
+{
+    float2 tri = abs(frac(board * 0.5) * 2.0 - 1.0);
+    return PlopArt((tri - 0.5) * 2.0 * extent);
+}
+
+// Seamless interior without visible mirror axes: two mirrored layers at unrelated angles and scales, each
+// gently domain-warped, blended by low-frequency noise. Continuous everywhere (no per-cell seams).
+float4 PlopArtSheet(float2 board, float extent, float2 drift)
+{
+    float2 w = float2(PlopFbm(board * 0.9 + 1.7), PlopFbm(board * 0.9 + 8.3)) - 0.5;
+    const float2x2 r1 = float2x2(0.921, -0.391, 0.391, 0.921);     // 23 degrees
+    const float2x2 r2 = float2x2(0.485, 0.875, -0.875, 0.485);     // -61 degrees
+    float4 a = PlopArtInterior(mul(r1, board) * 0.78 + w * 0.30 + drift, extent);
+    float4 b = PlopArtInterior(mul(r2, board) * 0.91 + 3.7 - w * 0.30 - drift * 0.7, extent);
+    float m = smoothstep(0.30, 0.70, PlopNoise(board * 0.62 + 2.9));
+    return lerp(a, b, m);
+}
+#endif
+
 // Composite a surface (colour, coverage) over its soft contact shadow.
 float4 PlopOverShadow(float3 col, float cover, float shadow, float3 shadowCol)
 {

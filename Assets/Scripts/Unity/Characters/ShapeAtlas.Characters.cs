@@ -576,7 +576,9 @@ namespace Plop.Presentation
         {
             if (style.Shape == NestShape.Pillow)
             {
-                specs.Add(Make(key, -0.5f, -0.5f, 1f, 1f, PillowPainter(palette.NestOuter(colorId), palette.NestInner(colorId))));
+                // Phase 11.6: the classic pillow is the supplied Nest art, re-dyed to the palette colour.
+                var painter = UsesArt ? ArtNestPainter(palette.NestOuter(colorId)) : PillowPainter(palette.NestOuter(colorId), palette.NestInner(colorId));
+                specs.Add(Make(key, -0.5f, -0.5f, 1f, 1f, painter));
                 return;
             }
             var cover = palette.NestOuter(colorId);

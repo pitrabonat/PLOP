@@ -210,10 +210,13 @@ namespace Plop.Tests.PlayMode
             }
             var lab = VisualLab.Get(4).Level;
             var board = Board(lab);
-            Assume.That(PlopShaders.Available);
             foreach (var t in lab.Tiles.Where(t => t.Kind == TileKind.Portal))
-                Assert.AreEqual(SurfaceConnectivity.PortalSlot(t.Pair),
-                    SurfaceConnectivity.DecodePortalPair(PlopShaders.Unpack(board.Environment.PortalRendererAt(t.Position).color)));
+            {
+                // Phase 11.6: each pair's frame sprite carries its own pip count (and tint).
+                var frame = board.Environment.PortalRendererAt(t.Position);
+                Assert.AreEqual(ShapeAtlas.PortalKey(SurfaceConnectivity.PortalSlot(t.Pair)), frame.sprite.name);
+                if (ArtPack.Ready) Assert.IsNotNull(board.Environment.VortexAt(t.Position), "separate rotating vortex");
+            }
         }
 
         // ------------------------------------------------------------------ trace visualisation and cleanup

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae458fc0bb12b4e4698b3caa0f6c358d, type: 3}
+  m_Name: Phase11_6
+  m_EditorClassIdentifier: PLOP.Unity::Plop.Presentation.ArtPackAsset
+  floor: {fileID: 21300000, guid: 7815b41f7d2d843c0beb06a1f9cb45d5, type: 3}
+  pebble: {fileID: 21300000, guid: 610a88fd778dc48ceb6c0a71a9280d17, type: 3}
+  lava: {fileID: 21300000, guid: 7a52c02db28d8473f854a0f2804cdefd, type: 3}
+  frost: {fileID: 21300000, guid: 69aa3e5e2523344bd87a6e950aa04806, type: 3}
+  fanHousing: {fileID: 21300000, guid: b0271ff3700534373a462b3071267cdc, type: 3}
+  fanBlades: {fileID: 21300000, guid: 6335211639aa4465eb55ec517392dfc8, type: 3}
+  portalFrame: {fileID: 21300000, guid: ea2350bf312f1493995726a91b651a82, type: 3}
+  portalVortex: {fileID: 21300000, guid: b58e56a68cc1b4806833d11f49d653fd, type: 3}
+  nests:
+  - {fileID: 21300000, guid: 986b9d4d6a60d4cb9b3ca1b5b20520d0, type: 3}
+  - {fileID: 21300000, guid: 25b34b51de510466e9006c40ed11c4e8, type: 3}
+  - {fileID: 21300000, guid: 4b2860b0d68f449fbb5fc2903373a424, type: 3}
+  - {fileID: 21300000, guid: d40fe3755269541c6a9aeb04f46ea738, type: 3}
+  lavaMaterial: {fileID: 2100000, guid: 57d4c0bd5c51d426fa91d2e2e0732d67, type: 2}
+  frostMaterial: {fileID: 2100000, guid: 2bc33634e4b584950ba957cf13c71aa4, type: 2}

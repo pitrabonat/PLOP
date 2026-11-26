@@ -3,18 +3,17 @@ using UnityEngine;
 namespace Plop.Presentation
 {
     /// <summary>
-    /// Phase 11.5 procedural board shaders (Lava, Frost, Loops, Breeze wind). One shared material per shader,
-    /// one unit-quad sprite for every instance, and a single global clock. Per-renderer data is packed into the
-    /// SpriteRenderer colour (<see cref="SurfaceConnectivity"/>), so instances never need their own material.
-    /// If a shader is missing or unsupported, <see cref="Available"/> is false and the board falls back to the
-    /// baked atlas sprites.
+    /// Board shaders: Lava and Frost (Phase 11.6: built from the supplied art tiles, see <see cref="ArtPack"/>),
+    /// Breeze wind and the living-World layers. One shared material per shader, one unit-quad sprite for every
+    /// instance, and a single global clock. Per-renderer data is packed into the SpriteRenderer colour
+    /// (<see cref="SurfaceConnectivity"/>), so instances never need their own material. If a shader or the art
+    /// pack is missing or unsupported, <see cref="Available"/> is false and the board falls back to the baked
+    /// atlas sprites.
     /// </summary>
     public static class PlopShaders
     {
         private static readonly int TimeId = Shader.PropertyToID("_PlopTime");
         private static readonly int BoardId = Shader.PropertyToID("_PlopBoard");
-        private static readonly int PortalTintsId = Shader.PropertyToID("_PlopPortalTints");
-        private static readonly int PortalInkId = Shader.PropertyToID("_PlopPortalInk");
         private static readonly int WindTintId = Shader.PropertyToID("_PlopWindTint");
         private static readonly int ClearId = Shader.PropertyToID("_PlopClear");
 
@@ -22,7 +21,7 @@ namespace Plop.Presentation
         public const float FrozenTime = 7.35f;
         private const float Wrap = 600f;
 
-        private static Material _lava, _frost, _portal, _wind, _ambient, _ambientParticles;
+        private static Material _lava, _frost, _wind, _ambient, _ambientParticles;
         private static Sprite _quad;
         private static bool _loaded, _available;
         private static float _time = FrozenTime;
@@ -35,7 +34,6 @@ namespace Plop.Presentation
         public static bool Available { get { Load(); return _available; } }
         public static Material Lava { get { Load(); return _lava; } }
         public static Material Frost { get { Load(); return _frost; } }
-        public static Material Portal { get { Load(); return _portal; } }
         public static Material Wind { get { Load(); return _wind; } }
         /// <summary>Living-World background layer (independent of <see cref="Available"/>; null if unsupported).</summary>
         public static Material Ambient { get { Load(); return _ambient; } }
@@ -62,14 +60,13 @@ namespace Plop.Presentation
         {
             if (_loaded && (_lava != null || !_available)) return;
             _loaded = true;
-            _lava = Make("Shaders/PlopLava");
-            _frost = Make("Shaders/PlopFrost");
-            _portal = Make("Shaders/PlopPortal");
+            var art = ArtPack.Asset;
+            _lava = FromArt(art != null ? art.lavaMaterial : null, ArtPack.Lava);
+            _frost = FromArt(art != null ? art.frostMaterial : null, ArtPack.Frost);
             _wind = Make("Shaders/PlopWind");
             _ambient = Make("Shaders/PlopAmbient");
             _ambientParticles = Make("Shaders/PlopAmbientParticles");
-            _available = _lava != null && _frost != null && _portal != null && _wind != null;
-            SetPortalPalette(DefaultPortalTints, PlopPalette.Hex(0x3F3552));
+            _available = _lava != null && _frost != null && _wind != null && ArtPack.Ready;
             SetWindTint(DefaultWindTint);
             Shader.SetGlobalFloat(TimeId, _time);
         }
@@ -81,22 +78,27 @@ namespace Plop.Presentation
             return new Material(shader) { name = shader.name, hideFlags = HideFlags.DontSave };
         }
 
+        /// <summary>Runtime copy of an art material, with the art's opaque box (content rect) filled in.</summary>
+        private static Material FromArt(Material source, ArtImage art)
+        {
+            if (source == null || art == null || source.shader == null || !source.shader.isSupported) return null;
+            var m = new Material(source) { name = source.name + " (runtime)", hideFlags = HideFlags.DontSave };
+            var c = art.Content;
+            m.SetVector(ArtRectId, new Vector4((c.x + c.width * 0.5f) / art.Width, (c.y + c.height * 0.5f) / art.Height,
+                c.width / (float)art.Width, c.height / (float)art.Height));
+            return m;
+        }
+
+        private static readonly int ArtRectId = Shader.PropertyToID("_ArtRect");
+
         public static readonly Color DefaultWindTint = new Color(0.47f, 0.78f, 0.72f, 0.95f);
 
-        /// <summary>Loop pair colours; pair identity also uses bead count and ring dashes.</summary>
+        /// <summary>Loop pair colours; pair identity also uses the pip count on each frame.</summary>
         public static readonly Color[] DefaultPortalTints =
         {
             PlopPalette.Hex(0x9C8FE0), PlopPalette.Hex(0x6FC9B0), PlopPalette.Hex(0xF2A585),
             PlopPalette.Hex(0x86B8EA), PlopPalette.Hex(0xE6B064), PlopPalette.Hex(0xE592B4)
         };
-
-        public static void SetPortalPalette(Color[] tints, Color ink)
-        {
-            var v = new Vector4[6];
-            for (int i = 0; i < 6; i++) v[i] = tints[i % tints.Length];
-            Shader.SetGlobalVectorArray(PortalTintsId, v);
-            Shader.SetGlobalColor(PortalInkId, ink);
-        }
 
         // Vectors are passed as-is (sRGB, like the palette); the shaders convert to linear once.
         public static void SetWindTint(Color tint) => Shader.SetGlobalVector(WindTintId, tint);

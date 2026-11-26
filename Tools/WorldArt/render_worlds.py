@@ -477,6 +477,170 @@ def prism(canvas, preview):
     canvas.mist(552, 1000, 26, 26, 0xFFFFFF, 0.6)
 
 
+# ---------------------------------------------------------------- Phase 11.6 enrichment
+# Reference-inspired props (Documentation/ArtPack/Phase11_6/Visual_Target.png) added around the board:
+# side margins, the band under the header and the floor line. The board area (about y 290-720 at the
+# centre) and the HUD stay clear. Existing props keep their positions, so Ambient.json regions still match.
+
+def flower(canvas, x, y, size, petal, centre, opacity=1.0):
+    canvas.mist(x, y + size * 0.6, size * 2.2, size * 0.9, 0x7FA86E, 0.18 * opacity)
+    for k in range(5):
+        a = math.radians(k * 72 - 90)
+        canvas.oval(x + math.cos(a) * size * 0.42, y + math.sin(a) * size * 0.42, size * 0.62, size * 0.50,
+                    petal, mix_hex(petal, 0x9A6A8A, 0.25), angle=k * 72, opacity=opacity, feather=1.3)
+    canvas.oval(x, y, size * 0.42, size * 0.42, centre, mix_hex(centre, 0xB07A40, 0.3), opacity=opacity)
+
+
+def mix_hex(a, b, w):
+    ca, cb = rgb(a), rgb(b)
+    m = mix(ca, cb, w)
+    return (m[0] << 16) | (m[1] << 8) | m[2]
+
+
+def pine(canvas, x, y, height, body, shade, snow):
+    canvas.mist(x, y + 6, height * 0.7, height * 0.16, shade, 0.30)
+    canvas.round(x, y - height * 0.06, height * 0.08, height * 0.16, 3, 0xA88E86, 0x7E6862)
+    for k, (w, h, dy) in enumerate(((0.62, 0.38, 0.22), (0.50, 0.34, 0.45), (0.36, 0.30, 0.66))):
+        cy = y - height * dy
+        for side in (-1, 1):
+            canvas.segment(x, cy - height * h * 0.5, x + side * height * w * 0.5, cy + height * h * 0.35,
+                           height * 0.10, body, 0.95)
+        canvas.oval(x, cy + height * h * 0.15, height * w * 0.82, height * h * 0.62, body, shade, feather=1.6)
+        canvas.oval(x - height * 0.03, cy - height * h * 0.18, height * w * 0.55, height * h * 0.22, snow, 0xD9E8F2,
+                    opacity=0.92, feather=1.8)
+
+
+def crystal(canvas, x, y, w, h, angle, top, bottom, glow=None):
+    if glow is not None:
+        canvas.mist(x, y - h * 0.3, w * 3.2, h * 1.4, glow, 0.30)
+    canvas.round(x, y - h * 0.5, w, h, w * 0.28, top, bottom, angle, bevel=0.22)
+    canvas.round(x - w * 0.18, y - h * 0.56, w * 0.22, h * 0.70, w * 0.1, 0xFFFFFF, top, angle, opacity=0.45, feather=1.4)
+
+
+def cluster(canvas, x, y, scale, top, bottom, glow=None):
+    for dx, h, w, a in ((-0.55, 0.62, 0.30, -24), (0.50, 0.70, 0.30, 22), (0.0, 1.0, 0.38, 0), (-0.25, 0.45, 0.24, -8), (0.28, 0.42, 0.22, 12)):
+        crystal(canvas, x + dx * 36 * scale, y, w * 36 * scale, h * 70 * scale, a, top, bottom, glow if h == 1.0 else None)
+
+
+def mushroom(canvas, x, y, size, cap, dots):
+    canvas.mist(x + 3, y + 2, size * 1.3, size * 0.35, 0x6E8E68, 0.28)
+    canvas.round(x, y - size * 0.32, size * 0.32, size * 0.62, size * 0.14, 0xFFF6E8, 0xE1D2BE)
+    canvas.oval(x, y - size * 0.66, size, size * 0.62, cap, mix_hex(cap, 0x7A3E4A, 0.35), feather=1.4)
+    for dx, dy, r in ((-0.22, -0.78, 0.13), (0.16, -0.84, 0.10), (0.30, -0.64, 0.08), (-0.05, -0.60, 0.07)):
+        canvas.oval(x + dx * size, y + dy * size, r * size, r * size * 0.9, dots, 0xEADBD0, opacity=0.95)
+
+
+def mug(canvas, x, y, size, body, shade, mark=True):
+    canvas.mist(x + 4, y + size * 0.48, size * 1.4, size * 0.35, shade, 0.35)
+    canvas.oval(x + size * 0.50, y, size * 0.42, size * 0.50, body, shade, feather=1.3)
+    canvas.oval(x + size * 0.50, y, size * 0.20, size * 0.28, mix_hex(body, 0xFFFFFF, 0.2), shade, opacity=0.0)
+    canvas.round(x, y, size * 0.86, size, size * 0.18, body, shade, bevel=0.18)
+    canvas.oval(x, y - size * 0.47, size * 0.80, size * 0.16, mix_hex(shade, 0x6E4A3A, 0.45), shade)
+    if mark:
+        canvas.oval(x - size * 0.02, y + size * 0.05, size * 0.26, size * 0.26, 0xFFF4D8, 0xE8D2A8, opacity=0.95)
+        canvas.oval(x + size * 0.06, y - size * 0.01, size * 0.22, size * 0.22, body, body, opacity=1.0)
+    for k in range(2):
+        canvas.mist(x - size * 0.12 + k * size * 0.22, y - size * (0.95 + 0.25 * k), size * 0.14, size * 0.42, 0xFFFFFF, 0.30)
+
+
+def fairy_lights(canvas, x0, x1, y, sag, count, wire, bulbs):
+    prev = None
+    for k in range(count + 1):
+        t = k / count
+        px = x0 + (x1 - x0) * t
+        py = y + sag * 4 * t * (1 - t)
+        if prev is not None:
+            canvas.segment(prev[0], prev[1], px, py, 1.6, wire, 0.55)
+        prev = (px, py)
+        if 0 < k < count:
+            color = bulbs[k % len(bulbs)]
+            canvas.mist(px, py + 6, 26, 26, color, 0.42)
+            canvas.oval(px, py + 5, 7, 9, 0xFFFBEA, color, opacity=0.95)
+
+
+def table_lamp(canvas, x, y, scale, shade_top, shade_bottom):
+    canvas.mist(x, y - 30 * scale, 180 * scale, 160 * scale, 0xFFE2AE, 0.45)
+    canvas.round(x, y + 20 * scale, 34 * scale, 16 * scale, 6 * scale, 0xE6C3A4, 0xBE9479)
+    canvas.round(x, y - 8 * scale, 7 * scale, 44 * scale, 3 * scale, 0xD9B79A, 0xB08D74)
+    canvas.round(x, y - 48 * scale, 66 * scale, 44 * scale, 16 * scale, shade_top, shade_bottom, bevel=0.2)
+    canvas.oval(x, y - 26 * scale, 54 * scale, 8 * scale, 0xFFF3C8, 0xF4D49A, opacity=0.9)
+
+
+def potted_plant(canvas, x, y, scale):
+    leaves = ((0xCFE5AE, 0x8FB577), (0xBCDDA3, 0x7FA86E))
+    for k, (dx, dy, w, h, a) in enumerate(((-18, -52, 58, 20, -60), (16, -58, 62, 21, -118), (-26, -30, 54, 18, -25),
+                                           (24, -34, 56, 19, -155), (0, -66, 48, 18, -90))):
+        leaf(canvas, x + dx * scale, y + dy * scale, w * scale, h * scale, a, *leaves[k % 2])
+    canvas.round(x, y - 4 * scale, 52 * scale, 40 * scale, 12 * scale, 0xE9B9A0, 0xC68F7A, bevel=0.2)
+    canvas.round(x, y - 22 * scale, 58 * scale, 10 * scale, 4 * scale, 0xF1C8AF, 0xCF9C86)
+
+
+def dome(canvas, x, y, scale):
+    canvas.mist(x, y, 190 * scale, 90 * scale, 0xBFB2DD, 0.32)
+    canvas.round(x, y + 10 * scale, 130 * scale, 46 * scale, 10 * scale, 0xEDE6F7, 0xC4B7DE, bevel=0.2)
+    canvas.oval(x, y - 16 * scale, 118 * scale, 100 * scale, 0xF4EEFB, 0xBFB0DA, feather=1.5)
+    canvas.round(x + 6 * scale, y - 30 * scale, 18 * scale, 60 * scale, 8 * scale, 0x6F6496, 0x51497A, angle=-12)
+    canvas.mist(x + 6 * scale, y - 34 * scale, 14 * scale, 40 * scale, 0xBFD8FF, 0.5, -12)
+    canvas.round(x - 30 * scale, y - 44 * scale, 30 * scale, 10 * scale, 5 * scale, 0xFFFFFF, 0xE6DEF4, angle=-30, opacity=0.6)
+
+
+def enrich(key, canvas):
+    if key == "cozy-nest":
+        fairy_lights(canvas, -10, 586, 176, 34, 14, 0xC9A28C, (0xFFD58F, 0xFFC0B0, 0xFFE6A6))
+        table_lamp(canvas, 512, 912, 1.0, 0xF6CDB4, 0xDDA48C)
+        mug(canvas, 172, 966, 34, 0xF3B7C4, 0xCF8FA0)
+    elif key == "frosted-pond":
+        for x, y, h in ((28, 950, 150), (92, 968, 104), (548, 946, 160), (486, 972, 96)):
+            pine(canvas, x, y, h, 0xA9C9C4, 0x6F9A9A, 0xF7FBFF)
+        cluster(canvas, 170, 1000, 0.75, 0xE6F5FF, 0x8DBAE0, 0xD8F0FF)
+        cluster(canvas, 412, 1004, 0.55, 0xEAF6FF, 0x9AC2E4, 0xD8F0FF)
+    elif key == "breezy-meadow":
+        canvas.oval(288, 958, 700, 90, 0xDCECC0, 0xB7D29C, opacity=0.7)
+        for k, x in enumerate(range(26, 560, 39)):
+            y = 990 + (k * 17) % 26
+            petal = (0xF6B8C8, 0xFFF0A8, 0xFFFFFF, 0xC9B6EE)[k % 4]
+            flower(canvas, x, y, 13 + (k * 5) % 6, petal, 0xF6C96B if petal != 0xFFF0A8 else 0xF2A85C)
+        for x in (44, 118):
+            canvas.round(x, 930, 8, 52, 3, 0xE9D7BC, 0xC2A98A)
+        canvas.segment(30, 916, 132, 916, 5, 0xE5D0B2, 0.95)
+        canvas.segment(30, 936, 132, 936, 5, 0xE5D0B2, 0.95)
+    elif key == "ember-hollow":
+        canvas.mist(0, 300, 120, 700, 0x5C4651, 0.35)
+        canvas.mist(576, 300, 120, 700, 0x5C4651, 0.35)
+        cluster(canvas, 96, 968, 0.80, 0xFFD58A, 0xE48A3E, 0xFFB46A)
+        cluster(canvas, 486, 972, 0.95, 0xFFDE9C, 0xE07B3A, 0xFFB46A)
+        cluster(canvas, 548, 214, 0.45, 0xFFD58A, 0xE48A3E, 0xFFB46A)
+        canvas.segment(170, 1040, 230, 985, 9, 0xFFB466, 0.55)
+        canvas.segment(360, 1040, 330, 990, 7, 0xFFB466, 0.50)
+    elif key == "prism-observatory":
+        dome(canvas, 470, 975, 0.9)
+        cluster(canvas, 92, 962, 0.85, 0xE9DDFF, 0x9C86D8, 0xF2C8F0)
+        cluster(canvas, 40, 214, 0.45, 0xE3F4FF, 0x8FB8E2, 0xC6F0E4)
+        for x, y, size in ((250, 935, 7), (330, 960, 9), (560, 860, 8), (24, 860, 7)):
+            star(canvas, x, y, size, 0xFFF4D8, 0.85)
+    elif key == "dewdrop-garden":
+        mushroom(canvas, 430, 1000, 46, 0xF19AA6, 0xFFF3EC)
+        mushroom(canvas, 470, 1012, 30, 0xF6B2A0, 0xFFF3EC)
+        for k, x in enumerate((210, 250, 290, 336, 380)):
+            flower(canvas, x, 1004 + (k % 2) * 10, 12, (0xD9C6F2, 0xF6B8C8, 0xFFFFFF)[k % 3], 0xF6C96B, 0.9)
+    elif key == "rainy-window":
+        potted_plant(canvas, 196, 1000, 1.0)
+        mug(canvas, 404, 986, 38, 0xF4E6D6, 0xCDB9A6)
+        for x, y, r in ((60, 70, 5), (110, 40, 4), (520, 60, 5), (560, 100, 4), (470, 30, 3)):
+            canvas.oval(x, y, r, r * 1.3, 0xFFFFFF, 0xB9CCE3, opacity=0.75)
+    elif key == "twilight-attic":
+        fairy_lights(canvas, -10, 586, 150, 40, 12, 0xB79CB6, (0xFFD58F, 0xFFC6A6, 0xFFE9A6, 0xF6C2E0))
+        canvas.mist(288, 1000, 220, 70, 0xFFE2A8, 0.30)
+        star(canvas, 288, 985, 26, 0xFFE7A8, 0.85)
+        canvas.oval(288, 985, 22, 22, 0xFFF4C8, 0xF2CC80, opacity=0.95)
+    elif key == "moonlit-clouds":
+        cloud(canvas, 12, 520, 120, 44, 0xF7F4FC, 0xCDD0E9)
+        cloud(canvas, 566, 420, 130, 46, 0xF9F5FB, 0xD0D2EA)
+        cloud(canvas, 560, 760, 110, 40, 0xF9F5FB, 0xD0D2EA)
+        for x, y, size in ((30, 640, 8), (548, 580, 6), (24, 350, 6), (552, 300, 9), (300, 930, 7)):
+            star(canvas, x, y, size, 0xFFF5D9, 0.82)
+
+
 WORLDS = (
     ("cozy-nest", 0xFBEBDC, 0xF5DBCA, 0xFFF6E7, (0.26, 0.10), cozy),
     ("dewdrop-garden", 0xE1EFE2, 0xD6E3CA, 0xF5F8DF, (0.31, 0.13), garden),
@@ -497,6 +661,7 @@ def main(root, only=None):
             continue
         backdrop = Canvas(576, 1024, top, floor, light, light_at)
         compose(backdrop, False)
+        enrich(key, backdrop)
         backdrop.save(resources / "WorldBackdrops" / f"{key}.png")
 
         preview = Canvas(320, 160, top, floor, light, light_at)

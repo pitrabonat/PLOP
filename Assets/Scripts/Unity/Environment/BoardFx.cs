@@ -19,16 +19,19 @@ namespace Plop.Presentation
             public Vector3 Position, Velocity;
             public float Born, Life, Size0, Size1, Spin, Drag, Gravity, Angle;
             public Color Color;
-            public bool Live;
+            public bool Live, Ambient;
         }
 
         private readonly Particle[] _pool = new Particle[Capacity];
         private readonly Sprite[] _sprites = new Sprite[5];
-        private int _cursor, _saverParity, _live;
+        private int _cursor, _saverParity, _live, _ambient;
 
         public bool Enabled { get; set; } = true;
         public bool BatterySaver { get; set; }
+        /// <summary>Particles that answer a gameplay event (the board is "busy" while any are alive).</summary>
         public int LiveCount => _live;
+        /// <summary>Decorative idle motes (portal sparks); never block input or count as feedback.</summary>
+        public int AmbientCount => _ambient;
 
         public BoardFx(Transform parent, ShapeAtlas atlas)
         {
@@ -55,6 +58,7 @@ namespace Plop.Presentation
             public Color Color;
             public float Life, Size0, Size1, Spin, Drag, Gravity;
             public int Order;
+            public bool Ambient;
         }
 
         public void Spawn(in Emit e, float now)
@@ -71,8 +75,10 @@ namespace Plop.Presentation
             _cursor = (slot + 1) % Capacity;
 
             ref var p = ref _pool[slot];
-            if (!p.Live) _live++;
+            if (p.Live) Kill(ref p);
             p.Live = true;
+            p.Ambient = e.Ambient;
+            if (p.Ambient) _ambient++; else _live++;
             p.Position = e.Position;
             p.Velocity = e.Velocity;
             p.Born = now;
@@ -95,7 +101,7 @@ namespace Plop.Presentation
 
         public void Tick(float now, float dt)
         {
-            if (_live == 0) return;
+            if (_live == 0 && _ambient == 0) return;
             dt = Mathf.Min(dt, 0.05f);
             for (int i = 0; i < Capacity; i++)
             {
@@ -126,13 +132,15 @@ namespace Plop.Presentation
         {
             for (int i = 0; i < Capacity; i++) if (_pool[i].Live) Kill(ref _pool[i]);
             _live = 0;
+            _ambient = 0;
         }
 
         private void Kill(ref Particle p)
         {
             p.Live = false;
             p.Renderer.enabled = false;
-            _live = Mathf.Max(0, _live - 1);
+            if (p.Ambient) _ambient = Mathf.Max(0, _ambient - 1);
+            else _live = Mathf.Max(0, _live - 1);
         }
     }
 }

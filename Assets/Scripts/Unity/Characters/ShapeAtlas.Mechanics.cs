@@ -30,7 +30,7 @@ namespace Plop.Presentation
         public const int PortalColors = 6;
         public static string PortalKey(int pair) => "tile.portal" + (pair % PortalColors);
 
-        private static readonly Color[] PortalTints =
+        internal static readonly Color[] PortalTints =
         {
             PlopPalette.Hex(0xB6ADE3), PlopPalette.Hex(0x9FD8C9), PlopPalette.Hex(0xF3BEA9),
             PlopPalette.Hex(0xAFCDEB), PlopPalette.Hex(0xE7BC85), PlopPalette.Hex(0xE9AEC4)
@@ -41,7 +41,9 @@ namespace Plop.Presentation
             specs.Add(Make(FrostKey, -0.5f, -0.5f, 1f, 1f, PaintFrost));
             specs.Add(Make(LavaKey, -0.5f, -0.5f, 1f, 1f, PaintLava));
             specs.Add(Make(FanKey, -0.5f, -0.5f, 1f, 1f, PaintFanBase));
-            specs.Add(Make(FanBladesKey, -0.3f, -0.3f, 0.6f, 0.6f, PaintFanBlades));
+            float blade = UsesArt ? ArtPack.BladeRadiusCells + 0.02f : 0.3f;
+            specs.Add(Make(FanBladesKey, -blade, -blade, 2f * blade, 2f * blade, PaintFanBlades));
+            specs.Add(Make(FanChevronKey, -0.06f, -0.045f, 0.12f, 0.09f, PaintFanChevron, 192));
             specs.Add(Make(FanArrowKey, -0.13f, -0.10f, 0.26f, 0.20f, PaintFanArrow, 192));
             AddEffectParticles(specs);
             specs.Add(Make(NestBedKey, -0.5f, -0.5f, 1f, 1f, PaintNestBed));
@@ -55,7 +57,15 @@ namespace Plop.Presentation
             {
                 var tint = PortalTints[i];
                 int pips = i + 1;
-                specs.Add(Make(PortalKey(i), -0.5f, -0.5f, 1f, 1f, (x, y, px) => PaintPortal(x, y, px, tint, pips)));
+                if (!UsesArt)
+                {
+                    specs.Add(Make(PortalKey(i), -0.5f, -0.5f, 1f, 1f, (x, y, px) => PaintPortal(x, y, px, tint, pips)));
+                    continue;
+                }
+                // Phase 11.6: the supplied frame (static, carries the pair pips) above a separate rotating vortex.
+                specs.Add(Make(PortalKey(i), -0.5f, -0.5f, 1f, 1f, (x, y, px) => ArtPortalFrame(x, y, px, tint, pips)));
+                float vr = ArtPack.VortexRadiusCells + 0.01f;
+                specs.Add(Make(PortalVortexKey(i), -vr, -vr, 2f * vr, 2f * vr, (x, y, px) => ArtPortalVortex(x, y, px, tint)));
             }
             specs.Add(Make(BurnKey, -0.18f, -0.18f, 0.36f, 0.36f, (x, y, px) =>
             {
@@ -70,6 +80,7 @@ namespace Plop.Presentation
 
         private static Color PaintFrost(float x, float y, float pixel)
         {
+            if (UsesArt) return ArtSurfaceTile(ArtPack.Frost, x, y, pixel);
             float half = TileSize * 0.5f;
             var deep = PlopPalette.Hex(0x9CC4DE);
             float contact = Sdf.RoundBox(x, y, 0.014f, -0.021f, half - 0.016f, half - 0.016f, TileRadius);
@@ -96,6 +107,7 @@ namespace Plop.Presentation
 
         private static Color PaintLava(float x, float y, float pixel)
         {
+            if (UsesArt) return ArtSurfaceTile(ArtPack.Lava, x, y, pixel);
             float half = TileSize * 0.5f;
             float angle = Mathf.Atan2(y, x);
             float scallop = 0.016f * Mathf.Sin(angle * 8f);
@@ -123,6 +135,7 @@ namespace Plop.Presentation
         // here; the floor tile underneath is its own sprite.
         private static Color PaintFanBase(float x, float y, float pixel)
         {
+            if (UsesArt) return ArtFanHousing(x, y, pixel);
             var c = PlopPalette.Shadow.WithAlpha(0f);
             const float rim = 0.368f, well = 0.302f;
             float r = Mathf.Sqrt(x * x + y * y);
@@ -158,6 +171,7 @@ namespace Plop.Presentation
 
         private static Color PaintFanBlades(float x, float y, float pixel)
         {
+            if (UsesArt) return ArtFanBlades(x, y, pixel);
             var blade = PlopPalette.Hex(0x7DC3AE);
             float d = 10f;
             float lightAcc = 0f;
