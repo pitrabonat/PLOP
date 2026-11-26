@@ -247,6 +247,31 @@ namespace Plop.Tests.PlayMode
             Assert.IsNotNull(Board.PlopViewAt(0).AccessoryTransform);
         }
 
+        /// <summary>Phase 11 player-flow fix: Android's system Back did nothing anywhere.</summary>
+        [UnityTest]
+        public IEnumerator SystemBack_ClosesTheTopScreen_ThenReturnsToTheMenu()
+        {
+            CreateController();
+            yield return null;
+            var hud = _root.GetComponent<GameHud>();
+            _controller.ShowMenu();
+            _controller.OpenStudio();
+            Assert.AreEqual("studio", _controller.HandleBack());
+            Assert.IsFalse(_controller.Studio.IsOpen);
+            Assert.IsTrue(_controller.Menu.IsOpen, "Studio → menu");
+
+            _controller.Menu.Hide(instant: true);
+            hud.ShowSettings();
+            Assert.AreEqual("modal", _controller.HandleBack());
+            Assert.IsFalse(hud.IsSettingsOpen);
+
+            _controller.StartCampaign();
+            Assert.IsFalse(_controller.Menu.IsOpen);
+            Assert.AreEqual("menu", _controller.HandleBack(), "a level → main menu, like Home");
+            Assert.IsTrue(_controller.Menu.IsOpen);
+            Assert.AreEqual("background", _controller.HandleBack(), "the menu is the root");
+        }
+
         [UnityTest]
         public IEnumerator StudioPreview_TapReactionsAreRateLimited_AndAtlasesAreReleased()
         {

@@ -251,6 +251,30 @@ namespace Plop.Presentation
             MarkActive();
         }
 
+        /// <summary>
+        /// System Back (Android back gesture, Escape in the Editor): closes the top overlay like its own button;
+        /// from a level it goes to the main menu like Home. On the main menu it sends the app to the background.
+        /// Returns what it did, for tests.
+        /// </summary>
+        internal string HandleBack()
+        {
+            ClearPendingInput();
+            _hud.CancelWorldAnnouncement();
+            if (_studio != null && _studio.IsOpen) { _studio.Close(); return "studio"; }
+            if (_hud.HandleBack()) { MarkActive(); return "modal"; }
+            if (_menu != null && _menu.IsOpen)
+            {
+#if UNITY_ANDROID && !UNITY_EDITOR
+                using (var player = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+                using (var activity = player.GetStatic<AndroidJavaObject>("currentActivity"))
+                    activity.Call<bool>("moveTaskToBack", true);
+#endif
+                return "background";
+            }
+            ShowMenu();
+            return "menu";
+        }
+
         private void OnStudioClosed()
         {
             ApplyLook();
@@ -599,14 +623,8 @@ namespace Plop.Presentation
             _hud.ShowSettings();
         }
 
-        private void DismissModal()
-        {
-            ClearPendingInput();
-            _hud.CloseSettings();
-            _hud.CloseLevelPicker();
-            _hud.CloseDeadlock();
-            _hud.CancelWorldAnnouncement();
-        }
+        /// <summary>Escape / Android system Back (SwipeInput's Dismiss action, so presses shorter than a frame count too).</summary>
+        private void DismissModal() => HandleBack();
 
         private bool CanCheckDeadlock => isActiveAndEnabled && !_suspended &&
             _engine.HasLevel && !_engine.IsCompleted && !_engine.IsFailed && !_engine.IsOutOfMoves;

@@ -601,6 +601,16 @@ namespace Plop.Presentation
             SetModal(_worldPicker, false);
         }
 
+        /// <summary>System Back on an open modal: the same as its Close / Keep playing button. False when none is open.</summary>
+        public bool HandleBack()
+        {
+            if (IsDeadlockOpen) { CloseDeadlock(); return true; }
+            if (IsSettingsOpen) { CloseSettings(); return true; }
+            if (_levelPicker != null && _levelPicker.gameObject.activeSelf) { ExitLevelRange(); return true; }
+            if (IsChoosingLevel) { CloseLevelPicker(); return true; }
+            return false;
+        }
+
         private void ExitLevelRange()
         {
             if (!_canReturnToWorlds)

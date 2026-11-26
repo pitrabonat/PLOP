@@ -238,3 +238,39 @@ See [PROJECT_STATE.md](PROJECT_STATE.md) for verification and remaining device Q
 - Verified: .NET 179, EditMode 179, PlayMode 100; strict production verification of Pack 002;
   Android ARM64 development APK on the emulator, including the Phase 9 save migration; iOS Simulator
   export built by Xcode 26.3 and run on the iPhone 15 Pro Max simulator.
+
+## 2026-11-26 · Phase 11 gameplay mastery, campaign balancing, economy and QA
+
+- Branched `feature/gameplay-mastery` from Phase 10 (tag `checkpoint/pre-phase11`). First
+  checkpoint `297e632`; then the v2 campaign build, Daily pool, docs, builds and previews.
+- Audit first: `PuzzleQuality` (decisions, coordination, settlement, mechanic removal test, planning
+  depth, misleading choices, route efficiency, diversity) and `SimulatedPlayers` (Random, Greedy,
+  Look-ahead 2/3, Limited-information, Optimal). `QualityAudit` writes per-level JSON and markdown for
+  a pack. The Phase 10 baseline: mean quality 60.6, 14 levels solved by the greedy player, 27 shallow,
+  3 with decorative mechanics, a Daily pool with no mechanics (`Documentation/Phase11/CAMPAIGN_AUDIT.md`).
+- `BalancedCampaign` builds `PLOP_Pack_003`: 95 levels kept, 1 improved, 57 replaced, 7 authored
+  (L2, L4, L6–L10). A–E learning stages per mechanic with acceptance floors, Frost moved to L6, eight
+  Limited Moves challenges with slack +2 → +1 → 0. Mean quality 71.6, greedy solves 8.
+- Build v2 judges a kept puzzle by its new slot (old 9 would have sat at 11 with quality 29). A first
+  attempt shifted every search seed and made the pack worse; search seeds now carry their own
+  `SeedVersion`, and late re-searches use a separate seed range, so only that slot changed.
+- Changing a Move limit changes a level id. `PLOP_Pack_002_Order.json` lists `aliases` for boards whose
+  rule only got looser; `MigrateFromRebalancedCampaign` carries completions, access and the resume level.
+- `PLOP_Daily_002`: 20 classic puzzles kept, 40 new across Frost/Breeze/Lava/Loops tiers, gated by
+  `DailySchedule.PickIndex` to mechanics the player has learned; the pick is stored per calendar day.
+- Economy: `EconomySimulator` (Casual, Regular, Enthusiast, High-Hint over 200 runs). Casual players
+  were refused a hint in 67 % of runs, so `HintPolicy` grants the first hint on a level free after two
+  tries when Dust is short. Rewards and prices are unchanged.
+- Readability: Loop pairs carry 1–6 pips as well as a tint; fan power pips are larger with a halo.
+- Dev-only playtest recorder (`plop.debug.playtest`, CSV in persistent data, compiled out of release),
+  `debugprefs.py playtest|pull-playtest`, `--playtest-summary`. Level Lab "Balance & quality" view with
+  filters, players, similarity, a before/after pack comparison and export.
+- New tests: campaign, economy, stability fuzz (damaged saves, long random sessions), playtest log,
+  rebalanced-campaign migration and per-device layout (cells ≥ 44 pt).
+- No human playtest and no physical device; see `Documentation/Phase11/KNOWN_ISSUES.md`.
+- The emulator player-flow test found that Android's system Back did nothing anywhere. The first fix polled
+  `Keyboard.current` and missed the first press after launch; it now runs through SwipeInput's Escape action.
+  A stale Gradle `launcher-debug.apk` had been inflating every APK (Phase 10: 64 MB for 46 MB of content).
+- Verified: .NET 200, EditMode 200, PlayMode 106; Pack_003 and Daily_002 strictly verified; Android
+  ARM64 dev APK (46.5 MB) on the emulator, including the Phase 10 save migration and Level 155 solved by
+  swipes; iOS Simulator export built by Xcode 26.3 and run on the iPhone 15 Pro Max simulator.

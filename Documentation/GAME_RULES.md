@@ -96,6 +96,15 @@ Together with `PlopMoved`, these events are the full per-command chain. Level La
 - **Undo** restores the exact state before the last state-changing command (works after completion too).
 - **Restart** restores the level's starting state and clears history.
 
+## Phase 11 meta rules (outside the engine)
+
+These sit in `Plop.Meta` and the controller. The move rules above are unchanged.
+
+- **Perfect** = solved in exactly the BFS-verified optimum with no hint shown during that visit. Undo shortens the counted history. A count below the optimum is rejected as corrupt.
+- **Limited Moves challenges** (`PLOP_Pack_003`): levels 30, 45 and 60 allow optimum + 2; 80, 100 and 120 allow + 1; 140 and 155 allow exactly the optimum. Changing a level's limit gives it a new id.
+- **Hints** cost 15 Dream Dust, once per level and exact board state. They are free on levels 1–6 and on levels with an instruction. **Grace:** if the player cannot afford a hint and has tried this visit at least twice (restart after moving, Lava, out of moves, proven dead end), the level's first hint is free, once per level id ever (`hintgrace:ID`).
+- **Daily Puzzle**: one per local calendar date from `PLOP_Daily_002`. It only uses mechanics whose introducing level the player has completed (Frost 6, Breeze 21, Lava 35, Loops 49). The day's pick is remembered. No move limit, no streak, and missed days cost nothing. Rewards are paid once per date.
+
 ## Invariants (enforced by validation / tests)
 
 - A Plop can never start on its matching Nest (that would be a free sleep and makes states ambiguous).

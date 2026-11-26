@@ -10,15 +10,15 @@
 | 8 | frosted-pond | Reasoning | Authored | – |  | Frost with a second Plop: a sleeping Plop becomes a stopper. | 6 | 3 | 0.50 | – → 65 | `PLOP-DE12C476906C` |
 | 9 | frosted-pond | Reasoning | Authored | – |  | Coordination: settle in the right order so neither Plop blocks the other. | 6 | 4 | 0.33 | – → 63 | `PLOP-7CD506EF0820` |
 | 10 | frosted-pond | Mastery | Authored | – |  | First mastery puzzle: plan the slide and the settle order together. | 11 | 5 | 0.36 | – → 68 | `PLOP-4042DA40E967` |
-| 11 | frosted-pond | Reasoning | Kept | 9 |  | Predict Frost outcomes for two Plops at once. | 8 | 3 | 0.25 | 29 → 29 | `PLOP-9B860AF9CFF8` |
-| 12 | frosted-pond | Combination | Kept | 12 |  | Combine Frost with sleeping-Plop stoppers. | 10 | 4 | 0.30 | 62 → 62 | `PLOP-8C4398D61D57` |
-| 13 | frosted-pond | Reasoning | Replaced | 11 | greedy-solvable, low quality 23, no mechanic changes the solution | Predict Frost outcomes for two Plops at once. | 7 | 4 | 0.29 | 23 → 64 | `PLOP-D39CCC1F9B14` |
-| 14 | frosted-pond | Combination | Kept | 18 |  | Combine Frost with sleeping-Plop stoppers. | 7 | 5 | 0.43 | 79 → 79 | `PLOP-0389B44CD9AD` |
-| 15 | frosted-pond | Combination | Kept | 17 |  | Combine Frost with sleeping-Plop stoppers. | 9 | 5 | 0.44 | 73 → 73 | `PLOP-0296098C6005` |
-| 16 | frosted-pond | Combination | Kept | 20 |  | Combine Frost with sleeping-Plop stoppers. | 11 | 4 | 0.27 | 66 → 66 | `PLOP-AD35D365A625` |
-| 17 | frosted-pond | Combination | Replaced | 13 | shallow | Combine Frost with sleeping-Plop stoppers. | 10 | 5 | 0.30 | 44 → 71 | `PLOP-8A1C6E1E6D4B` |
-| 18 | frosted-pond | Reasoning | Replaced | 10 | few-decisions | Predict Frost outcomes for two Plops at once. | 9 | 4 | 0.44 | 19 → 80 | `PLOP-F6A94F24656A` |
-| 19 | frosted-pond | Combination | Kept | 19 |  | Combine Frost with sleeping-Plop stoppers. | 11 | 5 | 0.27 | 72 → 72 | `PLOP-EC8D7A6CB346` |
+| 11 | frosted-pond | Combination | Kept | 12 |  | Combine Frost with sleeping-Plop stoppers. | 10 | 4 | 0.30 | 62 → 62 | `PLOP-8C4398D61D57` |
+| 12 | frosted-pond | Reasoning | Replaced | 11 | greedy-solvable, low quality 23, no mechanic changes the solution | Predict Frost outcomes for two Plops at once. | 7 | 4 | 0.29 | 23 → 64 | `PLOP-D39CCC1F9B14` |
+| 13 | frosted-pond | Combination | Kept | 18 |  | Combine Frost with sleeping-Plop stoppers. | 7 | 5 | 0.43 | 79 → 79 | `PLOP-0389B44CD9AD` |
+| 14 | frosted-pond | Combination | Kept | 17 |  | Combine Frost with sleeping-Plop stoppers. | 9 | 5 | 0.44 | 73 → 73 | `PLOP-0296098C6005` |
+| 15 | frosted-pond | Combination | Kept | 20 |  | Combine Frost with sleeping-Plop stoppers. | 11 | 4 | 0.27 | 66 → 66 | `PLOP-AD35D365A625` |
+| 16 | frosted-pond | Combination | Replaced | 13 | shallow | Combine Frost with sleeping-Plop stoppers. | 10 | 5 | 0.30 | 44 → 71 | `PLOP-8A1C6E1E6D4B` |
+| 17 | frosted-pond | Reasoning | Replaced | 10 | few-decisions | Predict Frost outcomes for two Plops at once. | 9 | 4 | 0.44 | 19 → 80 | `PLOP-F6A94F24656A` |
+| 18 | frosted-pond | Combination | Kept | 19 |  | Combine Frost with sleeping-Plop stoppers. | 11 | 5 | 0.27 | 72 → 72 | `PLOP-EC8D7A6CB346` |
+| 19 | frosted-pond | Reasoning | Replaced | 9 | low quality 29 at its new position | Predict Frost outcomes for two Plops at once. | 8 | 5 | 0.50 | 29 → 81 | `PLOP-32B6D19B7F92` |
 | 20 | frosted-pond | Mastery | Replaced | 14 | few-decisions, low quality 25 | Multi-step Frost plan with a tempting trap. | 12 | 5 | 0.33 | 25 → 74 | `PLOP-13DD0A5060F9` |
 | 21 | breezy-meadow | Discovery | Replaced | – |  | Discover Breeze on a tiny board. | 4 | 1 | 0.25 | – → 16 | `PLOP-EC13D6F2DB0A` |
 | 22 | breezy-meadow | Application | Replaced | – |  | Use Breeze on purpose to reach the Nest. | 8 | 4 | 0.38 | – → 46 | `PLOP-E977D44E75EB` |

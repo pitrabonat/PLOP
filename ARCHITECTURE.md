@@ -69,6 +69,19 @@ finish. Level Lab places mechanics, sets move limits, debugs effect resolution a
 See [Game rules](Documentation/GAME_RULES.md#phase-10-mechanics) and the
 [technical architecture](Documentation/ARCHITECTURE.md#phase-10-mechanics-failure-limits-and-the-hint-economy).
 
+Phase 11 adds measurement and balancing, all offline. `PuzzleQuality` scores a board from its full state graph:
+decisions, coordination, settlement, a mechanic-removal test, planning depth, misleading choices, efficiency and
+solution diversity. `SimulatedPlayers` adds Random, Greedy, Look-ahead and Limited-information players.
+`QualityAudit` audits a whole pack. `BalancedCampaign` rebuilds the campaign (`PLOP_Pack_003`) and the Daily
+pool (`PLOP_Daily_002`) deterministically against per-stage `QualityFloors`, keeping strong levels by id.
+`LevelProgress` migrates Phase 10 saves by id and old frontier. In `Plop.Meta`, `HintPolicy` (hint grace),
+`DailySchedule.PickIndex` (mechanic-gated Daily), `EconomySimulator` (offline Dust model) and `PlaytestLog`
+(dev-only local CSV) are engine-free, so .NET tests cover them. The Level Lab "Balance & quality" view puts
+the audit in the Editor. See [Phase 11 reports](Documentation/Phase11/).
+System Back (Android back gesture, Escape) arrives through SwipeInput's `Dismiss` action, so a press shorter than a
+frame still counts. `PlopGameController.HandleBack` closes the top screen: Studio, then any HUD modal
+(`GameHud.HandleBack`), then a level returns to the menu, and the menu sends the app to the background.
+
 For assembly dependencies, data flow and performance details, see the
 [technical architecture](Documentation/ARCHITECTURE.md). See
 [PROJECT_STATE.md](PROJECT_STATE.md) for the current handoff.

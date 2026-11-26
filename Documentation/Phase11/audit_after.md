@@ -1,11 +1,11 @@
 # Quality audit — PLOP_Pack_003 (Phase 11)
 
-Levels: 160 · verified: 160 · analysed: 160 · 0.3 s on 10 threads · PuzzleQuality v1, random player 400 seeded runs, look-ahead up to 4.
+Levels: 160 · verified: 160 · analysed: 160 · 0.4 s on 10 threads · PuzzleQuality v1, random player 400 seeded runs, look-ahead up to 4.
 
 | World | Levels | Avg opt | Avg states | Avg density | Avg quality | Avg challenge | Greedy solves | LA2 solves | LA3 solves | LimInfo solves | Random ≥25% | Flagged |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | cozy-nest | 1–5 | 3.2 | 42 | 0.08 | 16.4 | 9.6 | 3 | 4 | 5 | 5 | 3 | 5 |
-| frosted-pond | 6–20 | 8.5 | 179 | 0.37 | 62.2 | 33.6 | 2 | 2 | 3 | 4 | 1 | 5 |
+| frosted-pond | 6–20 | 8.5 | 183 | 0.39 | 65.7 | 35.2 | 2 | 2 | 2 | 3 | 1 | 4 |
 | breezy-meadow | 21–34 | 9.3 | 225 | 0.36 | 69.0 | 39.9 | 1 | 1 | 2 | 1 | 2 | 3 |
 | ember-hollow | 35–48 | 9.4 | 236 | 0.48 | 68.3 | 37.0 | 1 | 1 | 5 | 3 | 0 | 6 |
 | prism-observatory | 49–63 | 8.8 | 249 | 0.40 | 66.1 | 38.0 | 1 | 1 | 3 | 2 | 1 | 9 |
@@ -14,11 +14,11 @@ Levels: 160 · verified: 160 · analysed: 160 · 0.3 s on 10 threads · PuzzleQu
 | twilight-attic | 109–133 | 13.2 | 6957 | 0.42 | 77.3 | 54.5 | 0 | 0 | 4 | 4 | 0 | 1 |
 | moonlit-clouds | 134–160 | 14.6 | 9149 | 0.46 | 81.3 | 62.1 | 0 | 0 | 1 | 0 | 0 | 5 |
 
-Flags: open 19 · repetitive 14 · easy-for-position 11 · greedy-solvable 8 · random-solvable 7 · few-decisions 4 · shallow 2
+Flags: open 19 · repetitive 13 · easy-for-position 10 · greedy-solvable 8 · random-solvable 7 · few-decisions 4 · shallow 2
 
-Categories: Easy 11 · Expert 43 · Hard 60 · Normal 38 · Tutorial 8
+Categories: Easy 10 · Expert 43 · Hard 61 · Normal 38 · Tutorial 8
 
-Planning depth (smallest look-ahead that solves): 1: 8 · 2: 2 · 3: 21 · 4: 27 · >4: 102
+Planning depth (smallest look-ahead that solves): 1: 8 · 2: 2 · 3: 20 · 4: 27 · >4: 103
 
 Shortest solutions: min 1, median 11, mean 11.0, max 17
 
@@ -32,22 +32,22 @@ Shortest solutions: min 1, median 11, mean 11.0, max 17
 | 4 | cozy-nest | 4×4 | 2 | 2 | 0 | classic | 6 | 160 | 1 | 0.17 | 0.5 | – | 3 | 1 | 21 | ✗ | ✗ | 10 | 11 | 25.1 | 38 | 21 (25%) | ✓ | few-decisions |
 | 5 | cozy-nest | 3×3 | 2 | 2 | 0 | classic | 4 | 14 | 1 | 0.25 | 0.5 | yes | 2 | 1 | 22 | ✗ | 4 | 4 | 4 | 23.0 | 45 | 0 (0%) | ✓ | shallow |
 | 6 | frosted-pond | 4×4 | 1 | 2 | 2 | Frost | 4 | 12 | 3 | 0.75 | 0.0 | – | 1 | 0 | 42 | 5 | 5 | ✗ | 5 | 10.2 | 32 | 49 (25%) | ✓ | random-solvable, greedy-solvable |
-| 7 | frosted-pond | 5×5 | 1 | 4 | 2 | Frost | 6 | 19 | 2 | 0.33 | 0.0 | – | 1 | 2 | 17 | 10 | 6 | 6 | 10 | 15.2 | 36 | 12 (29%) | ✓ | greedy-solvable, open, easy-for-position |
+| 7 | frosted-pond | 5×5 | 1 | 4 | 2 | Frost | 6 | 19 | 2 | 0.33 | 0.0 | – | 1 | 2 | 17 | 10 | 6 | 6 | 10 | 15.2 | 36 | 11 (29%) | ✓ | greedy-solvable, open, easy-for-position |
 | 8 | frosted-pond | 4×5 | 2 | 3 | 2 | Frost | 6 | 126 | 3 | 0.50 | 0.3 | yes | 3 | 1 | 11 | ✗ | ✗ | 6 | ✗ | 30.8 | 65 | 9 (15%) | ✓ |  |
 | 9 | frosted-pond | 4×5 | 2 | 3 | 0 | classic | 6 | 238 | 2 | 0.33 | 0.5 | yes | 4 | 1 | 6 | ✗ | ✗ | ✗ | ✗ | 32.8 | 63 | 8 (15%) | ✓ | open |
-| 10 | frosted-pond | 5×5 | 2 | 4 | 1 | Frost | 11 | 100 | 4 | 0.36 | 0.5 | – | >4 | 3 | 2 | ✗ | ✗ | ✗ | ✗ | 36.4 | 68 | 13 (27%) | ✓ |  |
-| 11 | frosted-pond | 5×5 | 1 | 6 | 1 | Frost | 8 | 19 | 2 | 0.25 | 0.0 | – | 3 | 0 | 24 | ✗ | ✗ | 8 | 8 | 22.6 | 29 | 22 (29%) | ✓ | repetitive, easy-for-position |
-| 12 | frosted-pond | 5×5 | 2 | 9 | 2 | Frost | 10 | 108 | 3 | 0.30 | 1.0 | – | 4 | 0 | 1 | ✗ | ✗ | ✗ | 16 | 29.8 | 62 | 51 (41%) | ✓ |  |
-| 13 | frosted-pond | 5×5 | 2 | 6 | 1 | Frost | 7 | 172 | 2 | 0.29 | 0.5 | yes | 4 | 1 | 8 | ✗ | ✗ | ✗ | ✗ | 30.0 | 64 | 36 (31%) | ✓ | open |
-| 14 | frosted-pond | 5×6 | 2 | 8 | 1 | Frost | 7 | 219 | 3 | 0.43 | 0.5 | yes | >4 | 2 | 6 | ✗ | ✗ | ✗ | ✗ | 34.6 | 79 | 85 (27%) | ✓ |  |
-| 15 | frosted-pond | 5×6 | 2 | 9 | 2 | Frost | 9 | 204 | 4 | 0.44 | 0.5 | yes | >4 | 0 | 3 | ✗ | ✗ | ✗ | ✗ | 37.6 | 73 | 40 (35%) | ✓ |  |
-| 16 | frosted-pond | 5×6 | 2 | 12 | 2 | Frost | 11 | 196 | 3 | 0.27 | 0.5 | yes | 4 | 1 | 8 | ✗ | ✗ | ✗ | ✗ | 40.7 | 66 | 33 (35%) | ✓ |  |
-| 17 | frosted-pond | 5×6 | 2 | 8 | 2 | Frost | 10 | 270 | 3 | 0.30 | 0.5 | yes | >4 | 2 | 7 | ✗ | ✗ | ✗ | ✗ | 40.8 | 71 | 71 (30%) | ✓ |  |
-| 18 | frosted-pond | 5×5 | 2 | 6 | 1 | Frost | 9 | 126 | 4 | 0.44 | 0.5 | yes | 4 | 2 | 7 | ✗ | ✗ | ✗ | ✗ | 42.2 | 80 | 7 (29%) | ✓ |  |
-| 19 | frosted-pond | 5×6 | 2 | 7 | 1 | Frost | 11 | 415 | 3 | 0.27 | 0.5 | yes | >4 | 3 | 2 | ✗ | ✗ | ✗ | ✗ | 43.2 | 72 | 16 (32%) | ✓ |  |
+| 10 | frosted-pond | 5×5 | 2 | 4 | 1 | Frost | 11 | 100 | 4 | 0.36 | 0.5 | – | >4 | 3 | 2 | ✗ | ✗ | ✗ | ✗ | 36.4 | 68 | 12 (27%) | ✓ |  |
+| 11 | frosted-pond | 5×5 | 2 | 9 | 2 | Frost | 10 | 108 | 3 | 0.30 | 1.0 | – | 4 | 0 | 1 | ✗ | ✗ | ✗ | 16 | 29.8 | 62 | 51 (41%) | ✓ |  |
+| 12 | frosted-pond | 5×5 | 2 | 6 | 1 | Frost | 7 | 172 | 2 | 0.29 | 0.5 | yes | 4 | 1 | 8 | ✗ | ✗ | ✗ | ✗ | 30.0 | 64 | 36 (31%) | ✓ | open |
+| 13 | frosted-pond | 5×6 | 2 | 8 | 1 | Frost | 7 | 219 | 3 | 0.43 | 0.5 | yes | >4 | 2 | 6 | ✗ | ✗ | ✗ | ✗ | 34.6 | 79 | 85 (27%) | ✓ |  |
+| 14 | frosted-pond | 5×6 | 2 | 9 | 2 | Frost | 9 | 204 | 4 | 0.44 | 0.5 | yes | >4 | 0 | 3 | ✗ | ✗ | ✗ | ✗ | 37.6 | 73 | 40 (35%) | ✓ |  |
+| 15 | frosted-pond | 5×6 | 2 | 12 | 2 | Frost | 11 | 196 | 3 | 0.27 | 0.5 | yes | 4 | 1 | 8 | ✗ | ✗ | ✗ | ✗ | 40.7 | 66 | 33 (35%) | ✓ |  |
+| 16 | frosted-pond | 5×6 | 2 | 8 | 2 | Frost | 10 | 270 | 3 | 0.30 | 0.5 | yes | >4 | 2 | 7 | ✗ | ✗ | ✗ | ✗ | 40.8 | 71 | 71 (30%) | ✓ |  |
+| 17 | frosted-pond | 5×5 | 2 | 6 | 1 | Frost | 9 | 126 | 4 | 0.44 | 0.5 | yes | 4 | 2 | 7 | ✗ | ✗ | ✗ | ✗ | 42.2 | 80 | 7 (29%) | ✓ |  |
+| 18 | frosted-pond | 5×6 | 2 | 7 | 1 | Frost | 11 | 415 | 3 | 0.27 | 0.5 | yes | >4 | 3 | 2 | ✗ | ✗ | ✗ | ✗ | 43.2 | 72 | 15 (32%) | ✓ |  |
+| 19 | frosted-pond | 5×5 | 2 | 6 | 2 | Frost | 8 | 66 | 4 | 0.50 | 0.5 | yes | >4 | 2 | 12 | ✗ | ✗ | ✗ | ✗ | 47.1 | 81 | 31 (24%) | ✓ |  |
 | 20 | frosted-pond | 6×6 | 2 | 10 | 5 | Frost | 12 | 468 | 4 | 0.33 | 0.5 | yes | >4 | 4 | 2 | ✗ | ✗ | ✗ | ✗ | 56.8 | 74 | 80 (25%) | ✓ |  |
 | 21 | breezy-meadow | 4×4 | 1 | 3 | 1 | Breeze | 4 | 11 | 1 | 0.25 | 0.0 | – | 1 | 0 | 44 | 10 | 10 | 4 | 4 | 11.1 | 16 | 49 (30%) | ✓ | random-solvable, greedy-solvable, open |
-| 22 | breezy-meadow | 5×5 | 1 | 6 | 1 | Breeze | 8 | 18 | 3 | 0.38 | 0.0 | – | 4 | 1 | 29 | ✗ | ✗ | ✗ | ✗ | 26.3 | 46 | 11 (29%) | ✓ | random-solvable, easy-for-position |
+| 22 | breezy-meadow | 5×5 | 1 | 6 | 1 | Breeze | 8 | 18 | 3 | 0.38 | 0.0 | – | 4 | 1 | 29 | ✗ | ✗ | ✗ | ✗ | 26.3 | 46 | 24 (25%) | ✓ | random-solvable, easy-for-position |
 | 23 | breezy-meadow | 5×6 | 2 | 8 | 2 | Frost+Breeze | 11 | 217 | 4 | 0.36 | 1.0 | – | >4 | 2 | 5 | ✗ | ✗ | ✗ | ✗ | 36.1 | 73 | 92 (33%) | ✓ |  |
 | 24 | breezy-meadow | 5×5 | 2 | 6 | 2 | Breeze | 10 | 233 | 4 | 0.40 | 0.5 | yes | >4 | 2 | 10 | ✗ | ✗ | ✗ | ✗ | 36.7 | 78 | 27 (28%) | ✓ |  |
 | 25 | breezy-meadow | 5×6 | 2 | 6 | 2 | Frost+Breeze | 7 | 430 | 2 | 0.29 | 0.5 | yes | >4 | 2 | 2 | ✗ | ✗ | ✗ | ✗ | 36.7 | 70 | 65 (28%) | ✓ |  |
@@ -58,14 +58,14 @@ Shortest solutions: min 1, median 11, mean 11.0, max 17
 | 30 | breezy-meadow | 5×6 | 2 | 7 | 2 | Frost+Breeze+Limit11 | 9 | 400 | 2 | 0.22 | 1.0 | yes | >4 | 3 | 1 | ✗ | ✗ | ✗ | ✗ | 43.5 | 73 | 81 (25%) | ✓ |  |
 | 31 | breezy-meadow | 5×5 | 2 | 6 | 1 | Breeze | 9 | 198 | 3 | 0.33 | 0.5 | yes | 4 | 2 | 7 | ✗ | ✗ | ✗ | ✗ | 43.7 | 74 | 58 (25%) | ✓ |  |
 | 32 | breezy-meadow | 5×5 | 2 | 6 | 1 | Breeze | 9 | 208 | 5 | 0.56 | 0.5 | yes | >4 | 3 | 0 | ✗ | ✗ | ✗ | ✗ | 50.7 | 83 | 27 (27%) | ✓ |  |
-| 33 | breezy-meadow | 5×6 | 2 | 7 | 3 | Frost+Breeze | 12 | 155 | 4 | 0.33 | 1.0 | yes | >4 | 3 | 0 | ✗ | ✗ | ✗ | ✗ | 57.8 | 80 | 16 (35%) | ✓ |  |
+| 33 | breezy-meadow | 5×6 | 2 | 7 | 3 | Frost+Breeze | 12 | 155 | 4 | 0.33 | 1.0 | yes | >4 | 3 | 0 | ✗ | ✗ | ✗ | ✗ | 57.8 | 80 | 15 (35%) | ✓ |  |
 | 34 | breezy-meadow | 6×6 | 2 | 8 | 2 | Frost+Breeze | 13 | 588 | 5 | 0.39 | 1.0 | yes | 4 | 4 | 0 | ✗ | ✗ | ✗ | ✗ | 59.7 | 82 | 76 (22%) | ✓ |  |
 | 35 | ember-hollow | 3×2 | 1 | 0 | 1 | Lava | 4 | 5 | 2 | 0.50 | 0.0 | – | 1 | 0 | 7 | 4 | 4 | 4 | 4 | 7.2 | 45 | 0 (0%) | ✓ | greedy-solvable |
-| 36 | ember-hollow | 5×5 | 2 | 6 | 2 | Lava | 7 | 71 | 3 | 0.43 | 0.5 | yes | >4 | 0 | 3 | ✗ | ✗ | ✗ | ✗ | 29.5 | 67 | 13 (31%) | ✓ | open, easy-for-position |
+| 36 | ember-hollow | 5×5 | 2 | 6 | 2 | Lava | 7 | 71 | 3 | 0.43 | 0.5 | yes | >4 | 0 | 3 | ✗ | ✗ | ✗ | ✗ | 29.5 | 67 | 12 (31%) | ✓ | open, easy-for-position |
 | 37 | ember-hollow | 5×6 | 2 | 5 | 1 | Lava | 9 | 142 | 6 | 0.67 | 0.0 | – | 4 | 1 | 3 | ✗ | ✗ | ✗ | ✗ | 27.2 | 60 | 92 (33%) | ✓ | repetitive, open, easy-for-position |
 | 38 | ember-hollow | 5×5 | 2 | 4 | 1 | Lava | 10 | 142 | 3 | 0.30 | 0.5 | – | >4 | 0 | 1 | ✗ | ✗ | ✗ | ✗ | 27.9 | 52 | 36 (25%) | ✓ | open, easy-for-position |
-| 39 | ember-hollow | 5×5 | 2 | 6 | 1 | Lava | 8 | 91 | 3 | 0.38 | 0.5 | yes | 4 | 1 | 1 | ✗ | ✗ | ✗ | ✗ | 33.5 | 71 | 12 (26%) | ✓ |  |
-| 40 | ember-hollow | 5×6 | 1 | 9 | 3 | Frost+Lava | 12 | 17 | 4 | 0.33 | 0.0 | – | 3 | 1 | 0 | ✗ | ✗ | 12 | lava | 35.1 | 54 | 15 (35%) | ✓ |  |
+| 39 | ember-hollow | 5×5 | 2 | 6 | 1 | Lava | 8 | 91 | 3 | 0.38 | 0.5 | yes | 4 | 1 | 1 | ✗ | ✗ | ✗ | ✗ | 33.5 | 71 | 11 (26%) | ✓ |  |
+| 40 | ember-hollow | 5×6 | 1 | 9 | 3 | Frost+Lava | 12 | 17 | 4 | 0.33 | 0.0 | – | 3 | 1 | 0 | ✗ | ✗ | 12 | lava | 35.1 | 54 | 14 (35%) | ✓ |  |
 | 41 | ember-hollow | 5×6 | 2 | 12 | 2 | Frost+Lava | 10 | 123 | 3 | 0.30 | 0.5 | yes | >4 | 0 | 4 | ✗ | ✗ | ✗ | ✗ | 37.6 | 60 | 83 (32%) | ✓ |  |
 | 42 | ember-hollow | 5×6 | 2 | 10 | 2 | Lava+Breeze | 11 | 274 | 4 | 0.36 | 0.5 | yes | >4 | 1 | 0 | ✗ | ✗ | ✗ | ✗ | 41.8 | 71 | 26 (30%) | ✓ |  |
 | 43 | ember-hollow | 6×6 | 2 | 7 | 2 | Frost+Lava | 11 | 638 | 6 | 0.55 | 0.5 | yes | 3 | 2 | 2 | ✗ | ✗ | 12 | 17 | 42.7 | 79 | 87 (25%) | ✓ |  |
@@ -75,18 +75,18 @@ Shortest solutions: min 1, median 11, mean 11.0, max 17
 | 47 | ember-hollow | 5×6 | 2 | 8 | 3 | Frost+Lava | 10 | 304 | 5 | 0.50 | 0.5 | yes | >4 | 3 | 0 | ✗ | ✗ | ✗ | ✗ | 50.1 | 86 | 46 (37%) | ✓ |  |
 | 48 | ember-hollow | 6×6 | 2 | 10 | 2 | Frost+Lava | 12 | 298 | 6 | 0.50 | 0.5 | yes | >4 | 3 | 1 | ✗ | ✗ | ✗ | ✗ | 52.4 | 83 | 74 (29%) | ✓ |  |
 | 49 | prism-observatory | 4×4 | 1 | 3 | 2 | Loops | 4 | 13 | 1 | 0.25 | 0.0 | – | 1 | 0 | 40 | 4 | 4 | 4 | ✗ | 5.5 | 12 | 21 (30%) | ✓ | random-solvable, greedy-solvable, open |
-| 50 | prism-observatory | 5×5 | 2 | 6 | 2 | Loops | 8 | 181 | 2 | 0.25 | 0.4 | yes | 4 | 1 | 11 | ✗ | ✗ | ✗ | ✗ | 32.4 | 58 | 18 (25%) | ✓ | open |
-| 51 | prism-observatory | 5×5 | 2 | 6 | 2 | Loops | 8 | 285 | 2 | 0.25 | 0.5 | – | 4 | 1 | 7 | ✗ | ✗ | ✗ | 9 | 29.4 | 58 | 12 (41%) | ✓ | easy-for-position |
+| 50 | prism-observatory | 5×5 | 2 | 6 | 2 | Loops | 8 | 181 | 2 | 0.25 | 0.4 | yes | 4 | 1 | 11 | ✗ | ✗ | ✗ | ✗ | 32.4 | 58 | 17 (25%) | ✓ | open |
+| 51 | prism-observatory | 5×5 | 2 | 6 | 2 | Loops | 8 | 285 | 2 | 0.25 | 0.5 | – | 4 | 1 | 7 | ✗ | ✗ | ✗ | 9 | 29.4 | 58 | 11 (41%) | ✓ | easy-for-position |
 | 52 | prism-observatory | 5×6 | 2 | 8 | 4 | Lava+Loops | 7 | 353 | 3 | 0.43 | 0.5 | – | 3 | 0 | 1 | ✗ | ✗ | 10 | 14 | 30.2 | 55 | 42 (26%) | ✓ | open |
-| 53 | prism-observatory | 5×5 | 2 | 6 | 2 | Loops | 9 | 215 | 3 | 0.33 | 0.5 | – | >4 | 2 | 7 | ✗ | ✗ | ✗ | ✗ | 36.4 | 63 | 13 (25%) | ✓ |  |
+| 53 | prism-observatory | 5×5 | 2 | 6 | 2 | Loops | 9 | 215 | 3 | 0.33 | 0.5 | – | >4 | 2 | 7 | ✗ | ✗ | ✗ | ✗ | 36.4 | 63 | 12 (25%) | ✓ |  |
 | 54 | prism-observatory | 5×6 | 2 | 9 | 5 | Lava+Loops | 9 | 211 | 3 | 0.33 | 0.5 | yes | 3 | 1 | 0 | ✗ | ✗ | 13 | ✗ | 38.5 | 60 | 55 (29%) | ✓ | repetitive |
 | 55 | prism-observatory | 5×6 | 2 | 8 | 3 | Lava+Loops | 10 | 307 | 3 | 0.30 | 0.5 | yes | >4 | 2 | 2 | ✗ | ✗ | ✗ | ✗ | 41.1 | 71 | 54 (29%) | ✓ |  |
 | 56 | prism-observatory | 5×6 | 2 | 5 | 5 | Frost+Lava+Loops | 6 | 449 | 4 | 0.67 | 0.5 | yes | >4 | 2 | 9 | ✗ | ✗ | ✗ | ✗ | 41.2 | 74 | 83 (21%) | ✓ | open |
 | 57 | prism-observatory | 5×6 | 2 | 9 | 5 | Lava+Loops | 10 | 157 | 5 | 0.50 | 0.5 | yes | >4 | 1 | 0 | ✗ | ✗ | ✗ | ✗ | 41.7 | 83 | 75 (27%) | ✓ |  |
 | 58 | prism-observatory | 5×5 | 2 | 6 | 2 | Loops | 9 | 209 | 3 | 0.33 | 0.5 | yes | 4 | 2 | 10 | ✗ | ✗ | ✗ | ✗ | 42.1 | 69 | 28 (27%) | ✓ |  |
-| 59 | prism-observatory | 5×6 | 2 | 8 | 3 | Lava+Loops | 10 | 272 | 4 | 0.40 | 0.5 | yes | >4 | 1 | 0 | ✗ | ✗ | ✗ | ✗ | 43.0 | 74 | 16 (32%) | ✓ |  |
+| 59 | prism-observatory | 5×6 | 2 | 8 | 3 | Lava+Loops | 10 | 272 | 4 | 0.40 | 0.5 | yes | >4 | 1 | 0 | ✗ | ✗ | ✗ | ✗ | 43.0 | 74 | 15 (32%) | ✓ |  |
 | 60 | prism-observatory | 5×6 | 2 | 7 | 4 | Lava+Loops+Limit12 | 10 | 178 | 6 | 0.60 | 0.5 | yes | 4 | 1 | 0 | ✗ | ✗ | ✗ | ✗ | 43.1 | 79 | 23 (25%) | ✓ | open |
-| 61 | prism-observatory | 5×6 | 2 | 8 | 2 | Loops | 7 | 259 | 3 | 0.43 | 0.5 | yes | 4 | 2 | 9 | ✗ | ✗ | ✗ | ✗ | 43.7 | 74 | 15 (32%) | ✓ | open |
+| 61 | prism-observatory | 5×6 | 2 | 8 | 2 | Loops | 7 | 259 | 3 | 0.43 | 0.5 | yes | 4 | 2 | 9 | ✗ | ✗ | ✗ | ✗ | 43.7 | 74 | 14 (32%) | ✓ | open |
 | 62 | prism-observatory | 5×6 | 2 | 6 | 3 | Lava+Loops | 12 | 434 | 6 | 0.50 | 0.5 | yes | >4 | 3 | 2 | ✗ | ✗ | ✗ | ✗ | 46.9 | 80 | 85 (24%) | ✓ | repetitive, open |
 | 63 | prism-observatory | 6×6 | 2 | 10 | 3 | Lava+Loops | 13 | 216 | 6 | 0.46 | 0.5 | yes | >4 | 4 | 1 | ✗ | ✗ | ✗ | ✗ | 54.4 | 82 | 87 (29%) | ✓ |  |
 | 64 | dewdrop-garden | 6×6 | 2 | 5 | 3 | Frost+Breeze | 12 | 746 | 3 | 0.25 | 0.5 | yes | 4 | 1 | 2 | ✗ | ✗ | ✗ | ✗ | 38.4 | 63 | 76 (23%) | ✓ |  |
@@ -96,11 +96,11 @@ Shortest solutions: min 1, median 11, mean 11.0, max 17
 | 68 | dewdrop-garden | 6×6 | 2 | 10 | 3 | Breeze+Loops | 9 | 584 | 4 | 0.44 | 0.5 | – | 2 | 2 | 17 | ✗ | 11 | 11 | ✗ | 36.9 | 54 | 140 (30%) | ✓ | shallow |
 | 69 | dewdrop-garden | 5×6 | 2 | 10 | 3 | Lava+Loops | 11 | 241 | 4 | 0.36 | 0.5 | – | >4 | 2 | 1 | ✗ | ✗ | ✗ | ✗ | 39.5 | 69 | 26 (26%) | ✓ |  |
 | 70 | dewdrop-garden | 5×6 | 2 | 10 | 3 | Lava+Loops | 11 | 250 | 4 | 0.36 | 0.5 | yes | 4 | 2 | 1 | ✗ | ✗ | ✗ | ✗ | 44.7 | 78 | 84 (32%) | ✓ |  |
-| 71 | dewdrop-garden | 5×6 | 2 | 10 | 2 | Lava+Breeze | 9 | 160 | 4 | 0.44 | 0.5 | yes | >4 | 2 | 4 | ✗ | ✗ | ✗ | ✗ | 36.6 | 79 | 17 (30%) | ✓ |  |
+| 71 | dewdrop-garden | 5×6 | 2 | 10 | 2 | Lava+Breeze | 9 | 160 | 4 | 0.44 | 0.5 | yes | >4 | 2 | 4 | ✗ | ✗ | ✗ | ✗ | 36.6 | 79 | 16 (30%) | ✓ |  |
 | 72 | dewdrop-garden | 6×6 | 3 | 9 | 3 | Frost+Loops | 11 | 10655 | 5 | 0.46 | 0.5 | yes | >4 | 2 | 3 | ✗ | ✗ | ✗ | ✗ | 53.6 | 78 | 109 (29%) | ✓ |  |
 | 73 | dewdrop-garden | 5×6 | 2 | 7 | 3 | Frost+Lava | 8 | 349 | 3 | 0.38 | 0.5 | – | >4 | 1 | 3 | ✗ | ✗ | ✗ | ✗ | 33.9 | 64 | 40 (26%) | ✓ |  |
 | 74 | dewdrop-garden | 6×6 | 2 | 9 | 3 | Breeze+Loops | 9 | 241 | 3 | 0.33 | 0.5 | yes | 4 | 1 | 4 | ✗ | ✗ | ✗ | ✗ | 34.9 | 69 | 90 (35%) | ✓ |  |
-| 75 | dewdrop-garden | 5×6 | 2 | 9 | 4 | Lava+Loops | 12 | 214 | 5 | 0.42 | 0.5 | yes | >4 | 1 | 2 | ✗ | ✗ | ✗ | ✗ | 40.5 | 77 | 19 (32%) | ✓ |  |
+| 75 | dewdrop-garden | 5×6 | 2 | 9 | 4 | Lava+Loops | 12 | 214 | 5 | 0.42 | 0.5 | yes | >4 | 1 | 2 | ✗ | ✗ | ✗ | ✗ | 40.5 | 77 | 18 (32%) | ✓ |  |
 | 76 | dewdrop-garden | 6×6 | 2 | 11 | 3 | Frost+Breeze | 7 | 440 | 2 | 0.29 | 0.5 | yes | 3 | 1 | 7 | ✗ | ✗ | 7 | ✗ | 40.7 | 63 | 98 (32%) | ✓ |  |
 | 77 | dewdrop-garden | 5×6 | 3 | 8 | 0 | classic | 12 | 1289 | 4 | 0.33 | 0.5 | yes | >4 | 1 | 3 | ✗ | ✗ | ✗ | ✗ | 34.8 | 65 | 41 (30%) | ✓ |  |
 | 78 | dewdrop-garden | 6×6 | 2 | 11 | 3 | Frost+Loops | 12 | 498 | 4 | 0.33 | 0.5 | – | >4 | 1 | 4 | ✗ | ✗ | ✗ | ✗ | 40.7 | 63 | 66 (38%) | ✓ |  |
@@ -110,7 +110,7 @@ Shortest solutions: min 1, median 11, mean 11.0, max 17
 | 82 | dewdrop-garden | 6×6 | 3 | 14 | 3 | Frost+Breeze | 13 | 4644 | 5 | 0.39 | 0.7 | yes | >4 | 1 | 1 | ✗ | ✗ | ✗ | ✗ | 46.7 | 78 | 80 (31%) | ✓ |  |
 | 83 | dewdrop-garden | 5×6 | 2 | 11 | 2 | Lava+Breeze | 10 | 101 | 4 | 0.40 | 0.5 | – | >4 | 2 | 1 | ✗ | ✗ | ✗ | ✗ | 36.4 | 69 | 41 (32%) | ✓ |  |
 | 84 | dewdrop-garden | 5×6 | 3 | 11 | 0 | classic | 11 | 4435 | 4 | 0.36 | 0.5 | yes | 4 | 2 | 3 | ✗ | ✗ | ✗ | ✗ | 39.7 | 72 | 70 (32%) | ✓ | repetitive |
-| 85 | dewdrop-garden | 5×6 | 2 | 9 | 3 | Frost+Lava | 10 | 98 | 6 | 0.60 | 0.5 | yes | 4 | 3 | 0 | ✗ | ✗ | ✗ | ✗ | 49.9 | 83 | 14 (27%) | ✓ | repetitive |
+| 85 | dewdrop-garden | 5×6 | 2 | 9 | 3 | Frost+Lava | 10 | 98 | 6 | 0.60 | 0.5 | yes | 4 | 3 | 0 | ✗ | ✗ | ✗ | ✗ | 49.9 | 83 | 13 (27%) | ✓ | repetitive |
 | 86 | rainy-window | 6×6 | 3 | 9 | 4 | Frost+Loops | 9 | 12112 | 4 | 0.44 | 0.5 | yes | 4 | 2 | 11 | ✗ | ✗ | ✗ | 20 | 42.2 | 74 | 95 (31%) | ✓ |  |
 | 87 | rainy-window | 6×6 | 3 | 11 | 2 | Frost+Lava | 8 | 8677 | 3 | 0.38 | 0.6 | yes | 3 | 2 | 3 | ✗ | ✗ | 12 | ✗ | 38.6 | 73 | 127 (30%) | ✓ | easy-for-position |
 | 88 | rainy-window | 6×6 | 3 | 10 | 3 | Breeze+Loops | 13 | 8732 | 5 | 0.39 | 0.6 | yes | >4 | 2 | 2 | ✗ | ✗ | ✗ | ✗ | 51.0 | 74 | 99 (27%) | ✓ |  |

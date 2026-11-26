@@ -18,16 +18,22 @@ describes the system boundaries and [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md) rec
   Keep non-color matching cues readable and honor reduced motion.
   Use PLOP → Play Game to preview the production gameplay scene in the Editor.
 - Keep puzzle quality measurable: new or rebuilt levels must pass `PuzzleInsight`
-  floors (see `CampaignQualityTests`, `Phase10CampaignTests`), store a verified `optimalMoves`,
-  and keep IDs of unchanged puzzles. The shipped campaign is `PLOP_Pack_002` (160 levels, built by
-  `Bench --expanded`); Phase 8's pack is archived and only read for save migration. Never reset saves
-  silently, and never mark a changed puzzle complete.
+  and `PuzzleQuality` floors (see `CampaignQualityTests`, `Phase11CampaignTests`), store a verified
+  `optimalMoves`, and keep IDs of unchanged puzzles. The shipped campaign is `PLOP_Pack_003` (160 levels,
+  built deterministically by `Bench --balanced`); Packs 001/002 are archived and only read for save
+  migration and comparison. A Move-limit change is a new id; add an alias only when the rule got looser.
+  Never reset saves silently, and never mark a changed puzzle complete. Audit with
+  `Bench --quality-audit` or Level Lab → Balance & quality before and after content changes.
 - Mechanics (Frost, Lava, Breeze, Loops) live only in `MoveRules.Apply` with the documented precedence
   (GAME_RULES.md). Forced movement must stay bounded: run Level Lab → Inspect chains or
   `ForcedChainInspector` on new content. Lava failure and Limited Moves end the attempt without penalty;
   Undo and Restart always recover.
 - Dream Dust grants and hint spends are one-time keys written atomically. A hint is charged only after a
-  verified route for the unchanged board. Keep rewards small and cosmetic: no ads, no real-money purchases.
+  verified route for the unchanged board (`HintPolicy`: after two tries the first hint on a level is free
+  once when Dust is short). Keep rewards small and cosmetic: no ads, no real-money purchases. Rerun
+  `Bench --economy` after changing rewards or prices.
+- Playtest metrics stay local and dev-only (`[Conditional("DEVELOPMENT_BUILD")]`): no analytics SDKs.
+  Never present simulated-player numbers as human playtest results.
 - Keep Meta (records, wallet, daily rules) engine-free behind `IKeyValueStore`/`IClock`.
   The game opens on `MainMenu`; PlayMode tests that load the shipped pack press PLAY first.
 - Keep cosmetics visual-only: a `CharacterLook` may change sprites, faces, accessories, Nest art and effects,

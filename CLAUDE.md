@@ -12,7 +12,7 @@ Shared guidance for Claude Code, Codex, and other contributors. Start with
 - **Targets:** Android (IL2CPP, ARM64, min API 26, target = highest installed) and iOS (min iOS 15.0)
 - **Orientation:** Portrait only
 - **Repository:** https://github.com/pitrabonat/PLOP (remote `origin`, branch `main`; public)
-- **Status:** Phase 10 mechanics (Frost, Lava, Breeze, Loops), 160-level campaign over nine Worlds, Limited Moves, paid hints and Board decorations (on top of Phase 9 characters and Phase 8 depth). See PROJECT_STATE.md.
+- **Status:** Phase 11 rebalanced campaign (`PLOP_Pack_003`), mechanic-tiered Daily pool, hint grace, quality tooling and dev playtest metrics, on top of Phase 10 mechanics (Frost, Lava, Breeze, Loops), nine Worlds, Limited Moves, Phase 9 characters and Phase 8 depth. See PROJECT_STATE.md.
 - **Visual style:** "Soft Toy Minimalism" — see `Documentation/VISUAL_STYLE.md` (palette, corner radii, animation).
 - **Docs:** `Documentation/` — ARCHITECTURE, GAME_RULES, SOLVER, LEVEL_GENERATION, PUZZLE_QUALITY, CHARACTERS, LEVEL_FORMAT, VISUAL_STYLE, TESTING, DEVELOPMENT_LOG.
 
@@ -64,10 +64,11 @@ Assets/
     Gameplay/ UI/ SaveSystem/          reserved (empty)
   Tests/EditMode/    PLOP.Tests          — NUnit tests (also run by DotNet/Plop.Tests)
   Tests/PlayMode/    PLOP.Tests.PlayMode — Unity integration tests
-  Levels/Resources/Levels/PLOP_Pack_002.json  — shipped level pack (160 verified levels, schema 1/2 levels)
-  Levels/Resources/Levels/PLOP_Deadlocks_002.bytes — generated exact deadlock data
-  Levels/Archive/PLOP_Pack_001.json (+ Deadlocks_001) — Phase 8 pack, read for migration and classic reuse
-  Levels/Resources/Levels/PLOP_Daily_001.json — 60-puzzle offline Daily Puzzle pool
+  Levels/Resources/Levels/PLOP_Pack_003.json  — shipped level pack (160 verified levels, Phase 11 rebalance)
+  Levels/Resources/Levels/PLOP_Deadlocks_003.bytes — generated exact deadlock data for Pack_003
+  Levels/Resources/Levels/PLOP_Pack_002_Order.json — Phase 10 level order + aliases, for save migration
+  Levels/Resources/Levels/PLOP_Daily_002.json — 60-puzzle offline Daily pool (classic + 4 mechanic tiers)
+  Levels/Archive/ — Pack_001/002, Deadlocks_001/002, Daily_001: read for migration, comparison and reuse
   Levels/Resources/Levels/PLOP_Pack_001_SlotHistory.json — old→new level IDs per slot for save migration
   Art/ Audio/ Animations/ Materials/ Prefabs/ Settings/
 DotNet/              Plop.Lib (netstandard2.1 build of Core/Solver/Generation), Plop.Tests, Plop.Bench
@@ -178,11 +179,16 @@ UNITY=/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/Unity.app/Contents/MacOS/Unity
 ```
 Level Lab: Unity menu **PLOP → Level Lab** (edit, generate, solve, replay, metrics, import/export, batch generation, filters and manual catalog ordering;
 player-model insight panel, campaign overview with Plop/size/trivial filters and most-similar comparison;
-Phase 10: Frost/Lava/Fan/Loop tools, move limit, mechanic quality search, effect-resolution debugger, chain/loop-risk inspector).
+Phase 10: Frost/Lava/Fan/Loop tools, move limit, mechanic quality search, effect-resolution debugger, chain/loop-risk inspector;
+Phase 11: "Balance & quality" — quality audit, simulated players, filters, similarity, before/after pack comparison, md/json export).
 
-Phase 10 campaign: `cd DotNet && dotnet run -c Release --project Plop.Bench -- --expanded` rebuilds `PLOP_Pack_002.json`
-and `Documentation/benchmarks/campaign_phase10.md` (~90 s); then `--deadlocks ../Assets/Levels/Resources/Levels/PLOP_Pack_002.json
-../Assets/Levels/Resources/Levels/PLOP_Deadlocks_002.bytes 600000`. See Documentation/LEVEL_GENERATION.md.
+Phase 11 campaign: `cd DotNet && dotnet run -c Release --project Plop.Bench -- --balanced` (deterministic, ~2 min) rebuilds
+`PLOP_Pack_003.json`, `PLOP_Daily_002.json`, `PLOP_Pack_002_Order.json` and the reports in `Documentation/Phase11/`; then
+`--deadlocks ../Assets/Levels/Resources/Levels/PLOP_Pack_003.json ../Assets/Levels/Resources/Levels/PLOP_Deadlocks_003.bytes 600000`.
+Also `--quality-audit <pack> out.json out.md`, `--economy [md] [json]`, `--playtest-summary file.csv`.
+
+Phase 10 campaign (archived): `--expanded` rebuilt `PLOP_Pack_002.json` (now in `Assets/Levels/Archive/`) and
+`Documentation/benchmarks/campaign_phase10.md`. See Documentation/LEVEL_GENERATION.md.
 
 Characters: **PLOP → Characters → Animation Lab / Validate Cosmetics / Capture Reference Sheets** (see
 `Documentation/CHARACTERS.md`). Batch validator: `-executeMethod Plop.CharacterTools.CosmeticValidatorWindow.RunBatch`.
@@ -190,6 +196,8 @@ Characters: **PLOP → Characters → Animation Lab / Validate Cosmetics / Captu
 Screenshot hooks (development builds only, never saved progress): integer pref `plop.debug.level` (1-based)
 and string pref `plop.debug.moves` (e.g. `DLDRU`) skip the main menu. On the Android emulator the debuggable
 build's prefs can be edited with `run-as` — run `python3 Tools/Android/debugprefs.py <level|0> [moves]` (force-stops the app; 0 clears).
+Local playtest metrics (dev builds only, no SDK): `debugprefs.py playtest on|off`, `debugprefs.py pull-playtest out.csv`
+(see `Documentation/Phase11/PLAYTEST_GUIDE.md`).
 
 ## Build instructions
 GUI: Unity menu **PLOP → Build → Android APK (Development)** / **iOS Xcode Project (Device)** / **iOS Xcode Project (Simulator)**.
@@ -203,7 +211,7 @@ PROJ=/Volumes/PLOP_DEV/Unity/Projects/PLOP
 "$UNITY" -batchmode -quit -projectPath "$PROJ" -buildTarget Android -executeMethod Plop.EditorTools.PlopBuild.BuildAndroid -logFile -
 # Install & launch on a connected phone
 adb install -r /Volumes/PLOP_DEV/Builds/Android/PLOP-dev.apk
-adb shell monkey -p com.plop.sleepypuzzle -c android.intent.category.LAUNCHER 1
+adb shell am start -n com.plop.sleepypuzzle/com.unity3d.player.UnityPlayerGameActivity  # not monkey: it can inject a stray touch
 export DEVELOPER_DIR=/Volumes/PLOP_DEV/Xcode/Xcode-26.3.app/Contents/Developer
 # iOS Simulator: export (arm64 simulator) -> build -> run in "PLOP iPhone 15 Pro Max" simulator
 # Set PLOP_IOS_SIM_EXPORT to export to a separate verification directory.

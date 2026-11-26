@@ -11,6 +11,33 @@ The same NUnit test files run in two environments:
 (`Unity` = `/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/Unity.app/Contents/MacOS/Unity`; close the Editor first.)
 Tests use only NUnit features available in Unity's NUnit 3.5 fork.
 
+## Phase 11 results (2026-11-26, executed)
+
+| Run | Total | Passed | Failed | Skipped |
+|---|---|---|---|---|
+| dotnet test (net10.0) | 200 | 200 | 0 | 0 |
+| Unity 6000.3.29f1 EditMode | 200 | 200 | 0 | 0 |
+| Unity 6000.3.29f1 PlayMode | 106 | 106 | 0 | 0 |
+| `LevelVerifier.VerifyProductionPack` on `PLOP_Pack_003.json` / `PLOP_Daily_002.json` | 160 / 60 levels | verified | | |
+| `--balanced` twice | byte-identical Pack_003 and Daily_002 | | | |
+
+The PlayMode run includes `Phase9CharacterTests.SystemBack_ClosesTheTopScreen_ThenReturnsToTheMenu`, added after the emulator
+player-flow test found that Android's system Back did nothing. Device and Simulator checks are in
+[Phase11/QA_RESULTS.md](Phase11/QA_RESULTS.md).
+
+New suites:
+
+| Suite | Runner | What it pins |
+|---|---|---|
+| `Phase11CampaignTests` | .NET + EditMode | Pack_003: 160 strictly verified levels, teaching order L1–L10, each mechanic discovered at its World's first level (and matching the Daily gating), Limited Moves slack +2 → 0, World finales need depth ≥ 3 and beat Greedy, kept ids keep the same board, aliases only loosen. Daily_002: 60 verified, no campaign duplicates, ≥ 20 classic and ≥ 10 per mechanic, no move limits, gating is deterministic and covers the pool |
+| `Phase11EconomyTests` | .NET + EditMode | Hint charged once per board; grace needs 2 tries, is once per level and grants no Dust; simulation deterministic and pays each reward once; no standard profile is refused a hint |
+| `Phase11StabilityTests` | .NET + EditMode | Seeded fuzzing of wallet and record saves (truncations, mutations, odd JSON types and huge numbers): never throws, never negative, still earns, never double-pays. Torn-write backup recovery. 120-step random sessions (swipes, undo, restart) on all 220 shipped boards: undo is exact, no overlap, limits hold, replay is deterministic |
+| `Phase11PlaytestLogTests` | .NET + EditMode | Local metrics rows, Perfect detection, visit closing, CSV parsing that skips damaged lines |
+| `Phase11ProgressTests` | PlayMode | Pack_002 → Pack_003 migration (same-id completions, old frontier, aliases, resume, corrupt or empty saves), shipped migration resources present, retired packs not shipped |
+| `Phase11LayoutTests` | PlayMode | Every shipped board size fits the safe area on six screens (SE, 15 Pro Max, Pixel 7, small and tall Android, iPad) with cells ≥ 44 pt |
+
+Bench commands added: `--quality-audit`, `--balanced`, `--economy`, `--playtest-summary`, `--candidates`, `--probe`.
+
 ## Phase 10 results (2026-11-25, executed)
 
 | Run | Total | Passed | Failed | Skipped |

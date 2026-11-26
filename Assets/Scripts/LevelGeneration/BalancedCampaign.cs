@@ -64,7 +64,9 @@ namespace Plop.Generation
     /// </summary>
     public static class BalancedCampaign
     {
-        public const int Version = 1;
+        public const int Version = 2;
+        /// <summary>Search seeds stay those of v1 so a rule change only re-searches the slots it affects.</summary>
+        public const int SeedVersion = 1;
         public const int LevelCount = 160;
         public const string PackId = "PLOP_Pack_003";
         public const ulong DefaultSeed = 0x504C4F50_31310000UL;
@@ -268,7 +270,7 @@ namespace Plop.Generation
         }
 
         public static ulong JobSeed(ulong seed, ulong jobIndex, int retry)
-            => SplitMix64.Derive(seed ^ ((ulong)(0x20 + Version) << 56), jobIndex * 128UL + (ulong)retry);
+            => SplitMix64.Derive(seed ^ ((ulong)(0x20 + SeedVersion) << 56), jobIndex * 128UL + (ulong)retry);
 
         public static BalancedBuild Build(IReadOnlyList<LevelDefinition> previous, ulong seed = DefaultSeed, Action<string> log = null)
         {
@@ -282,6 +284,11 @@ namespace Plop.Generation
             QualityAudit.Finish(before);
             build.Previous = before.ToList();
             var weak = before.Select(Weakness).ToArray();
+            // v2: old Cozy Nest slots aside, every kept puzzle lands at level 6 or later, so the position rules
+            // apply to it there. Such "late-weak" levels get extra searches with their own seeds, so every other
+            // slot keeps the v1 search (and result).
+            var lateWeak = before.Select(r => r.Index >= 5 && Weakness(r).Count == 0 ? Weakness(r, true) : new List<string>()).ToArray();
+            ulong lateSeed = 100_000;
             log?.Invoke("audited Phase 10: " + weak.Count(w => w.Count > 0) + " weak levels");
 
             var slots = new BalancedLevel[LevelCount];
@@ -322,9 +329,11 @@ namespace Plop.Generation
                 // Phase 10 levels of this World (by old range) that pass, or can be improved.
                 var oldRange = OldRange(world.Id);
                 var replaceReasons = new List<(int Old, string Why)>();
+                var lateReasons = new List<(int Old, string Why)>();
                 for (int old = oldRange.First - 1; old < oldRange.Last && list.Count < open; old++)
                 {
                     if (usedPrevious.Contains(old) || IsOldIntro(old)) continue;
+                    if (lateWeak[old].Count > 0) { lateReasons.Add((old, string.Join(", ", lateWeak[old]) + " at its new position")); continue; }
                     if (weak[old].Count == 0)
                     {
                         usedPrevious.Add(old);
@@ -335,7 +344,8 @@ namespace Plop.Generation
                     if (improved != null) { usedPrevious.Add(old); improved.Weakness = string.Join(", ", weak[old]); list.Add(improved); }
                     else replaceReasons.Add((old, string.Join(", ", weak[old])));
                 }
-                int searches = open - list.Count;
+                int late = Math.Min(lateReasons.Count, open - list.Count);
+                int searches = open - list.Count - late;
                 for (int s = 0; s < searches; s++)
                 {
                     var stage = s == searches - 1 && searches >= 2 ? LearningStage.Mastery
@@ -344,6 +354,9 @@ namespace Plop.Generation
                         Previous = s < replaceReasons.Count ? replaceReasons[s].Old : -1,
                         Weakness = s < replaceReasons.Count ? replaceReasons[s].Why : "", SeedIndex = jobIndex++ });
                 }
+                for (int s = 0; s < late; s++)
+                    jobs.Add(new Job { WorldId = world.Id, Stage = LearningStage.Reasoning, Target = StageTarget(world.Id, LearningStage.Reasoning),
+                        Floors = FloorsFor(LearningStage.Reasoning), Previous = lateReasons[s].Old, Weakness = lateReasons[s].Why, SeedIndex = lateSeed++ });
             }
 
             // 4. Combination Worlds (64–160): keep strong levels in place, improve or replace weak ones with the slot's own target.
@@ -378,7 +391,9 @@ namespace Plop.Generation
             int finished = 0;
             Parallel.ForEach(jobs, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, job =>
             {
-                for (int retry = 0; retry < MaxRetries && job.Found.Count < CandidatesPerSlot; retry++)
+                // Tiny Discovery boards rarely pass the floors; give them a longer search.
+                int retries = job.Stage == LearningStage.Discovery ? MaxRetries * 4 : MaxRetries;
+                for (int retry = 0; retry < retries && job.Found.Count < CandidatesPerSlot; retry++)
                 {
                     ulong s = JobSeed(seed, job.SeedIndex, retry);
                     var r = QualitySearch.Search(s, job.Target);

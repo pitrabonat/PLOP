@@ -1989,7 +1989,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x0B3C44852E64DDA0",
-        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=0",
+        "generatorParams": "daily balanced v2 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=0",
         "solverVersion": 1,
         "solution": "DRULDRDL",
         "solutionLength": 8,
@@ -2096,7 +2096,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x51EDD0FEFE3C5521",
-        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=0",
+        "generatorParams": "daily balanced v2 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=0",
         "solverVersion": 1,
         "solution": "DLLDLUULDURU",
         "solutionLength": 12,
@@ -2214,7 +2214,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x6A8F0562F96094DD",
-        "generatorParams": "daily balanced v1 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=12",
+        "generatorParams": "daily balanced v2 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=12",
         "solverVersion": 1,
         "solution": "LDRLDDR",
         "solutionLength": 7,
@@ -2322,7 +2322,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x99759AE2B9043A63",
-        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=8",
+        "generatorParams": "daily balanced v2 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=8",
         "solverVersion": 1,
         "solution": "UDRLUUULULUL",
         "solutionLength": 12,
@@ -2431,7 +2431,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x4F57998947AD02D3",
-        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=4",
+        "generatorParams": "daily balanced v2 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=4",
         "solverVersion": 1,
         "solution": "DDRRULULUULDR",
         "solutionLength": 13,
@@ -2546,7 +2546,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x85DFAB432719EFDE",
-        "generatorParams": "daily balanced v1 6x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=0",
+        "generatorParams": "daily balanced v2 6x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=0",
         "solverVersion": 1,
         "solution": "RURURUULDULLD",
         "solutionLength": 13,
@@ -2667,7 +2667,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x2535276CD959302F",
-        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=11",
+        "generatorParams": "daily balanced v2 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=11",
         "solverVersion": 1,
         "solution": "RRDLDLDDRU",
         "solutionLength": 10,
@@ -2772,7 +2772,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x44D19F4B01CC5A4A",
-        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=7",
+        "generatorParams": "daily balanced v2 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=7",
         "solverVersion": 1,
         "solution": "DLDLUUURU",
         "solutionLength": 9,
@@ -2883,7 +2883,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xC3FE6E52C1655AFA",
-        "generatorParams": "daily balanced v1 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=2",
+        "generatorParams": "daily balanced v2 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=2",
         "solverVersion": 1,
         "solution": "LUUDURRDR",
         "solutionLength": 9,
@@ -2988,7 +2988,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x09F28DC3D2CA37BA",
-        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=8",
+        "generatorParams": "daily balanced v2 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost use Frost steps≥1 retry=8",
         "solverVersion": 1,
         "solution": "URRDRRDRD",
         "solutionLength": 9,
@@ -3100,7 +3100,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x789A30A32166ED3A",
-        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=5",
+        "generatorParams": "daily balanced v2 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=5",
         "solverVersion": 1,
         "solution": "DDLLRDDUR",
         "solutionLength": 9,
@@ -3210,7 +3210,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x46906E5D990552F9",
-        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=3",
+        "generatorParams": "daily balanced v2 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=3",
         "solverVersion": 1,
         "solution": "LUDLULDRDRDRR",
         "solutionLength": 13,
@@ -3320,7 +3320,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xE8BF85B9A319B5E1",
-        "generatorParams": "daily balanced v1 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=2",
+        "generatorParams": "daily balanced v2 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=2",
         "solverVersion": 1,
         "solution": "LULDDRURRUULL",
         "solutionLength": 13,
@@ -3431,7 +3431,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x7484E363A316B679",
-        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=1",
+        "generatorParams": "daily balanced v2 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=1",
         "solverVersion": 1,
         "solution": "LRRDRULLURD",
         "solutionLength": 11,
@@ -3545,7 +3545,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x5CADE7B8976D9A78",
-        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=0",
+        "generatorParams": "daily balanced v2 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=0",
         "solverVersion": 1,
         "solution": "DLRRUULDLLUD",
         "solutionLength": 12,
@@ -3662,7 +3662,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xE471F7B2CC12262C",
-        "generatorParams": "daily balanced v1 6x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=3",
+        "generatorParams": "daily balanced v2 6x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=3",
         "solverVersion": 1,
         "solution": "URDURURURUL",
         "solutionLength": 11,
@@ -3768,7 +3768,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x8866DC8718BE9A90",
-        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=4",
+        "generatorParams": "daily balanced v2 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=4",
         "solverVersion": 1,
         "solution": "URRLULDDDRUUR",
         "solutionLength": 13,
@@ -3882,7 +3882,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xABF7FE05DAE70BB6",
-        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=1",
+        "generatorParams": "daily balanced v2 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=1",
         "solverVersion": 1,
         "solution": "RRULLDRDDLDDR",
         "solutionLength": 13,
@@ -3994,7 +3994,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xA4B4A765E9753D06",
-        "generatorParams": "daily balanced v1 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=0",
+        "generatorParams": "daily balanced v2 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=0",
         "solverVersion": 1,
         "solution": "DLURURRUUURDD",
         "solutionLength": 13,
@@ -4105,7 +4105,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xFE01EA7C10B5496E",
-        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=5",
+        "generatorParams": "daily balanced v2 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Breeze use Breeze steps≥1 retry=5",
         "solverVersion": 1,
         "solution": "URLDDRLDRRDLD",
         "solutionLength": 13,
@@ -4216,7 +4216,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xEE48796FC5093B39",
-        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
+        "generatorParams": "daily balanced v2 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
         "solverVersion": 1,
         "solution": "URRUUULULD",
         "solutionLength": 10,
@@ -4339,7 +4339,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x28F26B886D869465",
-        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
+        "generatorParams": "daily balanced v2 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
         "solverVersion": 1,
         "solution": "DDLDDLUULUUR",
         "solutionLength": 12,
@@ -4452,7 +4452,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x06ADAE757CF0D4D8",
-        "generatorParams": "daily balanced v1 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=1",
+        "generatorParams": "daily balanced v2 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=1",
         "solverVersion": 1,
         "solution": "ULLDRDDDRUUR",
         "solutionLength": 12,
@@ -4567,7 +4567,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x812A231E76FA9B35",
-        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=1",
+        "generatorParams": "daily balanced v2 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=1",
         "solverVersion": 1,
         "solution": "DLURUUULULLD",
         "solutionLength": 12,
@@ -4677,7 +4677,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xE6089E691585D966",
-        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
+        "generatorParams": "daily balanced v2 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
         "solverVersion": 1,
         "solution": "DLLDRDRUUR",
         "solutionLength": 10,
@@ -4792,7 +4792,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x8B3FF26730A75A05",
-        "generatorParams": "daily balanced v1 6x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
+        "generatorParams": "daily balanced v2 6x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
         "solverVersion": 1,
         "solution": "URUDLDDRRDRU",
         "solutionLength": 12,
@@ -4908,7 +4908,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xD6CA4A1B38B9485B",
-        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
+        "generatorParams": "daily balanced v2 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
         "solverVersion": 1,
         "solution": "ULUURDRRDDR",
         "solutionLength": 11,
@@ -5017,7 +5017,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xC1E84AE43193A6F8",
-        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
+        "generatorParams": "daily balanced v2 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
         "solverVersion": 1,
         "solution": "UDRRRDRUUUR",
         "solutionLength": 11,
@@ -5130,7 +5130,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x9AD2FF17A10B18DA",
-        "generatorParams": "daily balanced v1 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
+        "generatorParams": "daily balanced v2 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
         "solverVersion": 1,
         "solution": "UULDRRDDL",
         "solutionLength": 9,
@@ -5241,7 +5241,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xC59D1F39F6FCA969",
-        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
+        "generatorParams": "daily balanced v2 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Breeze use Lava steps≥0 retry=0",
         "solverVersion": 1,
         "solution": "LUDURRDLRDRR",
         "solutionLength": 12,
@@ -5360,7 +5360,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x7283A4153CD6A728",
-        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
+        "generatorParams": "daily balanced v2 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
         "solverVersion": 1,
         "solution": "DDURURURURUUD",
         "solutionLength": 13,
@@ -5482,7 +5482,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0x84C00F2F4CC11CFC",
-        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
+        "generatorParams": "daily balanced v2 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
         "solverVersion": 1,
         "solution": "LDULULLDLLU",
         "solutionLength": 11,
@@ -5608,7 +5608,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xF6358AFCEFACBDC1",
-        "generatorParams": "daily balanced v1 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
+        "generatorParams": "daily balanced v2 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
         "solverVersion": 1,
         "solution": "URDUUDRUUR",
         "solutionLength": 10,
@@ -5734,7 +5734,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xE74647BAD7EB27F0",
-        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
+        "generatorParams": "daily balanced v2 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
         "solverVersion": 1,
         "solution": "UULDURUDLLRR",
         "solutionLength": 12,
@@ -5849,7 +5849,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xECF1EDE25CC8072A",
-        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=1",
+        "generatorParams": "daily balanced v2 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=1",
         "solverVersion": 1,
         "solution": "DDDLURDDU",
         "solutionLength": 9,
@@ -5977,7 +5977,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xFD7BCA10FA96E097",
-        "generatorParams": "daily balanced v1 6x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
+        "generatorParams": "daily balanced v2 6x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
         "solverVersion": 1,
         "solution": "UULURLDRDDL",
         "solutionLength": 11,
@@ -6092,7 +6092,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xD44ADA6E091BC9D8",
-        "generatorParams": "daily balanced v1 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=1",
+        "generatorParams": "daily balanced v2 5x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=1",
         "solverVersion": 1,
         "solution": "ULUURUDLD",
         "solutionLength": 9,
@@ -6212,7 +6212,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xF13C936F8D76F80A",
-        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=3",
+        "generatorParams": "daily balanced v2 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=3",
         "solverVersion": 1,
         "solution": "LUURUUL",
         "solutionLength": 7,
@@ -6333,7 +6333,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xE68A77568DCBB724",
-        "generatorParams": "daily balanced v1 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
+        "generatorParams": "daily balanced v2 5x6 p3 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=0",
         "solverVersion": 1,
         "solution": "RURRDRDUR",
         "solutionLength": 9,
@@ -6454,7 +6454,7 @@
       "dev": {
         "generatorVersion": 3,
         "seed": "0xFEFA8AD4C0FDB964",
-        "generatorParams": "daily balanced v1 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=3",
+        "generatorParams": "daily balanced v2 6x6 p2 opt 7-13 challenge 0-∞ greedy-fails counter≥0 traps≥1 blocks≥0 patterns≥0 mech Frost, Lava, Loops use Loops steps≥1 retry=3",
         "solverVersion": 1,
         "solution": "RRRDRLDLULLLU",
         "solutionLength": 13,

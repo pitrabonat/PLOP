@@ -1,10 +1,44 @@
 # PLOP! project state
 
+**Phase 11 · Gameplay mastery: a rebalanced 160-level campaign, a mechanic-tiered Daily pool, fair hints, quality tooling and QA**
+
+The project is on `feature/gameplay-mastery`, branched from the pushed Phase 10 work (`feature/puzzle-evolution`; tag `checkpoint/pre-phase11`). Nothing from Phase 11 is pushed. Open the project in Unity `6000.3.29f1` with **PLOP → Play Game**. **The build target was last switched to iOS** (Simulator export); the Android build script switches back on its own.
+
+Reports: [Campaign audit](Documentation/Phase11/CAMPAIGN_AUDIT.md) · [Puzzle balance](Documentation/Phase11/PUZZLE_BALANCE_REPORT.md) · [Economy](Documentation/Phase11/ECONOMY_BALANCE_REPORT.md) · [Playtest guide](Documentation/Phase11/PLAYTEST_GUIDE.md) · [Performance](Documentation/Phase11/PERFORMANCE_REPORT.md) · [QA results](Documentation/Phase11/QA_RESULTS.md) · [Known issues](Documentation/Phase11/KNOWN_ISSUES.md) · [Previews](Documentation/Previews/Phase11/README.md)
+
+## Implemented in Phase 11
+
+- **Measurement first.** `PuzzleQuality` (decision density, coordination, settlement order, mechanic removal test, planning depth, misleading choices, route efficiency, solution diversity → quality 0–100), `SimulatedPlayers` (Random, Greedy, Look-ahead 2/3, Limited-information, Optimal) and `QualityAudit` (per-level JSON/markdown, similarity, flags). `Bench --quality-audit`, Level Lab **Balance & quality**.
+- **Campaign `PLOP_Pack_003`** (`Bench --balanced`, deterministic): 95 levels kept with the same id, 1 improved, 57 replaced, 7 authored (L2, L4, L6–L10). Mean quality 60.6 → 71.6; greedy solves 14 → 8 (only tutorials and Discovery levels); planning depth > 4 on 103 levels. Frost is discovered at L6; each mechanic World runs Discovery → Application → Reasoning → Combination → Mastery. Limited Moves: eight challenges, slack +2 (30, 45, 60) → +1 (80, 100, 120) → exact (140, 155).
+- **Save migration** Pack_002 → Pack_003: same-id completions kept, access up to the old frontier, the resume level kept when it still exists, `aliases` for boards whose Move limit only loosened. Never invents a completion; the old save is untouched. Verified on the emulator's real Phase 10 save.
+- **Daily `PLOP_Daily_002`**: 20 strong classic puzzles kept plus 40 new across Frost, Breeze, Lava and Loops tiers. A tier is served only after the player completed its Discovery level (6, 21, 35, 49). The pick is stored per day, there is one reward per date, no streaks and no move limits.
+- **Economy**: rewards and prices unchanged. `HintPolicy` grace: after two tries, the first hint on a level is free once when Dust is short. `EconomySimulator` (`Bench --economy`) shows no standard profile is refused a hint and that Casual, Regular and Enthusiast players can buy all 18 Dust-priced cosmetics by Level 160 (median).
+- **Readability**: Loop pairs carry 1–6 pips besides their tint; fan power pips are larger with a halo.
+- **Player flow**: Android's system Back now works everywhere (it did nothing before): it closes Studio and modals, returns from a level to the menu, and backgrounds the app from the menu.
+- **Dev-only tools**: local playtest metrics CSV (`debugprefs.py playtest on`, `--playtest-summary`; no SDK, compiled out of release), `debugprefs.py diagnostics on`.
+- **Tests**: .NET 200, EditMode 200, PlayMode 106 (21 + 6 new): campaign, Daily gating, economy, save fuzzing, random sessions on all 220 shipped boards, migration, layout on six screens, system Back.
+
+## Verification (executed 2026-11-26)
+
+- **Tests:** .NET 200/200, Unity EditMode 200/200, Unity PlayMode 106/106. `VerifyProductionPack` passes on Pack_003 (160) and Daily_002 (60); `--balanced` is byte-identical on rerun.
+- **Android:** `/Volumes/PLOP_DEV/Builds/Android/Phase11/PLOP-phase11-dev.apk` (ARM64 development build, 46.5 MB) on the `Medium_Phone_API_37.0` emulator; no phone was connected. Covered: the real Phase 10 save migrating on upgrade, every mechanic, Limited Moves, the Lava card, Perfect on Level 155 by real swipes, Daily, Studio, Worlds, Settings and system Back. Frame time on the emulator: ~57 FPS, main thread 0.7 ms on Level 155.
+- **Found on the emulator and fixed:** Android's system Back did nothing; the first fix missed the first press after launch and was reworked to use an `InputAction`. A Gradle packaging cache had inflated APKs (Phase 10: 64 MB for 46 MB of content).
+- **iOS:** Simulator project exported and built by Xcode 26.3 (**BUILD SUCCEEDED**); ran on the iPhone 15 Pro Max simulator (iOS 26.3): Phase 10 save migrated (55 Dust, PLAY → Level 123), Levels 57 and 120 inside the safe area. No taps (that tool needs a system `xcode-select` change, not made). No device build.
+- Details: [QA_RESULTS.md](Documentation/Phase11/QA_RESULTS.md), [PERFORMANCE_REPORT.md](Documentation/Phase11/PERFORMANCE_REPORT.md), [previews](Documentation/Previews/Phase11/README.md).
+
+## Not done / known limits
+
+- **No human playtest.** Every difficulty, quality and economy number is from heuristics and simulated players.
+- **No physical device**: Android was checked on the API 37 emulator and iOS on the Simulator. Battery and thermal behaviour were not measured.
+- Remaining balance flags and minor issues: [KNOWN_ISSUES.md](Documentation/Phase11/KNOWN_ISSUES.md).
+
+## Phase 10 summary
+
 **Phase 10 · Puzzle evolution: Frost, Lava, Breeze, Loops, a 160-level campaign over nine Worlds, Limited Moves and the Dream Dust economy**
 
 The project is on `feature/puzzle-evolution`, branched from the pushed Phase 9 work (`feature/character-studio`, tag `checkpoint/pre-phase9` marks Phase 8). Open the project in Unity `6000.3.29f1` with **PLOP → Play Game** or `Assets/Scenes/Gameplay.unity`. The game opens on the main menu. **The build target was last switched to iOS** (for the Simulator export); the Android build script switches back on its own.
 
-## Implemented in Phase 10
+### Implemented in Phase 10
 
 Rules: [Game rules — Phase 10 mechanics](Documentation/GAME_RULES.md#phase-10-mechanics). Content: [Level generation](Documentation/LEVEL_GENERATION.md) and the [per-level report](Documentation/benchmarks/campaign_phase10.md).
 
@@ -42,14 +76,14 @@ Rules: [Game rules — Phase 10 mechanics](Documentation/GAME_RULES.md#phase-10-
 - **Level Lab:** Frost/Lava/Fan/Loop tools (fan direction and power, Loop pair), move limit, mechanic quality search, effect-resolution debugger (per-swipe event chain in replay, plus "Try a swipe"), forced-chain and loop-risk inspector. Editor only.
 - **Mobile performance:** no solver or generation work in `Update`; forced movement is bounded by the step budget; mechanic art shares the existing atlas and material.
 
-## Verification (executed 2026-11-25)
+### Verification (executed 2026-11-25)
 
 - **Tests:** .NET 179/179, Unity EditMode 179/179, Unity PlayMode 100/100 (one earlier full run had a 5 s timeout in `DeadlockRecoveryTests.ANewSwipeSupersedesTheOldAnalysis` while an APK build and the emulator loaded the Mac; it passed alone twice and in the final full run). `Bench --verify-production` passes on Pack 002 (160 levels).
 - **Android:** `/Volumes/PLOP_DEV/Builds/Android/Phase10/PLOP-phase10-dev.apk` (ARM64 development build, 64 MB) on the `Medium_Phone_API_37.0` emulator (1080×2400). No phone was connected. Exercised: every mechanic and the main combinations (levels 12, 24, 27, 30, 35, 39, 43, 52, 66, 157), the Lava card, the Limited Moves counter, a paid hint, World selection, the Studio Board tab with a locked preview, and the automatic migration of the emulator's Phase 9 save (25 Dust kept; 3 of 5 old completions still exist and were kept; PLAY resumes at Level 6). Screenshots: [Phase 10 previews](Documentation/Previews/Phase10/README.md).
 - **Found on the device, fixed and re-verified:** the first APK showed an empty board because `Gameplay.unity` still serialized the archived Pack 001 path (Editor tests supply their own levels, so they passed). The scene, a controller fallback and a regression test fix it. The paid hint now states the charge; Board thumbnails and the Studio preview were corrected.
 - **iOS:** Unity exported the ARM64 Simulator project (`/Volumes/PLOP_DEV/Builds/iOS/Phase10/PLOP-Xcode-Sim`) and Xcode 26.3 built it: **BUILD SUCCEEDED**. It ran on the iPhone 15 Pro Max simulator: the main menu (its older save migrated: 55 Dust, PLAY → Level 123), Level 157 with all four mechanics, and the Lava card on Level 35, all inside the Dynamic Island safe area ([iOS captures](Documentation/Previews/Phase10/ios/)). Taps were not driven on iOS (the simulator tap tool needs a system-wide `xcode-select`, which was not changed). The rendering path is unchanged: the same runtime atlas and default sprite material. No device build.
 
-## Not done / known limits
+### Not done / known limits
 
 - **Not verified on hardware:** no physical phone was connected; frame time for long forced chains on a phone is unmeasured.
 - **Difficulty** is the player-model score, not a human playtest. Levels 11, 16 and 25 are intentionally greedy-solvable breathers.
