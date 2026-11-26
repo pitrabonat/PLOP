@@ -1,12 +1,45 @@
 # PLOP! project state
 
-**Phase 11 · Gameplay mastery: a rebalanced 160-level campaign, a mechanic-tiered Daily pool, fair hints, quality tooling and QA**
+**Phase 11.5 · Environmental art, advanced VFX and living Worlds (presentation only)**
 
-The project is on `feature/gameplay-mastery`, branched from the pushed Phase 10 work (`feature/puzzle-evolution`; tag `checkpoint/pre-phase11`). Nothing from Phase 11 is pushed. Open the project in Unity `6000.3.29f1` with **PLOP → Play Game**. **The build target was last switched to iOS** (Simulator export); the Android build script switches back on its own.
+The project is on `feature/living-worlds`, branched from the Phase 11 work (`feature/gameplay-mastery`, commit `3a92469`; tag `checkpoint/pre-phase11.5`). Nothing from Phase 11 or 11.5 is pushed. Open the project in Unity `6000.3.29f1` with **PLOP → Play Game**, or **PLOP → Visual Lab → Preview Window** for the environment preview. **The build target was last switched to iOS** (Simulator export); the Android build script switches back on its own.
+
+Previews (real captures, not concept art): [Documentation/Previews/Phase11_5/README.md](Documentation/Previews/Phase11_5/README.md)
+
+## Implemented in Phase 11.5
+
+- **No rule, solver, level, price or UI-layout change.** 0 campaign or Daily levels modified (Pack_003 and Daily_002 byte-identical). Header, Home, Settings, level number, move counter, Limited Moves pips, Undo/Restart/Hint and board placement are untouched.
+- **Mechanic shaders** (`Assets/Art/Resources/Shaders`, one shared material each, per-renderer data packed in the SpriteRenderer colour): `PlopLava` (flowing molten surface, glowing cracks, cooled-stone rounded rim, bubbles; adjacent cells merge into one pool), `PlopFrost` (translucent crystalline ice, cracks, frosted edge, adjacency-aware for isolated/straight/corner/T/cross/area without thick borders), `PlopWind` (curved streaks and particles aligned with the fan, length = push run), `PlopPortal` (rounded frame, luminous ring, vortex, pair pips besides the tint). `SurfaceConnectivity` computes 8-neighbour masks, shapes and wind runs. If a shader is unsupported the atlas sprites are used.
+- **Fans**: rounded housing, recognisable blades, continuous rotation paused when hidden or under Reduced Motion; 1–3 strength chevrons readable without animation; airflow never drawn through obstacles.
+- **Interaction VFX follow the Core trace** (`BoardEnvironment` + `BoardFx` pool of 40 renderers + `TraceTiming`): icy trail, stretch and frost particles on slides; wind gust, stretch and settle on pushes; shrink → entry swirl → exit reveal on teleports (blocked exit: small wobble, no exit effect); warm puff, ripple and surprised face before the unchanged Lava failure card. Long chains compress (`CompressAfter` 2, factor 0.8, min 0.6). `Sync` (Undo, Restart, recovery, level/World change) clears every pending effect; the one-command input buffer is unchanged.
+- **Audio**: seven new synthesised cues (ice slide, fan whoosh, portal in/out/blocked, lava hiss, quiet lava bubble) raised by the trace, through the existing `PlopAudio` and its settings.
+- **Board materials per World** (`Resources/Worlds/BoardMaterials.json`, `ShapeAtlas.WorldSurfaces`): tray, floor tile and pebble painted per World on a worker thread with the shared geometry (Cozy satin cream tray and toy pebbles; Frosted ice tray, frosted tiles, ice pebbles with snow caps; Meadow wood tray, mossy stones; Ember dark stone tray with an amber seam, speckled tiles, stones with ember fissures; Prism glass tray, glazed tiles, crystal pebbles; Dewdrop sage ceramic with dew-capped stones; Rainy misted glazed ceramic; Attic warm wood with toy blocks; Moonlit celestial ivory with cratered moon pebbles). Nests gained a recessed bed. Two World atlases cached at most.
+- **Living Worlds** (`Resources/Worlds/Ambient.json`, `WorldAmbient`, `PlopAmbient`, `PlopAmbientParticles`): far = authored backdrop; mid = a few region quads (windmill sails with lattice frames, grass, prism rays, attic beam, clouds, ember glow); near = one static particle mesh (≤ 58 quads per World today, 64 max per set: motes and bokeh, pollen and glints, rain streaks and drops, attic dust, stars, snowflakes, dandelion seeds, embers, prism glints). Clean centre over the board, no camera motion, one clock, only the current World exists, Battery Saver thins (density 0.55, speed 0.7), Reduced Motion freezes.
+- **Tools**: development-only Visual Lab boards (`debugprefs.py lab <n> [world] [moves]`, compiled out of release), editor-only **PLOP → Visual Lab → Preview Window** (board, World, time scrubber, Reduced Motion, Battery Saver, Play in Editor) and **PLOP → Visual Lab → Capture Close-ups** (`EnvironmentCapture`).
+- **Tests**: `Phase11_5EnvironmentTests` (18): adjacency, Lava diagonals, mask packing, edge selection, wind direction/alignment and pips, paused blades, portal pairs, trace order of the combined demo, effect cleanup on Sync, teleport landing, Reduced Motion, chain compression, every World's materials and ambient, grid unchanged, async World change, ambient lifecycle and particle budget.
+
+## Verification (executed 2026-11-26)
+
+- **Tests:** .NET 200/200, Unity EditMode 200/200, Unity PlayMode 124/124 (Phase 11.5 suite 18/18), all on the final code. Level packs untouched (0 levels modified).
+- **Android:** `/Volumes/PLOP_DEV/Builds/Android/Phase11_5/PLOP-phase11_5-dev.apk` (ARM64 development build, 46.7 MB, +0.2 MB) on the `Medium_Phone_API_37.0` emulator (SwiftShader software rendering); no phone was connected. Screenshots in `Documentation/Previews/Phase11_5/` (the emulator's own recorders only reached 2–6 fps under software rendering, so recordings were made on the iOS Simulator).
+- **Performance (emulator, same protocol before/after, diagnostics overlay):** see [TESTING.md](Documentation/TESTING.md#phase-115-results-2026-11-26-executed). Loop FPS mean of four readings — L21 33.6 → 34.7, L35 36.8 → 30.9, L155 35.1 → 32.9; draw calls 12–13 → 18–31; Unity heap 78.7–79.0 → 79.7–80.0 MiB; PSS within ±10 MB. The emulator renders on the CPU, so these numbers are noisy and pessimistic for shader cost; no physical device was measured.
+- **iOS:** Simulator project exported (development) to `/Volumes/PLOP_DEV/Builds/iOS/Phase11_5/PLOP-Xcode-Sim` and built by Xcode 26.3 (**BUILD SUCCEEDED**); installed and run on the iPhone 15 Pro Max simulator (Visual Lab boards inside the safe area). The recordings in `Documentation/Previews/Phase11_5/recordings/` were made there with `simctl io recordVideo`. No device build or signing.
+
+## Not done / known limits (Phase 11.5)
+
+- **No physical device**, so no real GPU, battery or thermal numbers. Smooth 60 / Battery Saver 30 behaviour was verified in tests and on the emulator only.
+- Draw calls rose (World surfaces use their own atlas, plus ambient regions and the particle mesh). L35 averaged ~16 % lower Loop FPS on the software-rendered emulator; worth profiling on a mid-range phone.
+- Multi-cell Frost paths in campaign levels were not added (optional; would require re-verification and new optimums).
+- Art is procedural/shader-drawn by the team's own tools; it is production-direction placeholder quality, not final illustrated art.
+- No human playtest.
+
+## Phase 11 summary
+
+**Phase 11 · Gameplay mastery: a rebalanced 160-level campaign, a mechanic-tiered Daily pool, fair hints, quality tooling and QA**
 
 Reports: [Campaign audit](Documentation/Phase11/CAMPAIGN_AUDIT.md) · [Puzzle balance](Documentation/Phase11/PUZZLE_BALANCE_REPORT.md) · [Economy](Documentation/Phase11/ECONOMY_BALANCE_REPORT.md) · [Playtest guide](Documentation/Phase11/PLAYTEST_GUIDE.md) · [Performance](Documentation/Phase11/PERFORMANCE_REPORT.md) · [QA results](Documentation/Phase11/QA_RESULTS.md) · [Known issues](Documentation/Phase11/KNOWN_ISSUES.md) · [Previews](Documentation/Previews/Phase11/README.md)
 
-## Implemented in Phase 11
+### Implemented in Phase 11
 
 - **Measurement first.** `PuzzleQuality` (decision density, coordination, settlement order, mechanic removal test, planning depth, misleading choices, route efficiency, solution diversity → quality 0–100), `SimulatedPlayers` (Random, Greedy, Look-ahead 2/3, Limited-information, Optimal) and `QualityAudit` (per-level JSON/markdown, similarity, flags). `Bench --quality-audit`, Level Lab **Balance & quality**.
 - **Campaign `PLOP_Pack_003`** (`Bench --balanced`, deterministic): 95 levels kept with the same id, 1 improved, 57 replaced, 7 authored (L2, L4, L6–L10). Mean quality 60.6 → 71.6; greedy solves 14 → 8 (only tutorials and Discovery levels); planning depth > 4 on 103 levels. Frost is discovered at L6; each mechanic World runs Discovery → Application → Reasoning → Combination → Mastery. Limited Moves: eight challenges, slack +2 (30, 45, 60) → +1 (80, 100, 120) → exact (140, 155).
@@ -18,7 +51,7 @@ Reports: [Campaign audit](Documentation/Phase11/CAMPAIGN_AUDIT.md) · [Puzzle ba
 - **Dev-only tools**: local playtest metrics CSV (`debugprefs.py playtest on`, `--playtest-summary`; no SDK, compiled out of release), `debugprefs.py diagnostics on`.
 - **Tests**: .NET 200, EditMode 200, PlayMode 106 (21 + 6 new): campaign, Daily gating, economy, save fuzzing, random sessions on all 220 shipped boards, migration, layout on six screens, system Back.
 
-## Verification (executed 2026-11-26)
+### Phase 11 verification (executed 2026-11-26)
 
 - **Tests:** .NET 200/200, Unity EditMode 200/200, Unity PlayMode 106/106. `VerifyProductionPack` passes on Pack_003 (160) and Daily_002 (60); `--balanced` is byte-identical on rerun.
 - **Android:** `/Volumes/PLOP_DEV/Builds/Android/Phase11/PLOP-phase11-dev.apk` (ARM64 development build, 46.5 MB) on the `Medium_Phone_API_37.0` emulator; no phone was connected. Covered: the real Phase 10 save migrating on upgrade, every mechanic, Limited Moves, the Lava card, Perfect on Level 155 by real swipes, Daily, Studio, Worlds, Settings and system Back. Frame time on the emulator: ~57 FPS, main thread 0.7 ms on Level 155.
@@ -26,7 +59,7 @@ Reports: [Campaign audit](Documentation/Phase11/CAMPAIGN_AUDIT.md) · [Puzzle ba
 - **iOS:** Simulator project exported and built by Xcode 26.3 (**BUILD SUCCEEDED**); ran on the iPhone 15 Pro Max simulator (iOS 26.3): Phase 10 save migrated (55 Dust, PLAY → Level 123), Levels 57 and 120 inside the safe area. No taps (that tool needs a system `xcode-select` change, not made). No device build.
 - Details: [QA_RESULTS.md](Documentation/Phase11/QA_RESULTS.md), [PERFORMANCE_REPORT.md](Documentation/Phase11/PERFORMANCE_REPORT.md), [previews](Documentation/Previews/Phase11/README.md).
 
-## Not done / known limits
+### Phase 11 known limits
 
 - **No human playtest.** Every difficulty, quality and economy number is from heuristics and simulated players.
 - **No physical device**: Android was checked on the API 37 emulator and iOS on the Simulator. Battery and thermal behaviour were not measured.

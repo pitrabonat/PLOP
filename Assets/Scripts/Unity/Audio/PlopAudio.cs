@@ -145,6 +145,21 @@ namespace Plop.Presentation
                 Play(wall ? PlopCue.Wall : PlopCue.Plop, moved ? 0.50f : 0.74f, 0.065, 1);
         }
 
+        /// <summary>Phase 11.5: mechanic cues raised as the board shows each step of the movement trace.</summary>
+        internal void PlayTrace(BoardEnvironment.Cue cue)
+        {
+            switch (cue)
+            {
+                case BoardEnvironment.Cue.IceSlide: Play(PlopCue.IceSlide, 0.55f, 0.08, 1); break;
+                case BoardEnvironment.Cue.FanPush: Play(PlopCue.FanWhoosh, 0.60f, 0.10, 1); break;
+                case BoardEnvironment.Cue.PortalIn: Play(PlopCue.PortalIn, 0.55f, 0.06, 2); break;
+                case BoardEnvironment.Cue.PortalOut: Play(PlopCue.PortalOut, 0.55f, 0.06, 2); break;
+                case BoardEnvironment.Cue.PortalBlocked: Play(PlopCue.PortalBlocked, 0.55f, 0.10, 1); break;
+                case BoardEnvironment.Cue.LavaHiss: Play(PlopCue.LavaHiss, 0.62f, 0.15, 3); break;
+                case BoardEnvironment.Cue.LavaBubble: Play(PlopCue.LavaBubble, 0.18f, 2.0, 0); break;
+            }
+        }
+
         private bool OutputAllowed => _initialized && !MasterMuted && !_paused && _hasFocus && isActiveAndEnabled;
         private bool CanPlayEffects => OutputAllowed && SoundVolume > 0f;
 

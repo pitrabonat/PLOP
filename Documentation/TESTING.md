@@ -11,6 +11,42 @@ The same NUnit test files run in two environments:
 (`Unity` = `/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/Unity.app/Contents/MacOS/Unity`; close the Editor first.)
 Tests use only NUnit features available in Unity's NUnit 3.5 fork.
 
+## Phase 11.5 results (2026-11-26, executed)
+
+| Run | Total | Passed | Failed | Skipped |
+|---|---|---|---|---|
+| dotnet test (net10.0) | 200 | 200 | 0 | 0 |
+| Unity 6000.3.29f1 EditMode | 200 | 200 | 0 | 0 |
+| Unity 6000.3.29f1 PlayMode | 124 | 124 | 0 | 0 |
+| of which `Phase11_5EnvironmentTests` | 18 | 18 | 0 | 0 |
+
+New suite `Assets/Tests/PlayMode/Phase11_5EnvironmentTests.cs` (18): neighbour masks and shapes, Lava diagonals,
+mask packing round trip, Frost edge selection, shader masks, wind runs/alignment/strength pips, fan blades
+paused when hidden and under Reduced Motion, Loop pair ids and pips, the combined Visual Lab demo's trace order
+(slide → slide → teleport), effect cleanup on `Sync` (Undo/Restart), teleport landing, no particles under
+Reduced Motion, chain compression, materials and ambient for all nine Worlds, grid unchanged by World
+materials, async World change, one ambient root per World with ≤ 64 particles, World switch replacing the
+layer, Battery Saver density and Reduced Motion freeze. `Phase10GameplayTests.Board_DrawsEveryMechanic` now
+accepts the shader renderers. No level files changed (Pack_003 and Daily_002 untouched), so no level replay
+was needed beyond the existing campaign/Daily verification inside the suites.
+
+### Phase 11.5 performance (Android emulator, executed)
+
+Protocol (same for before and after): `Medium_Phone_API_37.0` emulator (1080×2400, SwiftShader: rendering runs
+on the host CPU), development APK, diagnostics overlay on, launch the level, settle 30 s, four overlay
+readings 6 s apart; host load average 10–14 both times. Before = Phase 11 APK, after = Phase 11.5 APK.
+
+| Level (World) | Loop FPS before | Loop FPS after | Draws before → after | Unity heap before → after | PSS before → after |
+|---|---|---|---|---|---|
+| L21 (breezy-meadow) | 38.5 / 33.4 / 30.0 / 32.3 (mean 33.6) | 30.1 / 35.2 / 39.2 / 34.4 (mean 34.7) | 13 → 22 | 78.7 → 79.8 MiB | 326,967 → 313,431 KiB |
+| L35 (ember-hollow) | 42.5 / 37.9 / 31.0 / 35.9 (mean 36.8) | 39.8 / 28.4 / 28.9 / 26.5 (mean 30.9) | 13 → 18 | 78.7 → 79.7 MiB | 329,606 → 332,052 KiB |
+| L155 (moonlit-clouds) | 27.5 / 43.7 / 30.5 / 38.5 (mean 35.1) | 32.4 / 30.4 / 26.9 / 41.8 (mean 32.9) | 12 → 31 | 79.0 → 80.0 MiB | 334,080 → 324,106 KiB |
+
+GC per frame is unchanged (~1.6 KB, the overlay's own text). "Main" readings (5–250 ms) and p90 (~170–215 ms)
+are dominated by the `screencap` stalls of the reading itself and are not comparable. The emulator's software
+renderer exaggerates per-pixel shader cost; the first full-screen ambient design measured 8.3 FPS on L35 and
+was replaced before these numbers. No physical device, battery or thermal measurement was made.
+
 ## Phase 11 results (2026-11-26, executed)
 
 | Run | Total | Passed | Failed | Skipped |

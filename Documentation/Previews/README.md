@@ -2,6 +2,8 @@
 
 These images were captured from the running Unity player.
 
+- [Phase 11.5 environmental art, VFX and living Worlds](Phase11_5/README.md)
+- [Phase 11 gameplay mastery](Phase11/README.md)
 - [Phase 7 gameplay, settings and input](Phase7/README.md)
 - [Phase 6 themed Worlds, gameplay and recovery](Phase6/README.md)
 - [Phase 5 portrait visuals and recovery](Phase5/README.md)

@@ -82,6 +82,28 @@ System Back (Android back gesture, Escape) arrives through SwipeInput's `Dismiss
 frame still counts. `PlopGameController.HandleBack` closes the top screen: Studio, then any HUD modal
 (`GameHud.HandleBack`), then a level returns to the menu, and the menu sends the app to the background.
 
+Phase 11.5 changes presentation only (no rules, solver, level or price changes). Lava, Frost, Loops and fan
+wind are drawn by four small unlit sprite shaders in `Resources/Shaders` (`PlopCommon.hlsl` holds the shared
+noise, connected-surface SDF and colour helpers). Every instance uses one shared material per shader and one
+unit-quad sprite; per-renderer data (8-neighbour mask, Loop pair, wind cell, effect flash) travels in the
+SpriteRenderer colour, packed by `PlopShaders.Pack` so it survives Unity's Linear colour conversion.
+`SurfaceConnectivity` (pure) computes neighbour masks, shapes, wind runs and encodings. `BoardEnvironment`
+(owned by `BoardView`) builds the mechanic visuals, spins fans, pools trace particles (`BoardFx`, 40 renderers)
+and reacts to the Core trace steps BoardView already queues (`TraceTiming` sets per-step durations and
+compresses long chains); `Sync` (Undo, Restart, recovery) clears every pending effect. If a shader is
+unsupported the atlas sprites are used. World board materials are data (`Resources/Worlds/BoardMaterials.json`):
+`ShapeAtlas.WorldSurfaces` paints that World's tray, tile and pebble on a worker thread with the same geometry
+as the shared atlas, and BoardView swaps the three sprites when ready (two World atlases cached at most).
+Living backgrounds keep the authored far image (far layer) and add, per World (`Resources/Worlds/Ambient.json`),
+a few small region quads drawn by `PlopAmbient` (mid props: windmill sails, grass, prism rays, attic beam,
+clouds, ember glow) and one static particle mesh drawn by `PlopAmbientParticles` (near layer: at most 64
+vertex-animated quads; particles over the board or above the Battery Saver density collapse to zero area).
+Nothing is drawn full-screen, so only those pixels are shaded. `WorldAmbient` is a single clock advanced by
+`WorldBackdrop.Update` only while visible, frozen under Reduced Motion and thinned in Battery Saver; only the
+current World's quads and mesh exist.
+Development-only Visual Lab boards (`VisualLab`, compiled out of release players) and the editor-only
+PLOP → Visual Lab window and capture tool preview all of it.
+
 For assembly dependencies, data flow and performance details, see the
 [technical architecture](Documentation/ARCHITECTURE.md). See
 [PROJECT_STATE.md](PROJECT_STATE.md) for the current handoff.

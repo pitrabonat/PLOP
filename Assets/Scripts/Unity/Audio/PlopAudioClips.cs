@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace Plop.Presentation
 {
-    internal enum PlopCue { Button, Move, Wall, Plop, Settle, Undo, Restart, Complete, WorldUnlock, Deadlock, Count }
+    internal enum PlopCue { Button, Move, Wall, Plop, Settle, Undo, Restart, Complete, WorldUnlock, Deadlock,
+        IceSlide, FanWhoosh, PortalIn, PortalOut, PortalBlocked, LavaHiss, LavaBubble, Count }
 
     /// <summary>Original short rubber, felt and hardwood textures with soft bell accents.</summary>
     internal static class PlopAudioClips
@@ -25,6 +26,13 @@ namespace Plop.Presentation
                 case PlopCue.Complete: return Completion();
                 case PlopCue.WorldUnlock: return WorldUnlock();
                 case PlopCue.Deadlock: return Deadlock();
+                case PlopCue.IceSlide: return IceSlide();
+                case PlopCue.FanWhoosh: return FanWhoosh();
+                case PlopCue.PortalIn: return Portal("Loop in", 76, 83, 0.55);
+                case PlopCue.PortalOut: return Portal("Loop out", 83, 78, 0.25);
+                case PlopCue.PortalBlocked: return Tap("Loop closed", 0.13, 250, 205, 0.012, 0.20, 0.10, 0.08, 61u);
+                case PlopCue.LavaHiss: return LavaHiss();
+                case PlopCue.LavaBubble: return Tap("Lava blub", 0.14, 150, 330, 0.018, 0.16, 0.05, 0.05, 29u);
                 default: throw new ArgumentOutOfRangeException(nameof(cue));
             }
         }
@@ -69,6 +77,65 @@ namespace Plop.Presentation
             Bell(pcm, 0.00, 0.25, 69, 0.041, 0.14);
             Bell(pcm, 0.12, 0.27, 65, 0.045, 0.12);
             return Clip("Try a new path", pcm);
+        }
+
+        // ---- Phase 11.5 mechanic cues: short, soft and original (synthesised here, no samples) ----
+
+        private static AudioClip IceSlide()
+        {
+            var pcm = Samples(0.34);
+            AddNoise(pcm, 0.0, 0.34, 0.55, 0.03, 2.6, 0.10, 0.6, 97u);
+            Bell(pcm, 0.02, 0.26, 88, 0.010, 0.035);
+            Bell(pcm, 0.07, 0.22, 93, 0.010, 0.022);
+            return Clip("Ice glide", pcm);
+        }
+
+        private static AudioClip FanWhoosh()
+        {
+            var pcm = Samples(0.46);
+            AddNoise(pcm, 0.0, 0.46, 0.045, 0.10, 2.0, 0.42, 0.0, 113u);
+            AddNoise(pcm, 0.03, 0.36, 0.14, 0.09, 2.4, 0.10, 0.3, 131u);
+            return Clip("Breeze gust", pcm);
+        }
+
+        private static AudioClip Portal(string name, int first, int second, double swish)
+        {
+            var pcm = Samples(0.36);
+            AddNoise(pcm, 0.0, 0.22, 0.20, 0.04, 2.8, 0.05 * swish, 0.8, 71u);
+            Bell(pcm, 0.00, 0.20, first, 0.012, 0.09);
+            Bell(pcm, 0.07, 0.27, second, 0.014, 0.10);
+            return Clip(name, pcm);
+        }
+
+        private static AudioClip LavaHiss()
+        {
+            var pcm = Samples(0.56);
+            AddNoise(pcm, 0.0, 0.56, 0.62, 0.012, 3.4, 0.09, 1.0, 157u);
+            AddTap(pcm, 0.16, 120, 260, 0.02, 0.14, 0.04, 0.05, 19u);
+            return Clip("Lava sizzle", pcm);
+        }
+
+        /// <summary>Filtered noise. <paramref name="response"/> 0..1 = dark..bright; <paramref name="crackle"/> adds sparse pops.</summary>
+        private static void AddNoise(float[] pcm, double start, double duration, double response, double attack,
+            double decay, double gain, double crackle, uint noise)
+        {
+            int first = (int)Math.Round(start * SampleRate);
+            int count = Math.Min((int)Math.Round(duration * SampleRate), pcm.Length - first);
+            double filtered = 0.0, prev = 0.0;
+            for (int i = 0; i < count; i++)
+            {
+                noise = unchecked(1664525u * noise + 1013904223u);
+                double white = ((noise >> 16) / 32767.5) - 1.0;
+                filtered += response * (white - filtered);
+                double high = filtered - prev; // gentle high-pass for airy textures
+                prev = filtered;
+                double t = (double)i / SampleRate;
+                double env = Envelope(t, duration, attack, decay);
+                double pop = 0.0;
+                if (crackle > 0.0 && (noise & 0x3FFu) == 0u) pop = crackle * 0.8;
+                double sample = response > 0.3 ? high * 4.0 + filtered * 0.4 : filtered * 2.2;
+                pcm[first + i] += (float)(gain * env * (sample + pop));
+            }
         }
 
         private static AudioClip Tap(string name, double duration, double fromHz, double toHz,

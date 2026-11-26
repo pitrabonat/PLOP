@@ -379,10 +379,13 @@ def frosted(canvas, preview):
     canvas.mist(540, 1036, 220, 60, 0xFFFFFF, 0.55)
 
 
-def windmill(canvas, x, y, scale, angle):
+def windmill(canvas, x, y, scale, angle, sails=True):
+    # In-game backdrops leave the sails off: PlopAmbient.shader turns them (same hub, size and colours).
     canvas.mist(x, y + 60 * scale, 120 * scale, 70 * scale, 0x9FBF8A, 0.25)
     canvas.round(x, y + 40 * scale, 34 * scale, 80 * scale, 14 * scale, 0xF6EEDC, 0xD6C2A4)
     canvas.round(x, y + 2 * scale, 42 * scale, 22 * scale, 10 * scale, 0xE7A98F, 0xC7826C)
+    if not sails:
+        return
     for k in range(4):
         a = math.radians(angle + k * 90)
         ex, ey = x + math.cos(a) * 52 * scale, y + math.sin(a) * 52 * scale
@@ -414,8 +417,8 @@ def meadow(canvas, preview):
             grass(canvas, x, 158, 26 + (x * 7) % 14, (x % 3 - 1) * 12, *greens[x % 3])
         return
     canvas.mist(120, 60, 260, 140, 0xFFFDF0, 0.35)
-    windmill(canvas, 470, 90, 1.0, 18)
-    windmill(canvas, 380, 140, 0.55, 52)
+    windmill(canvas, 470, 90, 1.0, 18, sails=False)
+    windmill(canvas, 380, 140, 0.55, 52, sails=False)
     for x, y, size in ((90, 70, 12), (180, 140, 9), (60, 190, 7), (300, 60, 8), (240, 210, 6), (520, 920, 9), (80, 900, 8)):
         seed_puff(canvas, x, y, size)
     canvas.oval(120, 1030, 420, 140, 0xD2E7B2, 0xA2C487)

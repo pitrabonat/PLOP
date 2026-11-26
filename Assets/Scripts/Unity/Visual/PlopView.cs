@@ -54,6 +54,10 @@ namespace Plop.Presentation
         private Vector4 _displayedBody = new Vector4(1f, 1f, 0f, 0f);
         private Vector4 _blendBody;
         private float _displayedShadowWidth = 1f;
+        // Phase 11.5 Loop teleport: shrink into the entry portal, reappear and grow at the exit.
+        private Vector3 _warpFrom;
+        private float _warpT0 = -1f, _warpDuration = 0.3f, _displayedWarp = 1f;
+        internal const float WarpEntryShare = 0.45f;
         private int _sortingBase = int.MinValue;
 
         private Expression _override = Expression.Neutral;
@@ -64,7 +68,8 @@ namespace Plop.Presentation
         private float _displayedFaceSleep = -1f, _displayedEyeScale = -1f;
         private Expression _displayedExpression = (Expression)(-1);
 
-        internal bool IsSliding => _moveT0 >= 0f;
+        internal bool IsSliding => _moveT0 >= 0f || _warpT0 >= 0f;
+        internal bool IsWarping => _warpT0 >= 0f;
         public bool IsMoving => IsSliding || _bumpT0 >= 0f;
         public bool IsBusy(float now) => IsMoving || _landT0 >= 0f || _hopT0 >= 0f || _sleepPending || _restoreT0 >= 0f ||
                                          (_sleepT0 >= 0f && now - _sleepT0 < SleepDuration);
@@ -217,8 +222,9 @@ namespace Plop.Presentation
         public void Snap(Vector3 position, bool asleep)
         {
             _from = _to = position;
-            _moveT0 = _bumpT0 = _landT0 = _hopT0 = _sleepT0 = _blinkT0 = _restoreT0 = _blendT0 = _wobbleT0 = -1f;
+            _moveT0 = _bumpT0 = _landT0 = _hopT0 = _sleepT0 = _blinkT0 = _restoreT0 = _blendT0 = _wobbleT0 = _warpT0 = -1f;
             _sleepPending = _sleepPoseFrozen = false;
+            SetWarpScale(1f);
             _asleep = asleep;
             _look = Vector2.zero;
             if (!_overrideForever) _overrideUntil = -1f;
@@ -289,6 +295,33 @@ namespace Plop.Presentation
             _lookUntil = now + 0.46f;
         }
 
+        /// <summary>
+        /// Loop teleport: the Plop shrinks into the portal at its current position, then reappears at
+        /// <paramref name="to"/> and grows back with a small overshoot. Counts as travelling (IsSliding).
+        /// </summary>
+        public void StartWarp(Vector3 to, float now, float duration)
+        {
+            if (_reducedMotion)
+            {
+                Snap(to, false);
+                return;
+            }
+            PreserveInterruptedPose(now);
+            _warpFrom = _displayedRoot;
+            _from = _to = to;
+            _warpT0 = now;
+            _warpDuration = Mathf.Max(0.08f, duration);
+            _moveT0 = _bumpT0 = _landT0 = -1f;
+            _sleepPoseFrozen = false;
+        }
+
+        private void SetWarpScale(float scale)
+        {
+            if (_displayedWarp == scale) return;
+            _displayedWarp = scale;
+            _pose.localScale = new Vector3(scale, scale, 1f);
+        }
+
         public void StartBump(Vector2 dir, float now, BlockReason reason = BlockReason.Wall)
         {
             if (_reducedMotion || _asleep || _sleepPending) return;
@@ -341,8 +374,34 @@ namespace Plop.Presentation
             if (_sleepPoseFrozen) return;
 
             Vector3 position = _to;
-            float moveTime = IsSliding ? now - _moveT0 : _moveDuration;
-            if (IsSliding)
+            bool moving = _moveT0 >= 0f;
+            float moveTime = moving ? now - _moveT0 : _moveDuration;
+            float warpScale = 1f, warpSpin = 0f;
+            if (_warpT0 >= 0f)
+            {
+                float u = (now - _warpT0) / _warpDuration;
+                if (u >= 1f)
+                {
+                    _warpT0 = -1f;
+                    _landT0 = now;
+                    _landDir = Vector2.down;
+                }
+                else if (u < WarpEntryShare)
+                {
+                    float k = Smooth(u / WarpEntryShare);
+                    position = _warpFrom;
+                    warpScale = 1f - 0.90f * k;
+                    warpSpin = 140f * k;
+                }
+                else
+                {
+                    float k = (u - WarpEntryShare) / (1f - WarpEntryShare);
+                    float back = 1f + 2.2f * Mathf.Pow(k - 1f, 3f) + 1.2f * Mathf.Pow(k - 1f, 2f);
+                    warpScale = 0.10f + 0.90f * back;
+                    warpSpin = -110f * (1f - k);
+                }
+            }
+            if (moving)
             {
                 float travel = (moveTime - _anticipation) / (_moveDuration - _anticipation);
                 if (travel >= 1f)
@@ -388,7 +447,8 @@ namespace Plop.Presentation
                 else tilt += 7f * Mathf.Sin(2f * Mathf.PI * 2.5f * u) * (1f - u) * (1f - u);
             }
 
-            if (IsSliding)
+            tilt += warpSpin;
+            if (moving)
             {
                 float along;
                 if (moveTime < _anticipation)
@@ -443,6 +503,7 @@ namespace Plop.Presentation
                 }
             }
             DisplayPose(position, offset, body);
+            SetWarpScale(warpScale);
 
             float eyeOpen = _asleep ? Mathf.Lerp(1f, 0.12f, Smooth(asleep / 0.38f)) : Blink(now);
             if (!_asleep && recoil > 0f) eyeOpen *= 1f - (_softBump ? 0.44f : 0.72f) * Smooth(recoil);

@@ -42,6 +42,14 @@ describes the system boundaries and [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md) rec
   rename or reuse one); run PLOP → Characters → Validate Cosmetics. Unlocks go through
   `CosmeticCollection` (one wallet write); never add a second currency, wallet or save manager.
   See [Documentation/CHARACTERS.md](Documentation/CHARACTERS.md).
+- Environment visuals (Phase 11.5) are presentation only: they read the Core trace and never change positions,
+  rules, solver input, levels or prices. Mechanic looks live in `Resources/Shaders` (one shared material per
+  shader, per-renderer data packed with `PlopShaders.Pack`); World materials and living backgrounds are data in
+  `Resources/Worlds/BoardMaterials.json` and `Ambient.json` (their colours are the documented exception to
+  "PlopPalette only"). No per-object `Update`: one ambient clock, event-driven effects from the pooled
+  `BoardFx`, and every pending effect cleared by `BoardEnvironment.Sync`. Keep only the current World's
+  ambient alive, nothing full-screen, Reduced Motion frozen (fan direction and Loop pair pips still visible)
+  and Battery Saver thinned. Preview with PLOP → Visual Lab → Preview Window; run `Phase11_5EnvironmentTests`.
 - Keep the one-command gesture buffer in presentation. Clear it on recovery,
   modal entry, navigation and suspension. Honor reduced motion when dispatching
   queued input. Keep the optional profiler readout in development builds.

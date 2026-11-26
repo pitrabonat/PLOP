@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Plop.Core;
 using UnityEngine;
@@ -32,7 +33,7 @@ namespace Plop.Presentation
         private MoveEffects _effects;
 
         // ---- Phase 10: forced-movement playback and tile feedback ----
-        private enum StepKind : byte { Slide, Push, Teleport, Settle, Burn }
+        private enum StepKind : byte { Slide, Push, Teleport, Settle, Burn, PortalBlocked, None }
         private readonly struct Step
         {
             public readonly StepKind Kind;
@@ -41,13 +42,16 @@ namespace Plop.Presentation
             public Step(StepKind kind, GridPosition from, GridPosition to, Direction direction) { Kind = kind; From = from; To = to; Direction = direction; }
         }
         private readonly List<Queue<Step>> _queues = new List<Queue<Step>>();
-        private readonly Dictionary<int, Transform> _fanBlades = new Dictionary<int, Transform>();
-        private readonly Dictionary<int, Transform> _portalRings = new Dictionary<int, Transform>();
-        private readonly Dictionary<Transform, float> _spinUntil = new Dictionary<Transform, float>();
-        private readonly List<Transform> _spinDone = new List<Transform>();
-        private const float SlideSecondsPerCell = 0.065f;
-        private const float PushSecondsPerCell = 0.085f;
+        private readonly List<StepKind> _lastStep = new List<StepKind>();
+        private readonly List<Direction> _lastStepDirection = new List<Direction>();
         public const float BurnRevealDelay = 0.18f;
+
+        // ---- Phase 11.5: procedural mechanic surfaces, fans, portals and trace feedback ----
+        private BoardEnvironment _env;
+        private bool _visible = true;
+        internal BoardEnvironment Environment => _env;
+        /// <summary>Mechanic sound cues, raised when each step of the trace is shown.</summary>
+        internal event Action<BoardEnvironment.Cue> TraceSound;
 
         /// <summary>True while any Plop still has forced-movement steps to show.</summary>
         public bool HasQueuedSteps
@@ -79,7 +83,7 @@ namespace Plop.Presentation
                 float now = Time.unscaledTime;
                 foreach (var p in _plops) if (p.IsBusy(now)) return true;
                 for (int i = 0; i < _pulseNest.Length; i++) if (_pulseNest[i] != null) return true;
-                if (HasQueuedSteps || _spinUntil.Count > 0) return true;
+                if (HasQueuedSteps || (_env != null && _env.HasActiveFeedback)) return true;
                 return false;
             }
         }
@@ -98,6 +102,65 @@ namespace Plop.Presentation
         {
             _batterySaver = saver;
             if (_effects != null) _effects.BatterySaver = saver;
+            _env?.SetBatterySaver(saver);
+        }
+
+        /// <summary>False while the board is covered (main menu, Studio) or the app is in the background:
+        /// ambient fan, lava and portal motion pause; gameplay feedback is unaffected.</summary>
+        public void SetVisible(bool visible)
+        {
+            _visible = visible;
+            _env?.SetVisible(visible);
+        }
+
+        public bool Visible => _visible;
+
+        private WorldTheme _world;
+        private BoardMaterialProfile _materials;
+        private ShapeAtlas _surfaces;
+        private bool _surfacesPending;
+
+        /// <summary>The World whose board materials dress the tray, floor and pebbles (see BoardMaterials).</summary>
+        public void SetWorld(WorldTheme world)
+        {
+            _world = world;
+            var profile = BoardMaterials.For(world);
+            PlopShaders.SetWindTint(profile != null ? profile.Wind.WithAlpha(PlopShaders.DefaultWindTint.a) : PlopShaders.DefaultWindTint);
+            if (profile == _materials) return;
+            _materials = profile;
+            // On a live board the new World's surfaces bake in the background and swap in when ready.
+            RequestSurfaces(synchronous: !Application.isPlaying);
+        }
+
+        /// <summary>The World board-material profile in use, or null for the default Cozy materials.</summary>
+        public BoardMaterialProfile Materials => _materials;
+        /// <summary>True when the tray, tiles and pebbles show the current World's own materials.</summary>
+        public bool ShowsWorldMaterials => SurfacesMatch(_surfaces);
+        public bool SurfacesPending => _surfacesPending;
+
+        private bool SurfacesMatch(ShapeAtlas s) => s != null && _materials != null && _atlas != null
+            && s.WorldId == _materials.Id && s.PixelsPerUnit == _atlas.PixelsPerUnit;
+
+        private void RequestSurfaces(bool synchronous)
+        {
+            _surfacesPending = false;
+            if (_materials != null && _atlas != null && !SurfacesMatch(_surfaces))
+            {
+                var baked = ShapeAtlas.WorldSurfaces(_materials, _atlas.PixelsPerUnit, synchronous);
+                if (baked == null) { _surfacesPending = true; return; }
+                _surfaces = baked;
+            }
+            ApplySurfaces();
+        }
+
+        /// <summary>Points the tray, tile and pebble renderers at the World atlas (or back at the shared one).</summary>
+        private void ApplySurfaces()
+        {
+            if (_atlas == null) return;
+            var src = SurfacesMatch(_surfaces) ? _surfaces : _atlas;
+            if (_tray != null) _tray.sprite = src.Get("panel");
+            foreach (var tile in _tiles) tile.Renderer.sprite = src.Get("tile");
+            foreach (var pebble in _pebbles) pebble.sprite = src.Get("pebble");
         }
 
         /// <summary>Applies the current World's surface colors on the shared board atlas.</summary>
@@ -123,6 +186,7 @@ namespace Plop.Presentation
                 plop.SetSortingBase(RowOrder(row));
             }
             if (reduced) ClearNestPulses();
+            _env?.SetReducedMotion(reduced);
             if (_effects != null)
             {
                 _effects.Enabled = !reduced;
@@ -146,9 +210,8 @@ namespace Plop.Presentation
             _static.Clear();
             _plops.Clear();
             _queues.Clear();
-            _fanBlades.Clear();
-            _portalRings.Clear();
-            _spinUntil.Clear();
+            _lastStep.Clear();
+            _lastStepDirection.Clear();
             _tiles.Clear();
             _pebbles.Clear();
             _nestByCell.Clear();
@@ -190,46 +253,22 @@ namespace Plop.Presentation
                 }
             }
 
-            // ---- Phase 10 mechanic tiles (above floor tiles, below Nests and Plops) ----
-            foreach (var t in level.Tiles)
+            // ---- mechanic tiles (above floor tiles, below Nests and Plops): see BoardEnvironment ----
+            if (_env == null)
             {
-                var at = CellToLocal(t.Position);
-                int cell = level.CellIndex(t.Position);
-                switch (t.Kind)
-                {
-                    case TileKind.Frost:
-                        Simple("Frost " + t.Position, atlas.Get(ShapeAtlas.FrostKey), -976).transform.localPosition = at;
-                        break;
-                    case TileKind.Lava:
-                        Simple("Lava " + t.Position, atlas.Get(ShapeAtlas.LavaKey), -976).transform.localPosition = at;
-                        break;
-                    case TileKind.Portal:
-                        var ring = Simple("Loop " + t.Pair + " " + t.Position, atlas.Get(ShapeAtlas.PortalKey(t.Pair)), -976);
-                        ring.transform.localPosition = at;
-                        _portalRings[cell] = ring.transform;
-                        break;
-                    case TileKind.Fan:
-                        Simple("Breeze " + t.Position, atlas.Get(ShapeAtlas.FanKey), -976).transform.localPosition = at;
-                        var blades = Simple("Breeze blades " + t.Position, atlas.Get(ShapeAtlas.FanBladesKey), -975);
-                        blades.transform.localPosition = at;
-                        _fanBlades[cell] = blades.transform;
-                        var dir = Delta(t.Direction);
-                        var arrow = Simple("Breeze arrow " + t.Position, atlas.Get(ShapeAtlas.FanArrowKey), -974);
-                        arrow.transform.localPosition = at + (Vector3)(dir * 0.395f);
-                        arrow.transform.localRotation = Quaternion.FromToRotation(Vector3.up, dir);
-                        for (int k = 0; k < t.Power; k++)
-                        {
-                            // Power pips sit opposite the chevron: one dot per cell of push.
-                            var across = new Vector2(-dir.y, dir.x);
-                            var pip = Simple("Breeze power " + t.Position, atlas.Get(ShapeAtlas.FanPipKey), -974);
-                            pip.transform.localPosition = at + (Vector3)(-dir * 0.40f + across * ((k - (t.Power - 1) * 0.5f) * 0.1f));
-                        }
-                        break;
-                }
+                _env = new BoardEnvironment(transform, CellToLocal, PlopLocal, RowOrder);
+                _env.Sound += cue => TraceSound?.Invoke(cue);
             }
+            _env.Build(level, atlas, Simple, _reducedMotion, _batterySaver);
+            _env.SetBatterySaver(_batterySaver);
+            _env.SetVisible(_visible);
+            // World board materials: wait for a bake already in flight (level load is a hitch point anyway).
+            RequestSurfaces(synchronous: true);
 
             foreach (var nest in level.Nests)
             {
+                var bed = Simple("Nest bed " + nest.Color, atlas.Get(ShapeAtlas.NestBedKey), -972);
+                bed.transform.localPosition = CellToLocal(nest.Position);
                 var n = Simple("Nest " + nest.Color, atlas.Get(ShapeAtlas.NestKey((int)nest.Color)), -970);
                 n.transform.localPosition = CellToLocal(nest.Position);
                 var seal = Simple("Match seal " + nest.Color, atlas.Get(ShapeAtlas.NestSealKey((int)nest.Color)), NestSealOrder);
@@ -243,6 +282,8 @@ namespace Plop.Presentation
             {
                 _plops.Add(new PlopView(transform, atlas, (int)level.PlopColorOf(id), id + 1, _reducedMotion));
                 _queues.Add(new Queue<Step>());
+                _lastStep.Add(StepKind.None);
+                _lastStepDirection.Add(Direction.Up);
             }
 
             var effects = new GameObject("Move effects");
@@ -263,8 +304,12 @@ namespace Plop.Presentation
             }
             ClearNestPulses();
             _effects?.Clear();
+            _env?.Clear();
             foreach (var q in _queues) q.Clear();
+            for (int i = 0; i < _lastStep.Count; i++) _lastStep[i] = StepKind.None;
         }
+
+        private Vector3 PlopLocal(int plopId) => transform.InverseTransformPoint(_plops[plopId].Root.position);
 
         private void ClearNestPulses()
         {
@@ -286,6 +331,7 @@ namespace Plop.Presentation
                     case GameEventType.PlopMoved:
                     {
                         var view = _plops[e.PlopId];
+                        _lastStep[e.PlopId] = StepKind.None;
                         view.StartMove(CellToLocal(e.To), Delta(e.Direction), now);
                         if (_effects != null && _effects.Enabled)
                         {
@@ -297,7 +343,11 @@ namespace Plop.Presentation
                         break;
                     }
                     case GameEventType.PlopBlocked:
-                        if (e.BlockReason == BlockReason.PortalExit) { Pulse(e.To, now); break; }
+                        if (e.BlockReason == BlockReason.PortalExit)
+                        {
+                            Enqueue(e.PlopId, new Step(StepKind.PortalBlocked, e.To, e.To, e.Direction), now);
+                            break;
+                        }
                         if (_queues.Count > e.PlopId && _queues[e.PlopId].Count > 0) break; // the chain ended against it
                         _plops[e.PlopId].StartBump(Delta(e.Direction), now, e.BlockReason);
                         break;
@@ -327,12 +377,14 @@ namespace Plop.Presentation
 
         private void Update()
         {
-            if (_level == null || _reducedMotion) return;
+            if (_level == null) return;
             float now = Time.unscaledTime;
+            _env?.Tick(now, Time.unscaledDeltaTime);
+            if (_surfacesPending) RequestSurfaces(synchronous: false);
+            if (_reducedMotion) return;
             _effects?.Tick(now);
             for (int i = 0; i < _queues.Count; i++)
                 if (_queues[i].Count > 0 && !_plops[i].IsSliding) StartStep(i, _queues[i].Dequeue(), now);
-            if (_spinUntil.Count > 0) SpinTiles(now);
             for (int i = 0; i < _plops.Count; i++)
             {
                 var p = _plops[i];
@@ -343,6 +395,11 @@ namespace Plop.Presentation
 
                 int row = Mathf.RoundToInt(p.Target.y + (_level.Height - 1) * 0.5f);
                 if (landed) p.SetSortingBase(RowOrder(row));
+                if (landed && _lastStep[i] == StepKind.Slide && _queues[i].Count == 0)
+                {
+                    _env?.OnSlideStopped(i, _lastStepDirection[i], now);
+                    _lastStep[i] = StepKind.None;
+                }
                 if (p.SleepJustStarted)
                 {
                     int column = Mathf.RoundToInt(p.Target.x + (_level.Width - 1) * 0.5f);
@@ -374,61 +431,44 @@ namespace Plop.Presentation
         {
             var view = _plops[plopId];
             int cells = Mathf.Abs(step.To.X - step.From.X) + Mathf.Abs(step.To.Y - step.From.Y);
+            int behind = _queues[plopId].Count;
+            _lastStep[plopId] = step.Kind;
+            _lastStepDirection[plopId] = step.Direction;
             switch (step.Kind)
             {
                 case StepKind.Slide:
                 case StepKind.Push:
-                    float perCell = step.Kind == StepKind.Slide ? SlideSecondsPerCell : PushSecondsPerCell;
-                    view.StartMove(CellToLocal(step.To), Delta(step.Direction), now, 0.05f + perCell * cells, false);
+                {
+                    bool slide = step.Kind == StepKind.Slide;
+                    float duration = slide ? TraceTiming.Slide(cells, behind) : TraceTiming.Push(cells, behind);
+                    view.StartMove(CellToLocal(step.To), Delta(step.Direction), now, duration, false);
                     view.SetSortingBase(RowOrder(Mathf.Min(step.From.Y, step.To.Y)));
-                    if (step.Kind == StepKind.Push && _fanBlades.TryGetValue(_level.CellIndex(step.From), out var blades))
-                        _spinUntil[blades] = now + 0.55f;
+                    if (slide) _env?.OnSlide(plopId, step.From, step.To, step.Direction, duration, now);
+                    else _env?.OnPush(plopId, step.From, step.Direction, duration, now);
                     break;
+                }
                 case StepKind.Teleport:
-                    Pulse(step.From, now);
-                    Pulse(step.To, now);
-                    view.Snap(CellToLocal(step.To), false);
+                {
+                    float duration = TraceTiming.Teleport(behind);
+                    view.StartWarp(CellToLocal(step.To), now, duration);
                     view.SetSortingBase(RowOrder(step.To.Y));
                     view.React(Reaction.Surprised, now);
+                    _env?.OnTeleport(plopId, step.From, step.To, duration, now);
+                    break;
+                }
+                case StepKind.PortalBlocked:
+                    view.React(Reaction.Wobble, now);
+                    _env?.OnPortalBlocked(step.To, now);
                     break;
                 case StepKind.Settle:
                     view.QueueSleep(now);
                     break;
                 case StepKind.Burn:
-                    view.SetExpression(Expression.Worried);
+                    view.SetExpression(Expression.Surprised);
                     view.StartBump(Vector2.up, now, BlockReason.Wall);
-                    _effects?.Spawn(CellToLocal(step.To), Vector2.up, PlopPalette.Hex(0xF6A266), now, RowOrder(step.To.Y) + 15);
+                    _env?.OnBurn(plopId, step.To, now);
                     break;
             }
-        }
-
-        private void Pulse(GridPosition at, float now)
-        {
-            if (_level == null || !_level.InBounds(at)) return;
-            if (_portalRings.TryGetValue(_level.CellIndex(at), out var ring)) _spinUntil[ring] = now + 0.35f;
-        }
-
-        private void SpinTiles(float now)
-        {
-            _spinDone.Clear();
-            foreach (var kv in _spinUntil)
-            {
-                float left = kv.Value - now;
-                if (left <= 0f)
-                {
-                    kv.Key.localRotation = Quaternion.identity;
-                    kv.Key.localScale = Vector3.one;
-                    _spinDone.Add(kv.Key);
-                    continue;
-                }
-                if (_portalRings.ContainsValue(kv.Key))
-                {
-                    float pulse = Mathf.Sin(Mathf.PI * left / 0.35f);
-                    kv.Key.localScale = new Vector3(1f + 0.08f * pulse, 1f + 0.08f * pulse, 1f);
-                }
-                else kv.Key.localRotation = Quaternion.AngleAxis(-900f * Time.unscaledDeltaTime, Vector3.forward) * kv.Key.localRotation;
-            }
-            foreach (var t in _spinDone) _spinUntil.Remove(t);
         }
 
         private void StartPulse(Transform nest, float now)

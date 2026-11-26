@@ -59,14 +59,16 @@ namespace Plop.Tests.PlayMode
                 var board = scene.AddComponent<BoardView>();
                 var level = LevelText.Parse(2, "tiles", "1~..r", "R!>.1");
                 board.Build(level, level.CreateInitialState(), ShapeAtlas.ForDensity(96f));
-                Assert.IsNotNull(scene.transform.Find("Frost (1,1)"));
-                Assert.IsNotNull(scene.transform.Find("Lava (1,0)"));
+                var names = scene.GetComponentsInChildren<Transform>().Select(t => t.name).ToList();
+                Assert.IsTrue(names.Any(n => n.StartsWith("Frost (1,1)")));
+                Assert.IsTrue(names.Any(n => n.StartsWith("Lava (1,0)")));
                 Assert.AreEqual(2, scene.GetComponentsInChildren<Transform>().Count(t => t.name.StartsWith("Loop ")));
                 var arrow = scene.transform.Find("Breeze arrow (2,0)");
                 Assert.Less(Vector3.Distance(Vector3.right, arrow.up), 1e-4f, "the chevron points the fan's way");
                 Assert.AreEqual(2, scene.GetComponentsInChildren<Transform>().Count(t => t.name.StartsWith("Breeze power")), "one pip per cell of push");
                 var textures = scene.GetComponentsInChildren<SpriteRenderer>().Where(r => r.sprite != null).Select(r => r.sprite.texture).Distinct().Count();
-                Assert.AreEqual(1, textures, "mechanic tiles share the board atlas");
+                // Phase 11.5: surfaces, Loops and wind use one shared procedural quad; everything else the board atlas.
+                Assert.LessOrEqual(textures, PlopShaders.Available ? 2 : 1, "mechanic tiles share the board atlas (and the shader quad)");
             }
             finally { Object.Destroy(scene); }
         }

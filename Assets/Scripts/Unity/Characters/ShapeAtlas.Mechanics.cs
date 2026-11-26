@@ -19,6 +19,14 @@ namespace Plop.Presentation
         public const string FanArrowKey = "tile.fanArrow";
         public const string FanPipKey = "tile.fanPip";
         public const string BurnKey = "fx.burn";
+        // Phase 11.5 effect particles (tiny, shared by every board effect).
+        public const string FxDotKey = "fx.dot";
+        public const string FxRingKey = "fx.ring";
+        public const string FxSparkKey = "fx.spark";
+        public const string FxFlakeKey = "fx.flake";
+        public const string FxPuffKey = "fx.puff";
+        /// <summary>Phase 11.5: a shallow recessed bed under every Nest (depth without touching cosmetic Nest art).</summary>
+        public const string NestBedKey = "nest.bed";
         public const int PortalColors = 6;
         public static string PortalKey(int pair) => "tile.portal" + (pair % PortalColors);
 
@@ -34,7 +42,9 @@ namespace Plop.Presentation
             specs.Add(Make(LavaKey, -0.5f, -0.5f, 1f, 1f, PaintLava));
             specs.Add(Make(FanKey, -0.5f, -0.5f, 1f, 1f, PaintFanBase));
             specs.Add(Make(FanBladesKey, -0.3f, -0.3f, 0.6f, 0.6f, PaintFanBlades));
-            specs.Add(Make(FanArrowKey, -0.12f, -0.09f, 0.24f, 0.18f, PaintFanArrow, 192));
+            specs.Add(Make(FanArrowKey, -0.13f, -0.10f, 0.26f, 0.20f, PaintFanArrow, 192));
+            AddEffectParticles(specs);
+            specs.Add(Make(NestBedKey, -0.5f, -0.5f, 1f, 1f, PaintNestBed));
             specs.Add(Make(FanPipKey, -0.055f, -0.055f, 0.11f, 0.11f, (x, y, px) =>
             {
                 // Ink dot with a pale halo so it reads on both the tile and the fan housing.
@@ -108,42 +118,137 @@ namespace Plop.Presentation
             return Sdf.Over(c, Color.Lerp(rim, pool, band), inside);
         }
 
+        // Phase 11.5 fan: a rounded porcelain drum with a recessed grille well, four swept blades on a hub
+        // (rotated at runtime) and a nozzle tab carrying the direction chevron. Only the housing is painted
+        // here; the floor tile underneath is its own sprite.
         private static Color PaintFanBase(float x, float y, float pixel)
         {
-            var c = PaintTile(x, y, pixel);
-            float housing = Sdf.Circle(x, y, 0f, 0f, 0.335f);
-            float shade = Sdf.Soft(Sdf.Circle(x, y, 0.012f, -0.022f, 0.335f), 0.03f);
-            c = Sdf.Over(c, PlopPalette.Shadow, 0.22f * shade);
-            var shell = Color.Lerp(PlopPalette.Hex(0xE9E0D4), PlopPalette.Hex(0xFFF8EE), Smooth(0.5f + 1.3f * y - 0.9f * x));
-            c = Sdf.Over(c, shell, Sdf.Coverage(housing, pixel));
-            float well = Sdf.Circle(x, y, 0f, 0f, 0.285f);
-            var hollow = Color.Lerp(PlopPalette.Hex(0xBFDDD4), PlopPalette.Hex(0xDCEFE8), Smooth(0.5f - 1.2f * y + 0.8f * x));
-            return Sdf.Over(c, hollow, Sdf.Coverage(well, pixel));
+            var c = PlopPalette.Shadow.WithAlpha(0f);
+            const float rim = 0.368f, well = 0.302f;
+            float r = Mathf.Sqrt(x * x + y * y);
+            c = Sdf.Over(c, PlopPalette.Shadow, 0.30f * Sdf.Soft(Sdf.Circle(x, y, 0.014f, -0.030f, rim), 0.035f));
+            float nx = r > 1e-4f ? x / r : 0f, ny = r > 1e-4f ? y / r : 1f;
+            float band = Mathf.Clamp01((r - well) / (rim - well));
+            float bulge = (band - 0.5f) * 2f;
+            float lit = Mathf.Clamp01(0.5f + 0.5f * (-0.57f * nx + 0.82f * ny) * bulge + 0.22f * (1f - Mathf.Abs(bulge)));
+            var shell = Color.Lerp(PlopPalette.Hex(0xCFC5B7), PlopPalette.Hex(0xFFFAF2), lit);
+            c = Sdf.Over(c, shell, Sdf.Coverage(Sdf.Circle(x, y, 0f, 0f, rim), pixel));
+            // Four tiny screws on the rim.
+            for (int k = 0; k < 4; k++)
+            {
+                float a = Mathf.PI * 0.25f + k * Mathf.PI * 0.5f;
+                float sx = Mathf.Cos(a) * 0.336f, sy = Mathf.Sin(a) * 0.336f;
+                float screw = Sdf.Circle(x, y, sx, sy, 0.014f);
+                c = Sdf.Over(c, Color.Lerp(PlopPalette.Hex(0xB8AC9C), PlopPalette.Hex(0xEDE4D6), Smooth(0.5f + 30f * (y - sy) - 20f * (x - sx))), Sdf.Coverage(screw, pixel));
+            }
+            // Recessed well: shaded on the upper left (the lip casts into it), lit on the lower right.
+            float inner = Sdf.Circle(x, y, 0f, 0f, well);
+            float recess = Smooth(0.5f - 1.1f * y + 0.8f * x);
+            var hollow = Color.Lerp(PlopPalette.Hex(0x8FC2B6), PlopPalette.Hex(0xD3EEE7), recess);
+            float lipShade = (1f - Smooth(-inner / 0.05f)) * Smooth(0.5f + 1.4f * y - 1.0f * x);
+            hollow = Color.Lerp(hollow, PlopPalette.Hex(0x6E9F95), 0.45f * lipShade);
+            // Grille: two thin concentric rings and a cross brace behind the blades.
+            float ring1 = Mathf.Abs(r - 0.205f) - 0.006f;
+            float ring2 = Mathf.Abs(r - 0.125f) - 0.005f;
+            float brace = Mathf.Min(Mathf.Abs(x), Mathf.Abs(y)) - 0.005f;
+            float grille = Mathf.Min(Mathf.Min(ring1, ring2), r < well - 0.02f ? brace : 1f);
+            hollow = Color.Lerp(hollow, PlopPalette.Hex(0x5F8E85), 0.35f * Sdf.Coverage(grille, pixel));
+            return Sdf.Over(c, hollow, Sdf.Coverage(inner, pixel));
         }
 
         private static Color PaintFanBlades(float x, float y, float pixel)
         {
-            var blade = PlopPalette.Hex(0x8FCDBB);
+            var blade = PlopPalette.Hex(0x7DC3AE);
             float d = 10f;
-            for (int k = 0; k < 3; k++)
+            float lightAcc = 0f;
+            for (int k = 0; k < 4; k++)
             {
-                float a = k * Mathf.PI * 2f / 3f;
-                float c = Mathf.Cos(a), s = Mathf.Sin(a);
-                float u = x * c + y * s, v = -x * s + y * c;
-                d = Mathf.Min(d, Sdf.Ellipse(u - 0.13f, v + 0.02f * (u - 0.13f) * 6f, 0f, 0f, 0.13f, 0.065f));
+                float a = k * Mathf.PI * 0.5f + 0.35f;
+                float ca = Mathf.Cos(a), sa = Mathf.Sin(a);
+                float u = x * ca + y * sa, v = -x * sa + y * ca;
+                // Swept blade: an ellipse bent along its length.
+                float bend = v - 0.55f * (u - 0.05f) * (u - 0.05f);
+                float e = Sdf.Ellipse(u - 0.155f, bend + 0.012f, 0f, 0f, 0.128f, 0.071f);
+                if (e < d) { d = e; lightAcc = Smooth(0.5f + 4f * bend); }
             }
-            var color = Color.Lerp(Color.Lerp(blade, PlopPalette.Ink, 0.12f), Color.Lerp(blade, PlopPalette.Highlight, 0.35f), Smooth(0.5f + 3f * (y - x)));
-            var outC = Sdf.Over(blade.WithAlpha(0f), color, Sdf.Coverage(d, pixel));
-            float hub = Sdf.Circle(x, y, 0f, 0f, 0.055f);
-            var hubColor = Color.Lerp(PlopPalette.Hex(0xE5B97E), PlopPalette.Hex(0xFFE3B0), Smooth(0.5f + 8f * (y - x)));
-            return Sdf.Over(outC, hubColor, Sdf.Coverage(hub, pixel));
+            var face = Color.Lerp(Color.Lerp(blade, PlopPalette.Ink, 0.16f), Color.Lerp(blade, PlopPalette.Highlight, 0.42f), lightAcc);
+            face = Color.Lerp(face, Color.Lerp(blade, PlopPalette.Ink, 0.30f), 0.6f * (1f - Smooth(-d / 0.018f)));
+            var outC = Sdf.Over(blade.WithAlpha(0f), PlopPalette.Shadow, 0.22f * Sdf.Soft(d + 0.004f, 0.02f));
+            outC = Sdf.Over(outC, face, Sdf.Coverage(d, pixel));
+            float hub = Sdf.Circle(x, y, 0f, 0f, 0.068f);
+            var hubColor = Color.Lerp(PlopPalette.Hex(0xD9A866), PlopPalette.Hex(0xFFE6B8), Smooth(0.5f + 8f * (y - x)));
+            outC = Sdf.Over(outC, PlopPalette.Shadow, 0.25f * Sdf.Soft(Sdf.Circle(x, y, 0.008f, -0.012f, 0.068f), 0.02f));
+            outC = Sdf.Over(outC, hubColor, Sdf.Coverage(hub, pixel));
+            return Sdf.Over(outC, PlopPalette.Highlight, 0.8f * Sdf.Coverage(Sdf.Circle(x, y, -0.020f, 0.022f, 0.016f), pixel));
         }
 
-        /// <summary>Chevron pointing up (+y); the board rotates it to each fan's direction.</summary>
+        /// <summary>Nozzle tab with a chevron, pointing up (+y); the board rotates it to each fan's direction.</summary>
         private static Color PaintFanArrow(float x, float y, float pixel)
         {
-            float d = Mathf.Min(Segment(x, y, -0.065f, -0.035f, 0f, 0.035f), Segment(x, y, 0f, 0.035f, 0.065f, -0.035f)) - 0.022f;
-            return FanInk.WithAlpha(0.95f * Sdf.Coverage(d, pixel));
+            float tab = Sdf.RoundBox(x, y, 0f, -0.012f, 0.105f, 0.062f, 0.055f);
+            var c = PlopPalette.Shadow.WithAlpha(0.25f * Sdf.Soft(Sdf.RoundBox(x, y, 0.006f, -0.024f, 0.105f, 0.062f, 0.055f), 0.02f));
+            var porcelain = Color.Lerp(PlopPalette.Hex(0xE3D9CB), PlopPalette.Hex(0xFFFBF4), Smooth(0.5f + 6f * y));
+            c = Sdf.Over(c, porcelain, Sdf.Coverage(tab, pixel));
+            float d = Mathf.Min(Segment(x, y, -0.058f, -0.040f, 0f, 0.022f), Segment(x, y, 0f, 0.022f, 0.058f, -0.040f)) - 0.021f;
+            return Sdf.Over(c, FanInk, 0.95f * Sdf.Coverage(d, pixel));
+        }
+
+        /// <summary>
+        /// A soft recess pressed into the tile: the upper-left wall falls into shadow and the lower-right lip
+        /// catches the light (same upper-left key light as the rest of the board). Transparent elsewhere.
+        /// </summary>
+        private static Color PaintNestBed(float x, float y, float pixel)
+        {
+            float d = Sdf.RoundBox(x, y, 0f, 0.012f, 0.425f, 0.425f, 0.19f);
+            var c = PlopPalette.ContactShadow.WithAlpha(0f);
+            float inside = Sdf.Coverage(d, pixel);
+            if (inside > 0f)
+            {
+                float wall = 1f - Smooth(-d / 0.075f);
+                float shaded = Smooth(0.5f + (y - x) * 1.1f);
+                c = Sdf.Over(c, PlopPalette.ContactShadow, inside * (0.10f + 0.26f * wall * shaded));
+            }
+            float lip = (1f - Smooth(Mathf.Abs(d - 0.010f) / 0.012f)) * Smooth(0.5f + (x - y) * 1.2f);
+            return Sdf.Over(c, PlopPalette.Highlight, 0.55f * lip);
+        }
+
+        private void AddEffectParticles(List<Spec> specs)
+        {
+            specs.Add(Make(FxDotKey, -0.08f, -0.08f, 0.16f, 0.16f, (x, y, px) =>
+            {
+                float r = Mathf.Sqrt(x * x + y * y) / 0.075f;
+                return Color.white.WithAlpha(Mathf.Clamp01(1f - r * r) * Mathf.Clamp01(1.4f - r));
+            }, 96));
+            specs.Add(Make(FxRingKey, -0.25f, -0.25f, 0.5f, 0.5f, (x, y, px) =>
+            {
+                float r = Mathf.Sqrt(x * x + y * y);
+                return Color.white.WithAlpha(Mathf.Clamp01(1f - Mathf.Abs(r - 0.21f) / 0.022f) * 0.95f);
+            }, 128));
+            specs.Add(Make(FxSparkKey, -0.08f, -0.08f, 0.16f, 0.16f, (x, y, px) =>
+            {
+                float ax = Mathf.Abs(x), ay = Mathf.Abs(y);
+                float star = (Mathf.Sqrt(ax) + Mathf.Sqrt(ay) - Mathf.Sqrt(0.06f)) * 0.25f;
+                float glow = Mathf.Clamp01(1f - Mathf.Sqrt(x * x + y * y) / 0.07f) * 0.35f;
+                return Color.white.WithAlpha(Mathf.Max(Sdf.Coverage(star, px), glow));
+            }, 96));
+            specs.Add(Make(FxFlakeKey, -0.07f, -0.07f, 0.14f, 0.14f, (x, y, px) =>
+            {
+                float d = 10f;
+                for (int k = 0; k < 3; k++)
+                {
+                    float a = k * Mathf.PI / 3f;
+                    float ca = Mathf.Cos(a), sa = Mathf.Sin(a);
+                    d = Mathf.Min(d, Segment(x, y, -ca * 0.055f, -sa * 0.055f, ca * 0.055f, sa * 0.055f) - 0.009f);
+                }
+                d = Mathf.Min(d, Sdf.Circle(x, y, 0f, 0f, 0.018f));
+                return Color.white.WithAlpha(Sdf.Coverage(d, px));
+            }, 96));
+            specs.Add(Make(FxPuffKey, -0.16f, -0.16f, 0.32f, 0.32f, (x, y, px) =>
+            {
+                float d = Sdf.SmoothMin(Sdf.Circle(x, y, -0.05f, -0.02f, 0.085f), Sdf.Circle(x, y, 0.055f, -0.01f, 0.075f), 0.05f);
+                d = Sdf.SmoothMin(d, Sdf.Circle(x, y, 0.0f, 0.055f, 0.08f), 0.05f);
+                return Color.white.WithAlpha(0.85f * Sdf.Soft(d, 0.05f));
+            }, 96));
         }
 
         /// <summary>Dice layouts (unit square ±1) for 1–6 pips.</summary>

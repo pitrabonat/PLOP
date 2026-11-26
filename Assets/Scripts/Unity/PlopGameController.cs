@@ -185,6 +185,20 @@ namespace Plop.Presentation
             _studio.Closed += OnStudioClosed;
             _studio.ButtonPressed += _audio.PlayButton;
             _board.SetBatterySaver(targetFrameRate == FrameRateMode.Fps30);
+            _backdrop.SetBatterySaver(targetFrameRate == FrameRateMode.Fps30);
+            _board.TraceSound += _audio.PlayTrace;
+        }
+
+        /// <summary>
+        /// Ambient board and World motion runs only while the board is actually on screen: the opaque main menu,
+        /// Character Studio and a backgrounded app all pause it (state is kept; nothing is rebuilt).
+        /// </summary>
+        private void UpdateSceneVisibility()
+        {
+            bool visible = !_suspended && !(_menu != null && _menu.IsOpen) && !(_studio != null && _studio.IsOpen);
+            if (visible == _board.Visible) return;
+            _board.SetVisible(visible);
+            _backdrop.SetAmbientVisible(visible);
         }
 
         private void InitMeta(bool persist)
@@ -316,7 +330,9 @@ namespace Plop.Presentation
             // Screenshot/demo settings must never grant durable progress.
             int debugLevel = rememberProgress ? PlayerPrefs.GetInt("plop.debug.level", 0) : 0;
             string debugMoves = rememberProgress ? PlayerPrefs.GetString("plop.debug.moves", "") : "";
-            _debugPreview = debugLevel > 0 || !string.IsNullOrEmpty(debugMoves);
+            int debugLab = rememberProgress ? PlayerPrefs.GetInt("plop.debug.lab", 0) : 0;
+            string debugWorld = rememberProgress ? PlayerPrefs.GetString("plop.debug.world", "") : "";
+            _debugPreview = debugLevel > 0 || debugLab > 0 || !string.IsNullOrEmpty(debugMoves);
 #endif
             _progress = new LevelProgress(_levels, SavesProgress ? levelPackResource : null);
             // Development previews show the player's real look and Dust but never write to the save.
@@ -347,6 +363,10 @@ namespace Plop.Presentation
             _audio.Initialize(SavesProgress, _worlds.ForLevelIndex(_index)?.Ambience ?? WorldAmbience.CozyNest);
             UpdateCosmeticProgress();
             LoadCurrent();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (debugLab > 0) LoadVisualLab(debugLab, debugWorld);
+            else if (!string.IsNullOrEmpty(debugWorld)) ShowWorldOverride(debugWorld);
+#endif
             if (!_debugPreview) ShowMenu(); // the game opens on the main menu
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (PlayerPrefs.GetInt(PlopDiagnostics.Preference, 0) == 1) ToggleDiagnostics();
@@ -366,6 +386,29 @@ namespace Plop.Presentation
 
             _diagnostics = gameObject.AddComponent<PlopDiagnostics>();
             _diagnostics.Inspect(this);
+        }
+
+        /// <summary>Development only: show a Visual Lab board (never saved) in a chosen World.</summary>
+        internal bool LoadVisualLab(int number, string worldId = null)
+        {
+            var board = VisualLab.Get(number);
+            if (board == null) return false;
+            ShowWorldOverride(string.IsNullOrEmpty(worldId) ? board.World : worldId);
+            _engine.LoadLevel(board.Level);
+            PlopLog.Info("Visual Lab " + number + " in " + (_world?.Id ?? "-"));
+            return true;
+        }
+
+        /// <summary>Development only: dress the current board in another World (look only).</summary>
+        internal void ShowWorldOverride(string worldId)
+        {
+            foreach (var w in _worlds.Worlds)
+            {
+                if (w.Id != worldId) continue;
+                SetWorld(w);
+                if (_engine.HasLevel) _board.Build(_engine.Level, _engine.CurrentState, ShapeAtlas.ForDensity(FitCamera(), _look));
+                return;
+            }
         }
 
         private IEnumerator PlayDebugMoves(string moves)
@@ -477,6 +520,7 @@ namespace Plop.Presentation
             targetFrameRate = mode;
             ApplyFrameRate();
             _board.SetBatterySaver(mode == FrameRateMode.Fps30);
+            _backdrop.SetBatterySaver(mode == FrameRateMode.Fps30);
             _hud.SetFrameRate(mode);
             if (SavesProgress)
             {
@@ -886,6 +930,7 @@ namespace Plop.Presentation
             _world = world;
             _hud.SetCurrentWorld(world);
             _audio.SetWorldAmbience(world?.Ambience ?? WorldAmbience.CozyNest);
+            _board.SetWorld(world);
             ApplyBoardColors();
         }
 
@@ -900,8 +945,11 @@ namespace Plop.Presentation
                 return;
             }
             Color key = Color.Lerp(Color.white, _world.KeyLight, _world.LightStrength * 0.18f);
-            _board.SetPalette(BoardDecorTint.Blend(_world.TrayTint * key, decor?.Tray ?? Color.white, decor?.Amount ?? 0f),
-                BoardDecorTint.Blend(_world.TileTint * key, decor?.Tile ?? Color.white, decor?.Amount ?? 0f), _world.PebbleTint);
+            // A World with its own board materials paints its colours into the texture: only key light tints it.
+            bool painted = BoardMaterials.For(_world) != null;
+            _board.SetPalette(BoardDecorTint.Blend((painted ? Color.white : _world.TrayTint) * key, decor?.Tray ?? Color.white, decor?.Amount ?? 0f),
+                BoardDecorTint.Blend(_world.TileTint * key, decor?.Tile ?? Color.white, decor?.Amount ?? 0f),
+                painted ? key : _world.PebbleTint);
         }
 
         private void CompleteCurrentLevel(int moveCount)
@@ -1195,6 +1243,7 @@ namespace Plop.Presentation
 
         private void Update()
         {
+            UpdateSceneVisibility();
             if (_suspended) return;
             if (_pendingRecovery != Recovery.None && !_board.IsTraveling) ShowPendingRecovery();
             if (_pendingMove.HasValue && !_board.IsTraveling)

@@ -274,3 +274,28 @@ See [PROJECT_STATE.md](PROJECT_STATE.md) for verification and remaining device Q
 - Verified: .NET 200, EditMode 200, PlayMode 106; Pack_003 and Daily_002 strictly verified; Android
   ARM64 dev APK (46.5 MB) on the emulator, including the Phase 10 save migration and Level 155 solved by
   swipes; iOS Simulator export built by Xcode 26.3 and run on the iPhone 15 Pro Max simulator.
+
+## 2026-11-26 · Phase 11.5 environmental art, advanced VFX and living Worlds
+
+- Branched `feature/living-worlds` from Phase 11 (`3a92469`, tag `checkpoint/pre-phase11.5`). Presentation only:
+  no rule, solver, level, price or UI-layout change; 0 levels modified.
+- Audit first: mechanics were flat atlas sprites, Frost cells had per-cell borders, fans were static, portals had
+  no transit, every World shared one tray/tile/pebble look and backgrounds were still images. Phase 11 APK
+  measured on the emulator as the baseline (same protocol as after).
+- Four unlit sprite shaders (Lava, Frost, Wind, Portal) with one shared material each; per-renderer data rides in
+  the SpriteRenderer colour (`PlopShaders.Pack` compensates Unity's Linear conversion). `SurfaceConnectivity`
+  gives connected Lava pools and border-free Frost areas. Atlas sprites remain the fallback.
+- `BoardEnvironment` reacts to the Core trace BoardView already plays: slide trail and frost particles, fan gust
+  and stretch, teleport shrink/swirl/reveal (blocked exit wobbles), Lava puff and surprised face before the
+  unchanged failure card. `TraceTiming` compresses long chains; `Sync` clears all pending effects. Seven new
+  synthesised cues through `PlopAudio`.
+- World board materials (`BoardMaterials.json`): tray, tile and pebble painted per World on a worker thread, two
+  atlases cached; Nests gained a recessed bed.
+- Living Worlds: the first version was one full-screen ambient shader. Under the emulator's software renderer it
+  dropped L35 from ~37 to 8.3 FPS, so it was rebuilt as small region quads plus one vertex-animated particle mesh
+  (L35 back to ~31–40 FPS). Windmill sails moved from the painted backdrop into the animated region
+  (`render_worlds.py` `sails=False` for the meadow).
+- Visual Lab boards (dev-only), the editor-only Preview Window and capture tool. Lab 6 first put a Plop on a Loop,
+  which the Core rejects (`InvalidLevelException`); redesigned.
+- Verified: see PROJECT_STATE.md and Documentation/TESTING.md (Phase 11.5 results). Previews in
+  `Documentation/Previews/Phase11_5/`. No physical device and no human playtest.
