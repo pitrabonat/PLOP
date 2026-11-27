@@ -299,3 +299,33 @@ See [PROJECT_STATE.md](PROJECT_STATE.md) for verification and remaining device Q
   which the Core rejects (`InvalidLevelException`); redesigned.
 - Verified: see PROJECT_STATE.md and Documentation/TESTING.md (Phase 11.5 results). Previews in
   `Documentation/Previews/Phase11_5/`. No physical device and no human playtest.
+
+## 2026-11-26/27 · Phase 12–13, Final Sprint 01 and Final Sprint 02
+
+- **Phase 12/13:**
+  - RC1 hardening, plus the branding pack integration: a native splash built from the PNG layers (no video), the menu logo and review switches.
+- **Sprint 01:**
+  - Audit, content re-verification and the iOS launch colour.
+  - Builds in `Builds/FinalSprint/01_ProductCompletion`. I confirmed they're free of Sprint 02 code by inspecting `global-metadata.dat`.
+  - Handoff written: partial; the journey was folded into Sprint 02.
+- **Sprint 02, audio P0:**
+  - The audio code paths were fine, but the content was near-silent. Root cause in FINAL_SPRINT_02_HANDOFF.md.
+  - Built `Tools/AudioSynth`, an offline deterministic synth (modal piano, kalimba, marimba, bells, FM celesta, flute, pad, Freeverb). It renders the music, ambience and effects.
+  - Bugs found on the way:
+    - Music loop seams were up to 25× the median step, because each render pass used a different seed. Fixed with the same seed per event.
+    - Several effects sat below the speaker band; re-pitched.
+    - Effect tails were truncated; auto fades added.
+    - Ambience reverb didn't wrap; added a looped reverb.
+- **Sprint 02, runtime:**
+  - `PlopAudio` rewritten in place: buses, menu/gameplay context, `PlopLoopPlayer`, six voices, ducking, cancellable scheduled cues.
+  - Settings: Effects and Ambience sliders and Restore Defaults; legacy prefs migrated.
+- **In-build verification:**
+  - The emulator's gRPC `streamAudio` needed the discovery file's `grpc.token`; the console token is rejected.
+  - Measured −25.7 dBFS RMS in gameplay; mute is at the noise floor.
+- **Localization:**
+  - `Loc` with CLDR plurals and live relabelling through `LocalizedText`.
+  - `LocalizationTests` caught a bare "Level" placeholder label with no key.
+  - On device, Cyrillic renders through the OS fallback.
+- **Polish:** menu dawn gradient and dream motes.
+- Verified: see Documentation/TESTING.md (Final Sprint 02 results). Nobody has listened to the audio, and no physical device was used.
+

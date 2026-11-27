@@ -57,3 +57,10 @@ describes the system boundaries and [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md) rec
   settings, caches, and builds out of commits, and commit the Unity asset metadata.
 - Update `PROJECT_STATE.md` and the development log after meaningful milestones
   so either agent can resume from the repository and executed verification.
+- Audio (Sprint 02):
+  - `PlopAudio` is the only audio manager; never add a second one or play an `AudioSource` directly.
+  - Regenerate sounds with `Tools/AudioSynth`, keep the filenames and `.meta` GUIDs, and update the manifest.
+  - Never describe audio as "listened to" unless a person actually listened. Measurements are measurements.
+- Localization: every player-facing string goes through `Loc` (`Loc.Set` for labels) and gets a row in
+  `Tools/Localization/build_tables.py`. Translations stay marked unverified until a native speaker reviews them.
+

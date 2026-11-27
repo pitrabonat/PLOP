@@ -40,8 +40,10 @@ gameplay camera. Board palette tints reuse its existing atlas. The
 controller derives chapter access and progress from LevelProgress,
 reveals a newly unlocked chapter once, and retains per-level replay.
 Reduced motion changes presentation only and bypasses the travel
-wait. Short audio cues share three voices, and two bed sources
-crossfade authored world loops. App focus and suspension govern
+wait. PlopAudio (Sprint 02) mixes four buses (Music, SFX, Ambience, UI)
+under master mute. A menu/gameplay music context crossfades two loop sources,
+and a second loop player carries the World ambience. Short cues share six
+priority voices, and timed cues are cancelled on Undo, Restart and level changes. App focus and suspension govern
 playback. Opt-in haptics use Android View feedback or UIKit on
 supported physical devices.
 

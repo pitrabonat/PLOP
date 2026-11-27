@@ -1,5 +1,38 @@
 # PLOP! project state
 
+**Final Sprint 02/06 · Final production: audible audio, original score, localization, release polish**
+
+- Branch: `sprint/02-final-production`, from Sprint 01 at `e52e5d5`.
+- Read [Documentation/FINAL_SPRINT_02_HANDOFF.md](Documentation/FINAL_SPRINT_02_HANDOFF.md) first. The Sprint 01 record is in [Documentation/FINAL_SPRINT_01_HANDOFF.md](Documentation/FINAL_SPRINT_01_HANDOFF.md).
+- Open in Unity `6000.3.29f1` with **PLOP → Play Game**.
+- **The build target was last switched to iOS** (Simulator export); the Android build scripts switch back on their own.
+
+## Current state (2026-11-27)
+
+- **Audio (the P0 is fixed).**
+  - Cause: the content was effectively silent. Ambience sat at about −48 dBFS, there was no music, and the effects were quiet low sine blips.
+  - Now: original synthesised music (menu plus 9 Worlds), 9 ambience beds, 30 effects and a sonic logo (`Tools/AudioSynth`).
+  - `PlopAudio` has buses, settings, sync and cancellation.
+  - Measured audible in a running Android build; mute verified. Nobody has listened to it yet.
+- **Localization.** 8 languages with live switching via Settings ▸ Language. Seven translations are AI-drafted and **unverified**. Cyrillic falls back to the OS font. See [Documentation/LOCALIZATION.md](Documentation/LOCALIZATION.md).
+- **Settings.** Music 45 %, Effects 80 %, Ambience 30 %, Master mute, frame rate, haptics (on), reduced motion, Language, Restore Defaults.
+- **Branding.** Provisional (Hero_Pink icon, Jelly Pink logo, Day splash). The alternatives are in `/Volumes/PLOP_DEV/Marketing/Branding`.
+- **Tests.** .NET 203/203, Unity EditMode 203/203, PlayMode 162/162.
+- **Builds.** `/Volumes/PLOP_DEV/Builds/FinalSprint/02_FinalProduction/` (see `BUILD_MANIFEST.md` there).
+- **Content.** Unchanged: `PLOP_Pack_003` (160 levels) and `PLOP_Daily_002` (60).
+- **Still open.**
+  - Human listening.
+  - Native-speaker review.
+  - Bundling full Nunito.
+  - Owner branding choice.
+  - Physical-device checks.
+  - Production signing.
+  - The art and animation refinement that was carried over.
+
+---
+
+## Earlier: Phase 11.5
+
 **Phase 11.5 · Environmental art, advanced VFX and living Worlds (presentation only)**
 
 The project is on `feature/living-worlds`, branched from the Phase 11 work (`feature/gameplay-mastery`, commit `3a92469`; tag `checkpoint/pre-phase11.5`). Nothing from Phase 11 or 11.5 is pushed. Open the project in Unity `6000.3.29f1` with **PLOP → Play Game**, or **PLOP → Visual Lab → Preview Window** for the environment preview. **The build target was last switched to iOS** (Simulator export); the Android build script switches back on its own.

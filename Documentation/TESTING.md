@@ -11,6 +11,27 @@ The same NUnit test files run in two environments:
 (`Unity` = `/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/Unity.app/Contents/MacOS/Unity`; close the Editor first.)
 Tests use only NUnit features available in Unity's NUnit 3.5 fork.
 
+## Final Sprint 02 results (2026-11-27, executed)
+
+- .NET 203/203. Unity EditMode 203/203. Unity PlayMode 162/162, which includes the new `PlopAudioTests` and `LocalizationTests` suites.
+- **In-build audio** (Android dev build on the emulator; output captured through the emulator gRPC `streamAudio`, guest media volume 15/15; files in `Documentation/FinalSprint02/audio-qa/`):
+
+  | Capture | Peak | RMS |
+  |---|---:|---:|
+  | Gameplay | −5.4 dBFS | −25.7 dBFS |
+  | Menu at a saved 15 % music setting | −20.1 dBFS | −36.1 dBFS |
+  | Master mute | — | −104.8 dBFS |
+
+  - The emulator sends only sparse packets for near-silent output, so a quiet capture is short.
+  - Capture: start the emulator with `-grpc 8554 -grpc-use-token`, then run `python3 audio-qa/emucapture.py <seconds> out.wav`.
+- **Offline audio QA:** peak/RMS/seam numbers per file are in `Marketing/Audio/MANIFEST.md`; waveform and spectrogram sheets are `audio-qa/qa-*.png`. **No listening test was done.**
+- **Localization on device:** de/fr/ru/uk menu and Settings captures are in `Documentation/FinalSprint02/localization/`. Cyrillic uses the OS fallback font.
+- **Builds** (`/Volumes/PLOP_DEV/Builds/FinalSprint/02_FinalProduction/BUILD_MANIFEST.md`):
+  - **Release APK, emulator:** installed over the dev build with the save kept. Cold start → menu with audible output (peak −21.3 / RMS −36.4 dBFS at the saved 15 %); no crash. Evidence: `Documentation/FinalSprint02/release-smoke/`.
+  - **AAB:** built, not installed.
+  - **iOS Simulator:** Xcode BUILD SUCCEEDED. On the iPhone 15 Pro Max (iOS 26.3), 9 runs each replayed a World's shot-list solution to the Perfect! card.
+- **Marketing capture:** 15 stills (Android dev build) and 9 clips (iOS Simulator). The capture scripts are in `Documentation/FinalSprint02/marketing-capture/`. The clips have no audio track.
+
 ## Phase 11.5 results (2026-11-26, executed)
 
 | Run | Total | Passed | Failed | Skipped |
