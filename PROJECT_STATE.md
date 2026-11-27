@@ -1,13 +1,30 @@
 # PLOP! project state
 
-**Final Sprint 02/06 · Final production: audible audio, original score, localization, release polish**
+**Final Sprint 03/06 · Launch marketing package (trailers, store assets, listings, social kit)**
 
-- Branch: `sprint/02-final-production`, from Sprint 01 at `e52e5d5`.
-- Read [Documentation/FINAL_SPRINT_02_HANDOFF.md](Documentation/FINAL_SPRINT_02_HANDOFF.md) first. The Sprint 01 record is in [Documentation/FINAL_SPRINT_01_HANDOFF.md](Documentation/FINAL_SPRINT_01_HANDOFF.md).
+- Branch: `sprint/03-marketing`, from Sprint 02 at `b15c45c`. The game code is unchanged since Sprint 02.
+- Read [Documentation/FINAL_SPRINT_03_HANDOFF.md](Documentation/FINAL_SPRINT_03_HANDOFF.md) first. Earlier records: [Sprint 02](Documentation/FINAL_SPRINT_02_HANDOFF.md) and [Sprint 01](Documentation/FINAL_SPRINT_01_HANDOFF.md).
 - Open in Unity `6000.3.29f1` with **PLOP → Play Game**.
 - **The build target was last switched to iOS** (Simulator export); the Android build scripts switch back on their own.
 
-## Current state (2026-11-27)
+## Sprint 03 (2026-11-27)
+
+- **Marketing package.**
+  - The files are in `/Volumes/PLOP_DEV/Marketing/FinalSprint03/`, built by the pipeline in `Tools/Marketing/Sprint03/`.
+  - They include the 37 s cinematic trailer, the gameplay and vertical trailers, the App Preview (886×1920, High L4.0, 11.3 Mbps), 5 challenge videos and the mascot showcase.
+  - Also: 8 store screenshots at every required size, 3 feature graphics, 5 posters (plus square versions), the social kit, store listings in 8 languages, video captions, launch-announcement drafts, and audio stems.
+- **QA.** Across 495 files: 206 FINAL, 40 AWAITING OWNER APPROVAL, 249 DRAFT. No spec issues. See `11_QA/EXPORT_MANIFEST.md`.
+- **Owner decisions.**
+  - Rights to the reference illustration (it is in the cinematic, feature graphics A and B, two posters and the banners).
+  - Sign-off on the store copy.
+  - Final logo and icon.
+- **Blocked.**
+  - Burned-in Cyrillic headlines (no Cyrillic font is bundled).
+  - The Google Play video (needs a YouTube upload).
+  - All uploading and posting (out of scope by rule).
+
+## Sprint 02 state
+
 
 - **Audio (the P0 is fixed).**
   - Cause: the content was effectively silent. Ambience sat at about −48 dBFS, there was no music, and the effects were quiet low sine blips.
