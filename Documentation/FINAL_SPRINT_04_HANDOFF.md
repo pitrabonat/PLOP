@@ -247,7 +247,7 @@ Root: `/Volumes/PLOP_DEV/Builds/FinalSprint/04_Monetization/` (see its `BUILD_MA
 
 ## 19. Git branch and commit
 
-Branch `sprint/04-monetization` from tag `checkpoint/pre-sprint04` (`7a1ad5a`). Handoff commit: COMMIT_HASH.
+Branch `sprint/04-monetization` from tag `checkpoint/pre-sprint04` (`7a1ad5a`). Implementation commit: `8d3da20` (the following commit only records this hash).
 
 ## 20. Readiness verdict for Sprint 05
 
