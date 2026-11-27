@@ -21,7 +21,8 @@ namespace Plop.Tests.PlayMode
 
                 var mute = FindButton(root, "Master mute");
                 var music = FindSlider(root, "Music");
-                var sound = FindSlider(root, "Sound");
+                var sound = FindSlider(root, "Effects");
+                var ambience = FindSlider(root, "Ambience");
                 bool? muteEvent = null;
                 int muteEvents = 0;
                 int gainEvents = 0;
@@ -61,6 +62,23 @@ namespace Plop.Tests.PlayMode
                 Assert.GreaterOrEqual(card.rect.height, -reducedMotion.anchoredPosition.y + reducedMotion.rect.height * 0.5f);
                 Assert.GreaterOrEqual(haptics.anchoredPosition.y - haptics.rect.height * 0.5f,
                     reducedMotion.anchoredPosition.y + reducedMotion.rect.height * 0.5f);
+
+                // Sprint 02: ambience slider and Restore Defaults fit inside the card below everything else.
+                var restore = (RectTransform)FindButton(root, "Restore Defaults").transform;
+                Assert.AreSame(card, restore.parent);
+                Assert.GreaterOrEqual(card.rect.height, -restore.anchoredPosition.y + restore.rect.height * 0.5f + 20f);
+                Assert.GreaterOrEqual(reducedMotion.anchoredPosition.y - reducedMotion.rect.height * 0.5f,
+                    restore.anchoredPosition.y + restore.rect.height * 0.5f);
+                int restores = 0, ambienceEvents = 0;
+                hud.RestoreDefaultsClicked += () => restores++;
+                hud.AmbienceChanged += _ => ambienceEvents++;
+                hud.SetVolumes(0.1f, 0.2f, 0.3f);
+                Assert.AreEqual(0.3f, ambience.value, 0.001f);
+                Assert.AreEqual(0, ambienceEvents, "SetVolumes reflects saved values silently");
+                ambience.value = 0.6f;
+                Assert.AreEqual(1, ambienceEvents);
+                restore.GetComponent<Button>().onClick.Invoke();
+                Assert.AreEqual(1, restores);
             }
             finally
             {

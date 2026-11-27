@@ -53,7 +53,7 @@ namespace Plop.Tests.PlayMode
                         "Slider anchors must not stretch the thumb into the volume label.");
                 }
                 sliders.Single(s => s.name == "Music volume").value = 0.2f;
-                sliders.Single(s => s.name == "Sound volume").value = 0f;
+                sliders.Single(s => s.name == "Effects volume").value = 0f;
                 Assert.AreEqual(0.2f, audio.MusicVolume);
                 Assert.AreEqual(0f, audio.SoundVolume);
                 FindButton(root, "30 FPS").onClick.Invoke();

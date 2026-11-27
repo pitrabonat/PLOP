@@ -1,0 +1,170 @@
+# PLOP! — Russian (ru)
+# STATUS: drafted by an AI model (Claude) for Final Sprint 02. NOT reviewed by a native speaker.
+# Format: English source<TAB>translation. Plural forms separated by | (one|other; uk/ru: one|few|many).
+Sleepy Puzzle	Сонная головоломка
+Play	Играть
+Level	Уровень
+Level {0}	Уровень {0}
+Gift	Подарок
+Tomorrow	Завтра
+Daily	Ежедневно
+Daily Gift	Ежедневный подарок
+Daily Puzzle	Головоломка дня
+Levels	Уровни
+Studio	Студия
+Dream Dust	Пыль снов
++{0} Dream Dust	+{0} Пыли снов
+Next gift tomorrow	Следующий подарок завтра
+Daily puzzle unavailable	Головоломка дня недоступна
+New in Studio: {0}	Новое в студии: {0}
+Settings	Настройки
+Home	Главная
+Undo	Отменить
+Restart	Заново
+Hint	Подсказка
+Hint {0}	Подсказка {0}
+{0} moves	{0} ход|{0} хода|{0} ходов
+Perfect!	Идеально!
+Sweet Dreams!	Сладких снов!
+Perfect: {0}	Идеал: {0}
+Menu	Меню
+Next Level	Следующий уровень
+Replay	Ещё раз
+On	Вкл.
+Off	Выкл.
+Oops, we're stuck!	Ой, мы застряли!
+There's no way to get everyone home from here.	Отсюда уже не получится довести всех домой.
+Undo Move	Отменить ход
+Restart Level	Начать заново
+Keep playing	Играть дальше
+Choose a level	Выберите уровень
+Worlds	Миры
+Close	Закрыть
+Previous	Назад
+More	Далее
+Level {0} · Perfect	Уровень {0} · Идеально
+Level {0} · Done	Уровень {0} · Пройден
+Level {0} · Locked	Уровень {0} · Закрыт
+Levels {0}–{1}	Уровни {0}–{1}
+Done	Готово
+Music	Музыка
+Effects	Эффекты
+Ambience	Атмосфера
+Master mute	Выключить звук
+Frame rate	Частота кадров
+Haptics	Вибрация
+Reduced motion	Меньше движения
+Restore Defaults	Сбросить настройки
+Language	Язык
+Resume Level {0}	Продолжить уровень {0}
+Resume	Продолжить
+Levels {0}–{1} · {2}/{3}	Уровни {0}–{1} · {2}/{3}
+Current	Текущий
+Locked	Закрыто
+World unlocked	Мир открыт
+Cozy Nest	Уютное гнёздышко
+Dewdrop Garden	Сад росинок
+Rainy Window	Дождливое окно
+Twilight Attic	Сумеречный чердак
+Moonlit Clouds	Лунные облака
+Frosted Pond	Замёрзший пруд
+Breezy Meadow	Ветреный луг
+Ember Hollow	Тлеющая лощина
+Prism Observatory	Призменная обсерватория
+Undo or Restart first.	Сначала отмените ход или начните заново.
+Looking for a hint…	Ищу подсказку…
+A hint costs {0} Dream Dust. You have {1}.	Подсказка стоит {0} Пыли снов. У вас {1}.
+Keep trying: after {0} more tries the first hint here is free.	Не сдавайтесь: ещё {0} попытка — и первая подсказка здесь бесплатна.|Не сдавайтесь: ещё {0} попытки — и первая подсказка здесь бесплатна.|Не сдавайтесь: ещё {0} попыток — и первая подсказка здесь бесплатна.
+−{0} Dream Dust · {1} left	−{0} Пыли снов · осталось {1}
+This one is on the house.	Эта — за счёт заведения.
+Try swiping up.	Попробуйте провести вверх.
+Try swiping down.	Попробуйте провести вниз.
+Try swiping left.	Попробуйте провести влево.
+Try swiping right.	Попробуйте провести вправо.
+No route from here. Try Undo.	Отсюда нет пути. Попробуйте отменить ход.
+No hint available. Try Undo.	Подсказки нет. Попробуйте отменить ход.
+Challenge · {0} moves	Испытание · {0} ход|Испытание · {0} хода|Испытание · {0} ходов
+Oops! Too hot!	Ой! Горячо!
+Lava is no place for a nap. Undo or try again.	Лава — не место для сна. Отмените ход или попробуйте снова.
+Out of moves!	Ходы закончились!
+This challenge allows {0} moves. Undo or try again.	Это испытание допускает {0} ход. Отмените ход или попробуйте снова.|Это испытание допускает {0} хода. Отмените ход или попробуйте снова.|Это испытание допускает {0} ходов. Отмените ход или попробуйте снова.
+Swipe the Plop into its matching Nest.	Проведите, чтобы Плоп попал в своё гнездо.
+One swipe moves every awake Plop.	Один свайп двигает всех неспящих Плопов.
+Frost: Plops slide until something stops them.	Иней: Плопы скользят, пока что-то их не остановит.
+Breeze fans push Plops the way they point. Dots show how far.	Вертушки толкают Плопов туда, куда указывают. Точки показывают, как далеко.
+Lava is too hot! Keep every Plop out.	Лава слишком горячая! Не пускайте туда ни одного Плопа.
+Loops connect: in one, out the other.	Петли связаны: вошёл в одну — вышел из другой.
+Body	Тело
+Colors	Цвета
+Finish	Фактура
+Face	Лицо
+Accessories	Аксессуары
+Nest	Гнездо
+Board	Поле
+Equipped	Надето
+Equip	Надеть
+Tap to confirm	Нажмите для подтверждения
+Unlock {0}	Открыть за {0}
+Need {0} more	Нужно ещё {0}
+Free	Бесплатно
+Owned	Есть
+{0} or {1}	{0} или {1}
+{0} Dust	{0} пыли
+Wearing now	Сейчас надето
+Free · tap Equip	Бесплатно · нажмите «Надеть»
+Unlocked	Открыто
+Locked · {0}	Закрыто · {0}
+Locked · {0} or {1} Dream Dust	Закрыто · {0} или {1} Пыли снов
+Locked · {0} Dream Dust	Закрыто · {0} Пыли снов
+Unlocked {0}!	Открыто: {0}!
+Not enough Dream Dust	Недостаточно Пыли снов
+Could not unlock, try again	Не удалось открыть, попробуйте ещё
+{0} levels	{0} уровень|{0} уровня|{0} уровней
+{0} Perfects	{0} идеал|{0} идеала|{0} идеалов
+{0} Worlds	{0} мир|{0} мира|{0} миров
+{0} Dailies	{0} ежедневная|{0} ежедневные|{0} ежедневных
+Complete {0} levels	Пройдите {0} уровень|Пройдите {0} уровня|Пройдите {0} уровней
+Earn {0} Perfects	Получите {0} идеал|Получите {0} идеала|Получите {0} идеалов
+Finish {0} Worlds	Завершите {0} мир|Завершите {0} мира|Завершите {0} миров
+Solve {0} Dailies	Решите {0} ежедневную|Решите {0} ежедневные|Решите {0} ежедневных
+Classic	Классика
+Bouncy	Прыгучий
+Snoozy	Соня
+Classic Jelly	Классическое желе
+Frosted Jelly	Морозное желе
+Milky Jelly	Молочное желе
+Dewdrop Jelly	Желе-росинка
+Velvet Jelly	Бархатное желе
+Pearl Jelly	Жемчужное желе
+Toy Box	Коробка игрушек
+Pastel	Пастель
+Sorbet	Сорбет
+Sweet	Сладкий
+Button	Пуговка
+Dozy	Дрёма
+Blush	Румянец
+Starry	Звёздный
+None	Нет
+Tiny Bow	Бантик
+Little Flower	Цветочек
+Sprout Leaf	Росток
+Ribbon	Ленточка
+Little Star	Звёздочка
+Nightcap	Ночной колпак
+Cloud Puff	Облачко
+Tiny Crown	Коронка
+Moon Pillow	Лунная подушка
+Cloud Cushion	Облачная подушка
+Marshmallow	Маршмеллоу
+Soft Flower	Нежный цветок
+Crescent Bed	Кровать-месяц
+Dust Puff	Пыльное облачко
+Sparkle	Искры
+Bubbles	Пузырьки
+Star Trail	Звёздный след
+World Colors	Цвета мира
+Honey Tray	Медовый поднос
+Mint Garden	Мятный сад
+Peach Quilt	Персиковое одеяло
+Lavender Dream	Лавандовый сон
+Starlight	Звёздный свет

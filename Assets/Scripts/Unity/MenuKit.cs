@@ -140,7 +140,7 @@ namespace Plop.Presentation
             if (hasLabel)
             {
                 var text = Label(rt, "Label", fontSize, FontStyle.Bold, HudTheme.Ink, new Vector2(size.y * 0.25f, 0), new Vector2(size.x - size.y, size.y));
-                text.text = label;
+                Loc.Set(text, label);
             }
             return rt;
         }

@@ -15,7 +15,10 @@ namespace Plop.Presentation
         public event Action UndoClicked, RestartClicked, NextClicked, HintClicked, LevelsClicked;
         public event Action SettingsClicked, SettingsClosed, ButtonActivated;
         public event Action<PlopGameController.FrameRateMode> FrameRateChanged;
-        public event Action<float> MusicChanged, SoundChanged;
+        public event Action<float> MusicChanged, SoundChanged, AmbienceChanged;
+        /// <summary>Effects slider moved: a short confirmation tick at the new level (throttled; silent when muted).</summary>
+        public event Action EffectsPreview;
+        public event Action RestoreDefaultsClicked, LanguageClicked;
         public event Action<bool> HapticsChanged, ReducedMotionChanged, MasterMuteChanged;
         public event Action<int> LevelChosen;
         public event Action ModalInteracted;
@@ -33,11 +36,12 @@ namespace Plop.Presentation
         private Text _title, _moves, _instruction, _hintStatus, _completionActionLabel, _pageLabel;
         private Text _deadlockTitle, _deadlockDescription;
         private Text _gameName, _worldName, _pickerTitle, _pickerExitLabel, _hapticsLabel, _motionLabel;
-        private Text _musicPercent, _soundPercent, _muteLabel, _undoLabel, _completionMessage, _completionResult;
+        private Text _musicPercent, _soundPercent, _ambiencePercent, _muteLabel, _undoLabel, _completionMessage, _completionResult;
         private Image _perfectStar, _completionDustIcon;
         private int _optimalMoves, _moveLimit;
         private bool _levelPerfected;
-        private Slider _music, _sound;
+        private Slider _music, _sound, _ambience;
+        private float _effectsPreviewAt = -1f;
         private Image _completionActionIcon, _deadlockMascot, _levelBadgeBody, _moveBadgeBody;
         private Image _undoIcon, _rate30Check, _rate60Check;
         private Button _undo, _hint, _previousPage, _nextPage;
@@ -56,7 +60,8 @@ namespace Plop.Presentation
         private bool _masterMuted;
         private Font _font, _displayFont;
         private static readonly Vector2 PickerSize = new Vector2(880, 980);
-        private static readonly Vector2 SettingsSize = new Vector2(840, 982);
+        private static readonly Vector2 SettingsSize = new Vector2(840, 1342);
+        private Text _languageValue;
         private static readonly Vector2 DeadlockSize = new Vector2(742, 660);
         private static readonly Vector2 DeadlockTextOnlySize = new Vector2(742, 524);
         private IReadOnlyList<LevelDefinition> _pickerLevels;
@@ -71,6 +76,8 @@ namespace Plop.Presentation
         public bool IsSettingsOpen => _settings != null && _settings.gameObject.activeSelf;
         public bool IsDeadlockOpen => _deadlock != null && _deadlock.gameObject.activeSelf;
         public bool BlocksGameplayInput => IsChoosingLevel || IsSettingsOpen || IsDeadlockOpen;
+
+        private void OnDestroy() => Loc.Changed -= ShowLanguage;
 
         private void Awake()
         {
@@ -206,8 +213,10 @@ namespace Plop.Presentation
 
         public void SetLevel(string title, string instruction)
         {
-            _title.text = title;
-            _instruction.text = instruction ?? "";
+            var number = System.Text.RegularExpressions.Regex.Match(title ?? "", @"^Level (\d+)$");
+            if (number.Success) Loc.Set(_title, "Level {0}", int.Parse(number.Groups[1].Value));
+            else Loc.Set(_title, title ?? "");
+            Loc.Set(_instruction, instruction ?? "");
             bool showInstruction = !string.IsNullOrWhiteSpace(instruction);
             _instruction.gameObject.SetActive(showInstruction);
             PositionPlayControls();
@@ -217,7 +226,7 @@ namespace Plop.Presentation
         {
             bool visible = world != null;
             _worldName.gameObject.SetActive(visible);
-            _worldName.text = visible ? world.DisplayName : "";
+            Loc.Set(_worldName, visible ? world.DisplayName : "");
             _title.rectTransform.anchoredPosition = new Vector2(0, visible ? 14f : 0f);
             var accent = visible ? world.AccentColor : PlopPalette.ButtonFill;
             _levelBadgeBody.color = Color.Lerp(PlopPalette.ButtonFill, accent, 0.18f);
@@ -227,15 +236,17 @@ namespace Plop.Presentation
         /// <summary>Replaces the line under the title (World name, or the date for a Daily Puzzle) when it is shown.</summary>
         public void SetSubtitle(string text)
         {
-            if (_worldName.gameObject.activeSelf && !string.IsNullOrEmpty(text)) _worldName.text = text;
+            if (_worldName.gameObject.activeSelf && !string.IsNullOrEmpty(text)) Loc.SetRaw(_worldName, text);
         }
 
         /// <summary>Lets the level list mark levels finished in the verified minimum number of moves.</summary>
         public Func<int, bool> PerfectLookup { get; set; }
 
         public void SetMoves(int moves)
-            => _moves.text = _moveLimit > 0 ? moves + " / " + _moveLimit
-                : _optimalMoves > 0 ? moves + " / " + _optimalMoves : moves == 1 ? "1 move" : moves + " moves";
+        {
+            if (_moveLimit > 0 || _optimalMoves > 0) Loc.SetRaw(_moves, moves + " / " + (_moveLimit > 0 ? _moveLimit : _optimalMoves));
+            else Loc.SetPlural(_moves, "{0} moves", "{0} move", moves);
+        }
 
         /// <summary>Limited Moves challenge: the counter shows the limit and the badge a lock instead of the Perfect star.</summary>
         public void SetMoveLimit(int limit)
@@ -254,7 +265,9 @@ namespace Plop.Presentation
         public void SetHintCost(int cost)
         {
             var label = _hint.transform.Find("Label")?.GetComponent<Text>() ?? _hint.GetComponentInChildren<Text>();
-            if (label != null) label.text = cost > 0 ? "Hint " + cost : "Hint";
+            if (label == null) return;
+            if (cost > 0) Loc.Set(label, "Hint {0}", cost);
+            else Loc.Set(label, "Hint");
         }
         public string HintText => _hintStatus.text;
         public string HintLabel => (_hint.transform.Find("Label")?.GetComponent<Text>() ?? _hint.GetComponentInChildren<Text>())?.text;
@@ -271,16 +284,16 @@ namespace Plop.Presentation
         /// <summary>Result line on the completion card: moves, Perfect, Dream Dust earned (once).</summary>
         public void SetCompletionResult(int moves, int optimalMoves, bool perfect, int dustEarned, bool returnsToMenu)
         {
-            _completionMessage.text = perfect ? "Perfect!" : "Sweet Dreams!";
-            string result = moves == 1 ? "1 move" : moves + " moves";
-            if (optimalMoves > 0 && !perfect) result += "  ·  Perfect: " + optimalMoves;
+            Loc.Set(_completionMessage, perfect ? "Perfect!" : "Sweet Dreams!");
+            string result = Loc.P("{0} moves", "{0} move", moves);
+            if (optimalMoves > 0 && !perfect) result += "  ·  " + Loc.F("Perfect: {0}", optimalMoves);
             if (dustEarned > 0) result += "  ·  +" + dustEarned;
-            _completionResult.text = result;
+            Loc.SetRaw(_completionResult, result);
             _completionDustIcon.gameObject.SetActive(dustEarned > 0);
             if (perfect) { _levelPerfected = true; _perfectStar.color = PlopPalette.Honey; }
             if (returnsToMenu)
             {
-                _completionActionLabel.text = "Menu";
+                Loc.Set(_completionActionLabel, "Menu");
                 _completionActionIcon.sprite = HudIcons.Get(HudIcons.Kind.Home);
             }
         }
@@ -300,12 +313,16 @@ namespace Plop.Presentation
             _rate60Check.gameObject.SetActive(!is30);
         }
 
-        public void SetVolumes(float music, float sound)
+        public void SetVolumes(float music, float sound) => SetVolumes(music, sound, _ambience.value);
+
+        public void SetVolumes(float music, float sound, float ambience)
         {
             _music.SetValueWithoutNotify(music);
             _sound.SetValueWithoutNotify(sound);
+            _ambience.SetValueWithoutNotify(ambience);
             _musicPercent.text = Percent(music);
             _soundPercent.text = Percent(sound);
+            _ambiencePercent.text = Percent(ambience);
         }
 
         public void SetMasterMuted(bool muted)
@@ -337,7 +354,7 @@ namespace Plop.Presentation
         private static void PaintComfortSwitch(Button button, Text label, bool on)
         {
             button.image.color = on ? HudTheme.CompletionSurface : PlopPalette.Milk;
-            label.text = on ? "On" : "Off";
+            Loc.Set(label, on ? "On" : "Off");
         }
 
         public void ShowSettings() => SetModal(_settings, true);
@@ -351,7 +368,7 @@ namespace Plop.Presentation
 
         public void SetHint(string message, bool searching, Direction? direction = null)
         {
-            _hintStatus.text = message ?? "";
+            Loc.SetRaw(_hintStatus, message ?? "");
             _hint.interactable = !searching;
             ClearHintCue();
             if (!direction.HasValue || string.IsNullOrEmpty(message) || searching || BlocksGameplayInput || _completed)
@@ -439,7 +456,7 @@ namespace Plop.Presentation
         }
 
         public bool ShowDeadlock(bool canUndo, Sprite mascot = null)
-            => ShowRecovery("Oops, we're stuck!", "There's no way to get everyone home from here.", canUndo, mascot);
+            => ShowRecovery(Loc.T("Oops, we're stuck!"), Loc.T("There's no way to get everyone home from here."), canUndo, mascot);
 
         /// <summary>The friendly recovery card (stuck, too hot, out of moves): Undo or Restart, never a penalty.</summary>
         public bool ShowRecovery(string title, string message, bool canUndo, Sprite mascot = null)
@@ -447,8 +464,8 @@ namespace Plop.Presentation
             if (_completed) return false;
             if (IsDeadlockOpen) return true;
             if (BlocksGameplayInput) return false;
-            _deadlockTitle.text = title;
-            _deadlockDescription.text = message;
+            Loc.SetRaw(_deadlockTitle, title);
+            Loc.SetRaw(_deadlockDescription, message);
 
             _deadlockUndo.interactable = canUndo;
             _deadlockUndo.image.color = canUndo ? HudTheme.RecoverySurface : PlopPalette.Milk;
@@ -479,9 +496,9 @@ namespace Plop.Presentation
                 CloseDeadlock();
                 ClearHintCue();
             }
-            _completionActionLabel.text = canAdvance ? "Next Level" : "Levels";
+            Loc.Set(_completionActionLabel, canAdvance ? "Next Level" : "Levels");
             _completionActionIcon.sprite = HudIcons.Get(canAdvance ? HudIcons.Kind.Next : HudIcons.Kind.Levels);
-            if (!completed) { _completionResult.text = ""; _completionDustIcon.gameObject.SetActive(false); }
+            if (!completed) { Loc.SetRaw(_completionResult, ""); _completionDustIcon.gameObject.SetActive(false); }
 
             if (_cardAnim != null)
             {
@@ -506,7 +523,7 @@ namespace Plop.Presentation
             AddCardBackground(_completion, HudTheme.CompletionSurface);
             _completionMessage = MakeText(_completion, "Completion message", HudTheme.Heading, FontStyle.Bold, HudTheme.Ink,
                 Vector2.one * 0.5f, new Vector2(0, 74), new Vector2(590, 76));
-            _completionMessage.text = "Sweet Dreams!";
+            Loc.Set(_completionMessage, "Sweet Dreams!");
             _completionResult = MakeText(_completion, "Completion result", HudTheme.Caption, FontStyle.Bold, HudTheme.SecondaryText,
                 Vector2.one * 0.5f, new Vector2(16, 24), new Vector2(600, 48));
             _completionDustIcon = AddGlyph(_completion, HudIcons.Kind.Star, new Vector2(-290, 24), 34f, PlopPalette.Honey);
@@ -540,12 +557,12 @@ namespace Plop.Presentation
             _deadlockMascot.raycastTarget = false;
             _deadlockTitle = MakeText(_deadlockPanel, "Deadlock title", 54, FontStyle.Bold, HudTheme.Ink,
                 top, new Vector2(0, -236), new Vector2(672, 80));
-            _deadlockTitle.text = "Oops, we're stuck!";
+            Loc.Set(_deadlockTitle, "Oops, we're stuck!");
             _deadlockDescription = MakeText(_deadlockPanel, "Deadlock explanation", 36, FontStyle.Normal, HudTheme.SecondaryText,
                 top, new Vector2(0, -328), new Vector2(590, 122));
             _deadlockDescription.horizontalOverflow = HorizontalWrapMode.Wrap;
             _deadlockDescription.verticalOverflow = VerticalWrapMode.Overflow;
-            _deadlockDescription.text = "There's no way to get everyone home from here.";
+            Loc.Set(_deadlockDescription, "There's no way to get everyone home from here.");
 
             _deadlockUndo = MakeButton(_deadlockPanel, "Undo Move", new Vector2(-162, 175), new Vector2(292, 100),
                 HudTheme.RecoverySurface, () =>
@@ -586,8 +603,8 @@ namespace Plop.Presentation
             _pickerStart = first;
             _pickerEnd = endExclusive;
             _canReturnToWorlds = canReturnToWorlds;
-            _pickerTitle.text = title;
-            _pickerExitLabel.text = canReturnToWorlds ? "Worlds" : "Close";
+            Loc.Set(_pickerTitle, title);
+            Loc.Set(_pickerExitLabel, canReturnToWorlds ? "Worlds" : "Close");
             _page = _currentIndex >= first && _currentIndex < endExclusive ? (_currentIndex - first) / PageSize : 0;
             RenderLevelPage();
             _worldPicker.gameObject.SetActive(false);
@@ -687,13 +704,14 @@ namespace Plop.Presentation
                 bool done = _isCompleted(index);
                 button.interactable = unlocked;
                 bool perfect = done && PerfectLookup != null && PerfectLookup(index);
-                _levelLabels[slot].text = "Level " + (index + 1) + (perfect ? " · Perfect" : done ? " · Done" : unlocked ? "" : " · Locked");
+                Loc.Set(_levelLabels[slot], perfect ? "Level {0} · Perfect" : done ? "Level {0} · Done"
+                    : unlocked ? "Level {0}" : "Level {0} · Locked", index + 1);
                 button.image.color = index == _currentIndex ? PlopPalette.Berry
                     : perfect ? Color.Lerp(PlopPalette.Mint, PlopPalette.Honey, 0.55f) : done ? PlopPalette.Mint : PlopPalette.Milk;
             }
             _previousPage.interactable = _page > 0;
             _nextPage.interactable = end < _pickerEnd;
-            _pageLabel.text = "Levels " + (start + 1) + "–" + end;
+            Loc.Set(_pageLabel, "Levels {0}–{1}", start + 1, end);
         }
 
         private void BuildSettings()
@@ -703,7 +721,7 @@ namespace Plop.Presentation
             var title = MakeText(panel, "Settings title", HudTheme.Heading, FontStyle.Bold, HudTheme.Ink, new Vector2(0.12f, 1f),
                 new Vector2(177, -70), new Vector2(352, 80));
             title.alignment = TextAnchor.MiddleLeft;
-            title.text = "Settings";
+            Loc.Set(title, "Settings");
             MakeButton(panel, "Done", new Vector2(0, -70), new Vector2(168, HudTheme.ModalButtonHeight),
                 PlopPalette.Milk, CloseSettings, new Vector2(0.84f, 1f), fontSize: HudTheme.Control);
 
@@ -713,14 +731,25 @@ namespace Plop.Presentation
                 MusicChanged?.Invoke(value);
                 ModalInteracted?.Invoke();
             });
-            _sound = MakeVolume(panel, "Sound", -309, out _soundPercent, value =>
+            _sound = MakeVolume(panel, "Effects", -309, out _soundPercent, value =>
             {
                 _soundPercent.text = Percent(value);
                 SoundChanged?.Invoke(value);
                 ModalInteracted?.Invoke();
+                if (Time.unscaledTime >= _effectsPreviewAt)
+                {
+                    _effectsPreviewAt = Time.unscaledTime + 0.15f;
+                    EffectsPreview?.Invoke();
+                }
+            });
+            _ambience = MakeVolume(panel, "Ambience", -438, out _ambiencePercent, value =>
+            {
+                _ambiencePercent.text = Percent(value);
+                AmbienceChanged?.Invoke(value);
+                ModalInteracted?.Invoke();
             });
 
-            _muteButton = MakeComfortSwitch(panel, "Master mute", -470, () =>
+            _muteButton = MakeComfortSwitch(panel, "Master mute", -599, () =>
             {
                 ModalInteracted?.Invoke();
                 SetMasterMuted(!_masterMuted);
@@ -729,27 +758,34 @@ namespace Plop.Presentation
             SetMasterMuted(false);
 
             var center = new Vector2(0.5f, 1f);
-            MakeText(panel, "Frame rate title", HudTheme.Control, FontStyle.Bold, HudTheme.Ink, center,
-                new Vector2(0, -562), new Vector2(670, 53)).text = "Frame rate";
-            _rate30 = MakeButton(panel, "30 FPS", new Vector2(-171, -649), new Vector2(308, 94), PlopPalette.Milk,
+            Loc.Set(MakeText(panel, "Frame rate title", HudTheme.Control, FontStyle.Bold, HudTheme.Ink, center,
+                new Vector2(0, -691), new Vector2(670, 53)), "Frame rate");
+            _rate30 = MakeButton(panel, "30 FPS", new Vector2(-171, -778), new Vector2(308, 94), PlopPalette.Milk,
                 () => FrameRateChanged?.Invoke(PlopGameController.FrameRateMode.Fps30), center);
-            _rate60 = MakeButton(panel, "60 FPS", new Vector2(171, -649), new Vector2(308, 94), PlopPalette.Milk,
+            _rate60 = MakeButton(panel, "60 FPS", new Vector2(171, -778), new Vector2(308, 94), PlopPalette.Milk,
                 () => FrameRateChanged?.Invoke(PlopGameController.FrameRateMode.Fps60), center);
             _rate30Check = AddGlyph((RectTransform)_rate30.transform, HudIcons.Kind.Check, new Vector2(-104, 0), 50f, HudTheme.Ink);
             _rate60Check = AddGlyph((RectTransform)_rate60.transform, HudIcons.Kind.Check, new Vector2(-104, 0), 50f, HudTheme.Ink);
             SetFrameRate(PlopGameController.FrameRateMode.Fps60);
 
-            _hapticsButton = MakeComfortSwitch(panel, "Haptics", -767, () =>
+            _hapticsButton = MakeComfortSwitch(panel, "Haptics", -896, () =>
             {
                 SetComfortOptions(!_haptics, _reducedMotion);
                 HapticsChanged?.Invoke(_haptics);
             }, out _hapticsLabel);
-            _motionButton = MakeComfortSwitch(panel, "Reduced motion", -879, () =>
+            _motionButton = MakeComfortSwitch(panel, "Reduced motion", -1008, () =>
             {
                 SetComfortOptions(_haptics, !_reducedMotion);
                 ReducedMotionChanged?.Invoke(_reducedMotion);
             }, out _motionLabel);
             SetComfortOptions(false, false);
+            MakeLanguageRow(panel, -1120);
+            MakeButton(panel, "Restore Defaults", new Vector2(0, -1242), new Vector2(460, HudTheme.ModalButtonHeight),
+                PlopPalette.Milk, () =>
+                {
+                    ModalInteracted?.Invoke();
+                    RestoreDefaultsClicked?.Invoke();
+                }, new Vector2(0.5f, 1f), fontSize: HudTheme.Control);
             _settings.gameObject.SetActive(false);
         }
 
@@ -762,7 +798,7 @@ namespace Plop.Presentation
             var title = MakeText(button.transform, label + " label", HudTheme.Control, FontStyle.Bold, HudTheme.Ink,
                 center, new Vector2(-101, 0), new Vector2(376, 64));
             title.alignment = TextAnchor.MiddleLeft;
-            title.text = label;
+            Loc.Set(title, label);
             var state = MakeBadge((RectTransform)button.transform, "Switch state", new Vector2(112, 60), PlopPalette.ButtonFill);
             state.anchoredPosition = new Vector2(237, 0);
             value = MakeText(state, "Value", HudTheme.Caption, FontStyle.Bold, HudTheme.Ink, center,
@@ -770,13 +806,44 @@ namespace Plop.Presentation
             return button;
         }
 
+        /// <summary>Settings ▸ Language: cycles the eight languages; the value shows the current one in its own name.</summary>
+        private void MakeLanguageRow(RectTransform panel, float y)
+        {
+            var button = MakeButton(panel, "Language", new Vector2(0, y), new Vector2(648, 90), PlopPalette.Milk, () =>
+            {
+                ModalInteracted?.Invoke();
+                LanguageClicked?.Invoke();
+            }, new Vector2(0.5f, 1f), touchHeight: 102f, iconOnly: true);
+            var center = Vector2.one * 0.5f;
+            var title = MakeText(button.transform, "Language label", HudTheme.Control, FontStyle.Bold, HudTheme.Ink,
+                center, new Vector2(-170, 0), new Vector2(260, 64));
+            title.alignment = TextAnchor.MiddleLeft;
+            Loc.Set(title, "Language");
+            _languageValue = MakeText(button.transform, "Language value", HudTheme.Caption, FontStyle.Bold, HudTheme.Ink,
+                center, new Vector2(150, 0), new Vector2(320, 60));
+            _languageValue.alignment = TextAnchor.MiddleRight;
+            _languageValue.resizeTextForBestFit = true;
+            _languageValue.resizeTextMaxSize = HudTheme.Caption;
+            _languageValue.resizeTextMinSize = 18;
+            ShowLanguage();
+            Loc.Changed += ShowLanguage;
+        }
+
+        private void ShowLanguage()
+        {
+            if (_languageValue != null) Loc.SetRaw(_languageValue, Loc.NativeName(Loc.Current));
+        }
+
+        /// <summary>Settings ▸ Language value (tests).</summary>
+        public string LanguageLabel => _languageValue != null ? _languageValue.text : null;
+
         private Slider MakeVolume(Transform panel, string label, float y, out Text percent, Action<float> changed)
         {
             var anchor = new Vector2(0.5f, 1f);
             var name = MakeText(panel, label + " label", HudTheme.Control, FontStyle.Bold, HudTheme.Ink, anchor,
                 new Vector2(-162, y), new Vector2(338, 54));
             name.alignment = TextAnchor.MiddleLeft;
-            name.text = label;
+            Loc.Set(name, label);
             percent = MakeText(panel, label + " value", HudTheme.Caption, FontStyle.Normal, HudTheme.SecondaryText, anchor,
                 new Vector2(268, y), new Vector2(124, 54));
             percent.alignment = TextAnchor.MiddleRight;
@@ -1080,7 +1147,8 @@ namespace Plop.Presentation
                 var labelBox = stackIcon ? new Vector2(size.x, 44f) : size;
                 var text = MakeText(rt, "Label", stackIcon ? HudTheme.Caption : fontSize, FontStyle.Bold,
                     HudTheme.Ink, center, labelPosition, labelBox);
-                text.text = label;
+                if (label.EndsWith(" FPS")) Loc.SetRaw(text, label);
+                else Loc.Set(text, label);
             }
             return button;
         }

@@ -84,7 +84,7 @@ namespace Plop.Presentation
         private Recovery _pendingRecovery;
         /// <summary>Levels before this campaign index have free hints (onboarding), as do mechanic intro levels.</summary>
         internal const int FreeHintLevels = 6;
-        private bool _settingsFromMenu;
+        private bool _settingsFromMenu, _levelsFromMenu;
         private BoardView _board;
         private SwipeInput _input;
         private GameHud _hud;
@@ -184,6 +184,11 @@ namespace Plop.Presentation
             _menu.StudioClicked += OpenStudio;
             _studio.Closed += OnStudioClosed;
             _studio.ButtonPressed += _audio.PlayButton;
+            _studio.Unlocked += _ => _audio.PlayCosmeticUnlock();
+            _hud.AmbienceChanged += _audio.SetAmbienceVolume;
+            _hud.EffectsPreview += _audio.PlayToggle;
+            _hud.RestoreDefaultsClicked += RestoreDefaultSettings;
+            _hud.LanguageClicked += CycleLanguage;
             _board.SetBatterySaver(targetFrameRate == FrameRateMode.Fps30);
             _backdrop.SetBatterySaver(targetFrameRate == FrameRateMode.Fps30);
             _board.TraceSound += _audio.PlayTrace;
@@ -195,7 +200,11 @@ namespace Plop.Presentation
         /// </summary>
         private void UpdateSceneVisibility()
         {
-            bool visible = !_suspended && !(_menu != null && _menu.IsOpen) && !(_studio != null && _studio.IsOpen);
+            bool menuOpen = (_menu != null && _menu.IsOpen) || (_studio != null && _studio.IsOpen);
+            if (_levelsFromMenu && !_hud.IsChoosingLevel) _levelsFromMenu = false;
+            // The menu theme carries through the menu, Studio, and World select / Settings opened from the menu.
+            _audio.SetMusicContext(menuOpen || _settingsFromMenu || _levelsFromMenu ? MusicContext.Menu : MusicContext.Gameplay);
+            bool visible = !_suspended && !menuOpen;
             if (visible == _board.Visible) return;
             _board.SetVisible(visible);
             _backdrop.SetAmbientVisible(visible);
@@ -275,8 +284,8 @@ namespace Plop.Presentation
             ClearPendingInput();
             _hud.CancelWorldAnnouncement();
             if (_splash != null) { _splash.Skip(); return "splash"; }
-            if (_studio != null && _studio.IsOpen) { _studio.Close(); return "studio"; }
-            if (_hud.HandleBack()) { MarkActive(); return "modal"; }
+            if (_studio != null && _studio.IsOpen) { _audio.PlayBack(); _studio.Close(); return "studio"; }
+            if (_hud.HandleBack()) { _audio.PlayBack(); MarkActive(); return "modal"; }
             if (_menu != null && _menu.IsOpen)
             {
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -357,11 +366,13 @@ namespace Plop.Presentation
 #endif
             if (SavesProgress)
             {
-                _haptics.Enabled = PlayerPrefs.GetInt(HapticsKey, 0) == 1;
+                _haptics.Enabled = PlayerPrefs.GetInt(HapticsKey, 1) == 1; // Sprint 02: on by default
                 ApplyReducedMotion(PlayerPrefs.GetInt(ReducedMotionKey, 0) == 1);
             }
             _hud.SetComfortOptions(HapticsEnabled, ReducedMotionEnabled);
-            _audio.Initialize(SavesProgress, _worlds.ForLevelIndex(_index)?.Ambience ?? WorldAmbience.CozyNest);
+            if (SavesProgress) Loc.InitFromPreferences(); // tests and previews stay in English
+            _audio.Initialize(SavesProgress, _worlds.ForLevelIndex(_index)?.Ambience ?? WorldAmbience.CozyNest,
+                _debugPreview ? MusicContext.Gameplay : MusicContext.Menu);
             UpdateCosmeticProgress();
             LoadCurrent();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -396,7 +407,9 @@ namespace Plop.Presentation
 #endif
             if (!show) return;
             _splash = BrandSplash.Show(transform, profile, ReducedMotionEnabled);
-            if (_splash != null) _splash.Finished += () => _splash = null;
+            if (_splash == null) return;
+            _splash.Finished += () => _splash = null;
+            _audio.PlaySonicLogo(); // the mascot's landing; silent when the saved settings mute effects
         }
 
         internal void ShowReviewSplash(BrandSplash splash)
@@ -688,12 +701,43 @@ namespace Plop.Presentation
                 _hud.ShowLevels(_levels, IsLevelUnlocked, IsLevelCompleted, _index);
         }
 
+        /// <summary>Settings ▸ Restore Defaults: sound (music 45 %, effects 80 %, ambience 30 %, unmuted) and haptics on.
+        /// Frame rate and Reduced Motion are accessibility/comfort choices and are left as the player set them.</summary>
+        private void RestoreDefaultSettings()
+        {
+            _audio.RestoreDefaults();
+            SetHaptics(true);
+            _hud.SetVolumes(_audio.MusicVolume, _audio.SoundVolume, _audio.AmbienceVolume);
+            _hud.SetMasterMuted(_audio.MasterMuted);
+            _hud.SetComfortOptions(HapticsEnabled, ReducedMotionEnabled);
+        }
+
+        /// <summary>The line under the level title: the date (Daily), the move limit (Challenge) or the World name.</summary>
+        private void ApplySubtitle()
+        {
+            if (!_engine.HasLevel) return;
+            if (_engine.Level.MoveLimit > 0)
+                _hud.SetSubtitle(Loc.P("Challenge · {0} moves", "Challenge · {0} move", _engine.Level.MoveLimit));
+            else if (_playingDaily)
+                _hud.SetSubtitle(_dailyDate.ToString(Loc.Culture.DateTimeFormat.MonthDayPattern, Loc.Culture));
+            else
+                _hud.SetSubtitle(Loc.T(_world?.DisplayName));
+        }
+
+        /// <summary>Settings ▸ Language: next of the eight languages; bound labels follow at once.</summary>
+        private void CycleLanguage()
+        {
+            Loc.Set(Loc.Next(Loc.Current), save: SavesProgress);
+            ApplySubtitle();
+            RefreshMenu();
+        }
+
         private void ShowSettings()
         {
             if (GameplayBlocked) return;
             ClearPendingInput();
             InvalidateHint();
-            _hud.SetVolumes(_audio.MusicVolume, _audio.SoundVolume);
+            _hud.SetVolumes(_audio.MusicVolume, _audio.SoundVolume, _audio.AmbienceVolume);
             _hud.SetMasterMuted(_audio.MasterMuted);
             _hud.SetComfortOptions(HapticsEnabled, ReducedMotionEnabled);
             _hud.ShowSettings();
@@ -836,7 +880,7 @@ namespace Plop.Presentation
                 return null;
             if (_engine.IsFailed || _engine.IsOutOfMoves)
             {
-                ShowHint("Undo or Restart first.");
+                ShowHint(Loc.T("Undo or Restart first."));
                 return null;
             }
 
@@ -850,7 +894,7 @@ namespace Plop.Presentation
                 _deadlockCheckQueued = true;
                 _deadlockWork.Cancel();
             }
-            ShowHint("Looking for a hint…", true);
+            ShowHint(Loc.T("Looking for a hint…"), true);
             MarkActive();
             try
             {
@@ -879,26 +923,27 @@ namespace Plop.Presentation
                         if (spend == HintCharge.Insufficient)
                         {
                             int more = HintPolicy.GraceAttempts - _attempts;
-                            ShowHint("A hint costs " + RewardRules.HintCost + " Dream Dust. You have " + _wallet.Balance + "." +
+                            ShowHint(Loc.F("A hint costs {0} Dream Dust. You have {1}.", RewardRules.HintCost, _wallet.Balance) +
                                 (more > 0 && !_wallet.HasSpent(HintPolicy.GraceKey(level.Id))
-                                    ? "\nKeep trying: after " + more + " more " + (more == 1 ? "try" : "tries") + " the first hint here is free."
+                                    ? "\n" + Loc.P("Keep trying: after {0} more tries the first hint here is free.",
+                                        "Keep trying: after {0} more try the first hint here is free.", more)
                                     : ""));
                             return null;
                         }
                         if (spend == HintCharge.Charged)
-                            charged = "\n−" + RewardRules.HintCost + " Dream Dust · " + _wallet.Balance + " left";
+                            charged = "\n" + Loc.F("−{0} Dream Dust · {1} left", RewardRules.HintCost, _wallet.Balance);
                         else if (spend == HintCharge.Grace)
-                            charged = "\nThis one is on the house.";
+                            charged = "\n" + Loc.T("This one is on the house.");
                     }
                     _assisted = true; // a revealed route means this visit can no longer earn Perfect
-                    ShowHint("Try swiping " + direction.ToString().ToLowerInvariant() + "." + charged, direction: direction);
+                    ShowHint(Loc.T("Try swiping " + direction.ToString().ToLowerInvariant() + ".") + charged, direction: direction);
                     Playtest(PlaytestEvent.Hint);
                     return direction;
                 }
 
-                ShowHint(result.Status == SolverStatus.ProvenUnsolvable
+                ShowHint(Loc.T(result.Status == SolverStatus.ProvenUnsolvable
                     ? "No route from here. Try Undo."
-                    : "No hint available. Try Undo.");
+                    : "No hint available. Try Undo."));
                 return null;
             }
             catch (Exception exception)
@@ -906,7 +951,7 @@ namespace Plop.Presentation
                 if (!work.IsCancellationRequested && this != null && isActiveAndEnabled)
                 {
                     Debug.LogWarning("[PLOP] Hint failed: " + exception.GetType().Name);
-                    ShowHint("No hint available. Try Undo.");
+                    ShowHint(Loc.T("No hint available. Try Undo."));
                 }
                 return null;
             }
@@ -947,6 +992,7 @@ namespace Plop.Presentation
         private void LoadCurrent()
         {
             MarkActive();
+            _audio.CancelPending(); // no stale sleep/jingle cues from the previous level
             _hud.CancelWorldAnnouncement();
             var previousWorld = _world;
             SetWorld(_worlds.ForLevelIndex(_index));
@@ -992,6 +1038,7 @@ namespace Plop.Presentation
                 var daily = SafeReward(() => CompletionRewards.ForDaily(_wallet, _records, level.Id, _dailyDate, moveCount, level.OptimalMoves, _assisted));
                 _hud.SetCompleted(true, true);
                 _hud.SetCompletionResult(moveCount, level.OptimalMoves, daily.Attempt.Perfect, daily.DustEarned, returnsToMenu: true);
+                _audio.PlayCompletion(daily.Attempt.Perfect, daily.DustEarned);
                 UpdateCosmeticProgress();
                 PlopLog.Info("Daily puzzle " + level.Id + " completed in " + moveCount);
                 return;
@@ -1003,6 +1050,7 @@ namespace Plop.Presentation
             _hud.SetCompleted(true, nextUnlocked);
             var reward = SafeReward(() => CompletionRewards.ForLevel(_wallet, _records, level.Id, moveCount, level.OptimalMoves, _assisted));
             _hud.SetCompletionResult(moveCount, level.OptimalMoves, reward.Attempt.Perfect, reward.DustEarned, returnsToMenu: false);
+            _audio.PlayCompletion(reward.Attempt.Perfect, reward.DustEarned);
             UpdateCosmeticProgress();
 
             var nextWorld = _worlds.ForLevelIndex(nextIndex);
@@ -1032,12 +1080,9 @@ namespace Plop.Presentation
                     Playtest(PlaytestEvent.Start);
                     _hud.SetPerfectTarget(_engine.Level.OptimalMoves, _records.IsPerfect(_engine.Level.Id));
                     _hud.SetLevel(_engine.Level.Name, _engine.Level.Instruction);
-                    _hud.SetSubtitle(_playingDaily
-                        ? _dailyDate.ToString("MMMM d", System.Globalization.CultureInfo.InvariantCulture)
-                        : _world?.DisplayName);
                     _pendingRecovery = Recovery.None;
                     _hud.SetMoveLimit(_engine.Level.MoveLimit);
-                    if (_engine.Level.MoveLimit > 0) _hud.SetSubtitle("Challenge · " + _engine.Level.MoveLimit + " moves");
+                    ApplySubtitle();
                     _hud.SetHintCost(HintCost);
                     _hud.SetMoves(0);
                     _hud.SetCanUndo(false);
@@ -1099,8 +1144,9 @@ namespace Plop.Presentation
         {
             var sprite = _board.Atlas?.Get(ShapeAtlas.WorriedPlopKey);
             bool shown = _pendingRecovery == Recovery.Lava
-                ? _hud.ShowRecovery("Oops! Too hot!", "Lava is no place for a nap. Undo or try again.", _engine.CanUndo, sprite)
-                : _hud.ShowRecovery("Out of moves!", "This challenge allows " + _engine.Level.MoveLimit + " moves. Undo or try again.", _engine.CanUndo, sprite);
+                ? _hud.ShowRecovery(Loc.T("Oops! Too hot!"), Loc.T("Lava is no place for a nap. Undo or try again."), _engine.CanUndo, sprite)
+                : _hud.ShowRecovery(Loc.T("Out of moves!"), Loc.P("This challenge allows {0} moves. Undo or try again.",
+                    "This challenge allows {0} move. Undo or try again.", _engine.Level.MoveLimit), _engine.CanUndo, sprite);
             if (shown || _hud.IsDeadlockOpen) _pendingRecovery = Recovery.None;
         }
 
@@ -1137,7 +1183,7 @@ namespace Plop.Presentation
             _menu.Show();
             if (_newCosmetics.Count > 0)
             {
-                _menu.ShowToast("New in Studio: " + string.Join(", ", _newCosmetics));
+                _menu.ShowToast(Loc.F("New in Studio: {0}", string.Join(", ", _newCosmetics.ConvertAll(Loc.T))));
                 _newCosmetics.Clear();
             }
         }
@@ -1168,7 +1214,7 @@ namespace Plop.Presentation
         /// <summary>Starts today's prevalidated daily puzzle (offline, deterministic by local date).</summary>
         public bool StartDaily()
         {
-            if (_dailyPool.Count == 0) { _menu.ShowToast("Daily puzzle unavailable"); return false; }
+            if (_dailyPool.Count == 0) { _menu.ShowToast(Loc.T("Daily puzzle unavailable")); return false; }
             var now = Clock.LocalNow;
             _dailyDate = now.Date;
             var puzzle = _dailyPool[DailyPickIndex(now)];
@@ -1214,8 +1260,8 @@ namespace Plop.Presentation
         public int ClaimDailyGift()
         {
             int amount = DailyGift.Claim(_wallet, Clock.LocalNow);
-            _menu.ShowToast(amount > 0 ? "+" + amount + " Dream Dust" : "Next gift tomorrow");
-            if (amount > 0) _audio.PlayButton();
+            _menu.ShowToast(amount > 0 ? Loc.F("+{0} Dream Dust", amount) : Loc.T("Next gift tomorrow"));
+            if (amount > 0) _audio.PlayDust();
             RefreshMenu();
             return amount;
         }
@@ -1224,6 +1270,7 @@ namespace Plop.Presentation
         {
             _menu.Hide(instant: true);
             ShowLevelPicker();
+            _levelsFromMenu = _hud.IsChoosingLevel;
         }
 
         private void OpenSettingsFromMenu()

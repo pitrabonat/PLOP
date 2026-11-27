@@ -1,0 +1,168 @@
+# PLOP! localization source: English keys (plural keys: English one-form after a tab).
+Sleepy Puzzle
+Play
+Level
+Level {0}
+Gift
+Tomorrow
+Daily
+Daily Gift
+Daily Puzzle
+Levels
+Studio
+Dream Dust
++{0} Dream Dust
+Next gift tomorrow
+Daily puzzle unavailable
+New in Studio: {0}
+Settings
+Home
+Undo
+Restart
+Hint
+Hint {0}
+{0} moves	{0} move
+Perfect!
+Sweet Dreams!
+Perfect: {0}
+Menu
+Next Level
+Replay
+On
+Off
+Oops, we're stuck!
+There's no way to get everyone home from here.
+Undo Move
+Restart Level
+Keep playing
+Choose a level
+Worlds
+Close
+Previous
+More
+Level {0} · Perfect
+Level {0} · Done
+Level {0} · Locked
+Levels {0}–{1}
+Done
+Music
+Effects
+Ambience
+Master mute
+Frame rate
+Haptics
+Reduced motion
+Restore Defaults
+Language
+Resume Level {0}
+Resume
+Levels {0}–{1} · {2}/{3}
+Current
+Locked
+World unlocked
+Cozy Nest
+Dewdrop Garden
+Rainy Window
+Twilight Attic
+Moonlit Clouds
+Frosted Pond
+Breezy Meadow
+Ember Hollow
+Prism Observatory
+Undo or Restart first.
+Looking for a hint…
+A hint costs {0} Dream Dust. You have {1}.
+Keep trying: after {0} more tries the first hint here is free.	Keep trying: after {0} more try the first hint here is free.
+−{0} Dream Dust · {1} left
+This one is on the house.
+Try swiping up.
+Try swiping down.
+Try swiping left.
+Try swiping right.
+No route from here. Try Undo.
+No hint available. Try Undo.
+Challenge · {0} moves	Challenge · {0} move
+Oops! Too hot!
+Lava is no place for a nap. Undo or try again.
+Out of moves!
+This challenge allows {0} moves. Undo or try again.	This challenge allows {0} move. Undo or try again.
+Swipe the Plop into its matching Nest.
+One swipe moves every awake Plop.
+Frost: Plops slide until something stops them.
+Breeze fans push Plops the way they point. Dots show how far.
+Lava is too hot! Keep every Plop out.
+Loops connect: in one, out the other.
+Body
+Colors
+Finish
+Face
+Accessories
+Nest
+Board
+Equipped
+Equip
+Tap to confirm
+Unlock {0}
+Need {0} more
+Free
+Owned
+{0} or {1}
+{0} Dust
+Wearing now
+Free · tap Equip
+Unlocked
+Locked · {0}
+Locked · {0} or {1} Dream Dust
+Locked · {0} Dream Dust
+Unlocked {0}!
+Not enough Dream Dust
+Could not unlock, try again
+{0} levels	{0} level
+{0} Perfects	{0} Perfect
+{0} Worlds	{0} World
+{0} Dailies	{0} Daily
+Complete {0} levels	Complete {0} level
+Earn {0} Perfects	Earn {0} Perfect
+Finish {0} Worlds	Finish {0} World
+Solve {0} Dailies	Solve {0} Daily
+Classic
+Bouncy
+Snoozy
+Classic Jelly
+Frosted Jelly
+Milky Jelly
+Dewdrop Jelly
+Velvet Jelly
+Pearl Jelly
+Toy Box
+Pastel
+Sorbet
+Sweet
+Button
+Dozy
+Blush
+Starry
+None
+Tiny Bow
+Little Flower
+Sprout Leaf
+Ribbon
+Little Star
+Nightcap
+Cloud Puff
+Tiny Crown
+Moon Pillow
+Cloud Cushion
+Marshmallow
+Soft Flower
+Crescent Bed
+Dust Puff
+Sparkle
+Bubbles
+Star Trail
+World Colors
+Honey Tray
+Mint Garden
+Peach Quilt
+Lavender Dream
+Starlight

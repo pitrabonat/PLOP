@@ -1,0 +1,170 @@
+# PLOP! — Ukrainian (uk)
+# STATUS: drafted by an AI model (Claude) for Final Sprint 02. NOT reviewed by a native speaker.
+# Format: English source<TAB>translation. Plural forms separated by | (one|other; uk/ru: one|few|many).
+Sleepy Puzzle	Сонна головоломка
+Play	Грати
+Level	Рівень
+Level {0}	Рівень {0}
+Gift	Подарунок
+Tomorrow	Завтра
+Daily	Щодня
+Daily Gift	Щоденний подарунок
+Daily Puzzle	Головоломка дня
+Levels	Рівні
+Studio	Студія
+Dream Dust	Пил снів
++{0} Dream Dust	+{0} Пилу снів
+Next gift tomorrow	Наступний подарунок завтра
+Daily puzzle unavailable	Головоломка дня недоступна
+New in Studio: {0}	Нове в студії: {0}
+Settings	Налаштування
+Home	Головна
+Undo	Скасувати
+Restart	Заново
+Hint	Підказка
+Hint {0}	Підказка {0}
+{0} moves	{0} хід|{0} ходи|{0} ходів
+Perfect!	Ідеально!
+Sweet Dreams!	Солодких снів!
+Perfect: {0}	Ідеал: {0}
+Menu	Меню
+Next Level	Наступний рівень
+Replay	Ще раз
+On	Увімк.
+Off	Вимк.
+Oops, we're stuck!	Ой, ми застрягли!
+There's no way to get everyone home from here.	Звідси вже не вийде довести всіх додому.
+Undo Move	Скасувати хід
+Restart Level	Почати заново
+Keep playing	Грати далі
+Choose a level	Оберіть рівень
+Worlds	Світи
+Close	Закрити
+Previous	Назад
+More	Далі
+Level {0} · Perfect	Рівень {0} · Ідеально
+Level {0} · Done	Рівень {0} · Пройдено
+Level {0} · Locked	Рівень {0} · Закрито
+Levels {0}–{1}	Рівні {0}–{1}
+Done	Готово
+Music	Музика
+Effects	Ефекти
+Ambience	Атмосфера
+Master mute	Вимкнути звук
+Frame rate	Частота кадрів
+Haptics	Вібрація
+Reduced motion	Менше руху
+Restore Defaults	Скинути налаштування
+Language	Мова
+Resume Level {0}	Продовжити рівень {0}
+Resume	Продовжити
+Levels {0}–{1} · {2}/{3}	Рівні {0}–{1} · {2}/{3}
+Current	Поточний
+Locked	Закрито
+World unlocked	Світ відкрито
+Cozy Nest	Затишне гніздечко
+Dewdrop Garden	Сад росинок
+Rainy Window	Дощове вікно
+Twilight Attic	Сутінкове горище
+Moonlit Clouds	Місячні хмари
+Frosted Pond	Замерзлий ставок
+Breezy Meadow	Вітряна галявина
+Ember Hollow	Жаринна долинка
+Prism Observatory	Призмова обсерваторія
+Undo or Restart first.	Спершу скасуйте хід або почніть заново.
+Looking for a hint…	Шукаю підказку…
+A hint costs {0} Dream Dust. You have {1}.	Підказка коштує {0} Пилу снів. У вас {1}.
+Keep trying: after {0} more tries the first hint here is free.	Не здавайтеся: ще {0} спроба — і перша підказка тут безкоштовна.|Не здавайтеся: ще {0} спроби — і перша підказка тут безкоштовна.|Не здавайтеся: ще {0} спроб — і перша підказка тут безкоштовна.
+−{0} Dream Dust · {1} left	−{0} Пилу снів · залишилось {1}
+This one is on the house.	Ця — за рахунок закладу.
+Try swiping up.	Спробуйте провести вгору.
+Try swiping down.	Спробуйте провести вниз.
+Try swiping left.	Спробуйте провести вліво.
+Try swiping right.	Спробуйте провести вправо.
+No route from here. Try Undo.	Звідси немає шляху. Спробуйте скасувати хід.
+No hint available. Try Undo.	Підказки немає. Спробуйте скасувати хід.
+Challenge · {0} moves	Виклик · {0} хід|Виклик · {0} ходи|Виклик · {0} ходів
+Oops! Too hot!	Ой! Гаряче!
+Lava is no place for a nap. Undo or try again.	Лава — не місце для сну. Скасуйте хід або спробуйте ще раз.
+Out of moves!	Ходи закінчились!
+This challenge allows {0} moves. Undo or try again.	Цей виклик дозволяє {0} хід. Скасуйте хід або спробуйте ще раз.|Цей виклик дозволяє {0} ходи. Скасуйте хід або спробуйте ще раз.|Цей виклик дозволяє {0} ходів. Скасуйте хід або спробуйте ще раз.
+Swipe the Plop into its matching Nest.	Проведіть, щоб Плоп потрапив у своє гніздо.
+One swipe moves every awake Plop.	Один свайп рухає всіх неспаних Плопів.
+Frost: Plops slide until something stops them.	Іній: Плопи ковзають, доки щось їх не зупинить.
+Breeze fans push Plops the way they point. Dots show how far.	Вітрячки штовхають Плопів, куди вказують. Крапки показують, як далеко.
+Lava is too hot! Keep every Plop out.	Лава надто гаряча! Не пускайте туди жодного Плопа.
+Loops connect: in one, out the other.	Петлі з'єднані: в одну зайшов — з іншої вийшов.
+Body	Тіло
+Colors	Кольори
+Finish	Фактура
+Face	Обличчя
+Accessories	Аксесуари
+Nest	Гніздо
+Board	Поле
+Equipped	Вдягнено
+Equip	Вдягнути
+Tap to confirm	Торкніться, щоб підтвердити
+Unlock {0}	Відкрити за {0}
+Need {0} more	Потрібно ще {0}
+Free	Безкоштовно
+Owned	Є
+{0} or {1}	{0} або {1}
+{0} Dust	{0} пилу
+Wearing now	Зараз вдягнено
+Free · tap Equip	Безкоштовно · торкніться «Вдягнути»
+Unlocked	Відкрито
+Locked · {0}	Закрито · {0}
+Locked · {0} or {1} Dream Dust	Закрито · {0} або {1} Пилу снів
+Locked · {0} Dream Dust	Закрито · {0} Пилу снів
+Unlocked {0}!	Відкрито: {0}!
+Not enough Dream Dust	Недостатньо Пилу снів
+Could not unlock, try again	Не вдалося відкрити, спробуйте ще
+{0} levels	{0} рівень|{0} рівні|{0} рівнів
+{0} Perfects	{0} ідеал|{0} ідеали|{0} ідеалів
+{0} Worlds	{0} світ|{0} світи|{0} світів
+{0} Dailies	{0} щоденна|{0} щоденні|{0} щоденних
+Complete {0} levels	Пройдіть {0} рівень|Пройдіть {0} рівні|Пройдіть {0} рівнів
+Earn {0} Perfects	Отримайте {0} ідеал|Отримайте {0} ідеали|Отримайте {0} ідеалів
+Finish {0} Worlds	Завершіть {0} світ|Завершіть {0} світи|Завершіть {0} світів
+Solve {0} Dailies	Розв'яжіть {0} щоденну|Розв'яжіть {0} щоденні|Розв'яжіть {0} щоденних
+Classic	Класичний
+Bouncy	Стрибучий
+Snoozy	Сонько
+Classic Jelly	Класичне желе
+Frosted Jelly	Морозне желе
+Milky Jelly	Молочне желе
+Dewdrop Jelly	Желе-росинка
+Velvet Jelly	Оксамитове желе
+Pearl Jelly	Перлинне желе
+Toy Box	Іграшкова скриня
+Pastel	Пастель
+Sorbet	Сорбет
+Sweet	Солодкий
+Button	Ґудзик
+Dozy	Дрімота
+Blush	Рум'янець
+Starry	Зоряний
+None	Немає
+Tiny Bow	Бантик
+Little Flower	Квіточка
+Sprout Leaf	Паросток
+Ribbon	Стрічка
+Little Star	Зірочка
+Nightcap	Нічний ковпак
+Cloud Puff	Хмаринка
+Tiny Crown	Коронка
+Moon Pillow	Місячна подушка
+Cloud Cushion	Хмарна подушка
+Marshmallow	Маршмелоу
+Soft Flower	Ніжна квітка
+Crescent Bed	Ліжко-півмісяць
+Dust Puff	Пилова хмарка
+Sparkle	Іскри
+Bubbles	Бульбашки
+Star Trail	Зоряний слід
+World Colors	Кольори світу
+Honey Tray	Медова таця
+Mint Garden	М'ятний сад
+Peach Quilt	Персикова ковдра
+Lavender Dream	Лавандовий сон
+Starlight	Зоряне світло

@@ -88,7 +88,7 @@ namespace Plop.Presentation
             back.GetComponentInChildren<Text>()?.gameObject.SetActive(false);
             var title = _kit.Label(_safe, "Studio Title", HudTheme.Display - 8, FontStyle.Bold, HudTheme.Ink, Vector2.zero, new Vector2(520, 110), _kit.Display);
             Anchor(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0, -100));
-            title.text = "Studio";
+            Loc.Set(title, "Studio");
             var dustPill = MenuKit.Card(_safe, "Studio Dust", new Vector2(1f, 1f), new Vector2(-150, -100), new Vector2(236, 96), PlopPalette.ButtonFill);
             MenuKit.Glyph(dustPill, HudIcons.Kind.Star, new Vector2(-66, 0), 54, PlopPalette.Honey);
             _dust = _kit.Label(dustPill, "Dust amount", HudTheme.Action, FontStyle.Bold, HudTheme.Ink, new Vector2(24, 0), new Vector2(140, 70));
@@ -150,7 +150,7 @@ namespace Plop.Presentation
             float x = 10f;
             for (int i = 0; i < Tabs.Length; i++)
             {
-                float w = 52f + TabNames[i].Length * 21f;
+                float w = 52f + Mathf.Max(TabNames[i].Length, Loc.T(TabNames[i]).Length) * 21f;
                 int index = i;
                 var chip = MenuKit.Rect("Chip " + TabNames[i], _chipsContent);
                 chip.anchorMin = chip.anchorMax = new Vector2(0f, 0.5f);
@@ -163,7 +163,7 @@ namespace Plop.Presentation
                 chip.gameObject.AddComponent<Button>().onClick.AddListener(() => { ButtonPressed?.Invoke(); SelectCategory(Tabs[index]); });
                 chip.gameObject.AddComponent<PressScale>();
                 var label = _kit.Label(chip, "Label", HudTheme.Caption, FontStyle.Bold, HudTheme.Ink, Vector2.zero, new Vector2(w, 80));
-                label.text = TabNames[i];
+                Loc.Set(label, TabNames[i]);
                 _chips.Add((fill, label));
                 x += w + 14f;
             }
@@ -254,7 +254,7 @@ namespace Plop.Presentation
                 card.gameObject.AddComponent<PressScale>();
                 BuildThumb(card, item);
                 var name = _kit.Label(card, "Name", HudTheme.Caption - 2, FontStyle.Bold, HudTheme.Ink, new Vector2(0, -70), new Vector2(cardW - 16, 44));
-                name.text = item.Name;
+                Loc.Set(name, item.Name);
                 var price = _kit.Label(card, "Price", HudTheme.Caption - 6, FontStyle.Bold, HudTheme.SecondaryText, new Vector2(0, -106), new Vector2(cardW - 16, 36));
                 var badge = MenuKit.Glyph(card, HudIcons.Kind.Check, new Vector2(cardW * 0.5f - 38f, cardH * 0.5f - 38f), 46, HudTheme.Ink);
                 _cards.Add((item, card, fill, badge, price));
@@ -290,26 +290,56 @@ namespace Plop.Presentation
                 c.Badge.gameObject.SetActive(state != CosmeticState.Owned); // check when worn, lock when locked
                 c.Badge.sprite = HudIcons.Get(state == CosmeticState.Equipped ? HudIcons.Kind.Check : HudIcons.Kind.Lock);
                 c.Badge.color = state == CosmeticState.Equipped ? Color.Lerp(PlopPalette.Mint, PlopPalette.Ink, 0.45f) : HudTheme.DisabledText;
-                c.Price.text = PriceText(c.Item, state);
+                Loc.SetRaw(c.Price, PriceText(c.Item, state));
             }
             if (_selected == null) return;
             var s = _collection.StateOf(_selected);
-            _itemName.text = _selected.Name;
-            _itemStatus.text = StatusText(_selected, s);
+            Loc.Set(_itemName, _selected.Name);
+            Loc.SetRaw(_itemStatus, StatusText(_selected, s));
             switch (s)
             {
-                case CosmeticState.Equipped: SetAction(ActionKind.Equipped, "Equipped", HudIcons.Kind.Check, false); break;
-                case CosmeticState.Owned: SetAction(ActionKind.Equip, "Equip", HudIcons.Kind.Check, true); break;
+                case CosmeticState.Equipped: SetAction(ActionKind.Equipped, Loc.T("Equipped"), HudIcons.Kind.Check, false); break;
+                case CosmeticState.Owned: SetAction(ActionKind.Equip, Loc.T("Equip"), HudIcons.Kind.Check, true); break;
                 case CosmeticState.Affordable:
-                    if (Time.unscaledTime < _confirmUntil) SetAction(ActionKind.Confirm, "Tap to confirm", HudIcons.Kind.Star, true);
-                    else SetAction(ActionKind.Unlock, "Unlock " + _selected.Cost, HudIcons.Kind.Star, true);
+                    if (Time.unscaledTime < _confirmUntil) SetAction(ActionKind.Confirm, Loc.T("Tap to confirm"), HudIcons.Kind.Star, true);
+                    else SetAction(ActionKind.Unlock, Loc.F("Unlock {0}", _selected.Cost), HudIcons.Kind.Star, true);
                     break;
                 case CosmeticState.TooExpensive:
-                    SetAction(ActionKind.NeedDust, "Need " + _collection.Shortfall(_selected) + " more", HudIcons.Kind.Star, false);
+                    SetAction(ActionKind.NeedDust, Loc.F("Need {0} more", _collection.Shortfall(_selected)), HudIcons.Kind.Star, false);
                     break;
                 default:
-                    SetAction(ActionKind.Milestone, CosmeticCollection.ConditionText(_selected), HudIcons.Kind.Lock, false);
+                    SetAction(ActionKind.Milestone, Condition(_selected), HudIcons.Kind.Lock, false);
                     break;
+            }
+        }
+
+        /// <summary>Localized unlock condition ("Complete 20 levels"); English matches CosmeticCollection.ConditionText.</summary>
+        internal static string Condition(CosmeticItem item)
+        {
+            if (item.Unlock != UnlockMethod.Milestone) return "";
+            int n = item.MilestoneCount;
+            switch (item.Milestone)
+            {
+                case MilestoneKind.LevelsCompleted: return Loc.P("Complete {0} levels", "Complete {0} level", n);
+                case MilestoneKind.PerfectLevels: return Loc.P("Earn {0} Perfects", "Earn {0} Perfect", n);
+                case MilestoneKind.WorldsCompleted: return Loc.P("Finish {0} Worlds", "Finish {0} World", n);
+                case MilestoneKind.DailyPuzzles: return Loc.P("Solve {0} Dailies", "Solve {0} Daily", n);
+                default: return "";
+            }
+        }
+
+        /// <summary>Localized short condition ("20 levels"); English matches CosmeticCollection.ShortCondition.</summary>
+        internal static string ShortCondition(CosmeticItem item)
+        {
+            if (item.Unlock != UnlockMethod.Milestone) return "";
+            int n = item.MilestoneCount;
+            switch (item.Milestone)
+            {
+                case MilestoneKind.LevelsCompleted: return Loc.P("{0} levels", "{0} level", n);
+                case MilestoneKind.PerfectLevels: return Loc.P("{0} Perfects", "{0} Perfect", n);
+                case MilestoneKind.WorldsCompleted: return Loc.P("{0} Worlds", "{0} World", n);
+                case MilestoneKind.DailyPuzzles: return Loc.P("{0} Dailies", "{0} Daily", n);
+                default: return "";
             }
         }
 
@@ -317,13 +347,13 @@ namespace Plop.Presentation
         {
             switch (state)
             {
-                case CosmeticState.Equipped: return "Equipped";
-                case CosmeticState.Owned: return item.IsFree ? "Free" : "Owned";
-                case CosmeticState.MilestoneOnly: return CosmeticCollection.ConditionText(item);
+                case CosmeticState.Equipped: return Loc.T("Equipped");
+                case CosmeticState.Owned: return Loc.T(item.IsFree ? "Free" : "Owned");
+                case CosmeticState.MilestoneOnly: return Condition(item);
                 default:
                     return item.Unlock == UnlockMethod.Milestone
-                        ? CosmeticCollection.ShortCondition(item) + " or " + item.Cost
-                        : item.Cost + " Dust";
+                        ? Loc.F("{0} or {1}", ShortCondition(item), item.Cost)
+                        : Loc.F("{0} Dust", item.Cost);
             }
         }
 
@@ -331,19 +361,20 @@ namespace Plop.Presentation
         {
             switch (state)
             {
-                case CosmeticState.Equipped: return "Wearing now";
-                case CosmeticState.Owned: return item.IsFree ? "Free · tap Equip" : "Unlocked";
-                case CosmeticState.MilestoneOnly: return "Locked · " + CosmeticCollection.ConditionText(item);
+                case CosmeticState.Equipped: return Loc.T("Wearing now");
+                case CosmeticState.Owned: return Loc.T(item.IsFree ? "Free · tap Equip" : "Unlocked");
+                case CosmeticState.MilestoneOnly: return Loc.F("Locked · {0}", Condition(item));
                 default:
-                    string milestone = item.Unlock == UnlockMethod.Milestone ? CosmeticCollection.ConditionText(item) + " or " : "";
-                    return "Locked · " + milestone + item.Cost + " Dream Dust";
+                    return item.Unlock == UnlockMethod.Milestone
+                        ? Loc.F("Locked · {0} or {1} Dream Dust", Condition(item), item.Cost)
+                        : Loc.F("Locked · {0} Dream Dust", item.Cost);
             }
         }
 
         private void SetAction(ActionKind kind, string label, HudIcons.Kind icon, bool enabled)
         {
             _action = kind;
-            _actionLabel.text = label;
+            Loc.SetRaw(_actionLabel, label);
             _actionIcon.sprite = HudIcons.Get(icon);
             _actionButton.interactable = enabled;
             Color fill = kind == ActionKind.Equip ? Color.Lerp(PlopPalette.Berry, PlopPalette.ButtonFill, 0.15f)
@@ -366,7 +397,7 @@ namespace Plop.Presentation
                     if (_collection.Equip(_selected.Id))
                     {
                         _equippedLook = CharacterArt.Resolve(_collection.Equipped, _collection.Catalog);
-                        ShowToast("Equipped");
+                        ShowToast(Loc.T("Equipped"));
                         _preview?.React(Reaction.HappyBlink, now);
                     }
                     break;
@@ -380,11 +411,11 @@ namespace Plop.Presentation
                     {
                         _collection.Equip(_selected.Id);
                         _equippedLook = CharacterArt.Resolve(_collection.Equipped, _collection.Catalog);
-                        ShowToast("Unlocked " + _selected.Name + "!");
+                        ShowToast(Loc.F("Unlocked {0}!", Loc.T(_selected.Name)));
                         _preview?.React(Reaction.Bounce, now);
                         Unlocked?.Invoke(_selected);
                     }
-                    else ShowToast(result == UnlockResult.InsufficientDust ? "Not enough Dream Dust" : "Could not unlock, try again");
+                    else ShowToast(Loc.T(result == UnlockResult.InsufficientDust ? "Not enough Dream Dust" : "Could not unlock, try again"));
                     break;
             }
             RefreshState();
@@ -392,7 +423,7 @@ namespace Plop.Presentation
 
         private void ShowToast(string text)
         {
-            _toast.text = text;
+            Loc.SetRaw(_toast, text);
             _toast.gameObject.SetActive(true);
             _toastUntil = Time.unscaledTime + 1.6f;
         }

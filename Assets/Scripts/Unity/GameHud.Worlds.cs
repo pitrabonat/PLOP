@@ -56,7 +56,7 @@ namespace Plop.Presentation
 
             BindPicker(levels, isUnlocked, isCompleted, currentIndex);
             _resumeLevel = Mathf.Clamp(resumeIndex < 0 ? _currentIndex : resumeIndex, 0, levels.Count - 1);
-            _resumeLabel.text = "Resume Level " + (_resumeLevel + 1);
+            Loc.Set(_resumeLabel, "Resume Level {0}", _resumeLevel + 1);
             _resumeButton.interactable = _isUnlocked(_resumeLevel);
             RenderWorldRows(previewForWorld);
             _levelPicker.gameObject.SetActive(false);
@@ -72,7 +72,7 @@ namespace Plop.Presentation
             var title = MakeText(_worldPanel, "World picker title", HudTheme.Heading, FontStyle.Bold,
                 HudTheme.Ink, topCenter, new Vector2(-198, -74), new Vector2(390, 88));
             title.alignment = TextAnchor.MiddleLeft;
-            title.text = "Worlds";
+            Loc.Set(title, "Worlds");
             MakeButton(_worldPanel, "Done", new Vector2(310, -74), new Vector2(154, HudTheme.ModalButtonHeight),
                 PlopPalette.Milk, CloseLevelPicker, topCenter, fontSize: HudTheme.Control);
             _resumeButton = MakeButton(_worldPanel, "Resume", new Vector2(0, 72), new Vector2(496, 93),
@@ -150,9 +150,9 @@ namespace Plop.Presentation
                 row.Action.interactable = unlocked;
                 row.Action.image.color = Color.Lerp(PlopPalette.ButtonFill, world.AccentColor,
                     current ? 0.40f : unlocked ? 0.16f : 0.075f);
-                row.Title.text = world.DisplayName;
-                row.Range.text = "Levels " + (first + 1) + "–" + end + " · " + complete + "/" + (end - first);
-                row.Status.text = unlocked ? (current ? "Current" : "") : "Locked";
+                Loc.Set(row.Title, world.DisplayName);
+                Loc.Set(row.Range, "Levels {0}–{1} · {2}/{3}", first + 1, end, complete, end - first);
+                Loc.Set(row.Status, unlocked ? (current ? "Current" : "") : "Locked");
                 row.Affordance.sprite = HudIcons.Get(unlocked ? HudIcons.Kind.Next : HudIcons.Kind.Lock);
                 row.Preview.sprite = previewForWorld?.Invoke(world) ?? world.Preview;
                 row.Preview.color = row.Preview.sprite == null ? world.AccentColor : Color.white.WithAlpha(unlocked ? 1f : 0.82f);
@@ -214,7 +214,7 @@ namespace Plop.Presentation
         {
             if (string.IsNullOrWhiteSpace(name) || !isActiveAndEnabled) return;
             CancelWorldAnnouncement();
-            _worldAnnouncementName.text = name;
+            Loc.Set(_worldAnnouncementName, name);
             _worldAnnouncementArt.sprite = preview;
             _worldAnnouncementArt.gameObject.SetActive(preview != null);
             _worldAnnouncementBody.color = Color.Lerp(PlopPalette.ButtonFill, accent ?? PlopPalette.Honey, 0.34f);
@@ -252,8 +252,8 @@ namespace Plop.Presentation
             _worldAnnouncementArt = art.gameObject.AddComponent<Image>();
             _worldAnnouncementArt.preserveAspect = true;
             _worldAnnouncementArt.raycastTarget = false;
-            MakeText(_worldAnnouncement, "World unlocked label", 24, FontStyle.Bold, HudTheme.SecondaryText, center,
-                new Vector2(67, 23), new Vector2(360, 36)).text = "World unlocked";
+            Loc.Set(MakeText(_worldAnnouncement, "World unlocked label", 24, FontStyle.Bold, HudTheme.SecondaryText, center,
+                new Vector2(67, 23), new Vector2(360, 36)), "World unlocked");
             _worldAnnouncementName = MakeText(_worldAnnouncement, "Unlocked world", 39, FontStyle.Bold, HudTheme.Ink,
                 center, new Vector2(67, -15), new Vector2(390, 57));
             _worldAnnouncement.gameObject.SetActive(false);

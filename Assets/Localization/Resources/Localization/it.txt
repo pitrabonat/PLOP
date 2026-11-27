@@ -1,0 +1,170 @@
+# PLOP! — Italian (it)
+# STATUS: drafted by an AI model (Claude) for Final Sprint 02. NOT reviewed by a native speaker.
+# Format: English source<TAB>translation. Plural forms separated by | (one|other; uk/ru: one|few|many).
+Sleepy Puzzle	Puzzle dormiglione
+Play	Gioca
+Level	Livello
+Level {0}	Livello {0}
+Gift	Regalo
+Tomorrow	Domani
+Daily	Del giorno
+Daily Gift	Regalo del giorno
+Daily Puzzle	Puzzle del giorno
+Levels	Livelli
+Studio	Studio
+Dream Dust	Polvere dei sogni
++{0} Dream Dust	+{0} Polvere dei sogni
+Next gift tomorrow	Prossimo regalo domani
+Daily puzzle unavailable	Puzzle del giorno non disponibile
+New in Studio: {0}	Novità nello Studio: {0}
+Settings	Impostazioni
+Home	Home
+Undo	Annulla
+Restart	Ricomincia
+Hint	Aiuto
+Hint {0}	Aiuto {0}
+{0} moves	{0} mossa|{0} mosse
+Perfect!	Perfetto!
+Sweet Dreams!	Sogni d'oro!
+Perfect: {0}	Perfetto: {0}
+Menu	Menu
+Next Level	Livello successivo
+Replay	Rigioca
+On	Sì
+Off	No
+Oops, we're stuck!	Ops, siamo bloccati!
+There's no way to get everyone home from here.	Da qui non si riesce a portare tutti a casa.
+Undo Move	Annulla mossa
+Restart Level	Ricomincia livello
+Keep playing	Continua a giocare
+Choose a level	Scegli un livello
+Worlds	Mondi
+Close	Chiudi
+Previous	Indietro
+More	Altri
+Level {0} · Perfect	Livello {0} · Perfetto
+Level {0} · Done	Livello {0} · Fatto
+Level {0} · Locked	Livello {0} · Bloccato
+Levels {0}–{1}	Livelli {0}–{1}
+Done	Fatto
+Music	Musica
+Effects	Effetti
+Ambience	Ambiente
+Master mute	Silenzia tutto
+Frame rate	Frame rate
+Haptics	Vibrazione
+Reduced motion	Meno movimento
+Restore Defaults	Ripristina
+Language	Lingua
+Resume Level {0}	Riprendi livello {0}
+Resume	Riprendi
+Levels {0}–{1} · {2}/{3}	Livelli {0}–{1} · {2}/{3}
+Current	Attuale
+Locked	Bloccato
+World unlocked	Mondo sbloccato
+Cozy Nest	Nido accogliente
+Dewdrop Garden	Giardino di rugiada
+Rainy Window	Finestra di pioggia
+Twilight Attic	Soffitta al tramonto
+Moonlit Clouds	Nuvole di luna
+Frosted Pond	Stagno ghiacciato
+Breezy Meadow	Prato ventoso
+Ember Hollow	Conca delle braci
+Prism Observatory	Osservatorio prisma
+Undo or Restart first.	Prima annulla o ricomincia.
+Looking for a hint…	Cerco un aiuto…
+A hint costs {0} Dream Dust. You have {1}.	Un aiuto costa {0} Polvere dei sogni. Ne hai {1}.
+Keep trying: after {0} more tries the first hint here is free.	Continua: dopo {0} altro tentativo il primo aiuto qui è gratis.|Continua: dopo altri {0} tentativi il primo aiuto qui è gratis.
+−{0} Dream Dust · {1} left	−{0} Polvere dei sogni · ne restano {1}
+This one is on the house.	Questo lo offre la casa.
+Try swiping up.	Prova a scorrere in alto.
+Try swiping down.	Prova a scorrere in basso.
+Try swiping left.	Prova a scorrere a sinistra.
+Try swiping right.	Prova a scorrere a destra.
+No route from here. Try Undo.	Nessuna strada da qui. Prova Annulla.
+No hint available. Try Undo.	Nessun aiuto disponibile. Prova Annulla.
+Challenge · {0} moves	Sfida · {0} mossa|Sfida · {0} mosse
+Oops! Too hot!	Ahi! Che caldo!
+Lava is no place for a nap. Undo or try again.	La lava non è posto per un pisolino. Annulla o riprova.
+Out of moves!	Mosse finite!
+This challenge allows {0} moves. Undo or try again.	Questa sfida consente {0} mossa. Annulla o riprova.|Questa sfida consente {0} mosse. Annulla o riprova.
+Swipe the Plop into its matching Nest.	Scorri il Plop fino al suo nido abbinato.
+One swipe moves every awake Plop.	Uno scorrimento muove tutti i Plop svegli.
+Frost: Plops slide until something stops them.	Brina: i Plop scivolano finché qualcosa li ferma.
+Breeze fans push Plops the way they point. Dots show how far.	Le ventole spingono i Plop dove puntano. I puntini mostrano quanto lontano.
+Lava is too hot! Keep every Plop out.	La lava scotta! Tieni fuori ogni Plop.
+Loops connect: in one, out the other.	Gli anelli sono collegati: entri da uno, esci dall'altro.
+Body	Corpo
+Colors	Colori
+Finish	Finitura
+Face	Viso
+Accessories	Accessori
+Nest	Nido
+Board	Tavola
+Equipped	Equipaggiato
+Equip	Equipaggia
+Tap to confirm	Tocca per confermare
+Unlock {0}	Sblocca {0}
+Need {0} more	Ne servono altri {0}
+Free	Gratis
+Owned	Tuo
+{0} or {1}	{0} o {1}
+{0} Dust	{0} polvere
+Wearing now	Lo indossi ora
+Free · tap Equip	Gratis · tocca Equipaggia
+Unlocked	Sbloccato
+Locked · {0}	Bloccato · {0}
+Locked · {0} or {1} Dream Dust	Bloccato · {0} o {1} Polvere dei sogni
+Locked · {0} Dream Dust	Bloccato · {0} Polvere dei sogni
+Unlocked {0}!	{0} sbloccato!
+Not enough Dream Dust	Polvere dei sogni insufficiente
+Could not unlock, try again	Sblocco non riuscito, riprova
+{0} levels	{0} livello|{0} livelli
+{0} Perfects	{0} Perfetto|{0} Perfetti
+{0} Worlds	{0} mondo|{0} mondi
+{0} Dailies	{0} quotidiano|{0} quotidiani
+Complete {0} levels	Completa {0} livello|Completa {0} livelli
+Earn {0} Perfects	Ottieni {0} Perfetto|Ottieni {0} Perfetti
+Finish {0} Worlds	Completa {0} mondo|Completa {0} mondi
+Solve {0} Dailies	Risolvi {0} quotidiano|Risolvi {0} quotidiani
+Classic	Classico
+Bouncy	Saltellante
+Snoozy	Dormiglione
+Classic Jelly	Gelatina classica
+Frosted Jelly	Gelatina brinata
+Milky Jelly	Gelatina al latte
+Dewdrop Jelly	Gelatina di rugiada
+Velvet Jelly	Gelatina vellutata
+Pearl Jelly	Gelatina perlata
+Toy Box	Cesta dei giochi
+Pastel	Pastello
+Sorbet	Sorbetto
+Sweet	Dolce
+Button	Bottone
+Dozy	Assonnato
+Blush	Rossore
+Starry	Stellato
+None	Nessuno
+Tiny Bow	Fiocchetto
+Little Flower	Fiorellino
+Sprout Leaf	Germoglio
+Ribbon	Nastro
+Little Star	Stellina
+Nightcap	Berretto da notte
+Cloud Puff	Nuvoletta
+Tiny Crown	Coroncina
+Moon Pillow	Cuscino lunare
+Cloud Cushion	Cuscino di nuvola
+Marshmallow	Marshmallow
+Soft Flower	Fiore morbido
+Crescent Bed	Letto a mezzaluna
+Dust Puff	Nuvola di polvere
+Sparkle	Scintille
+Bubbles	Bolle
+Star Trail	Scia di stelle
+World Colors	Colori del mondo
+Honey Tray	Vassoio di miele
+Mint Garden	Giardino di menta
+Peach Quilt	Trapunta pesca
+Lavender Dream	Sogno di lavanda
+Starlight	Luce di stelle

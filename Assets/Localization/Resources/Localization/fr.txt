@@ -1,0 +1,170 @@
+# PLOP! — French (fr)
+# STATUS: drafted by an AI model (Claude) for Final Sprint 02. NOT reviewed by a native speaker.
+# Format: English source<TAB>translation. Plural forms separated by | (one|other; uk/ru: one|few|many).
+Sleepy Puzzle	Puzzle tout doux
+Play	Jouer
+Level	Niveau
+Level {0}	Niveau {0}
+Gift	Cadeau
+Tomorrow	Demain
+Daily	Du jour
+Daily Gift	Cadeau du jour
+Daily Puzzle	Puzzle du jour
+Levels	Niveaux
+Studio	Studio
+Dream Dust	Poussière de rêve
++{0} Dream Dust	+{0} Poussière de rêve
+Next gift tomorrow	Prochain cadeau demain
+Daily puzzle unavailable	Puzzle du jour indisponible
+New in Studio: {0}	Nouveau au Studio : {0}
+Settings	Réglages
+Home	Accueil
+Undo	Annuler
+Restart	Recommencer
+Hint	Indice
+Hint {0}	Indice {0}
+{0} moves	{0} coup|{0} coups
+Perfect!	Parfait !
+Sweet Dreams!	Fais de beaux rêves !
+Perfect: {0}	Parfait : {0}
+Menu	Menu
+Next Level	Niveau suivant
+Replay	Rejouer
+On	Oui
+Off	Non
+Oops, we're stuck!	Oups, on est coincés !
+There's no way to get everyone home from here.	Impossible de ramener tout le monde à la maison d'ici.
+Undo Move	Annuler le coup
+Restart Level	Recommencer
+Keep playing	Continuer
+Choose a level	Choisis un niveau
+Worlds	Mondes
+Close	Fermer
+Previous	Précédent
+More	Suite
+Level {0} · Perfect	Niveau {0} · Parfait
+Level {0} · Done	Niveau {0} · Fini
+Level {0} · Locked	Niveau {0} · Verrouillé
+Levels {0}–{1}	Niveaux {0}–{1}
+Done	OK
+Music	Musique
+Effects	Effets
+Ambience	Ambiance
+Master mute	Couper le son
+Frame rate	Images par seconde
+Haptics	Vibrations
+Reduced motion	Animations réduites
+Restore Defaults	Réglages par défaut
+Language	Langue
+Resume Level {0}	Reprendre le niveau {0}
+Resume	Reprendre
+Levels {0}–{1} · {2}/{3}	Niveaux {0}–{1} · {2}/{3}
+Current	En cours
+Locked	Verrouillé
+World unlocked	Monde débloqué
+Cozy Nest	Nid douillet
+Dewdrop Garden	Jardin de rosée
+Rainy Window	Fenêtre pluvieuse
+Twilight Attic	Grenier du soir
+Moonlit Clouds	Nuages de lune
+Frosted Pond	Étang givré
+Breezy Meadow	Prairie venteuse
+Ember Hollow	Creux des braises
+Prism Observatory	Observatoire prisme
+Undo or Restart first.	Annule ou recommence d'abord.
+Looking for a hint…	Je cherche un indice…
+A hint costs {0} Dream Dust. You have {1}.	Un indice coûte {0} Poussière de rêve. Tu en as {1}.
+Keep trying: after {0} more tries the first hint here is free.	Continue : encore {0} essai et le premier indice ici est gratuit.|Continue : encore {0} essais et le premier indice ici est gratuit.
+−{0} Dream Dust · {1} left	−{0} Poussière de rêve · il en reste {1}
+This one is on the house.	Celui-ci est offert.
+Try swiping up.	Essaie de glisser vers le haut.
+Try swiping down.	Essaie de glisser vers le bas.
+Try swiping left.	Essaie de glisser vers la gauche.
+Try swiping right.	Essaie de glisser vers la droite.
+No route from here. Try Undo.	Aucun chemin d'ici. Essaie Annuler.
+No hint available. Try Undo.	Pas d'indice disponible. Essaie Annuler.
+Challenge · {0} moves	Défi · {0} coup|Défi · {0} coups
+Oops! Too hot!	Aïe ! Trop chaud !
+Lava is no place for a nap. Undo or try again.	La lave, ce n'est pas pour la sieste. Annule ou réessaie.
+Out of moves!	Plus de coups !
+This challenge allows {0} moves. Undo or try again.	Ce défi autorise {0} coup. Annule ou réessaie.|Ce défi autorise {0} coups. Annule ou réessaie.
+Swipe the Plop into its matching Nest.	Glisse le Plop jusqu'à son nid assorti.
+One swipe moves every awake Plop.	Un glissement déplace tous les Plops éveillés.
+Frost: Plops slide until something stops them.	Givre : les Plops glissent jusqu'à ce que quelque chose les arrête.
+Breeze fans push Plops the way they point. Dots show how far.	Les ventilos poussent les Plops dans leur direction. Les points montrent jusqu'où.
+Lava is too hot! Keep every Plop out.	La lave est trop chaude ! Garde les Plops à l'écart.
+Loops connect: in one, out the other.	Les boucles sont reliées : on entre par l'une, on sort par l'autre.
+Body	Corps
+Colors	Couleurs
+Finish	Finition
+Face	Visage
+Accessories	Accessoires
+Nest	Nid
+Board	Plateau
+Equipped	Équipé
+Equip	Équiper
+Tap to confirm	Touche pour confirmer
+Unlock {0}	Débloquer {0}
+Need {0} more	Il manque {0}
+Free	Gratuit
+Owned	Possédé
+{0} or {1}	{0} ou {1}
+{0} Dust	{0} poussière
+Wearing now	Porté en ce moment
+Free · tap Equip	Gratuit · touche Équiper
+Unlocked	Débloqué
+Locked · {0}	Verrouillé · {0}
+Locked · {0} or {1} Dream Dust	Verrouillé · {0} ou {1} Poussière de rêve
+Locked · {0} Dream Dust	Verrouillé · {0} Poussière de rêve
+Unlocked {0}!	{0} débloqué !
+Not enough Dream Dust	Pas assez de Poussière de rêve
+Could not unlock, try again	Impossible de débloquer, réessaie
+{0} levels	{0} niveau|{0} niveaux
+{0} Perfects	{0} Parfait|{0} Parfaits
+{0} Worlds	{0} monde|{0} mondes
+{0} Dailies	{0} puzzle du jour|{0} puzzles du jour
+Complete {0} levels	Termine {0} niveau|Termine {0} niveaux
+Earn {0} Perfects	Obtiens {0} Parfait|Obtiens {0} Parfaits
+Finish {0} Worlds	Termine {0} monde|Termine {0} mondes
+Solve {0} Dailies	Résous {0} puzzle du jour|Résous {0} puzzles du jour
+Classic	Classique
+Bouncy	Rebondissant
+Snoozy	Somnolent
+Classic Jelly	Gelée classique
+Frosted Jelly	Gelée givrée
+Milky Jelly	Gelée lactée
+Dewdrop Jelly	Gelée de rosée
+Velvet Jelly	Gelée velours
+Pearl Jelly	Gelée nacrée
+Toy Box	Coffre à jouets
+Pastel	Pastel
+Sorbet	Sorbet
+Sweet	Douceur
+Button	Bouton
+Dozy	Assoupi
+Blush	Rosé
+Starry	Étoilé
+None	Aucun
+Tiny Bow	Mini ruban
+Little Flower	Petite fleur
+Sprout Leaf	Pousse
+Ribbon	Ruban
+Little Star	Petite étoile
+Nightcap	Bonnet de nuit
+Cloud Puff	Nuage douillet
+Tiny Crown	Petite couronne
+Moon Pillow	Oreiller lune
+Cloud Cushion	Coussin nuage
+Marshmallow	Guimauve
+Soft Flower	Fleur douce
+Crescent Bed	Lit croissant
+Dust Puff	Nuage de poussière
+Sparkle	Étincelles
+Bubbles	Bulles
+Star Trail	Traînée d'étoiles
+World Colors	Couleurs du monde
+Honey Tray	Plateau miel
+Mint Garden	Jardin menthe
+Peach Quilt	Édredon pêche
+Lavender Dream	Rêve lavande
+Starlight	Lumière d'étoiles

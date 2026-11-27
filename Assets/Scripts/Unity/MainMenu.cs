@@ -72,7 +72,7 @@ namespace Plop.Presentation
             logo.text = "PLOP!";
             _logoText = logo;
             var tagline = _kit.Label(_safe, "Tagline", HudTheme.Caption + 4, FontStyle.Bold, HudTheme.SecondaryText, new Vector2(0, 436), new Vector2(700, 60));
-            tagline.text = "Sleepy Puzzle";
+            Loc.Set(tagline, "Sleepy Puzzle");
 
             // ---- jelly Plops on a pillow (tap them) ----
             _mascots = MenuKit.Rect("Mascots", _safe);
@@ -157,13 +157,13 @@ namespace Plop.Presentation
         public void Refresh(int dust, int resumeLevelNumber, bool giftAvailable, bool dailyDone, bool dailyPerfect)
         {
             _dust.text = dust.ToString();
-            _playSubtitle.text = "Level " + resumeLevelNumber;
+            Loc.Set(_playSubtitle, "Level {0}", resumeLevelNumber);
             _giftDot.gameObject.SetActive(giftAvailable);
-            _giftLabel.text = giftAvailable ? "Gift" : "Tomorrow";
+            Loc.Set(_giftLabel, giftAvailable ? "Gift" : "Tomorrow");
             _giftButton.interactable = true;
             _dailyCheck.gameObject.SetActive(dailyDone);
             _dailyCheck.sprite = HudIcons.Get(dailyPerfect ? HudIcons.Kind.Star : HudIcons.Kind.Check);
-            _dailyLabel.text = "Daily";
+            Loc.Set(_dailyLabel, "Daily");
         }
 
         /// <summary>Shows a small dot on Studio when a milestone unlocked something new.</summary>
@@ -192,7 +192,7 @@ namespace Plop.Presentation
 
         public void ShowToast(string message)
         {
-            _toast.text = message;
+            Loc.SetRaw(_toast, message);
             _toast.gameObject.SetActive(true);
             if (_toastAnim != null) StopCoroutine(_toastAnim);
             _toastAnim = StartCoroutine(HideToast());

@@ -1,0 +1,170 @@
+# PLOP! — German (de)
+# STATUS: drafted by an AI model (Claude) for Final Sprint 02. NOT reviewed by a native speaker.
+# Format: English source<TAB>translation. Plural forms separated by | (one|other; uk/ru: one|few|many).
+Sleepy Puzzle	Schläfriges Rätsel
+Play	Spielen
+Level	Level
+Level {0}	Level {0}
+Gift	Geschenk
+Tomorrow	Morgen
+Daily	Täglich
+Daily Gift	Tagesgeschenk
+Daily Puzzle	Tagesrätsel
+Levels	Level
+Studio	Studio
+Dream Dust	Traumstaub
++{0} Dream Dust	+{0} Traumstaub
+Next gift tomorrow	Nächstes Geschenk morgen
+Daily puzzle unavailable	Tagesrätsel nicht verfügbar
+New in Studio: {0}	Neu im Studio: {0}
+Settings	Einstellungen
+Home	Start
+Undo	Zurück
+Restart	Neustart
+Hint	Tipp
+Hint {0}	Tipp {0}
+{0} moves	{0} Zug|{0} Züge
+Perfect!	Perfekt!
+Sweet Dreams!	Süße Träume!
+Perfect: {0}	Perfekt: {0}
+Menu	Menü
+Next Level	Nächstes Level
+Replay	Nochmal
+On	An
+Off	Aus
+Oops, we're stuck!	Hoppla, wir stecken fest!
+There's no way to get everyone home from here.	Von hier kommen nicht mehr alle nach Hause.
+Undo Move	Zug zurück
+Restart Level	Level neu starten
+Keep playing	Weiterspielen
+Choose a level	Level wählen
+Worlds	Welten
+Close	Schließen
+Previous	Zurück
+More	Weiter
+Level {0} · Perfect	Level {0} · Perfekt
+Level {0} · Done	Level {0} · Geschafft
+Level {0} · Locked	Level {0} · Gesperrt
+Levels {0}–{1}	Level {0}–{1}
+Done	Fertig
+Music	Musik
+Effects	Effekte
+Ambience	Atmosphäre
+Master mute	Alles stumm
+Frame rate	Bildrate
+Haptics	Vibration
+Reduced motion	Weniger Bewegung
+Restore Defaults	Standard wiederherstellen
+Language	Sprache
+Resume Level {0}	Weiter mit Level {0}
+Resume	Weiter
+Levels {0}–{1} · {2}/{3}	Level {0}–{1} · {2}/{3}
+Current	Aktuell
+Locked	Gesperrt
+World unlocked	Welt freigeschaltet
+Cozy Nest	Kuschelnest
+Dewdrop Garden	Tautropfengarten
+Rainy Window	Regenfenster
+Twilight Attic	Dämmerdachboden
+Moonlit Clouds	Mondscheinwolken
+Frosted Pond	Frostteich
+Breezy Meadow	Windige Wiese
+Ember Hollow	Glutmulde
+Prism Observatory	Prisma-Sternwarte
+Undo or Restart first.	Erst zurück oder neu starten.
+Looking for a hint…	Suche einen Tipp…
+A hint costs {0} Dream Dust. You have {1}.	Ein Tipp kostet {0} Traumstaub. Du hast {1}.
+Keep trying: after {0} more tries the first hint here is free.	Weiter so: nach {0} weiteren Versuch ist der erste Tipp hier gratis.|Weiter so: nach {0} weiteren Versuchen ist der erste Tipp hier gratis.
+−{0} Dream Dust · {1} left	−{0} Traumstaub · noch {1}
+This one is on the house.	Dieser geht aufs Haus.
+Try swiping up.	Wisch mal nach oben.
+Try swiping down.	Wisch mal nach unten.
+Try swiping left.	Wisch mal nach links.
+Try swiping right.	Wisch mal nach rechts.
+No route from here. Try Undo.	Von hier gibt es keinen Weg. Versuch's mit Zurück.
+No hint available. Try Undo.	Kein Tipp verfügbar. Versuch's mit Zurück.
+Challenge · {0} moves	Herausforderung · {0} Zug|Herausforderung · {0} Züge
+Oops! Too hot!	Autsch! Zu heiß!
+Lava is no place for a nap. Undo or try again.	Lava ist kein Ort für ein Nickerchen. Zurück oder neu versuchen.
+Out of moves!	Keine Züge mehr!
+This challenge allows {0} moves. Undo or try again.	Diese Herausforderung erlaubt {0} Zug. Zurück oder neu versuchen.|Diese Herausforderung erlaubt {0} Züge. Zurück oder neu versuchen.
+Swipe the Plop into its matching Nest.	Wisch den Plop in sein passendes Nest.
+One swipe moves every awake Plop.	Ein Wisch bewegt jeden wachen Plop.
+Frost: Plops slide until something stops them.	Frost: Plops rutschen, bis etwas sie stoppt.
+Breeze fans push Plops the way they point. Dots show how far.	Windräder schieben Plops in ihre Richtung. Punkte zeigen, wie weit.
+Lava is too hot! Keep every Plop out.	Lava ist zu heiß! Halte alle Plops fern.
+Loops connect: in one, out the other.	Schleifen sind verbunden: rein in die eine, raus aus der anderen.
+Body	Körper
+Colors	Farben
+Finish	Oberfläche
+Face	Gesicht
+Accessories	Zubehör
+Nest	Nest
+Board	Brett
+Equipped	Angelegt
+Equip	Anlegen
+Tap to confirm	Zum Bestätigen tippen
+Unlock {0}	Freischalten {0}
+Need {0} more	Noch {0} nötig
+Free	Gratis
+Owned	Im Besitz
+{0} or {1}	{0} oder {1}
+{0} Dust	{0} Staub
+Wearing now	Gerade angelegt
+Free · tap Equip	Gratis · tippe auf Anlegen
+Unlocked	Freigeschaltet
+Locked · {0}	Gesperrt · {0}
+Locked · {0} or {1} Dream Dust	Gesperrt · {0} oder {1} Traumstaub
+Locked · {0} Dream Dust	Gesperrt · {0} Traumstaub
+Unlocked {0}!	{0} freigeschaltet!
+Not enough Dream Dust	Nicht genug Traumstaub
+Could not unlock, try again	Freischalten fehlgeschlagen, bitte erneut versuchen
+{0} levels	{0} Level|{0} Level
+{0} Perfects	{0} Perfekt|{0} Perfekte
+{0} Worlds	{0} Welt|{0} Welten
+{0} Dailies	{0} Tagesrätsel|{0} Tagesrätsel
+Complete {0} levels	Schaffe {0} Level|Schaffe {0} Level
+Earn {0} Perfects	Hol {0} Perfekt|Hol {0} Perfekte
+Finish {0} Worlds	Schließe {0} Welt ab|Schließe {0} Welten ab
+Solve {0} Dailies	Löse {0} Tagesrätsel|Löse {0} Tagesrätsel
+Classic	Klassisch
+Bouncy	Hüpfend
+Snoozy	Schläfrig
+Classic Jelly	Klassik-Gelee
+Frosted Jelly	Frost-Gelee
+Milky Jelly	Milch-Gelee
+Dewdrop Jelly	Tautropfen-Gelee
+Velvet Jelly	Samt-Gelee
+Pearl Jelly	Perlen-Gelee
+Toy Box	Spielzeugkiste
+Pastel	Pastell
+Sorbet	Sorbet
+Sweet	Süß
+Button	Knopf
+Dozy	Dösig
+Blush	Rosig
+Starry	Sternig
+None	Keins
+Tiny Bow	Kleine Schleife
+Little Flower	Blümchen
+Sprout Leaf	Sprossblatt
+Ribbon	Band
+Little Star	Sternchen
+Nightcap	Schlafmütze
+Cloud Puff	Wolkenbausch
+Tiny Crown	Krönchen
+Moon Pillow	Mondkissen
+Cloud Cushion	Wolkenpolster
+Marshmallow	Marshmallow
+Soft Flower	Weiche Blume
+Crescent Bed	Sichelbett
+Dust Puff	Staubwölkchen
+Sparkle	Funkeln
+Bubbles	Blasen
+Star Trail	Sternenspur
+World Colors	Weltfarben
+Honey Tray	Honigtablett
+Mint Garden	Minzgarten
+Peach Quilt	Pfirsichdecke
+Lavender Dream	Lavendeltraum
+Starlight	Sternenlicht

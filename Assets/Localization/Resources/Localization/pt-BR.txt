@@ -1,0 +1,170 @@
+# PLOP! — Portuguese (Brazil) (pt-BR)
+# STATUS: drafted by an AI model (Claude) for Final Sprint 02. NOT reviewed by a native speaker.
+# Format: English source<TAB>translation. Plural forms separated by | (one|other; uk/ru: one|few|many).
+Sleepy Puzzle	Quebra-cabeça soneca
+Play	Jogar
+Level	Fase
+Level {0}	Fase {0}
+Gift	Presente
+Tomorrow	Amanhã
+Daily	Diário
+Daily Gift	Presente diário
+Daily Puzzle	Desafio diário
+Levels	Fases
+Studio	Estúdio
+Dream Dust	Pó dos sonhos
++{0} Dream Dust	+{0} Pó dos sonhos
+Next gift tomorrow	Próximo presente amanhã
+Daily puzzle unavailable	Desafio diário indisponível
+New in Studio: {0}	Novidade no Estúdio: {0}
+Settings	Configurações
+Home	Início
+Undo	Desfazer
+Restart	Reiniciar
+Hint	Dica
+Hint {0}	Dica {0}
+{0} moves	{0} movimento|{0} movimentos
+Perfect!	Perfeito!
+Sweet Dreams!	Bons sonhos!
+Perfect: {0}	Perfeito: {0}
+Menu	Menu
+Next Level	Próxima fase
+Replay	Repetir
+On	Sim
+Off	Não
+Oops, we're stuck!	Opa, ficamos presos!
+There's no way to get everyone home from here.	Daqui não dá para levar todos para casa.
+Undo Move	Desfazer
+Restart Level	Reiniciar fase
+Keep playing	Continuar
+Choose a level	Escolha uma fase
+Worlds	Mundos
+Close	Fechar
+Previous	Anterior
+More	Mais
+Level {0} · Perfect	Fase {0} · Perfeita
+Level {0} · Done	Fase {0} · Feita
+Level {0} · Locked	Fase {0} · Bloqueada
+Levels {0}–{1}	Fases {0}–{1}
+Done	Pronto
+Music	Música
+Effects	Efeitos
+Ambience	Ambiente
+Master mute	Silenciar tudo
+Frame rate	Taxa de quadros
+Haptics	Vibração
+Reduced motion	Menos movimento
+Restore Defaults	Restaurar padrão
+Language	Idioma
+Resume Level {0}	Continuar fase {0}
+Resume	Continuar
+Levels {0}–{1} · {2}/{3}	Fases {0}–{1} · {2}/{3}
+Current	Atual
+Locked	Bloqueado
+World unlocked	Mundo liberado
+Cozy Nest	Ninho aconchegante
+Dewdrop Garden	Jardim do orvalho
+Rainy Window	Janela chuvosa
+Twilight Attic	Sótão do crepúsculo
+Moonlit Clouds	Nuvens ao luar
+Frosted Pond	Lago congelado
+Breezy Meadow	Campo de brisa
+Ember Hollow	Vale das brasas
+Prism Observatory	Observatório prisma
+Undo or Restart first.	Primeiro desfaça ou reinicie.
+Looking for a hint…	Procurando uma dica…
+A hint costs {0} Dream Dust. You have {1}.	Uma dica custa {0} de Pó dos sonhos. Você tem {1}.
+Keep trying: after {0} more tries the first hint here is free.	Continue tentando: depois de mais {0} tentativa, a primeira dica aqui é grátis.|Continue tentando: depois de mais {0} tentativas, a primeira dica aqui é grátis.
+−{0} Dream Dust · {1} left	−{0} Pó dos sonhos · restam {1}
+This one is on the house.	Essa é por conta da casa.
+Try swiping up.	Tente deslizar para cima.
+Try swiping down.	Tente deslizar para baixo.
+Try swiping left.	Tente deslizar para a esquerda.
+Try swiping right.	Tente deslizar para a direita.
+No route from here. Try Undo.	Não há caminho daqui. Tente desfazer.
+No hint available. Try Undo.	Nenhuma dica disponível. Tente desfazer.
+Challenge · {0} moves	Desafio · {0} movimento|Desafio · {0} movimentos
+Oops! Too hot!	Ai! Quente demais!
+Lava is no place for a nap. Undo or try again.	Lava não é lugar para cochilar. Desfaça ou tente de novo.
+Out of moves!	Sem movimentos!
+This challenge allows {0} moves. Undo or try again.	Este desafio permite {0} movimento. Desfaça ou tente de novo.|Este desafio permite {0} movimentos. Desfaça ou tente de novo.
+Swipe the Plop into its matching Nest.	Deslize o Plop até o ninho da mesma cor.
+One swipe moves every awake Plop.	Um deslize move todos os Plops acordados.
+Frost: Plops slide until something stops them.	Geada: os Plops deslizam até algo pará-los.
+Breeze fans push Plops the way they point. Dots show how far.	Os ventiladores empurram os Plops para onde apontam. Os pontos mostram até onde.
+Lava is too hot! Keep every Plop out.	A lava é quente demais! Mantenha os Plops longe.
+Loops connect: in one, out the other.	Os portais se conectam: entra em um, sai pelo outro.
+Body	Corpo
+Colors	Cores
+Finish	Acabamento
+Face	Rosto
+Accessories	Acessórios
+Nest	Ninho
+Board	Tabuleiro
+Equipped	Equipado
+Equip	Equipar
+Tap to confirm	Toque para confirmar
+Unlock {0}	Liberar {0}
+Need {0} more	Faltam {0}
+Free	Grátis
+Owned	Seu
+{0} or {1}	{0} ou {1}
+{0} Dust	{0} de pó
+Wearing now	Usando agora
+Free · tap Equip	Grátis · toque em Equipar
+Unlocked	Liberado
+Locked · {0}	Bloqueado · {0}
+Locked · {0} or {1} Dream Dust	Bloqueado · {0} ou {1} de Pó dos sonhos
+Locked · {0} Dream Dust	Bloqueado · {0} de Pó dos sonhos
+Unlocked {0}!	{0} liberado!
+Not enough Dream Dust	Pó dos sonhos insuficiente
+Could not unlock, try again	Não foi possível liberar, tente de novo
+{0} levels	{0} fase|{0} fases
+{0} Perfects	{0} Perfeita|{0} Perfeitas
+{0} Worlds	{0} mundo|{0} mundos
+{0} Dailies	{0} diário|{0} diários
+Complete {0} levels	Complete {0} fase|Complete {0} fases
+Earn {0} Perfects	Ganhe {0} Perfeita|Ganhe {0} Perfeitas
+Finish {0} Worlds	Conclua {0} mundo|Conclua {0} mundos
+Solve {0} Dailies	Resolva {0} diário|Resolva {0} diários
+Classic	Clássico
+Bouncy	Saltitante
+Snoozy	Soneca
+Classic Jelly	Geleia clássica
+Frosted Jelly	Geleia gelada
+Milky Jelly	Geleia de leite
+Dewdrop Jelly	Geleia de orvalho
+Velvet Jelly	Geleia de veludo
+Pearl Jelly	Geleia perolada
+Toy Box	Baú de brinquedos
+Pastel	Pastel
+Sorbet	Sorbet
+Sweet	Doce
+Button	Botão
+Dozy	Sonolento
+Blush	Rubor
+Starry	Estrelado
+None	Nenhum
+Tiny Bow	Lacinho
+Little Flower	Florzinha
+Sprout Leaf	Broto
+Ribbon	Fita
+Little Star	Estrelinha
+Nightcap	Touca de dormir
+Cloud Puff	Nuvenzinha
+Tiny Crown	Coroinha
+Moon Pillow	Travesseiro lunar
+Cloud Cushion	Almofada de nuvem
+Marshmallow	Marshmallow
+Soft Flower	Flor macia
+Crescent Bed	Cama crescente
+Dust Puff	Nuvem de pó
+Sparkle	Brilhos
+Bubbles	Bolhas
+Star Trail	Rastro de estrelas
+World Colors	Cores do mundo
+Honey Tray	Bandeja de mel
+Mint Garden	Jardim de menta
+Peach Quilt	Colcha de pêssego
+Lavender Dream	Sonho de lavanda
+Starlight	Luz das estrelas

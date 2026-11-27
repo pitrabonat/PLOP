@@ -15,7 +15,7 @@ namespace Plop.Presentation
     /// </summary>
     internal sealed class BoardEnvironment
     {
-        public enum Cue : byte { IceSlide, FanPush, PortalIn, PortalOut, PortalBlocked, LavaHiss, LavaBubble }
+        public enum Cue : byte { IceSlide, FanPush, PortalIn, PortalOut, PortalBlocked, LavaHiss, LavaBubble, IceStop }
 
         public const int BackOrder = -960;    // behind every Plop, above Nests
         public const int FrontOrder = 950;    // above Plops, below Nest seals
@@ -308,6 +308,7 @@ namespace Plop.Presentation
         /// <summary>A slide ended: a small spray of frost in front of the Plop.</summary>
         public void OnSlideStopped(int plopId, Direction dir, float now)
         {
+            Sound?.Invoke(Cue.IceStop); // sound is not motion: it plays with Reduced Motion too
             if (_reduced) return;
             var d = (Vector3)Delta(dir);
             var at = _plopLocal(plopId) + d * 0.30f + Vector3.down * 0.25f;
