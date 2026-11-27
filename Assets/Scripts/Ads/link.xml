@@ -1,0 +1,5 @@
+<!-- Sprint 04: the AdMob adapter is reached only through AdServiceRegistry.SdkFactory (registered by
+     RuntimeInitializeOnLoadMethod), so IL2CPP stripping must keep it. The plugin ships its own link.xml. -->
+<linker>
+  <assembly fullname="PLOP.Ads.AdMob" preserve="all"/>
+</linker>

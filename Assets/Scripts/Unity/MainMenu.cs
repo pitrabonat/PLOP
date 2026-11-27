@@ -11,7 +11,7 @@ namespace Plop.Presentation
     /// The mascots are real Plop rigs wearing the equipped look; they animate only while the menu is visible
     /// and react when tapped.
     /// </summary>
-    public sealed class MainMenu : MonoBehaviour
+    public sealed partial class MainMenu : MonoBehaviour
     {
         public event Action PlayClicked, DailyGiftClicked, DailyPuzzleClicked, LevelsClicked, SettingsClicked, StudioClicked;
 
@@ -111,6 +111,8 @@ namespace Plop.Presentation
             _studioDot = MenuKit.Glyph(studio, HudIcons.Kind.Star, new Vector2(128, 44), 34, PlopPalette.Berry);
             _studioDot.name = "Studio news";
             _studioDot.gameObject.SetActive(false);
+
+            BuildBonusOffer();
 
             _toast = _kit.Label(_safe, "Toast", HudTheme.Action, FontStyle.Bold, HudTheme.Ink, new Vector2(0, -300), new Vector2(900, 60));
             _toast.gameObject.SetActive(false);

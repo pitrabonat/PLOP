@@ -251,8 +251,12 @@ namespace Plop.EditorTools
             }
         }
 
-        static void Build(BuildTarget target, string path, BuildOptions options)
+        static void Build(BuildTarget target, string path, BuildOptions options) => Build(target, path, options, null);
+
+        /// <summary>Sprint 04: <paramref name="extraDefines"/> (for example PLOP_ADS_TEST) apply to this build only.</summary>
+        internal static void Build(BuildTarget target, string path, BuildOptions options, string[] extraDefines)
         {
+            EnsureBootScene();
             ApplyReleaseVersion();
             bool release = (options & BuildOptions.Development) == 0;
             // Release players keep stack traces only for errors and exceptions (no per-log stack capture cost).
@@ -263,7 +267,7 @@ namespace Plop.EditorTools
                 PlayerSettings.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
                 PlayerSettings.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None);
             }
-            try { BuildCore(target, path, options); }
+            try { BuildCore(target, path, options, extraDefines); }
             finally
             {
                 PlayerSettings.SetStackTraceLogType(LogType.Log, logTrace);
@@ -287,7 +291,7 @@ namespace Plop.EditorTools
             }
         }
 
-        static void BuildCore(BuildTarget target, string path, BuildOptions options)
+        static void BuildCore(BuildTarget target, string path, BuildOptions options, string[] extraDefines)
         {
             if (target == BuildTarget.Android) ClearGradleOutputs();
             Directory.CreateDirectory(Path.GetDirectoryName(path));
@@ -296,7 +300,8 @@ namespace Plop.EditorTools
                 scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray(),
                 locationPathName = path,
                 target = target,
-                options = options
+                options = options,
+                extraScriptingDefines = extraDefines
             });
             var s = report.summary;
             Debug.Log($"[PLOP] {target} build {s.result}: {path} ({s.totalSize / (1024 * 1024)} MB, {s.totalTime})");

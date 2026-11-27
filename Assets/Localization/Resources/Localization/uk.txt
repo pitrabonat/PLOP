@@ -127,6 +127,23 @@ Complete {0} levels	Пройдіть {0} рівень|Пройдіть {0} рі�
 Earn {0} Perfects	Отримайте {0} ідеал|Отримайте {0} ідеали|Отримайте {0} ідеалів
 Finish {0} Worlds	Завершіть {0} світ|Завершіть {0} світи|Завершіть {0} світів
 Solve {0} Dailies	Розв'яжіть {0} щоденну|Розв'яжіть {0} щоденні|Розв'яжіть {0} щоденних
+Ad	Реклама
+Watch Ad	Переглянути рекламу
+No, thanks	Ні, дякую
+Ad unavailable	Реклама недоступна
+Bonus Dream Dust	Бонусний пил снів
+Watch Ad · +{0} Dream Dust	Реклама · +{0} Пилу снів
+Watch a short ad to get {0} Dream Dust. Up to {1} bonuses a day.	Перегляньте коротку рекламу й отримайте {0} Пилу снів. До {1} бонусів на день.
+Thanks! +{0} Dream Dust	Дякуємо! +{0} Пилу снів
+No reward this time. The ad did not finish.	Цього разу без нагороди. Реклама не завершилася.
+Get a hint	Отримати підказку
+Use {0} Dream Dust	Витратити {0} Пилу снів
+Watch Ad · Free Hint	Реклама · Безкоштовна підказка
+You have {0} Dream Dust. Or watch a short ad for one free hint.	У вас {0} Пилу снів. Або перегляньте коротку рекламу й отримайте одну безкоштовну підказку.
+Free hint used.	Безкоштовну підказку використано.
+Free hint saved for your next hint.	Безкоштовну підказку збережено для наступного разу.
+The board changed. Ask for a new hint.	Поле змінилося. Попросіть нову підказку.
+Privacy Choices	Налаштування конфіденційності
 Classic	Класичний
 Bouncy	Стрибучий
 Snoozy	Сонько

@@ -127,6 +127,23 @@ Complete {0} levels	Пройдите {0} уровень|Пройдите {0} у�
 Earn {0} Perfects	Получите {0} идеал|Получите {0} идеала|Получите {0} идеалов
 Finish {0} Worlds	Завершите {0} мир|Завершите {0} мира|Завершите {0} миров
 Solve {0} Dailies	Решите {0} ежедневную|Решите {0} ежедневные|Решите {0} ежедневных
+Ad	Реклама
+Watch Ad	Смотреть рекламу
+No, thanks	Нет, спасибо
+Ad unavailable	Реклама недоступна
+Bonus Dream Dust	Бонусная пыль снов
+Watch Ad · +{0} Dream Dust	Реклама · +{0} Пыли снов
+Watch a short ad to get {0} Dream Dust. Up to {1} bonuses a day.	Посмотрите короткую рекламу и получите {0} Пыли снов. До {1} бонусов в день.
+Thanks! +{0} Dream Dust	Спасибо! +{0} Пыли снов
+No reward this time. The ad did not finish.	В этот раз без награды. Реклама не досмотрена.
+Get a hint	Получить подсказку
+Use {0} Dream Dust	Потратить {0} Пыли снов
+Watch Ad · Free Hint	Реклама · Бесплатная подсказка
+You have {0} Dream Dust. Or watch a short ad for one free hint.	У вас {0} Пыли снов. Или посмотрите короткую рекламу и получите одну бесплатную подсказку.
+Free hint used.	Бесплатная подсказка использована.
+Free hint saved for your next hint.	Бесплатная подсказка сохранена на следующий раз.
+The board changed. Ask for a new hint.	Поле изменилось. Попросите новую подсказку.
+Privacy Choices	Настройки конфиденциальности
 Classic	Классика
 Bouncy	Прыгучий
 Snoozy	Соня

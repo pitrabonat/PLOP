@@ -1,0 +1,25 @@
+{
+    "name": "PLOP.Ads.AdMob",
+    "rootNamespace": "Plop.Ads.AdMob",
+    "references": [
+        "PLOP.Meta",
+        "PLOP.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "PLOP_HAS_GMA"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.google.ads.mobile",
+            "expression": "0.0.1",
+            "define": "PLOP_HAS_GMA"
+        }
+    ],
+    "noEngineReferences": false
+}

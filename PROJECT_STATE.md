@@ -1,5 +1,24 @@
 # PLOP! project state
 
+**Final Sprint 04/06 · AdMob integration, monetization architecture, privacy and ad QA**
+
+- Branch `sprint/04-monetization`. Read [Documentation/FINAL_SPRINT_04_HANDOFF.md](Documentation/FINAL_SPRINT_04_HANDOFF.md) first; the details are in `Documentation/Monetization/`.
+- **Ads are Disabled by default and production is locked** (`AdConfiguration.ProductionUnlocked = false`). Only Google's sample and test IDs exist. No AdMob account, agreement or store change was made.
+- **Builds:** `/Volumes/PLOP_DEV/Builds/FinalSprint/04_Monetization/`:
+  - ads-disabled release APK and AAB (test-signed);
+  - a test-ad dev APK (**never distribute**);
+  - an iOS Simulator Xcode project (test ads).
+- **Tested:**
+  - .NET 225/225, EditMode 225/225, PlayMode 181/181.
+  - Google test ads on the Android emulator: consent, rewarded, interstitial, offline.
+  - iOS Simulator: build plus launch with consent; ads not tapped through.
+- **Owner/publisher decisions:**
+  - the audience (mixed is recommended);
+  - whether a no-ads release removes the SDK entirely;
+  - the AdMob account and IDs, the privacy policy URL, app-ads.txt and signing (Sprint 05).
+- **The build target was last switched to iOS** (Simulator export). EDM's CocoaPods auto-install is now off.
+- YouTube task (Sprint 03.1) is still open: thumbnail not set and the fields still to verify. The video stays **Private**.
+
 **Final Sprint 03.1 · Official trailer V2 (awaiting owner approval), then YouTube release and short-form package**
 
 - Read [Documentation/FINAL_SPRINT_03_1_HANDOFF.md](Documentation/FINAL_SPRINT_03_1_HANDOFF.md) first.

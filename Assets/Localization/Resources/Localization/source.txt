@@ -125,6 +125,23 @@ Complete {0} levels	Complete {0} level
 Earn {0} Perfects	Earn {0} Perfect
 Finish {0} Worlds	Finish {0} World
 Solve {0} Dailies	Solve {0} Daily
+Ad
+Watch Ad
+No, thanks
+Ad unavailable
+Bonus Dream Dust
+Watch Ad · +{0} Dream Dust
+Watch a short ad to get {0} Dream Dust. Up to {1} bonuses a day.
+Thanks! +{0} Dream Dust
+No reward this time. The ad did not finish.
+Get a hint
+Use {0} Dream Dust
+Watch Ad · Free Hint
+You have {0} Dream Dust. Or watch a short ad for one free hint.
+Free hint used.
+Free hint saved for your next hint.
+The board changed. Ask for a new hint.
+Privacy Choices
 Classic
 Bouncy
 Snoozy

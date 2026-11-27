@@ -127,6 +127,23 @@ Complete {0} levels	Schaffe {0} Level|Schaffe {0} Level
 Earn {0} Perfects	Hol {0} Perfekt|Hol {0} Perfekte
 Finish {0} Worlds	Schließe {0} Welt ab|Schließe {0} Welten ab
 Solve {0} Dailies	Löse {0} Tagesrätsel|Löse {0} Tagesrätsel
+Ad	Werbung
+Watch Ad	Werbung ansehen
+No, thanks	Nein, danke
+Ad unavailable	Keine Werbung verfügbar
+Bonus Dream Dust	Bonus-Traumstaub
+Watch Ad · +{0} Dream Dust	Werbung ansehen · +{0} Traumstaub
+Watch a short ad to get {0} Dream Dust. Up to {1} bonuses a day.	Sieh dir eine kurze Werbung an und erhalte {0} Traumstaub. Bis zu {1} Boni pro Tag.
+Thanks! +{0} Dream Dust	Danke! +{0} Traumstaub
+No reward this time. The ad did not finish.	Diesmal keine Belohnung. Die Werbung lief nicht bis zum Ende.
+Get a hint	Tipp holen
+Use {0} Dream Dust	{0} Traumstaub nutzen
+Watch Ad · Free Hint	Werbung · Gratis-Tipp
+You have {0} Dream Dust. Or watch a short ad for one free hint.	Du hast {0} Traumstaub. Oder sieh dir eine kurze Werbung für einen Gratis-Tipp an.
+Free hint used.	Gratis-Tipp verwendet.
+Free hint saved for your next hint.	Gratis-Tipp für deinen nächsten Tipp gespeichert.
+The board changed. Ask for a new hint.	Das Spielfeld hat sich geändert. Frag nach einem neuen Tipp.
+Privacy Choices	Datenschutzoptionen
 Classic	Klassisch
 Bouncy	Hüpfend
 Snoozy	Schläfrig

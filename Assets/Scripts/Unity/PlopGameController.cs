@@ -1,4 +1,5 @@
 using Plop.Meta;
+using Plop.Meta.Ads;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace Plop.Presentation
     /// engine events to the views. Saves campaign progress and runs bounded hints on request.
     /// Input can queue one command while the board finishes its current slide.
     /// </summary>
-    public sealed class PlopGameController : MonoBehaviour
+    public sealed partial class PlopGameController : MonoBehaviour
     {
         public enum FrameRateMode { Fps60 = 60, Fps30 = 30 }
 
@@ -78,6 +79,14 @@ namespace Plop.Presentation
         private bool _playingDaily;
         private DateTime _dailyDate;
         private bool _assisted;            // a hint was shown during this level visit (no Perfect)
+        // ---- Sprint 04: advertising (Disabled unless the build or a development preference selects another mode) ----
+        private PlopAds _ads;
+        private IKeyValueStore _metaStore;
+        private bool _lastCompletionNew;   // this visit completed the level for the first time
+        private bool _advancing;           // Next Level pressed; an interstitial may be closing
+        private int _pendingAdvance = -1;  // level to open once the app is back in the foreground after an ad
+        /// <summary>Gameplay counts as active for the ad policy only while the player interacted this recently.</summary>
+        private const float ActiveGameplayWindow = 30f;
         private int _attempts;             // restarts, failures and dead ends this visit (hint grace)
         // ---- Phase 10 ----
         private enum Recovery { None, Lava, OutOfMoves }
@@ -114,11 +123,13 @@ namespace Plop.Presentation
             = SearchForDeadlockAsync;
         internal Direction? PendingMove => _pendingMove;
         private bool SavesProgress => rememberProgress && !_debugPreview;
-        private bool GameplayBlocked => !isActiveAndEnabled || _suspended || _hud.BlocksGameplayInput || (_menu != null && _menu.IsOpen) || (_studio != null && _studio.IsOpen);
+        private bool GameplayBlocked => !isActiveAndEnabled || _suspended || _hud.BlocksGameplayInput || (_menu != null && _menu.IsOpen) || (_studio != null && _studio.IsOpen) ||
+            (_ads != null && _ads.IsPresenting);
 
         /// <summary>Local calendar source for the daily features (tests inject a fixed clock).</summary>
         internal IClock Clock { get; set; } = new SystemClock();
         public DreamDustWallet Wallet => _wallet;
+        public PlopAds Ads => _ads;
         public LevelRecords Records => _records;
         public MainMenu Menu => _menu;
         public CharacterStudio Studio => _studio;
@@ -144,6 +155,7 @@ namespace Plop.Presentation
             _menu = gameObject.AddComponent<MainMenu>();
             _studio = gameObject.AddComponent<CharacterStudio>();
             InitMeta(persist: false); // tests and tools get an isolated in-memory wallet
+            SetAds(new PlopAds(AdConfiguration.Default, new DisabledAdService(), _metaStore, _wallet, _audio));
 
             _engine.EventRaised += OnEngineEvent;
             _input.DirectionRequested += RequestMove;
@@ -189,6 +201,8 @@ namespace Plop.Presentation
             _hud.EffectsPreview += _audio.PlayToggle;
             _hud.RestoreDefaultsClicked += RestoreDefaultSettings;
             _hud.LanguageClicked += CycleLanguage;
+            _hud.PrivacyChoicesClicked += () => _ads.ShowPrivacyOptions(RefreshAdUi);
+            _menu.BonusDustRequested += WatchBonusDust;
             _board.SetBatterySaver(targetFrameRate == FrameRateMode.Fps30);
             _backdrop.SetBatterySaver(targetFrameRate == FrameRateMode.Fps30);
             _board.TraceSound += _audio.PlayTrace;
@@ -223,7 +237,9 @@ namespace Plop.Presentation
 
         private void InitMeta(IKeyValueStore store)
         {
+            _metaStore = store;
             _wallet = new DreamDustWallet(store);
+            _ads?.UseProfile(store, _wallet);
             _records = new LevelRecords(store);
             _catalog = CosmeticCatalogLoader.Load();
             _cosmetics = new CosmeticCollection(_catalog, _wallet, new AppearanceStore(store, _catalog));
@@ -286,6 +302,7 @@ namespace Plop.Presentation
             if (_splash != null) { _splash.Skip(); return "splash"; }
             if (_studio != null && _studio.IsOpen) { _audio.PlayBack(); _studio.Close(); return "studio"; }
             if (_hud.HandleBack()) { _audio.PlayBack(); MarkActive(); return "modal"; }
+            if (_menu != null && _menu.IsOpen && _menu.CloseBonusCard()) { _audio.PlayBack(); return "modal"; }
             if (_menu != null && _menu.IsOpen)
             {
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -346,7 +363,11 @@ namespace Plop.Presentation
 #endif
             _progress = new LevelProgress(_levels, SavesProgress ? levelPackResource : null);
             // Development previews show the player's real look and Dust but never write to the save.
-            if (SavesProgress) InitMeta(true);
+            if (SavesProgress)
+            {
+                InitMeta(true);
+                SetAds(PlopAdsSetup.Create(_metaStore, _wallet, _audio)); // development previews and tests stay Disabled
+            }
             else if (_debugPreview) InitMeta(new ReadOnlyStore(new PlayerPrefsStore()));
             else InitMeta(false);
             if (levelPackResource == LevelLibrary.DefaultPack) _dailyPool = LevelLibrary.Load(LevelLibrary.DailyPack);
@@ -480,6 +501,7 @@ namespace Plop.Presentation
         private void OnApplicationPause(bool paused)
         {
             if (paused) Playtest(PlaytestEvent.Left);
+            _ads?.OnApplicationPause(paused);
             _applicationPaused = paused;
             ApplyApplicationActivity();
         }
@@ -516,6 +538,7 @@ namespace Plop.Presentation
         private void OnDestroy()
         {
             Playtest(PlaytestEvent.Left);
+            _ads?.Dispose();
             _engine.EventRaised -= OnEngineEvent;
             OnDemandRendering.renderFrameInterval = 1;
         }
@@ -670,9 +693,30 @@ namespace Plop.Presentation
 
         public void NextLevel()
         {
-            if (GameplayBlocked || !_engine.IsCompleted) return;
+            if (GameplayBlocked || !_engine.IsCompleted || _advancing) return;
             if (_playingDaily) { ShowMenu(); return; }
-            TrySelectLevel(_index + 1);
+            int next = _index + 1;
+            if (next >= _levels.Count || !IsLevelUnlocked(next) || _ads == null) { TrySelectLevel(next); return; }
+            // Sprint 04 natural break: the level is finished, rewards are saved and the player chose to continue.
+            // An interstitial appears only if the policy allows it and one is already loaded; otherwise no wait at all.
+            var context = new InterstitialContext
+            {
+                CompletedLevelNumber = _index + 1,
+                NewlyCompleted = _lastCompletionNew,
+                Tutorial = _engine.Level.Instruction != null || _levels[next].Instruction != null
+            };
+            _advancing = true;
+            bool showing = _ads.TryShowInterstitial(context, () =>
+            {
+                // The SDK can report the close before Unity regains focus; then the level opens on resume.
+                if (TrySelectLevel(next)) _advancing = false;
+                else _pendingAdvance = next;
+            });
+            if (!showing)
+            {
+                _advancing = false;
+                TrySelectLevel(next);
+            }
         }
 
         public bool TrySelectLevel(int index)
@@ -919,6 +963,20 @@ namespace Plop.Presentation
                     string charged = "";
                     if (!HintIsFree)
                     {
+                        // Sprint 04: a saved free hint pays first; otherwise, when a rewarded ad is ready, the player
+                        // chooses between Dream Dust and a voluntary ad (or neither). The verified route is kept only
+                        // for this exact board.
+                        ulong stateKey = new StateCodec(level).Encode(state);
+                        if (TryUseSavedFreeHint(level.Id, stateKey))
+                        {
+                            DeliverHint(direction, "\n" + Loc.T("Free hint used."));
+                            return direction;
+                        }
+                        if (ShouldOfferRewardedHint(level.Id, stateKey))
+                        {
+                            OfferRewardedHint(level, state, stateKey, direction);
+                            return null;
+                        }
                         var spend = HintPolicy.Charge(_wallet, level.Id, new StateCodec(level).Encode(state), _attempts);
                         if (spend == HintCharge.Insufficient)
                         {
@@ -935,9 +993,7 @@ namespace Plop.Presentation
                         else if (spend == HintCharge.Grace)
                             charged = "\n" + Loc.T("This one is on the house.");
                     }
-                    _assisted = true; // a revealed route means this visit can no longer earn Perfect
-                    ShowHint(Loc.T("Try swiping " + direction.ToString().ToLowerInvariant() + ".") + charged, direction: direction);
-                    Playtest(PlaytestEvent.Hint);
+                    DeliverHint(direction, charged);
                     return direction;
                 }
 
@@ -977,6 +1033,14 @@ namespace Plop.Presentation
             return result;
         }
 
+        /// <summary>Shows a verified, already-paid direction for the current board.</summary>
+        private void DeliverHint(Direction direction, string charged)
+        {
+            _assisted = true; // a revealed route means this visit can no longer earn Perfect
+            ShowHint(Loc.T("Try swiping " + direction.ToString().ToLowerInvariant() + ".") + charged, direction: direction);
+            Playtest(PlaytestEvent.Hint);
+        }
+
         private void ShowHint(string hint, bool searching = false, Direction? direction = null)
         {
             _hintVisible = hint != null;
@@ -992,6 +1056,9 @@ namespace Plop.Presentation
         private void LoadCurrent()
         {
             MarkActive();
+            _lastCompletionNew = false;
+            _pendingAdvance = -1;
+            _advancing = false;
             _audio.CancelPending(); // no stale sleep/jingle cues from the previous level
             _hud.CancelWorldAnnouncement();
             var previousWorld = _world;
@@ -1045,7 +1112,9 @@ namespace Plop.Presentation
             }
             int nextIndex = _index + 1;
             bool nextWasUnlocked = IsLevelUnlocked(nextIndex);
+            _lastCompletionNew = !_progress.IsCompleted(_index);
             _progress.Complete(_index, SavesProgress);
+            if (_lastCompletionNew && !_debugPreview) _ads?.Policy.RecordNewCompletion();
             bool nextUnlocked = IsLevelUnlocked(nextIndex);
             _hud.SetCompleted(true, nextUnlocked);
             var reward = SafeReward(() => CompletionRewards.ForLevel(_wallet, _records, level.Id, moveCount, level.OptimalMoves, _assisted));
@@ -1193,6 +1262,7 @@ namespace Plop.Presentation
             var now = Clock.LocalNow;
             _menu.Refresh(_wallet.Balance, CampaignResumeIndex + 1, DailyGift.IsAvailable(_wallet, now),
                 _wallet.HasGrant(RewardRules.DailyKey(now)), _wallet.HasGrant(RewardRules.DailyPerfectKey(now)));
+            RefreshAdUi();
         }
 
         /// <summary>PLAY: resume the furthest unlocked campaign level (Level 1 without progress).</summary>
@@ -1331,7 +1401,9 @@ namespace Plop.Presentation
                 Debug.Log("[PLOP] Startup: game scene ready " + (Time.realtimeSinceStartup * 1000f).ToString("F0", System.Globalization.CultureInfo.InvariantCulture) + " ms after engine start");
             }
             UpdateSceneVisibility();
+            TickAds();
             if (_suspended) return;
+            if (_pendingAdvance >= 0) FinishPendingAdvance();
             if (_pendingRecovery != Recovery.None && !_board.IsTraveling) ShowPendingRecovery();
             if (_pendingMove.HasValue && !_board.IsTraveling)
             {

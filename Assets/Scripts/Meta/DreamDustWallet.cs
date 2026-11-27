@@ -61,6 +61,28 @@ namespace Plop.Meta
             return true;
         }
 
+        /// <summary>Grant keys starting with <paramref name="prefix"/>, in ordinal order (Sprint 04: ad hint entitlements).</summary>
+        public List<string> GrantsWithPrefix(string prefix)
+        {
+            var keys = new List<string>();
+            foreach (var g in _grants) if (g.StartsWith(prefix, StringComparison.Ordinal)) keys.Add(g);
+            keys.Sort(StringComparer.Ordinal);
+            return keys;
+        }
+
+        /// <summary>
+        /// Records several zero-cost spend keys in one write (Sprint 04: redeeming a hint entitlement marks the
+        /// entitlement used and the board's hint paid together). Returns false, writing nothing, when the first key
+        /// was already recorded; later keys that already exist are kept as they are.
+        /// </summary>
+        public bool MarkSpent(params string[] keys)
+        {
+            if (keys == null || keys.Length == 0 || string.IsNullOrEmpty(keys[0])) throw new ArgumentException("Invalid spend.");
+            if (_spent.Contains(keys[0])) return false;
+            Commit(() => { foreach (var k in keys) if (!string.IsNullOrEmpty(k)) _spent.Add(k); });
+            return true;
+        }
+
         public bool Owns(string cosmeticId) => _owned.Contains(cosmeticId);
 
         public enum SpendResult { Charged, AlreadyPaid, InsufficientDust }

@@ -127,6 +127,23 @@ Complete {0} levels	Termine {0} niveau|Termine {0} niveaux
 Earn {0} Perfects	Obtiens {0} Parfait|Obtiens {0} Parfaits
 Finish {0} Worlds	Termine {0} monde|Termine {0} mondes
 Solve {0} Dailies	Résous {0} puzzle du jour|Résous {0} puzzles du jour
+Ad	Pub
+Watch Ad	Voir la pub
+No, thanks	Non merci
+Ad unavailable	Pub indisponible
+Bonus Dream Dust	Poussière de rêve bonus
+Watch Ad · +{0} Dream Dust	Voir la pub · +{0} Poussière de rêve
+Watch a short ad to get {0} Dream Dust. Up to {1} bonuses a day.	Regarde une courte pub pour obtenir {0} Poussière de rêve. Jusqu'à {1} bonus par jour.
+Thanks! +{0} Dream Dust	Merci ! +{0} Poussière de rêve
+No reward this time. The ad did not finish.	Pas de récompense cette fois. La pub n'est pas allée jusqu'au bout.
+Get a hint	Obtenir un indice
+Use {0} Dream Dust	Utiliser {0} Poussière de rêve
+Watch Ad · Free Hint	Pub · Indice gratuit
+You have {0} Dream Dust. Or watch a short ad for one free hint.	Tu as {0} Poussière de rêve. Ou regarde une courte pub pour un indice gratuit.
+Free hint used.	Indice gratuit utilisé.
+Free hint saved for your next hint.	Indice gratuit gardé pour ton prochain indice.
+The board changed. Ask for a new hint.	Le plateau a changé. Demande un nouvel indice.
+Privacy Choices	Choix de confidentialité
 Classic	Classique
 Bouncy	Rebondissant
 Snoozy	Somnolent

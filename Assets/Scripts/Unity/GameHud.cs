@@ -60,7 +60,6 @@ namespace Plop.Presentation
         private bool _masterMuted;
         private Font _font, _displayFont;
         private static readonly Vector2 PickerSize = new Vector2(880, 980);
-        private static readonly Vector2 SettingsSize = new Vector2(840, 1342);
         private Text _languageValue;
         private static readonly Vector2 DeadlockSize = new Vector2(742, 660);
         private static readonly Vector2 DeadlockTextOnlySize = new Vector2(742, 524);
@@ -75,7 +74,7 @@ namespace Plop.Presentation
             (_worldPicker != null && _worldPicker.gameObject.activeSelf);
         public bool IsSettingsOpen => _settings != null && _settings.gameObject.activeSelf;
         public bool IsDeadlockOpen => _deadlock != null && _deadlock.gameObject.activeSelf;
-        public bool BlocksGameplayInput => IsChoosingLevel || IsSettingsOpen || IsDeadlockOpen;
+        public bool BlocksGameplayInput => IsChoosingLevel || IsSettingsOpen || IsDeadlockOpen || IsAdOfferOpen;
 
         private void OnDestroy() => Loc.Changed -= ShowLanguage;
 
@@ -170,6 +169,7 @@ namespace Plop.Presentation
             BuildLevelPicker();
             BuildSettings();
             BuildDeadlock();
+            BuildAdOffer();
             BuildWorldAnnouncement();
             FitResponsiveElements();
             PositionPlayControls();
@@ -621,6 +621,7 @@ namespace Plop.Presentation
         /// <summary>System Back on an open modal: the same as its Close / Keep playing button. False when none is open.</summary>
         public bool HandleBack()
         {
+            if (IsAdOfferOpen) { DeclineAdOffer(); return true; }
             if (IsDeadlockOpen) { CloseDeadlock(); return true; }
             if (IsSettingsOpen) { CloseSettings(); return true; }
             if (_levelPicker != null && _levelPicker.gameObject.activeSelf) { ExitLevelRange(); return true; }
@@ -786,6 +787,7 @@ namespace Plop.Presentation
                     ModalInteracted?.Invoke();
                     RestoreDefaultsClicked?.Invoke();
                 }, new Vector2(0.5f, 1f), fontSize: HudTheme.Control);
+            BuildPrivacyRow(panel);
             _settings.gameObject.SetActive(false);
         }
 
@@ -917,6 +919,7 @@ namespace Plop.Presentation
             FitModal(_pickerPanel, PickerSize);
             FitModal(_settingsPanel, SettingsSize);
             FitModal(_deadlockPanel, _deadlockPanel.sizeDelta);
+            if (_adOfferPanel != null) FitModal(_adOfferPanel, AdOfferSize);
             if (_worldAnnouncement != null) FitModal(_worldAnnouncement, WorldAnnouncementSize);
             FitPlayRows();
         }

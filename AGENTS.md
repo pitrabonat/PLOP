@@ -30,8 +30,20 @@ describes the system boundaries and [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md) rec
   Undo and Restart always recover.
 - Dream Dust grants and hint spends are one-time keys written atomically. A hint is charged only after a
   verified route for the unchanged board (`HintPolicy`: after two tries the first hint on a level is free
-  once when Dust is short). Keep rewards small and cosmetic: no ads, no real-money purchases. Rerun
+  once when Dust is short). Keep rewards small and cosmetic: no real-money purchases. Rerun
   `Bench --economy` after changing rewards or prices.
+- Advertising (Sprint 04, see Documentation/Monetization/AD_CONFIGURATION.md):
+  - Only `PLOP.Ads.AdMob` may reference `GoogleMobileAds.*` (enforced by `Sprint04AdsTests`). Rules live
+    engine-free in `Plop.Meta.Ads`; the game talks to `PlopAds` only.
+  - Default mode is Disabled. Test mode uses Google's official test unit IDs only. Never commit a real
+    AdMob app or unit ID, never flip `AdConfiguration.ProductionUnlocked`, never set an audience, create ad
+    accounts or accept ad terms: those are publisher decisions.
+  - Never loosen the interstitial floors (`AdConfiguration.Validate`), never show an ad during a level, in
+    the first 10 levels, on resume or without the player pressing Next. Rewarded ads stay voluntary, with an
+    equal "No, thanks", and pay only on the SDK reward event through `RewardTransactionService` (one-time
+    wallet keys). Banners, app-open, rewarded-interstitial and native ads are out of scope.
+  - Do not re-enable EDM's CocoaPods auto-install; iOS SDKs come in via Swift Package Manager.
+  - No analytics, attribution or mediation SDKs. Consent (UMP) runs before any ad request.
 - Playtest metrics stay local and dev-only (`[Conditional("DEVELOPMENT_BUILD")]`): no analytics SDKs.
   Never present simulated-player numbers as human playtest results.
 - Keep Meta (records, wallet, daily rules) engine-free behind `IKeyValueStore`/`IClock`.

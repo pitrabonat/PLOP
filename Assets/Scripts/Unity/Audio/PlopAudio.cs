@@ -152,7 +152,31 @@ namespace Plop.Presentation
         public MusicContext Context { get; private set; } = MusicContext.Menu;
         internal PlopLoopPlayer Music => _music;
         internal PlopLoopPlayer AmbienceBus => _ambience;
-        internal bool OutputAllowed => _initialized && !MasterMuted && !_paused && _hasFocus && isActiveAndEnabled;
+        internal bool OutputAllowed => _initialized && !MasterMuted && !_paused && _hasFocus && !_adSuspended && isActiveAndEnabled;
+        private bool _adSuspended;
+
+        /// <summary>A full-screen ad is on screen (Sprint 04).</summary>
+        public bool SuspendedForAd => _adSuspended;
+
+        /// <summary>
+        /// Before a full-screen ad: silences music, ambience and effects the same way an app pause does (loops keep
+        /// their position, scheduled cues are dropped). Volumes, mute and saved preferences are not touched.
+        /// </summary>
+        public void SuspendForFullscreenAd()
+        {
+            if (_adSuspended) return;
+            _adSuspended = true;
+            _pending.Clear();
+            OutputChanged();
+        }
+
+        /// <summary>After the ad closes or fails: the same loops resume where they paused (never a second copy).</summary>
+        public void ResumeAfterFullscreenAd()
+        {
+            if (!_adSuspended) return;
+            _adSuspended = false;
+            OutputChanged();
+        }
         private bool CanPlayEffects => OutputAllowed && SoundVolume > 0f;
 
         public void Initialize(bool loadPreferences, WorldAmbience ambience = WorldAmbience.CozyNest,

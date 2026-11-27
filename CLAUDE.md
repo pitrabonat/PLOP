@@ -12,7 +12,7 @@ Shared guidance for Claude Code, Codex, and other contributors. Start with
 - **Targets:** Android (IL2CPP, ARM64, min API 26, target = highest installed) and iOS (min iOS 15.0)
 - **Orientation:** Portrait only
 - **Repository:** https://github.com/pitrabonat/PLOP (remote `origin`, branch `main`; public)
-- **Status:** Final Sprint 02 (audio, localization, release polish) on `sprint/02-final-production`; see Documentation/FINAL_SPRINT_02_HANDOFF.md. Before that: Phase 11.5 environmental art and living Worlds (mechanic shaders, trace-driven VFX and audio, per-World board materials, animated backgrounds; presentation only) on top of Phase 11's rebalanced campaign (`PLOP_Pack_003`), Daily pool and hint grace, Phase 10 mechanics (Frost, Lava, Breeze, Loops), nine Worlds, Limited Moves, Phase 9 characters and Phase 8 depth. See PROJECT_STATE.md.
+- **Status:** Final Sprint 04 (AdMob integration in Disabled/Mock/Google-test modes, consent, privacy drafts; production advertising BLOCKED pending publisher approval) on `sprint/04-monetization`; see Documentation/FINAL_SPRINT_04_HANDOFF.md. Earlier: Final Sprint 02 (audio, localization, release polish); see Documentation/FINAL_SPRINT_02_HANDOFF.md. Before that: Phase 11.5 environmental art and living Worlds (mechanic shaders, trace-driven VFX and audio, per-World board materials, animated backgrounds; presentation only) on top of Phase 11's rebalanced campaign (`PLOP_Pack_003`), Daily pool and hint grace, Phase 10 mechanics (Frost, Lava, Breeze, Loops), nine Worlds, Limited Moves, Phase 9 characters and Phase 8 depth. See PROJECT_STATE.md.
 - **Visual style:** "Soft Toy Minimalism" — see `Documentation/VISUAL_STYLE.md` (palette, corner radii, animation).
 - **Docs:** `Documentation/` — ARCHITECTURE, GAME_RULES, SOLVER, LEVEL_GENERATION, PUZZLE_QUALITY, CHARACTERS, LEVEL_FORMAT, VISUAL_STYLE, TESTING, DEVELOPMENT_LOG.
 
@@ -50,7 +50,11 @@ Assets/
                                         QualitySearch, CampaignPlan, CampaignInsights (NO UnityEngine)
     Meta/            PLOP.Meta        — Dream Dust wallet, level records/Perfect, Daily Gift/Puzzle rules,
                                         cosmetic catalog/collection/presets (NO UnityEngine)
+    Meta/Ads/        (PLOP.Meta)      — ad configuration, frequency policy, reward transactions, IAdService,
+                                        Disabled/Mock services, house-ad catalog (NO UnityEngine)
+    Ads/AdMob/       PLOP.Ads.AdMob   — the only assembly that references the Google Mobile Ads plugin 11.7.0
     Unity/           PLOP.Unity       — board, HUD, MainMenu, CharacterStudio, input, worlds, audio, PlopGameController
+      Ads/           PlopAds coordinator, PlopAdsSetup (mode selection), offer option
       Characters/    CharacterArt recipes, ShapeAtlas character painters, PlopPart, MoveEffects, validator
     CharacterTools/Editor/ PLOP.CharacterTools — Animation Lab, cosmetic validator, reference-sheet capture (Editor only)
   Data/Cosmetics/Resources/Cosmetics/PLOP_Cosmetics_001.json — cosmetic catalog (IDs are save keys)
@@ -101,6 +105,8 @@ Documentation/       design & technical docs, benchmarks and running-game previe
   that still exist, access as levels beaten + 1. A changed puzzle never inherits a completion.
 - Economy (`RewardRules`): completion 8, Perfect +4, Gift 10, Daily 12 (+6), hint 15 (free on levels 1–6
   and mechanic intros). Hint spends use `TrySpend` keys `hint:<level>:<state>`: one charge per board state.
+  Sprint 04 rewarded ads: bonus 15 Dust ×3/day (`addust:<date>:<id>`), free-hint entitlements (`adhint:<id>`,
+  redeemed with `adhint-used:<id>` + the board's hint key in one commit).
 
 ## Handoff and Git
 
@@ -171,6 +177,24 @@ All music, ambience and effects are original and rendered offline by the determi
   - Game code calls `PlopAudio` methods and never touches an `AudioSource` directly.
 - Provenance and levels for every file: `/Volumes/PLOP_DEV/Marketing/Audio/MANIFEST.md`.
 - `Tools/AudioArt/render_ambience.py` is the retired Phase 10 generator, kept for history only.
+
+## Advertising (Sprint 04)
+- Official Google Mobile Ads Unity plugin **11.7.0** (OpenUPM scoped registry, scope `com.google.ads.mobile` only)
+  with UMP. Only `Assets/Scripts/Ads/AdMob` (`PLOP.Ads.AdMob`) references `GoogleMobileAds.*`; everything else
+  uses `IAdService` / `PlopAds`. Rules (`AdConfiguration`, `AdFrequencyPolicy`, `RewardTransactionService`)
+  are engine-free in `Assets/Scripts/Meta/Ads` and tested by both the .NET and Unity suites.
+- Modes: Disabled (default) / Mock (`PLOP_ADS_MOCK`) / Test (`PLOP_ADS_TEST`, Google test units only) /
+  Production (always falls back to Disabled: `ProductionUnlocked = false`, audience Unconfirmed, no IDs).
+  Development builds accept `plop.debug.ads` = off | mock | test.
+- Plugin settings hold Google's **sample** app IDs (`PlopAdsBuild.ConfigureAdMobTestSettings`); never commit a
+  real AdMob ID. Interstitials only after Next Level and only if loaded; rewarded only voluntary, paid on the
+  SDK reward event with one-time wallet keys (`addust:`, `adhint:`). See Documentation/Monetization/.
+- Build entries: `Plop.EditorTools.PlopAdsBuild.{BuildAdsDisabledApk,BuildTestAdsApk,BuildAdsDisabledBundle,
+  BuildAllAndroid,ExportAdsIOSSimulator}` → `/Volumes/PLOP_DEV/Builds/FinalSprint/04_Monetization/`.
+- iOS gets GMA and UMP as **Swift packages** (EDM `swiftPackageManagerEnabled`); CocoaPods is not needed and is not
+  installed. Keep EDM's `autoPodToolInstallInEditor` at 0 (it once tried `gem install cocoapods` by itself). Build
+  the exported project with `DEVELOPER_DIR=/Volumes/PLOP_DEV/Xcode/Xcode-26.3.app/Contents/Developer xcodebuild …
+  -clonedSourcePackagesDirPath /Volumes/PLOP_DEV/Cache/SPM/<name>` so packages stay on PLOP_DEV.
 
 ## Localization (Sprint 02)
 

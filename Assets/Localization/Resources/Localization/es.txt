@@ -127,6 +127,23 @@ Complete {0} levels	Completa {0} nivel|Completa {0} niveles
 Earn {0} Perfects	Consigue {0} Perfecto|Consigue {0} Perfectos
 Finish {0} Worlds	Termina {0} mundo|Termina {0} mundos
 Solve {0} Dailies	Resuelve {0} diario|Resuelve {0} diarios
+Ad	Anuncio
+Watch Ad	Ver anuncio
+No, thanks	No, gracias
+Ad unavailable	Anuncio no disponible
+Bonus Dream Dust	Polvo de sueños extra
+Watch Ad · +{0} Dream Dust	Ver anuncio · +{0} Polvo de sueños
+Watch a short ad to get {0} Dream Dust. Up to {1} bonuses a day.	Mira un anuncio corto para conseguir {0} Polvo de sueños. Hasta {1} bonos al día.
+Thanks! +{0} Dream Dust	¡Gracias! +{0} Polvo de sueños
+No reward this time. The ad did not finish.	Esta vez no hay recompensa. El anuncio no terminó.
+Get a hint	Obtener una pista
+Use {0} Dream Dust	Usar {0} Polvo de sueños
+Watch Ad · Free Hint	Anuncio · Pista gratis
+You have {0} Dream Dust. Or watch a short ad for one free hint.	Tienes {0} Polvo de sueños. O mira un anuncio corto para una pista gratis.
+Free hint used.	Pista gratis usada.
+Free hint saved for your next hint.	Pista gratis guardada para tu próxima pista.
+The board changed. Ask for a new hint.	El tablero cambió. Pide una pista nueva.
+Privacy Choices	Opciones de privacidad
 Classic	Clásico
 Bouncy	Saltarín
 Snoozy	Dormilón

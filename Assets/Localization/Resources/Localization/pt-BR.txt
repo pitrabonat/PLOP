@@ -127,6 +127,23 @@ Complete {0} levels	Complete {0} fase|Complete {0} fases
 Earn {0} Perfects	Ganhe {0} Perfeita|Ganhe {0} Perfeitas
 Finish {0} Worlds	Conclua {0} mundo|Conclua {0} mundos
 Solve {0} Dailies	Resolva {0} diário|Resolva {0} diários
+Ad	Anúncio
+Watch Ad	Ver anúncio
+No, thanks	Não, obrigado
+Ad unavailable	Anúncio indisponível
+Bonus Dream Dust	Pó dos sonhos bônus
+Watch Ad · +{0} Dream Dust	Ver anúncio · +{0} Pó dos sonhos
+Watch a short ad to get {0} Dream Dust. Up to {1} bonuses a day.	Veja um anúncio curto para ganhar {0} Pó dos sonhos. Até {1} bônus por dia.
+Thanks! +{0} Dream Dust	Obrigado! +{0} Pó dos sonhos
+No reward this time. The ad did not finish.	Sem recompensa desta vez. O anúncio não terminou.
+Get a hint	Pegar uma dica
+Use {0} Dream Dust	Usar {0} Pó dos sonhos
+Watch Ad · Free Hint	Anúncio · Dica grátis
+You have {0} Dream Dust. Or watch a short ad for one free hint.	Você tem {0} Pó dos sonhos. Ou veja um anúncio curto para ganhar uma dica grátis.
+Free hint used.	Dica grátis usada.
+Free hint saved for your next hint.	Dica grátis guardada para a próxima dica.
+The board changed. Ask for a new hint.	O tabuleiro mudou. Peça uma nova dica.
+Privacy Choices	Opções de privacidade
 Classic	Clássico
 Bouncy	Saltitante
 Snoozy	Soneca

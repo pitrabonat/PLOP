@@ -11,6 +11,17 @@ The same NUnit test files run in two environments:
 (`Unity` = `/Volumes/PLOP_DEV/Unity/Editors/6000.3.29f1/Unity.app/Contents/MacOS/Unity`; close the Editor first.)
 Tests use only NUnit features available in Unity's NUnit 3.5 fork.
 
+## Final Sprint 04 results (2026-11-27, executed)
+
+- .NET 225/225. Unity EditMode **225 / 225** passed. Unity PlayMode **181 / 181** passed. New `Sprint04AdsTests` (22 EditMode, 18 PlayMode) cover:
+  - configuration and the production lock, the frequency policy, reward transactions, Mock ads and house ads;
+  - interstitial flow, the rewarded hint and bonus, consent, Privacy Choices, lifecycle, mute and the watchdog;
+  - the rule that only `PLOP.Ads.AdMob` references the SDK.
+- **Google test ads on the Android emulator.** Three runs: consent, bonus reward, rewarded hint, Privacy Choices, interstitial after Next, advance after close, offline. Records: `Documentation/Monetization/DEVICE_QA.md`; screens: `Builds/FinalSprint/04_Monetization/05_QA/screens/`. Two bugs were found and fixed (card text overflow, and no advance after the ad closed). A regression test was added for the second.
+- **iOS Simulator:** export plus `xcodebuild` BUILD SUCCEEDED (GMA 13.13.0 and UMP 3.1.0 via SPM). Launches in Test mode with the consent form. The ads were not tapped through (no Screen Recording permission). See `Documentation/Monetization/IOS_STATUS.md`.
+- **Performance and size:** `Documentation/Monetization/PERFORMANCE.md`. Ads-disabled cold start equals Sprint 02. The release APK is +10.9 %.
+- Mock ads in a dev build: dev preference `plop.debug.ads=mock` or the define `PLOP_ADS_MOCK`. Test ads: `PlopAdsBuild.BuildTestAdsApk`.
+
 ## Final Sprint 02 results (2026-11-27, executed)
 
 - .NET 203/203. Unity EditMode 203/203. Unity PlayMode 162/162, which includes the new `PlopAudioTests` and `LocalizationTests` suites.

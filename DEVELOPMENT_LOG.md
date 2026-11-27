@@ -329,3 +329,22 @@ See [PROJECT_STATE.md](PROJECT_STATE.md) for verification and remaining device Q
 - **Polish:** menu dawn gradient and dream motes.
 - Verified: see Documentation/TESTING.md (Final Sprint 02 results). Nobody has listened to the audio, and no physical device was used.
 
+## 2026-11-27 · Final Sprint 04: AdMob integration, monetization architecture and privacy
+
+- Branch `sprint/04-monetization` from tag `checkpoint/pre-sprint04` (`7a1ad5a`).
+- **SDK:** Google Mobile Ads Unity plugin 11.7.0 (OpenUPM) with EDM 2.1.1.
+  - Android: play-services-ads 25.5.0, UMP 4.0.0.
+  - iOS: GMA 13.13.0 and UMP 3.1.0 as Swift packages.
+- **Architecture:**
+  - Engine-free rules in `Plop.Meta.Ads` (configuration, frequency policy, reward transactions, Disabled and Mock services).
+  - A single SDK adapter assembly, `PLOP.Ads.AdMob`, behind a `PLOP_HAS_GMA` define constraint.
+  - `PlopAds` coordinator: audio suspend and restore, mute, watchdog, lifecycle.
+  - Glue in partial classes of the controller, HUD and menu.
+- **Defaults:** ads are Disabled and Production is locked. Test builds use Google test units only, through the `PLOP_ADS_TEST` per-build define.
+- **Bugs found on the emulator:**
+  - The offer-card message did not wrap. Fixed.
+  - When the SDK reported the interstitial closing before Unity regained focus, `TrySelectLevel` refused while suspended, leaving the player on the victory card. Fixed with a pending advance completed on resume, plus a PlayMode test.
+- **iOS:** EDM's built-in CocoaPods auto-install ran unasked during the export and failed harmlessly (system Ruby is read-only). It is now disabled in the EDM settings. The SDKs come in via SPM, so CocoaPods is not needed.
+- **Docs:** the App Privacy draft was corrected from the SDKs' own privacy manifests. The earlier hand-written guess had marked location and Device ID as "not linked".
+- Verified: see Documentation/TESTING.md (Final Sprint 04 results) and Documentation/FINAL_SPRINT_04_HANDOFF.md. No physical device was used. No account, ID or agreement was created.
+
