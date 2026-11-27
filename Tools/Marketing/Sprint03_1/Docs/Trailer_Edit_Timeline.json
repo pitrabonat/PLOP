@@ -1,0 +1,412 @@
+{
+ "title": "PLOP! — Sleepy Puzzle | Official Trailer V2",
+ "fps": 30,
+ "width": 1920,
+ "height": 1080,
+ "duration_s": 30.667,
+ "bpm": 90,
+ "beat_s": 0.6667,
+ "bar_s": 2.6667,
+ "shots": [
+  {
+   "start": 0.0,
+   "end": 2.0,
+   "shot": "S01",
+   "content": "World awakens: layered island, boom down, sleeping Plop breathing"
+  },
+  {
+   "start": 2.0,
+   "end": 5.333,
+   "shot": "S02",
+   "content": "Hero close-up: wakes, blinks, smiles, hops; mint friend reacts"
+  },
+  {
+   "start": 5.333,
+   "end": 8.0,
+   "shot": "S03",
+   "content": "Fan spins up, wind loops, hero slides over ice; camera follows"
+  },
+  {
+   "start": 8.0,
+   "end": 9.333,
+   "shot": "S04",
+   "content": "Warp into the vortex, push through, reveal out of the in-game portal tile"
+  },
+  {
+   "start": 9.333,
+   "end": 13.333,
+   "shot": "S05",
+   "content": "L057 (portal + lava): two Plops move on every swipe, portal hop, Plop sleeps — large board"
+  },
+  {
+   "start": 13.333,
+   "end": 17.333,
+   "shot": "S06",
+   "content": "Frost (L019) | fans (L027); L046 wrong swipe → lava, 0.67 s incl. the dialog; undo → L046 solution"
+  },
+  {
+   "start": 17.333,
+   "end": 21.333,
+   "shot": "S07",
+   "content": "Moonlit Clouds L144 | Three Plops L102; L155 Challenge (15 moves) finishing Perfect"
+  },
+  {
+   "start": 21.333,
+   "end": 24.0,
+   "shot": "S08",
+   "content": "Hero tries real cosmetics (bow, flower, crown, nightcap), one per beat"
+  },
+  {
+   "start": 24.0,
+   "end": 28.0,
+   "shot": "S09",
+   "content": "Night: four Plops in their Nests, eyes fully closed, breathing; z's only after eyes close"
+  },
+  {
+   "start": 28.0,
+   "end": 30.667,
+   "shot": "S10",
+   "content": "End card: approved logo + Sleepy Puzzle subtitle, sonic logo; no date, badge or call to action"
+  }
+ ],
+ "music_sections": [
+  {
+   "section": "intro (wonder)",
+   "start": 0.0,
+   "end": 5.333
+  },
+  {
+   "section": "build (adventure)",
+   "start": 5.333,
+   "end": 8.0
+  },
+  {
+   "section": "montage (play)",
+   "start": 8.0,
+   "end": 16.0
+  },
+  {
+   "section": "drive (play, rising)",
+   "start": 16.0,
+   "end": 24.0
+  },
+  {
+   "section": "outro (lullaby)",
+   "start": 24.0,
+   "end": 29.333
+  },
+  {
+   "section": "sonic logo over music fade",
+   "start": 28.1,
+   "end": 30.667
+  }
+ ],
+ "sync_points": [
+  {
+   "t": 2.45,
+   "sfx": "ui_toggle"
+  },
+  {
+   "t": 3.55,
+   "sfx": "ui_tap"
+  },
+  {
+   "t": 4.45,
+   "sfx": "move_2"
+  },
+  {
+   "t": 4.72,
+   "sfx": "dust"
+  },
+  {
+   "t": 5.45,
+   "sfx": "fan"
+  },
+  {
+   "t": 6.3,
+   "sfx": "ice_slide"
+  },
+  {
+   "t": 7.35,
+   "sfx": "ice_stop"
+  },
+  {
+   "t": 7.83,
+   "sfx": "portal_in"
+  },
+  {
+   "t": 9.0,
+   "sfx": "portal_out"
+  },
+  {
+   "t": 9.5,
+   "sfx": "move_1"
+  },
+  {
+   "t": 9.95,
+   "sfx": "move_2"
+  },
+  {
+   "t": 10.4,
+   "sfx": "move_3"
+  },
+  {
+   "t": 10.5,
+   "sfx": "portal_in"
+  },
+  {
+   "t": 10.7,
+   "sfx": "portal_out"
+  },
+  {
+   "t": 10.85,
+   "sfx": "move_4"
+  },
+  {
+   "t": 11.3,
+   "sfx": "move_1"
+  },
+  {
+   "t": 11.75,
+   "sfx": "move_2"
+  },
+  {
+   "t": 12.2,
+   "sfx": "move_3"
+  },
+  {
+   "t": 12.36,
+   "sfx": "settle"
+  },
+  {
+   "t": 12.52,
+   "sfx": "sleep"
+  },
+  {
+   "t": 12.65,
+   "sfx": "move_4"
+  },
+  {
+   "t": 13.1,
+   "sfx": "move_1"
+  },
+  {
+   "t": 13.563,
+   "sfx": "move_3"
+  },
+  {
+   "t": 13.643,
+   "sfx": "fan"
+  },
+  {
+   "t": 14.013,
+   "sfx": "move_4"
+  },
+  {
+   "t": 14.063,
+   "sfx": "ice_slide"
+  },
+  {
+   "t": 14.293,
+   "sfx": "ice_stop"
+  },
+  {
+   "t": 14.463,
+   "sfx": "move_1"
+  },
+  {
+   "t": 14.543,
+   "sfx": "fan"
+  },
+  {
+   "t": 14.913,
+   "sfx": "move_2"
+  },
+  {
+   "t": 14.993,
+   "sfx": "fan"
+  },
+  {
+   "t": 15.18,
+   "sfx": "move_1"
+  },
+  {
+   "t": 15.4,
+   "sfx": "lava_sizzle"
+  },
+  {
+   "t": 15.66,
+   "sfx": "undo"
+  },
+  {
+   "t": 15.807,
+   "sfx": "move_1"
+  },
+  {
+   "t": 16.257,
+   "sfx": "move_2"
+  },
+  {
+   "t": 16.707,
+   "sfx": "move_3"
+  },
+  {
+   "t": 17.157,
+   "sfx": "move_4"
+  },
+  {
+   "t": 17.237,
+   "sfx": "fan"
+  },
+  {
+   "t": 17.363,
+   "sfx": "move_2"
+  },
+  {
+   "t": 17.523,
+   "sfx": "ice_slide"
+  },
+  {
+   "t": 17.813,
+   "sfx": "move_3"
+  },
+  {
+   "t": 17.973,
+   "sfx": "ice_slide"
+  },
+  {
+   "t": 18.083,
+   "sfx": "collision_2"
+  },
+  {
+   "t": 18.263,
+   "sfx": "move_4"
+  },
+  {
+   "t": 18.363,
+   "sfx": "portal_in"
+  },
+  {
+   "t": 18.563,
+   "sfx": "portal_out"
+  },
+  {
+   "t": 18.713,
+   "sfx": "move_1"
+  },
+  {
+   "t": 18.763,
+   "sfx": "ice_slide"
+  },
+  {
+   "t": 18.873,
+   "sfx": "ice_slide"
+  },
+  {
+   "t": 18.993,
+   "sfx": "ice_stop"
+  },
+  {
+   "t": 19.163,
+   "sfx": "move_2"
+  },
+  {
+   "t": 19.443,
+   "sfx": "move_1"
+  },
+  {
+   "t": 19.603,
+   "sfx": "settle"
+  },
+  {
+   "t": 19.763,
+   "sfx": "sleep"
+  },
+  {
+   "t": 19.893,
+   "sfx": "move_2"
+  },
+  {
+   "t": 19.993,
+   "sfx": "portal_in"
+  },
+  {
+   "t": 20.193,
+   "sfx": "portal_out"
+  },
+  {
+   "t": 20.343,
+   "sfx": "move_3"
+  },
+  {
+   "t": 20.393,
+   "sfx": "ice_slide"
+  },
+  {
+   "t": 20.503,
+   "sfx": "settle"
+  },
+  {
+   "t": 20.623,
+   "sfx": "ice_stop"
+  },
+  {
+   "t": 20.643,
+   "sfx": "sleep"
+  },
+  {
+   "t": 20.743,
+   "sfx": "perfect"
+  },
+  {
+   "t": 22.0,
+   "sfx": "cosmetic_unlock"
+  },
+  {
+   "t": 22.666,
+   "sfx": "cosmetic_unlock"
+  },
+  {
+   "t": 23.333,
+   "sfx": "cosmetic_unlock"
+  },
+  {
+   "t": 24.25,
+   "sfx": "settle"
+  },
+  {
+   "t": 25.62,
+   "sfx": "sleep"
+  },
+  {
+   "t": 26.32,
+   "sfx": "sleep"
+  },
+  {
+   "t": 28.1,
+   "sfx": "sonic_logo"
+  }
+ ],
+ "ducks": [
+  {
+   "from": 8.0,
+   "to": 9.2,
+   "db": -6
+  },
+  {
+   "from": 28.0,
+   "to": 30.667,
+   "db": -7
+  }
+ ],
+ "editable_sources": {
+  "compositor_timeline": "/Volumes/PLOP_DEV/Marketing/FinalSprint03_1/08_ProductionSources/Timelines/PLOP_OfficialTrailer_V2_1920x1080.json",
+  "clean_timeline": "/Volumes/PLOP_DEV/Marketing/FinalSprint03_1/08_ProductionSources/Timelines/PLOP_OfficialTrailer_V2_Clean.json",
+  "mix_spec": "/Volumes/PLOP_DEV/Marketing/FinalSprint03_1/08_ProductionSources/Timelines/PLOP_OfficialTrailer_V2_1920x1080.mix.json",
+  "edit_script": "/Volumes/PLOP_DEV/Marketing/FinalSprint03_1/08_ProductionSources/Scripts/edit_v2.py",
+  "score_spec": "/Volumes/PLOP_DEV/Marketing/FinalSprint03_1/08_ProductionSources/TrailerAudio/specs/score_official_v2.json",
+  "cinematic_scenes": "/Volumes/PLOP_DEV/Marketing/FinalSprint03_1/08_ProductionSources/Compositor/Cinematic2.swift",
+  "rig_capture": "Assets/Scripts/CharacterTools/Editor/MarketingCapture.cs (game repo)",
+  "layer_extraction": "/Volumes/PLOP_DEV/Marketing/FinalSprint03_1/08_ProductionSources/Cinematic2/layers.swift"
+ }
+}

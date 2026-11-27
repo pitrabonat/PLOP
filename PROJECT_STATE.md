@@ -1,5 +1,12 @@
 # PLOP! project state
 
+**Final Sprint 03.1 · Official trailer V2 (awaiting owner approval), then YouTube release and short-form package**
+
+- Read [Documentation/FINAL_SPRINT_03_1_HANDOFF.md](Documentation/FINAL_SPRINT_03_1_HANDOFF.md) first.
+- **The V2 trailer is in `/Volumes/PLOP_DEV/Marketing/FinalSprint03_1/02_OfficialTrailer/`.** It runs 30.67 s with a new 2.5D layered island, the game's own Plop rig, five gameplay layouts, a night ending with closed eyes, and no Coming Soon.
+- **Approval gate.** Nothing is uploaded until the owner explicitly approves the video, the thumbnail and the visibility.
+- **Game code.** Unchanged. The only addition is the editor-only `Assets/Scripts/CharacterTools/Editor/MarketingCapture.cs`, a batch-mode rig renderer used for marketing.
+
 **Final Sprint 03/06 · Launch marketing package (trailers, store assets, listings, social kit)**
 
 - Branch: `sprint/03-marketing`, from Sprint 02 at `b15c45c`. The game code is unchanged since Sprint 02.
