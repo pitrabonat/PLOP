@@ -9,6 +9,7 @@ Usage:
   debugprefs.py branding push          copy every splash/logo alternative from the Phase 13 pack to the app's files
   debugprefs.py splash <off|selected|splash-day|splash-night|-> [hold-seconds]  Phase 13 splash review (- = normal)
   debugprefs.py logo <file.png|text|->  main-menu logo review (- = the selected profile logo)
+  debugprefs.py language <en|de|uk|ru|fr|es|it|pt-BR|->  the player's language choice (- = follow the device)
 Progress keys are left untouched. Force-stops the app before editing prefs."""
 import os, re, subprocess, sys
 PKG = "com.plop.sleepypuzzle"
@@ -20,17 +21,21 @@ PACK = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "Doc
 adb = ["adb"]
 
 
-def edit(remove, extra):
+def edit(remove, extra, prefix="plop\\.debug\\."):
     subprocess.run(adb + ["shell", "am", "force-stop", PKG], check=True)
     xml = subprocess.run(adb + ["shell", "run-as", PKG, "cat", XML], check=True, capture_output=True, text=True).stdout
-    xml = re.sub(r'\s*<(int|string|float) name="plop\.debug\.(%s)"[^\n]*' % remove, "", xml)
+    xml = re.sub(r'\s*<(int|string|float) name="%s(%s)"[^\n]*' % (prefix, remove), "", xml)
     xml = xml.replace("<map>", "<map>" + extra, 1)
     subprocess.run(adb + ["shell", "cat > /data/local/tmp/plop_prefs.xml"], input=xml, text=True, check=True)
     subprocess.run(adb + ["shell", "run-as", PKG, "cp", "/data/local/tmp/plop_prefs.xml", XML], check=True)
     subprocess.run(adb + ["shell", "rm", "/data/local/tmp/plop_prefs.xml"], check=True)
 
 
-if len(sys.argv) >= 2 and sys.argv[1] == "playtest":
+if len(sys.argv) >= 3 and sys.argv[1] == "language":
+    code = sys.argv[2]
+    edit("language", "" if code == "-" else '\n    <string name="plop.language">%s</string>' % code, prefix="plop\\.")
+    print("language %s" % code)
+elif len(sys.argv) >= 2 and sys.argv[1] == "playtest":
     on = len(sys.argv) > 2 and sys.argv[2] == "on"
     edit("playtest", '\n    <int name="plop.debug.playtest" value="1" />' if on else "")
     print("playtest metrics %s" % ("on" if on else "off"))

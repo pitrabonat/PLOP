@@ -370,7 +370,7 @@ namespace Plop.Presentation
                 ApplyReducedMotion(PlayerPrefs.GetInt(ReducedMotionKey, 0) == 1);
             }
             _hud.SetComfortOptions(HapticsEnabled, ReducedMotionEnabled);
-            if (SavesProgress) Loc.InitFromPreferences(); // tests and previews stay in English
+            if (SavesProgress || _debugPreview) Loc.InitFromPreferences(); // tests stay in English; dev previews follow the saved choice
             _audio.Initialize(SavesProgress, _worlds.ForLevelIndex(_index)?.Ambience ?? WorldAmbience.CozyNest,
                 _debugPreview ? MusicContext.Gameplay : MusicContext.Menu);
             UpdateCosmeticProgress();

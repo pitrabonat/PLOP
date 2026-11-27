@@ -55,6 +55,7 @@ namespace Plop.Presentation
             _root = MenuKit.Canvas(transform, "Main Menu Canvas", 50, out _group); // above the gameplay HUD
             var background = MenuKit.Rect("Background", _root);
             background.gameObject.AddComponent<Image>().color = PlopPalette.PlayBackground;
+            BuildAtmosphere();
             _safe = MenuKit.Rect("SafeArea", _root);
             MenuKit.FitSafeArea(_safe);
 
@@ -230,10 +231,106 @@ namespace Plop.Presentation
 
         // ------------------------------------------------------------------ animation
 
+        private const int MoteCount = 14;
+        private readonly RectTransform[] _motes = new RectTransform[MoteCount];
+        private readonly Image[] _moteImages = new Image[MoteCount];
+        private readonly Vector4[] _moteMotion = new Vector4[MoteCount]; // x0, speed, phase, base alpha
+        private static Sprite _moteSprite, _skySprite;
+
+        /// <summary>
+        /// Sprint 02 menu atmosphere: a soft dawn gradient over the flat background and a few "dream dust" motes that drift
+        /// upward and twinkle (static under Reduced Motion). Behind all controls; nothing in the layout moves.
+        /// </summary>
+        private void BuildAtmosphere()
+        {
+            var sky = MenuKit.Rect("Menu sky", _root);
+            var skyImage = sky.gameObject.AddComponent<Image>();
+            skyImage.sprite = _skySprite != null ? _skySprite : (_skySprite = SkyGradient());
+            skyImage.raycastTarget = false;
+
+            var layer = MenuKit.Rect("Dream motes", _root);
+            var random = new System.Random(20261127);
+            for (int i = 0; i < MoteCount; i++)
+            {
+                var mote = new GameObject("Mote", typeof(RectTransform)).GetComponent<RectTransform>();
+                mote.SetParent(layer, false);
+                float x = (float)random.NextDouble(), y = (float)random.NextDouble();
+                mote.anchorMin = mote.anchorMax = new Vector2(x, y);
+                float size = 10f + 16f * (float)random.NextDouble();
+                mote.sizeDelta = new Vector2(size, size);
+                var image = mote.gameObject.AddComponent<Image>();
+                image.sprite = _moteSprite != null ? _moteSprite : (_moteSprite = SoftDot());
+                image.raycastTarget = false;
+                image.color = Color.Lerp(PlopPalette.Honey, Color.white, i % 3 == 0 ? 0.65f : 0.25f);
+                _motes[i] = mote;
+                _moteImages[i] = image;
+                _moteMotion[i] = new Vector4(x, 0.006f + 0.010f * (float)random.NextDouble(),
+                    (float)(random.NextDouble() * Mathf.PI * 2), 0.30f + 0.35f * (float)random.NextDouble());
+                SetMoteAlpha(i, 0f);
+            }
+        }
+
+        private void SetMoteAlpha(int i, float time)
+        {
+            var m = _moteMotion[i];
+            float twinkle = _reducedMotion ? 1f : 0.65f + 0.35f * Mathf.Sin(time * 1.3f + m.z);
+            var c = _moteImages[i].color;
+            c.a = m.w * twinkle;
+            _moteImages[i].color = c;
+        }
+
+        private void TickAtmosphere(float now, float dt)
+        {
+            if (_motes[0] == null) return;
+            for (int i = 0; i < MoteCount; i++)
+            {
+                SetMoteAlpha(i, now);
+                if (_reducedMotion) continue;
+                var m = _moteMotion[i];
+                var a = _motes[i].anchorMin;
+                a.y += m.y * dt;
+                if (a.y > 1.04f) a.y = -0.04f;
+                a.x = m.x + 0.012f * Mathf.Sin(now * 0.4f + m.z);
+                _motes[i].anchorMin = _motes[i].anchorMax = a;
+            }
+        }
+
+        private static Sprite SkyGradient()
+        {
+            const int h = 64;
+            var tex = new Texture2D(1, h, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };
+            var top = Color.Lerp(PlopPalette.PlayBackground, Color.white, 0.45f);
+            var bottom = Color.Lerp(PlopPalette.PlayBackground, PlopPalette.Honey, 0.16f);
+            for (int y = 0; y < h; y++)
+            {
+                float t = y / (h - 1f);
+                tex.SetPixel(0, y, Color.Lerp(bottom, top, t * t * (3f - 2f * t)));
+            }
+            tex.Apply(false, true);
+            return Sprite.Create(tex, new Rect(0, 0, 1, h), new Vector2(0.5f, 0.5f), 100f);
+        }
+
+        private static Sprite SoftDot()
+        {
+            const int n = 32;
+            var tex = new Texture2D(n, n, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };
+            for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                float dx = (x + 0.5f) / n * 2f - 1f, dy = (y + 0.5f) / n * 2f - 1f;
+                float d = Mathf.Sqrt(dx * dx + dy * dy);
+                float a = Mathf.Clamp01(1f - d);
+                tex.SetPixel(x, y, new Color(1f, 1f, 1f, a * a));
+            }
+            tex.Apply(false, true);
+            return Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f);
+        }
+
         private void Update()
         {
             if (_root == null || !_root.gameObject.activeSelf) return;
             float now = Time.unscaledTime;
+            TickAtmosphere(now, Time.unscaledDeltaTime);
             for (int i = 0; i < _plops.Length; i++)
             {
                 var p = _plops[i];
